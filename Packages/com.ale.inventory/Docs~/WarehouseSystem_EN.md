@@ -1,17 +1,28 @@
 # Warehouse System
 
+<p align="center">
+  🌍
+  <a href="./WarehouseSystem.md">中文</a> |
+  English |
+  <a href="./WarehouseSystem_JA.md">日本語</a>
+</p>
+
 - Back to [documentation](../README_EN.md)
 
 The Warehouse System defines "containers": capacity, weight limit, put-in / take-out / operate function-tag restrictions, filter tags, and sorting rules. At runtime, `InventoryRuntimeManager` maintains each warehouse's slot list and provides add/remove / query / sort / save APIs. Backpacks, equipment bars, shop shelves, and crafting material stores are all backed by warehouses.
 
 # 📜 Table of Contents
 
+- [Warehouse System](#warehouse-system)
+- [📜 Table of Contents](#-table-of-contents)
 - [Tab Structure](#tab-structure)
 - [Warehouse Templates (Left Column)](#warehouse-templates-left-column)
 - [Warehouse List (Middle Column)](#warehouse-list-middle-column)
 - [Warehouse Inspector (Right Column)](#warehouse-inspector-right-column)
 - [Sorting](#sorting)
 - [Runtime Setup](#runtime-setup)
+    - [Cover-UI Setup (Popups / Ghost Icon)](#cover-ui-setup-popups--ghost-icon)
+    - [Editor Test-Item Population (Auto-Fill on Play)](#editor-test-item-population-auto-fill-on-play)
 - [Runtime API](#runtime-api)
 - [RuntimeItemSlot Structure](#runtimeitemslot-structure)
 - [Save and Load](#save-and-load)

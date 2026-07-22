@@ -1,5 +1,12 @@
 # 架构说明
 
+<p align="center">
+  🌍
+  中文 |
+  <a href="./Architecture_EN.md">English</a> |
+  <a href="./Architecture_JA.md">日本語</a>
+</p>
+
 - 返回 [说明文档](../README.md)
 
 ## 设计目标

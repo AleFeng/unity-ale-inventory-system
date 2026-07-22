@@ -1,5 +1,12 @@
 # UI 组件与预制体制作指南
 
+<p align="center">
+  🌍
+  中文 |
+  <a href="./UIComponentGuide_EN.md">English</a> |
+  <a href="./UIComponentGuide_JA.md">日本語</a>
+</p>
+
 - 返回 [说明文档](../README.md)
 
 本文档说明 `InventorySystem.UI` 程序集中各 UI 组件的功能、Inspector 参数及预制体制作方法。覆盖背包、商店、制作、装备四套界面与可复用的通用组件。

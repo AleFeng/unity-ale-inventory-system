@@ -1,5 +1,12 @@
 # 属性系统（Attribute System）
 
+<p align="center">
+  🌍
+  中文 |
+  <a href="./AttributeSystem_EN.md">English</a> |
+  <a href="./AttributeSystem_JA.md">日本語</a>
+</p>
+
 - 返回 [说明文档](../README.md)
 
 灵活属性系统是道具 / 仓库 / 商店 / 制作四大子系统共用的数据基础。本文档说明属性字段的类型、`AttributeValue` 的存储与取值、显示字符串与排序比较规则。各子系统的「自定义属性字段」「属性字段显示」「整理排序」均建立在此之上。
@@ -14,6 +21,7 @@
 - [读取属性值（运行时 API）](#读取属性值运行时-api)
 - [资源字段的加载（Addressables）](#资源字段的加载addressables)
 - [本地化（固定 Text 字段与工具）](#本地化固定-text-字段与工具)
+  - [本地化工具窗口](#本地化工具窗口)
 - [显示字符串 ToDisplayString](#显示字符串-todisplaystring)
 - [排序比较数值 ToComparableNumber](#排序比较数值-tocomparablenumber)
 - [StringIntPair 与价格 / 货币](#stringintpair-与价格--货币)

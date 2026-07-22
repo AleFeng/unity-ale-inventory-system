@@ -1,11 +1,20 @@
 # 道具系统（Item System）
 
+<p align="center">
+  🌍
+  中文 |
+  <a href="./ItemSystem_EN.md">English</a> |
+  <a href="./ItemSystem_JA.md">日本語</a>
+</p>
+
 - 返回 [说明文档](../README.md)
 
 道具系统是整个插件的基础：定义游戏中所有道具及其属性。仓库 / 商店 / 制作系统都引用道具系统中的道具 ID。本文档说明如何在 Inventory Editor 的「道具系统」页签配置枚举类型、功能标签、道具模板与道具，以及运行时如何查询道具数据。
 
 # 📜目录
 
+- [道具系统（Item System）](#道具系统item-system)
+- [📜目录](#目录)
 - [打开编辑器](#打开编辑器)
 - [页签结构](#页签结构)
 - [枚举类型](#枚举类型)

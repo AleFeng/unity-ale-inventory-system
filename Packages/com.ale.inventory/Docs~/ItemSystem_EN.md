@@ -1,11 +1,20 @@
 # Item System
 
+<p align="center">
+  🌍
+  <a href="./ItemSystem.md">中文</a> |
+  English |
+  <a href="./ItemSystem_JA.md">日本語</a>
+</p>
+
 - Back to [documentation](../README_EN.md)
 
 The Item System is the foundation of the whole plugin: it defines every item in the game and its attributes. The Warehouse / Shop / Crafting systems all reference item IDs from the Item System. This document explains how to configure enum types, function tags, item templates, and items on the "Item System" tab of the Inventory Editor, and how to query item data at runtime.
 
 # 📜 Table of Contents
 
+- [Item System](#item-system)
+- [📜 Table of Contents](#-table-of-contents)
 - [Open the Editor](#open-the-editor)
 - [Tab Structure](#tab-structure)
 - [Enum Types](#enum-types)

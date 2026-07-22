@@ -1,5 +1,12 @@
 # Inventory System
 
+<p align="center">
+  🌍
+  <a href="./README.md">中文</a> |
+  English |
+  <a href="./README_JA.md">日本語</a>
+</p>
+
 A Unity plugin providing designer-facing static-data configuration tooling. A single `InventoryDatabase` asset centralizes the static definition data of six subsystems — **Item / Warehouse / Shop / Crafting / Equipment / Skill**; the dynamic runtime state (owned counts, instance IDs, trade progress, crafted output, equipped items, learned skills, save data) is maintained by the corresponding runtime managers. A full set of ready-to-use runtime UI components (inventory / shop / crafting / equipment / skill screens) is included.
 
 - The editor always and only works on ScriptableObjects; JSON / binary are used solely as one-way export formats.
@@ -76,6 +83,14 @@ Located under `Runtime/UI/`, assembly `Ale.Inventory.UI`, namespace `Ale.Invento
   - **Spawn / assignment rate limiting** (`spawnPerSecond`, default 30/sec) — amortizes instantiation and binding across multiple frames to avoid single-frame spikes or asset-loading congestion (with a budget cap to prevent an "opening-frame" burst).
   - **Per-cell fade-in following scroll direction** — cells appear in the order they enter the viewport (top-down when scrolling down, bottom-up when scrolling up).
 - See the [UI Component Guide](Docs~/UIComponentGuide_EN.md) for details.
+
+---
+
+## Documentation
+
+- [Attribute System](Docs~/AttributeSystem_EN.md) — field-type reference, `AttributeValue` retrieval / display / sort comparison
+- [UI Component Guide](Docs~/UIComponentGuide_EN.md) — UI components, prefab authoring, feature macros, demo wizard
+- [Architecture](Docs~/Architecture_EN.md) — design goals, data flow, editor & runtime architecture, extension guide
 
 ---
 
@@ -218,22 +233,3 @@ InventorySystem/
 ├── Resources/Data/     Sample data files
 └── Docs~/              Detailed docs (this folder)
 ```
-
----
-
-## Documentation
-
-Subsystem configuration and usage:
-
-- [Item System](Docs~/ItemSystem_EN.md) — enum types / function tags / item templates / items / flexible attributes
-- [Warehouse System](Docs~/WarehouseSystem_EN.md) — warehouse templates / warehouses / sorting / runtime API / save data
-- [Shop System](Docs~/ShopSystem_EN.md) — shop types / price sources / product groups / refresh schedules / trade API
-- [Crafting System](Docs~/CraftingSystem_EN.md) — group tags / blueprint templates / blueprint recipes / crafting warehouses / crafting API
-- [Equipment System](Docs~/EquipmentSystem_EN.md) — group tags / equipment-group templates / slot lists / slots / item limits / attribute bonuses / equip API
-- [Skill System](Docs~/SkillSystem_EN.md) — group tags / skill templates / skills / item skill references / tier enums / four sources / learned-skill API
-
-General and reference:
-
-- [Attribute System](Docs~/AttributeSystem_EN.md) — field-type reference, `AttributeValue` retrieval / display / sort comparison
-- [UI Component Guide](Docs~/UIComponentGuide_EN.md) — UI components, prefab authoring, feature macros, demo wizard
-- [Architecture](Docs~/Architecture_EN.md) — design goals, data flow, editor & runtime architecture, extension guide

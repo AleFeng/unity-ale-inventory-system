@@ -1,13 +1,20 @@
 # Skill System
 
+<p align="center">
+  🌍
+  <a href="./SkillSystem.md">中文</a> |
+  English |
+  <a href="./SkillSystem_JA.md">日本語</a>
+</p>
+
 - Back to [documentation](../README_EN.md)
 
 The Skill System configures the skills the player can use (attack / heal / buff / debuff / support, etc.). A skill is an independent config entry carrying fixed info like ID / name / description / icon, while a skill's **type / effect / values / tier**, etc., are carried by attrIds the consumer agrees on in "custom attribute fields" for other systems to read. Skills are primarily **granted to equipment-type items** (a weapon's attack skill, armor's defense skill, etc.), and can also be granted to other items (a consumable's use skill, magic scrolls / skill books, etc.). Skills are a config catalog; the "learned skills" state at runtime is maintained by `SkillRuntimeManager`, and the display set is collected by `SkillCollector` by source.
 
-> **Note on identifiers**: attrId defaults shown as `位阶` (tier), `背景框` (background frame), `名称` (name), and `技能` (skill reference) are the **actual default string values** baked into the components. They are kept verbatim here because changing them would misstate the real defaults; you may of course rename them to any string in your project.
-
 # 📜 Table of Contents
 
+- [Skill System](#skill-system)
+- [📜 Table of Contents](#-table-of-contents)
 - [Core Concepts](#core-concepts)
 - [Tab Structure](#tab-structure)
 - [Group Tags](#group-tags)
@@ -19,6 +26,10 @@ The Skill System configures the skills the player can use (attack / heal / buff 
 - [Skill Sources](#skill-sources)
 - [Runtime API](#runtime-api)
 - [Skill UI](#skill-ui)
+  - [Display Modes and Filtering](#display-modes-and-filtering)
+  - [Custom Attribute Fields (Tooltip)](#custom-attribute-fields-tooltip)
+  - [Custom Inspector](#custom-inspector)
+  - [One-Click Prefab Generation](#one-click-prefab-generation)
 
 # Core Concepts
 

@@ -1,17 +1,28 @@
 # 仓库系统（Warehouse System）
 
+<p align="center">
+  🌍
+  中文 |
+  <a href="./WarehouseSystem_EN.md">English</a> |
+  <a href="./WarehouseSystem_JA.md">日本語</a>
+</p>
+
 - 返回 [说明文档](../README.md)
 
 仓库系统定义「容器」：容量、重量上限、可放入 / 取出 / 操作的功能标签限制、过滤标签、整理排序规则。运行时由 `InventoryRuntimeManager` 维护每个仓库的格子列表，并提供增删 / 查询 / 整理 / 存档接口。背包、装备栏、商店货架、制作材料库都用仓库来承载。
 
 # 📜目录
 
+- [仓库系统（Warehouse System）](#仓库系统warehouse-system)
+- [📜目录](#目录)
 - [页签结构](#页签结构)
 - [仓库模板（左侧列）](#仓库模板左侧列)
 - [仓库列表（中间列）](#仓库列表中间列)
 - [仓库 Inspector（右侧列）](#仓库-inspector右侧列)
 - [整理排序](#整理排序)
 - [运行时挂载](#运行时挂载)
+    - [覆盖式 UI 设置（弹窗 / 幽灵图标）](#覆盖式-ui-设置弹窗--幽灵图标)
+    - [编辑器测试道具填充（Play 自动填入）](#编辑器测试道具填充play-自动填入)
 - [运行时 API](#运行时-api)
 - [RuntimeItemSlot 结构](#runtimeitemslot-结构)
 - [存档与读档](#存档与读档)

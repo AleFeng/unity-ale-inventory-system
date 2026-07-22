@@ -1,5 +1,12 @@
 # 仓库系统（Inventory System）
 
+<p align="center">
+  🌍
+  中文 |
+  <a href="./README_EN.md">English</a> |
+  <a href="./README_JA.md">日本語</a>
+</p>
+
 面向设计师的 Unity 静态数据配置工具插件。用一个 `InventoryDatabase` 资产集中配置 **道具 / 仓库 / 商店 / 制作 / 装备 / 技能** 六大子系统的静态定义数据；动态运行时状态（拥有数量、实例 ID、交易进度、制作产出、已装备道具、已学技能、存档）由对应的运行时管理器维护。配套一整套开箱即用的运行时 UI 组件（背包 / 商店 / 制作 / 装备 / 技能界面）。
 
 - 编辑器始终且仅在 ScriptableObject 上工作；JSON / 二进制 仅作为单向导出格式。
@@ -76,6 +83,14 @@
   - **生成 / 分配限速**（`spawnPerSecond`，默认 30 个/秒）——把实例化与绑定分摊到多帧，避免单帧峰值卡顿或资源加载堵塞（含预算封顶防"打开界面那一帧"爆发）。
   - **逐格浮现跟随滚动方向**——格子按进入视口的先后出现（下滚从上往下、上滚从下往上）。
 - 详见 [UI 组件指南](Docs~/UIComponentGuide.md)。
+
+---
+
+## 详细文档
+
+- [属性系统](Docs~/AttributeSystem.md) — 字段类型参考、`AttributeValue` 取值 / 显示 / 排序比较
+- [UI 组件指南](Docs~/UIComponentGuide.md) — UI 组件、预制体制作、宏开关、Demo 向导
+- [架构说明](Docs~/Architecture.md) — 设计目标、数据流、编辑器与运行时架构、扩展指南
 
 ---
 
@@ -218,22 +233,3 @@ InventorySystem/
 ├── Resources/Data/     示例数据文件
 └── Docs~/              详细文档（本文件夹）
 ```
-
----
-
-## 详细文档
-
-子系统配置与使用：
-
-- [道具系统](Docs~/ItemSystem.md) — 枚举类型 / 功能标签 / 道具模板 / 道具 / 灵活属性
-- [仓库系统](Docs~/WarehouseSystem.md) — 仓库模板 / 仓库 / 整理排序 / 运行时 API / 存档
-- [商店系统](Docs~/ShopSystem.md) — 商店类型 / 价格来源 / 商品组 / 刷新计划 / 交易 API
-- [制作系统](Docs~/CraftingSystem.md) — 分组标签 / 蓝图模板 / 蓝图配方 / 制作仓库 / 制作 API
-- [装备系统](Docs~/EquipmentSystem.md) — 分组标签 / 装备组模板 / 槽位列表 / 装备槽 / 道具限制 / 属性加成 / 装备 API
-- [技能系统](Docs~/SkillSystem.md) — 分组标签 / 技能模板 / 技能 / 道具技能引用 / 位阶枚举 / 四种来源 / 已学技能 API
-
-通用与参考：
-
-- [属性系统](Docs~/AttributeSystem.md) — 字段类型参考、`AttributeValue` 取值 / 显示 / 排序比较
-- [UI 组件指南](Docs~/UIComponentGuide.md) — UI 组件、预制体制作、宏开关、Demo 向导
-- [架构说明](Docs~/Architecture.md) — 设计目标、数据流、编辑器与运行时架构、扩展指南

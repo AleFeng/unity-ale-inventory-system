@@ -187,15 +187,15 @@ Tools > Inventory System > Welcome Window
 
 サブシステムとリファレンスのドキュメント（`Packages/com.ale.inventory/Docs~/` 以下）：
 
-- [アイテムシステム](Packages/com.ale.inventory/Docs~/ItemSystem.md) — 列挙型 / 機能タグ / アイテムテンプレート / アイテム / 柔軟な属性
-- [倉庫システム](Packages/com.ale.inventory/Docs~/WarehouseSystem.md) — 倉庫テンプレート / 倉庫 / 整理ソート / ランタイム API / セーブデータ
-- [ショップシステム](Packages/com.ale.inventory/Docs~/ShopSystem.md) — ショップ種類 / 価格ソース / 商品グループ / 更新スケジュール / 取引 API
-- [クラフトシステム](Packages/com.ale.inventory/Docs~/CraftingSystem.md) — グループタグ / ブループリントテンプレート / ブループリントのレシピ / クラフト倉庫 / クラフト API
-- [装備システム](Packages/com.ale.inventory/Docs~/EquipmentSystem.md) — グループタグ / 装備グループテンプレート / スロットリスト / 装備スロット / アイテム制限 / 属性ボーナス / 装備 API
-- [スキルシステム](Packages/com.ale.inventory/Docs~/SkillSystem.md) — グループタグ / スキルテンプレート / スキル / アイテムのスキル参照 / 位階の列挙 / 4 つのソース / 習得スキル API
-- [属性システム](Packages/com.ale.inventory/Docs~/AttributeSystem.md) — フィールド型リファレンス、`AttributeValue` の取得 / 表示 / ソート比較
-- [UI コンポーネントガイド](Packages/com.ale.inventory/Docs~/UIComponentGuide.md) — UI コンポーネント、プレハブ作成、機能マクロ、デモウィザード
-- [アーキテクチャ](Packages/com.ale.inventory/Docs~/Architecture.md) — 設計目標、データフロー、エディタ・ランタイムのアーキテクチャ、拡張ガイド
+- [アイテムシステム](Packages/com.ale.inventory/Docs~/ItemSystem_JA.md) — 列挙型 / 機能タグ / アイテムテンプレート / アイテム / 柔軟な属性
+- [倉庫システム](Packages/com.ale.inventory/Docs~/WarehouseSystem_JA.md) — 倉庫テンプレート / 倉庫 / 整理ソート / ランタイム API / セーブデータ
+- [ショップシステム](Packages/com.ale.inventory/Docs~/ShopSystem_JA.md) — ショップ種類 / 価格ソース / 商品グループ / 更新スケジュール / 取引 API
+- [クラフトシステム](Packages/com.ale.inventory/Docs~/CraftingSystem_JA.md) — グループタグ / ブループリントテンプレート / ブループリントのレシピ / クラフト倉庫 / クラフト API
+- [装備システム](Packages/com.ale.inventory/Docs~/EquipmentSystem_JA.md) — グループタグ / 装備グループテンプレート / スロットリスト / 装備スロット / アイテム制限 / 属性ボーナス / 装備 API
+- [スキルシステム](Packages/com.ale.inventory/Docs~/SkillSystem_JA.md) — グループタグ / スキルテンプレート / スキル / アイテムのスキル参照 / 位階の列挙 / 4 つのソース / 習得スキル API
+- [属性システム](Packages/com.ale.inventory/Docs~/AttributeSystem_JA.md) — フィールド型リファレンス、`AttributeValue` の取得 / 表示 / ソート比較
+- [UI コンポーネントガイド](Packages/com.ale.inventory/Docs~/UIComponentGuide_JA.md) — UI コンポーネント、プレハブ作成、機能マクロ、デモウィザード
+- [アーキテクチャ](Packages/com.ale.inventory/Docs~/Architecture_JA.md) — 設計目標、データフロー、エディタ・ランタイムのアーキテクチャ、拡張ガイド
 
 ## 📁 ディレクトリ構成
 ```

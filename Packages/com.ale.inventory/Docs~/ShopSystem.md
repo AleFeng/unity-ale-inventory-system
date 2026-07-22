@@ -1,11 +1,20 @@
 # 商店系统（Shop System）
 
+<p align="center">
+  🌍
+  中文 |
+  <a href="./ShopSystem_EN.md">English</a> |
+  <a href="./ShopSystem_JA.md">日本語</a>
+</p>
+
 - 返回 [说明文档](../README.md)
 
 商店系统在道具 / 仓库之上实现买卖。商店是配置目录（商品为条目），运行时的每玩家交易进度（已购次数、刷新时间戳）由 `ShopRuntimeManager` 维护。价格不写死——取自道具的 `StringIntPair` 属性（货币 ID → 价格），支持多货币、价格倍率、周期性刷新可交易次数。
 
 # 📜目录
 
+- [商店系统（Shop System）](#商店系统shop-system)
+- [📜目录](#目录)
 - [核心概念](#核心概念)
 - [商店类型](#商店类型)
 - [页签结构](#页签结构)

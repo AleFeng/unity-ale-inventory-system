@@ -1,5 +1,12 @@
 # 编辑器配置指南（已拆分到各子系统文档）
 
+<p align="center">
+  🌍
+  中文 |
+  <a href="./EditorGuide_EN.md">English</a> |
+  <a href="./EditorGuide_JA.md">日本語</a>
+</p>
+
 - 返回 [说明文档](../README.md)
 
 本文档原先合并讲解道具 + 仓库的编辑器配置。现已按子系统拆分，请前往对应文档：

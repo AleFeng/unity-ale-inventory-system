@@ -1,11 +1,20 @@
 # 制作系统（Crafting System）
 
+<p align="center">
+  🌍
+  中文 |
+  <a href="./CraftingSystem_EN.md">English</a> |
+  <a href="./CraftingSystem_JA.md">日本語</a>
+</p>
+
 - 返回 [说明文档](../README.md)
 
 制作系统用「蓝图（配方）」描述「消耗材料 → 产出道具」。蓝图引用道具系统的道具 ID，从制作仓库扣材料、向制作仓库放产出。蓝图是配置目录；运行时的制作动作由 `CraftingRuntimeManager` 执行，连续制作的次数 / 计时 / 进度由 UI 层驱动。
 
 # 📜目录
 
+- [制作系统（Crafting System）](#制作系统crafting-system)
+- [📜目录](#目录)
 - [核心概念](#核心概念)
 - [页签结构](#页签结构)
 - [分组标签](#分组标签)

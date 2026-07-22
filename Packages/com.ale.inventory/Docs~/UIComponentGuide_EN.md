@@ -1,5 +1,12 @@
 # UI Component and Prefab Authoring Guide
 
+<p align="center">
+  🌍
+  <a href="./UIComponentGuide.md">中文</a> |
+  English |
+  <a href="./UIComponentGuide_JA.md">日本語</a>
+</p>
+
 - Back to [documentation](../README_EN.md)
 
 This document explains the functionality, Inspector parameters, and prefab authoring of each UI component in the `Ale.Inventory.UI` assembly. It covers the inventory, shop, crafting, and equipment screens plus reusable common components.

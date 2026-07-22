@@ -187,15 +187,15 @@ This README is an overview and quick start. The **complete usage guide** — eac
 
 Subsystem and reference docs (under `Packages/com.ale.inventory/Docs~/`):
 
-- [Item System](Packages/com.ale.inventory/Docs~/ItemSystem.md) — enum types / function tags / item templates / items / flexible attributes
-- [Warehouse System](Packages/com.ale.inventory/Docs~/WarehouseSystem.md) — warehouse templates / warehouses / sorting / runtime API / save data
-- [Shop System](Packages/com.ale.inventory/Docs~/ShopSystem.md) — shop types / price sources / product groups / refresh schedules / trade API
-- [Crafting System](Packages/com.ale.inventory/Docs~/CraftingSystem.md) — group tags / blueprint templates / blueprint recipes / crafting warehouses / crafting API
-- [Equipment System](Packages/com.ale.inventory/Docs~/EquipmentSystem.md) — group tags / equipment-group templates / slot lists / slots / item limits / attribute bonuses / equip API
-- [Skill System](Packages/com.ale.inventory/Docs~/SkillSystem.md) — group tags / skill templates / skills / item skill references / tier enums / four sources / learned-skill API
-- [Attribute System](Packages/com.ale.inventory/Docs~/AttributeSystem.md) — field-type reference, `AttributeValue` retrieval / display / sort comparison
-- [UI Component Guide](Packages/com.ale.inventory/Docs~/UIComponentGuide.md) — UI components, prefab authoring, feature macros, demo wizard
-- [Architecture](Packages/com.ale.inventory/Docs~/Architecture.md) — design goals, data flow, editor & runtime architecture, extension guide
+- [Item System](Packages/com.ale.inventory/Docs~/ItemSystem_EN.md) — enum types / function tags / item templates / items / flexible attributes
+- [Warehouse System](Packages/com.ale.inventory/Docs~/WarehouseSystem_EN.md) — warehouse templates / warehouses / sorting / runtime API / save data
+- [Shop System](Packages/com.ale.inventory/Docs~/ShopSystem_EN.md) — shop types / price sources / product groups / refresh schedules / trade API
+- [Crafting System](Packages/com.ale.inventory/Docs~/CraftingSystem_EN.md) — group tags / blueprint templates / blueprint recipes / crafting warehouses / crafting API
+- [Equipment System](Packages/com.ale.inventory/Docs~/EquipmentSystem_EN.md) — group tags / equipment-group templates / slot lists / slots / item limits / attribute bonuses / equip API
+- [Skill System](Packages/com.ale.inventory/Docs~/SkillSystem_EN.md) — group tags / skill templates / skills / item skill references / tier enums / four sources / learned-skill API
+- [Attribute System](Packages/com.ale.inventory/Docs~/AttributeSystem_EN.md) — field-type reference, `AttributeValue` retrieval / display / sort comparison
+- [UI Component Guide](Packages/com.ale.inventory/Docs~/UIComponentGuide_EN.md) — UI components, prefab authoring, feature macros, demo wizard
+- [Architecture](Packages/com.ale.inventory/Docs~/Architecture_EN.md) — design goals, data flow, editor & runtime architecture, extension guide
 
 ## 📁 Directory Structure
 ```

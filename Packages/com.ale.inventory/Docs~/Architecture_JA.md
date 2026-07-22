@@ -1,5 +1,12 @@
 # アーキテクチャ
 
+<p align="center">
+  🌍
+  <a href="./Architecture.md">中文</a> |
+  <a href="./Architecture_EN.md">English</a> |
+  日本語
+</p>
+
 - [説明ドキュメント](../README_JA.md) に戻る
 
 ## 設計目標

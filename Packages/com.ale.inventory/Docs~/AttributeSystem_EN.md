@@ -1,5 +1,12 @@
 # Attribute System
 
+<p align="center">
+  🌍
+  <a href="./AttributeSystem.md">中文</a> |
+  English |
+  <a href="./AttributeSystem_JA.md">日本語</a>
+</p>
+
 - Back to [documentation](../README_EN.md)
 
 The flexible attribute system is the shared data foundation of the four subsystems — Item / Warehouse / Shop / Crafting. This document explains attribute field types, `AttributeValue` storage and retrieval, display strings, and sort comparison rules. Each subsystem's "custom attribute fields", "attribute field display", and "sorting" are built on top of this.
@@ -14,6 +21,7 @@ The flexible attribute system is the shared data foundation of the four subsyste
 - [Reading Attribute Values (Runtime API)](#reading-attribute-values-runtime-api)
 - [Asset Field Loading (Addressables)](#asset-field-loading-addressables)
 - [Localization (Fixed Text Fields and Tooling)](#localization-fixed-text-fields-and-tooling)
+  - [Localization Tool Window](#localization-tool-window)
 - [Display String (ToDisplayString)](#display-string-todisplaystring)
 - [Sort Comparison Value (ToComparableNumber)](#sort-comparison-value-tocomparablenumber)
 - [StringIntPair and Price / Currency](#stringintpair-and-price--currency)

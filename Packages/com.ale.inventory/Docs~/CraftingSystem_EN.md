@@ -1,11 +1,20 @@
 # Crafting System
 
+<p align="center">
+  🌍
+  <a href="./CraftingSystem.md">中文</a> |
+  English |
+  <a href="./CraftingSystem_JA.md">日本語</a>
+</p>
+
 - Back to [documentation](../README_EN.md)
 
 The Crafting System uses "blueprints (recipes)" to describe "consume materials → produce items". A blueprint references item IDs from the Item System, deducts materials from crafting warehouses, and places output into crafting warehouses. Blueprints are a config catalog; the crafting action at runtime is executed by `CraftingRuntimeManager`, while the count / timing / progress of continuous crafting is driven by the UI layer.
 
 # 📜 Table of Contents
 
+- [Crafting System](#crafting-system)
+- [📜 Table of Contents](#-table-of-contents)
 - [Core Concepts](#core-concepts)
 - [Tab Structure](#tab-structure)
 - [Group Tags](#group-tags)

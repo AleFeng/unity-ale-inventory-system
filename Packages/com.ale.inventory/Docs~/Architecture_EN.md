@@ -1,5 +1,12 @@
 # Architecture
 
+<p align="center">
+  🌍
+  <a href="./Architecture.md">中文</a> |
+  English |
+  <a href="./Architecture_JA.md">日本語</a>
+</p>
+
 - Back to [documentation](../README_EN.md)
 
 ## Design Goals

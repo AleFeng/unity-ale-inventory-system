@@ -1,5 +1,12 @@
 # 属性システム（Attribute System）
 
+<p align="center">
+  🌍
+  <a href="./AttributeSystem.md">中文</a> |
+  <a href="./AttributeSystem_EN.md">English</a> |
+  日本語
+</p>
+
 - [説明ドキュメント](../README_JA.md) に戻る
 
 柔軟な属性システムは、アイテム / 倉庫 / ショップ / クラフトの 4 大サブシステムが共有するデータ基盤です。本ドキュメントでは、属性フィールドの型、`AttributeValue` の格納と取得、表示文字列とソート比較ルールを説明します。各サブシステムの「カスタム属性フィールド」「属性フィールド表示」「整理ソート」はすべてこの上に構築されています。
@@ -14,6 +21,7 @@
 - [属性値の読み取り（ランタイム API）](#属性値の読み取りランタイム-api)
 - [リソースフィールドの読み込み（Addressables）](#リソースフィールドの読み込みaddressables)
 - [ローカライズ（固定 Text フィールドとツール）](#ローカライズ固定-text-フィールドとツール)
+  - [ローカライズツールウィンドウ](#ローカライズツールウィンドウ)
 - [表示文字列（ToDisplayString）](#表示文字列todisplaystring)
 - [ソート比較数値（ToComparableNumber）](#ソート比較数値tocomparablenumber)
 - [StringIntPair と価格 / 通貨](#stringintpair-と価格--通貨)

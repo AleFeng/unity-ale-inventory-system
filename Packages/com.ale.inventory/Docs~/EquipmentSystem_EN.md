@@ -1,23 +1,34 @@
 # Equipment System
 
+<p align="center">
+  🌍
+  <a href="./EquipmentSystem.md">中文</a> |
+  English |
+  <a href="./EquipmentSystem_JA.md">日本語</a>
+</p>
+
 - Back to [documentation](../README_EN.md)
 
 The Equipment System lets the player equip items into the slots of an "equipment group" to gain attribute bonuses. An equipment group defines a full slot structure (multiple **slot lists**, each containing multiple **equipment slots**), and constrains which items each slot may hold via "item limits" (function tag / enum constraints) and "slot filter conditions"; the "equipment attribute field list" specifies which item attributes are summed into the equipment group's total attribute bonuses. Equipment groups are a config catalog; the equip / unequip / swap actions and bonus aggregation at runtime are executed by `EquipmentRuntimeManager`.
 
 # 📜 Table of Contents
 
+- [Equipment System](#equipment-system)
+- [📜 Table of Contents](#-table-of-contents)
 - [Core Concepts](#core-concepts)
 - [Tab Structure](#tab-structure)
 - [Group Tags](#group-tags)
 - [Equipment-Group Templates](#equipment-group-templates)
 - [Equipment Groups (Middle Column)](#equipment-groups-middle-column)
 - [Equipment-Group Inspector (Right Column)](#equipment-group-inspector-right-column)
+- [Equipment Warehouses](#equipment-warehouses)
 - [Slot Lists and Item Limits](#slot-lists-and-item-limits)
 - [Equipment Slots and Filter Conditions](#equipment-slots-and-filter-conditions)
 - [Equipment Attribute Field List](#equipment-attribute-field-list)
 - [Limit Matching Rules](#limit-matching-rules)
 - [Runtime API](#runtime-api)
 - [Equipment UI](#equipment-ui)
+  - [Interaction](#interaction)
 
 # Core Concepts
 

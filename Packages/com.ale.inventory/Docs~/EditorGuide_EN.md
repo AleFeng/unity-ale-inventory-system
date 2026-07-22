@@ -1,5 +1,12 @@
 # Editor Configuration Guide (Split into Each Subsystem's Docs)
 
+<p align="center">
+  🌍
+  <a href="./EditorGuide.md">中文</a> |
+  English |
+  <a href="./EditorGuide_JA.md">日本語</a>
+</p>
+
 - Back to [documentation](../README_EN.md)
 
 This document originally covered the editor configuration of items + warehouses together. It has now been split by subsystem; please go to the corresponding document:

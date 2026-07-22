@@ -1,11 +1,20 @@
 # Shop System
 
+<p align="center">
+  🌍
+  <a href="./ShopSystem.md">中文</a> |
+  English |
+  <a href="./ShopSystem_JA.md">日本語</a>
+</p>
+
 - Back to [documentation](../README_EN.md)
 
 The Shop System implements buying and selling on top of the Item / Warehouse systems. A shop is a config catalog (products are entries); the per-player trade progress at runtime (purchase counts, refresh timestamps) is maintained by `ShopRuntimeManager`. Prices are not hard-coded — they are read from an item's `StringIntPair` attribute (currency ID → price), supporting multiple currencies, price multipliers, and periodically refreshed tradeable counts.
 
 # 📜 Table of Contents
 
+- [Shop System](#shop-system)
+- [📜 Table of Contents](#-table-of-contents)
 - [Core Concepts](#core-concepts)
 - [Shop Types](#shop-types)
 - [Tab Structure](#tab-structure)

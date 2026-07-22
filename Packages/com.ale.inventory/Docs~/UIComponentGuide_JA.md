@@ -1,5 +1,12 @@
 # UI コンポーネントとプレハブ作成ガイド
 
+<p align="center">
+  🌍
+  <a href="./UIComponentGuide.md">中文</a> |
+  <a href="./UIComponentGuide_EN.md">English</a> |
+  日本語
+</p>
+
 - [説明ドキュメント](../README_JA.md) に戻る
 
 本ドキュメントでは、`Ale.Inventory.UI` アセンブリ内の各 UI コンポーネントの機能、Inspector パラメータ、プレハブの作成方法を説明します。バックパック、ショップ、クラフト、装備の 4 つの画面と、再利用可能な共通コンポーネントをカバーします。
