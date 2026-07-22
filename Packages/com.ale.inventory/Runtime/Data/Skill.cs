@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 技能配置条目。携带唯一 <see cref="id"/>、显示信息（名称 / 描述 / 图标 + 本地化）、来源模板引用、

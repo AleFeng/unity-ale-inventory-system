@@ -1,4 +1,4 @@
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 道具格子网格显示组件（MonoBehaviour）。

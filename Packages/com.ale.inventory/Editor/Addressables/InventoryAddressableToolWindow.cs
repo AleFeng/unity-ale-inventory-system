@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// Addressable工具窗口（仅 IS_ADDRESSABLE 编译）。

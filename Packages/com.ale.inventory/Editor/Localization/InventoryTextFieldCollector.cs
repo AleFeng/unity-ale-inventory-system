@@ -1,8 +1,8 @@
 #if IS_LOCALIZATION
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>本地化工具收集到的一个 <see cref="EFieldType.Text"/> 位置：属性值 + 元素索引 + 语义 Key 路径。</summary>
     internal readonly struct TextFieldRef

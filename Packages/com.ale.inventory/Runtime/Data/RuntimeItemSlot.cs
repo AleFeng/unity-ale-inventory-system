@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 仓库中一个格子的运行时状态。

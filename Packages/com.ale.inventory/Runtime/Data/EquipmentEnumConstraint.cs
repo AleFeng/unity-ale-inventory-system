@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 槽位列表级「枚举类型约束」：从道具系统定义的枚举类型中选一个，再选若干允许的枚举值，

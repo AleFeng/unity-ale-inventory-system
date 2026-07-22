@@ -1,4 +1,4 @@
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>商店刷新周期。决定「可交易次数」按何种周期重置。</summary>
     public enum ShopRefreshType

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 仓库模板。定义一组自定义属性字段（如备注、分区等），作为创建新仓库的蓝本。

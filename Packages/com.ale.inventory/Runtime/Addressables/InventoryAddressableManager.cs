@@ -5,7 +5,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using Object = UnityEngine.Object;
 
-namespace InventorySystem.Runtime.AddressableSupport
+namespace Ale.Inventory.Runtime.AddressableSupport
 {
     /// <summary>
     /// Addressable 资源加载/卸载与内存管理核心。按「地址」做引用计数去重加载，

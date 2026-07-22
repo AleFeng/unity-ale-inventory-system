@@ -1,4 +1,4 @@
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 刷新时间类型。决定刷新边界依据哪种时钟计算。

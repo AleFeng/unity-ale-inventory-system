@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>装备候选条目：候选道具 + 其取出来源仓库 + 跨全部装备仓库的合计持有量。</summary>
     public struct EquipmentCandidateEntry

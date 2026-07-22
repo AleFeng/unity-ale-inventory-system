@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 装备组「装备属性字段列表」的一条配置：指定道具上的某个属性字段作为装备组的总属性加成数据，

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 装备槽（配置部分）。一个槽位可装备一个道具；本类仅承载「配置」（稳定 ID + 名称 + 槽级过滤条件），

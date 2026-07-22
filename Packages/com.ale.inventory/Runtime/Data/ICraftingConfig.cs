@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 蓝图可配置项的共享契约。由蓝图实例 <see cref="CraftingBlueprint"/> 与

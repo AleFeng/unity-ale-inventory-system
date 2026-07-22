@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 商店可配置项的共享 IMGUI 绘制：商店类型、交易仓库、过滤设置、UI 配置（数字格式 + 价格属性来源）、商品组。

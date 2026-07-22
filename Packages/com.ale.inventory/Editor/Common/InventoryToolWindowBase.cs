@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 库工具窗口基类：抽出「选数据库 + 逐帧时间预算步进 + 进度条 + 可选择日志 + 取消 + 完成收尾」等

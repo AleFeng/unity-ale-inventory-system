@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 技能模板。作为创建新技能的蓝本，承载「技能默认信息」（名称 / 描述 / 图标 / 本地化 / 分组标签）

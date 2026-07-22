@@ -4,10 +4,10 @@ using InventoryText = TMPro.TMP_Text;
 using InventoryText = UnityEngine.UI.Text;
 #endif
 
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 仓库页签按钮（MonoBehaviour）。

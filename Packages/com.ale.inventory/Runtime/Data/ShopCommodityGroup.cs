@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 商品组。商店中以页签形式分组显示的一组商品，另有「全部」页签聚合显示。

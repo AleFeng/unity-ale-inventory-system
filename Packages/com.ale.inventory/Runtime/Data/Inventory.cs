@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 仓库实例。容纳道具的容器（背包、商店库存、装备栏等）。

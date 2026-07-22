@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 通用「过滤页签栏」绘制：工具栏样式的「全部」+ 每个选项一个 Toggle 按钮，互斥单选。

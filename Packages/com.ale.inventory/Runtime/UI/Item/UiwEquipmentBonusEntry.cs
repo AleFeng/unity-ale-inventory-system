@@ -6,7 +6,7 @@ using InventoryText = UnityEngine.UI.Text;
 
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 装备属性加成条目显示组件。一行 = 标签 + 数值（如「攻击力  120」）。

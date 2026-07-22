@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 技能可配置项的共享契约。由技能实例 <see cref="Skill"/> 与技能模板 <see cref="SkillTemplate"/> 共同实现，

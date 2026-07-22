@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 仓库自动整理的单条优先级规则。<see cref="field"/> 指定排序依据的字段 ID，

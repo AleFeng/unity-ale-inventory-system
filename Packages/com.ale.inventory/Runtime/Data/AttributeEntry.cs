@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.Serialization;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 道具上的一条具体属性值。通过 <see cref="id"/> 与某个 <see cref="AttributeDefinition.id"/> 关联，

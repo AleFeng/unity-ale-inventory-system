@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 配置类<b>固定资源字段</b>（具名字段，如 <c>Skill.icon</c> / <c>FunctionTag.backgroundSprite</c>）的编辑器绘制辅助。

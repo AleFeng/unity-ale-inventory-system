@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 单个仓库的运行时状态：有序的格子列表（顺序即显示顺序）。

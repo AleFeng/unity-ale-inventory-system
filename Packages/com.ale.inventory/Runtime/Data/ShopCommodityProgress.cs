@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 单个商品的每玩家交易进度。记录「当前刷新周期内已交易次数」与「上次刷新时间」。

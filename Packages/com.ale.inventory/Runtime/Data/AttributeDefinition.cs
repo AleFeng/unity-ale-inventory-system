@@ -1,7 +1,7 @@
 using System;
 using UnityEngine.Serialization;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 属性字段定义（模板）。描述一个属性字段的元数据：稳定 ID、类型、是否数组、

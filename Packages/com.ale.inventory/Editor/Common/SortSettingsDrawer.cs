@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 整理设置共享绘制：整理列表（玩家可选排序条件）+ 整理优先级（条件值相同时的次级比较）两个

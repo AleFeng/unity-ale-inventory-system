@@ -1,9 +1,11 @@
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
+    // 类型 Inventory 与命名空间段 Ale.Inventory 同名，此处显式别名消歧义（否则 CS0118）。
+    using Inventory = global::Ale.Inventory.Runtime.Inventory;
     /// <summary>
     /// 「仓库系统」页签：三列布局，与道具系统页签对称。
     /// 左列 = 子页签 + 仓库模板列表；中列 = 仓库列表；右列 = 上下文 Inspector（共用）。

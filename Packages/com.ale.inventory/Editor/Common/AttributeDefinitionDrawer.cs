@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 绘制并编辑单个 <see cref="AttributeDefinition"/>：显示名、key、类型、是否数组、枚举类型引用、默认值。

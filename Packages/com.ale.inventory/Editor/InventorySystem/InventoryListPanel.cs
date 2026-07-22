@@ -1,9 +1,11 @@
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
+    // 类型 Inventory 与命名空间段 Ale.Inventory 同名，此处显式别名消歧义（否则 CS0118）。
+    using Inventory = global::Ale.Inventory.Runtime.Inventory;
     /// <summary>
     /// 仓库列表面板（中间列）：仓库模板过滤标签 + 搜索栏 + 「从模板添加」/「快速添加」 + 仓库行列表。
     /// 每行显示：仓库 ID（粗体）、名称、描述、来源模板名（灰色）、容量。

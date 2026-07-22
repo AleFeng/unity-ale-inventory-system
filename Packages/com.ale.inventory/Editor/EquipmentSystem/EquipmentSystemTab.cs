@@ -1,8 +1,8 @@
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 「装备系统」页签：三列布局，与制作 / 商店系统页签对称。

@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 装备组面板显示组件。显示一个装备组的名称，并展示该装备组的所有槽位列表。

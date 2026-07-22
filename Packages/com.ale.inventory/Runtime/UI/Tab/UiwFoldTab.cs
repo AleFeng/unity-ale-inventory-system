@@ -8,7 +8,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 通用折叠页签（MonoBehaviour）。一个可点击 <see cref="Button"/>，左侧为状态图标 <see cref="icon"/>（Image）、

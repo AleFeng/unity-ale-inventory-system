@@ -1,8 +1,8 @@
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// <see cref="LayerAttribute"/> 的绘制器：把 <c>int</c> 字段以 Layer 单选下拉呈现，

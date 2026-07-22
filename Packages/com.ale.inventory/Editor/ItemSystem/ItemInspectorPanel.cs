@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 道具 Inspector（右侧列）：编辑 ID（重复检查高亮）、功能标签（多选）、

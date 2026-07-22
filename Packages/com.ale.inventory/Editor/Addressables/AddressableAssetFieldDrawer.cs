@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// AssetReference 授权字段绘制器（原生可搜索选择器）。启用 IS_ADDRESSABLE 时经

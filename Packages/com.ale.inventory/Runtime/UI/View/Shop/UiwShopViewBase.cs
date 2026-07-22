@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 商店主界面基类（abstract MonoBehaviour）。承载全部「与商店类型无关」的通用逻辑：

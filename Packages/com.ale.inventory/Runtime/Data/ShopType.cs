@@ -1,4 +1,4 @@
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>商店类型。决定商店的交互方式；三种类型都需配置「交易仓库」。</summary>
     public enum ShopType

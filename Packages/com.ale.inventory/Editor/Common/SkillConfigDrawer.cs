@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 技能共享配置项的 IMGUI 绘制：技能默认信息（名称 / 描述 均为 Text：纯文本 + 本地化引用 / 图标）与分组标签（主 + 副）。

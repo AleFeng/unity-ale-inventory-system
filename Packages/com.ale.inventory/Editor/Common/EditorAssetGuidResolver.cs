@@ -1,9 +1,9 @@
-using InventorySystem.Runtime.Serialization;
+using Ale.Inventory.Runtime.Serialization;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 基于 AssetDatabase 的资源引用解析器。导出时把对象引用转为 "GUID:localFileId" 字符串

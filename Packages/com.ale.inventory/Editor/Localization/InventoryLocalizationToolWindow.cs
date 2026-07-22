@@ -1,14 +1,14 @@
 #if IS_LOCALIZATION
 using System;
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditor.Localization;
 using UnityEditor.Localization.UI;
 using UnityEngine;
 using UnityEngine.Localization.Tables;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 本地化工具窗口（仅 IS_LOCALIZATION 编译）。为指定 <see cref="InventoryDatabase"/>：

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 功能标签面板：左侧主列表（功能标签行，可拖拽排序）+ 右侧 Inspector（名称、说明、属性字段定义列表）。

@@ -1,4 +1,4 @@
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 装备组的一项总属性加成结果（由 <see cref="EquipmentRuntimeManager.GetTotalBonuses"/> 计算）：

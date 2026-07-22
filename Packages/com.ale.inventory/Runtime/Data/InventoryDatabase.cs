@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 仓库系统数据文件（ScriptableObject）。存储：枚举类型、功能标签、道具模板、道具、仓库模板、仓库。

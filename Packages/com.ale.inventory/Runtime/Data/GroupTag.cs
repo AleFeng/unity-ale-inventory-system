@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 分组标签基类。承载三大系统分组标签（制作 <see cref="CraftingGroupTag"/> / 装备 <see cref="EquipmentGroupTag"/> /

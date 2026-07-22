@@ -4,10 +4,10 @@ using InventoryText = TMPro.TMP_Text;
 using InventoryText = UnityEngine.UI.Text;
 #endif
 
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 制作蓝图详情中的「消耗道具」行（MonoBehaviour）。显示道具图标、名称、需求数量、当前持有数量

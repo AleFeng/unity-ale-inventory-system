@@ -2,7 +2,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 
-namespace InventorySystem.Runtime.Serialization
+namespace Ale.Inventory.Runtime.Serialization
 {
     /// <summary>
     /// 仓库系统二进制序列化器。导出：DB -> 紧凑 byte[]（带魔数与版本头）；导入：byte[] -> 新的 InventoryDatabase 实例。

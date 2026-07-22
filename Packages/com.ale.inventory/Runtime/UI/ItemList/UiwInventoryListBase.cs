@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 虚拟滚动列表基类（轴无关引擎）。所有"以列表 / 网格显示大量条目"的仓库系统 UI 列表的共同基础：

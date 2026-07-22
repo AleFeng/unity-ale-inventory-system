@@ -7,7 +7,7 @@ using InventoryText = UnityEngine.UI.Text;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 道具格子详细信息显示组件（MonoBehaviour）。

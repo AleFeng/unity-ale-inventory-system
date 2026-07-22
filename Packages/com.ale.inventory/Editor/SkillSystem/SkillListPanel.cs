@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 技能列表面板（中间列）：技能模板过滤标签 + 搜索栏 + 「从模板添加」/「快速添加」 + 技能行列表。

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 蓝图模板。定义自定义属性字段 + 一整套蓝图可配置项的默认值，作为创建新蓝图的蓝本，

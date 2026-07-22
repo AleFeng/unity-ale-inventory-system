@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 装备-分组标签面板：左侧主列表（分组标签行，可拖拽排序）+ 右侧 Inspector（ID / 名称 / 描述 / 本地化 / 色点）。

@@ -1,7 +1,7 @@
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace InventorySystem.Runtime.Serialization
+namespace Ale.Inventory.Runtime.Serialization
 {
     /// <summary>
     /// 资源引用 <-> GUID 的转换抽象。导出时把 Unity 对象引用转为可移植的 GUID 字符串，

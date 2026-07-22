@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 刷新计划。描述「可交易次数」按何种周期、依据哪种时钟、在何时间点重置。

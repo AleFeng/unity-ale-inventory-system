@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 商店实例。携带唯一 <see cref="id"/>、商店类型、交易仓库、过滤/数字格式/价格来源配置，

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 仓库系统运行时数据访问单例。统一管理一个或多个 <see cref="InventoryDatabase"/>，

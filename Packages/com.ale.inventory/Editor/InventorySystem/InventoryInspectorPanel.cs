@@ -1,11 +1,13 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
+    // 类型 Inventory 与命名空间段 Ale.Inventory 同名，此处显式别名消歧义（否则 CS0118）。
+    using Inventory = global::Ale.Inventory.Runtime.Inventory;
     /// <summary>
     /// 仓库 Inspector（右侧列）：编辑 ID（重复检查高亮）、来源模板、容量、
     /// 三类功能标签限制、整理设置（含 ReorderableList 优先级）、自定义属性值。

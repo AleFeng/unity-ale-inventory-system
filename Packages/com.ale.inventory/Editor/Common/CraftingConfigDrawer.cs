@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 蓝图可配置项的共享 IMGUI 绘制：制作参数（时间 / 连续次数）、制作仓库（有序，按 Index 优先级）、

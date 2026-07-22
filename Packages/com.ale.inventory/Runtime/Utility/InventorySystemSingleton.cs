@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     // ── 非 MonoBehaviour 单例基类 ──────────────────────────────────────────────────
     // 参考 Fs.Utility.Singleton.Singleton<T> 的设计，独立实现，不引用任何 Fs 命名空间。

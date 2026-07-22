@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 制作主界面（MonoBehaviour）。整合 蓝图模板页签 + 蓝图名搜索 + 分组折叠页签 + 排序整理栏 +

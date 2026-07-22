@@ -5,12 +5,12 @@ using InventoryText = UnityEngine.UI.Text;
 #endif
 
 using System;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 装备选择面板。点击装备组面板中的某装备槽时打开，替换显示装备组面板。

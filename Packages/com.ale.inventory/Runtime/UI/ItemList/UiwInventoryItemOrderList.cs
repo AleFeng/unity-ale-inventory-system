@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 仓库<b>顺序</b>道具列表（虚拟滚动，单列纵向）。以 <see cref="UiwInventoryItemDetail"/> 为格子，

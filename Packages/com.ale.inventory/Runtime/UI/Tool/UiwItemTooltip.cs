@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 道具信息悬停弹窗（场景全局单例）。复用 <see cref="UiwInventoryItemDetail"/> 渲染道具详情，全局共用一个实例，

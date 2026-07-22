@@ -1,7 +1,7 @@
 using UnityEditor;
-using InventorySystem.Runtime.UI;
+using Ale.Inventory.Runtime.UI;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// <see cref="UiwEquipmentGroupPanel"/> 的自定义 Inspector：按「槽位列表布局方式」开关，

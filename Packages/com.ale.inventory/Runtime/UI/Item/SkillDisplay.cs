@@ -1,4 +1,4 @@
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 技能显示文本解析（名称 / 描述 / 自定义属性字段），供技能条目与技能 Tooltip 共用。

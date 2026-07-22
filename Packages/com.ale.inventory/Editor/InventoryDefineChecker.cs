@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 仓库系统编辑器加载检查器。

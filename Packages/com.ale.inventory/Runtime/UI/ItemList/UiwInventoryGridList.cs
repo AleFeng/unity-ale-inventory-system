@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>列表滚动方向。决定虚拟滚动的主轴与跨轴（跨轴数量按视口对应边自动计算）。</summary>
     public enum EListScrollDirection

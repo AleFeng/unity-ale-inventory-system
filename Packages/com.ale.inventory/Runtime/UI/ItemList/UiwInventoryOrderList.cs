@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 通用<b>顺序</b>虚拟滚动列表（一维纵向、单列）。在 <see cref="UiwInventoryListBase{TData,TCell}"/>

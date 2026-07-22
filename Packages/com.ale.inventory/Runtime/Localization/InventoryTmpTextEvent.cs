@@ -10,7 +10,7 @@ using UnityEngine.Localization.Tables;
 using TMPro;
 #endif
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 用于本地化 TextMeshPro 文本内容的事件组件。

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 资源取用加载器抽象。<see cref="InventoryAssets"/> 门面把所有取用请求委派给当前激活的加载器。

@@ -11,7 +11,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 通用「数字计数器」组件（MonoBehaviour）。一对 +/- 按钮 + 数值显示（可选输入框），在 [<see cref="Min"/>,

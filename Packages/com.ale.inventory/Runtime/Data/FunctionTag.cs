@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 功能标签。一个道具可具有多个功能标签，每个标签定义一组属性字段（<see cref="AttributeDefinition"/>）。

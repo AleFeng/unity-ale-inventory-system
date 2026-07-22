@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>交易失败 / 部分成交的原因。</summary>
     public enum ShopTradeFailReason

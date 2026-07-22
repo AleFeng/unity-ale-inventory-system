@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 通用「拖拽重排」状态机：在以「行 Rect」布局的列表里，左侧 ≡ 句柄长按拖动调整顺序，

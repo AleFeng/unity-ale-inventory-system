@@ -1,7 +1,7 @@
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 商店 Inspector（右侧列）：商店身份（ID / 名称 / 来源模板）、共享可配置项（<see cref="ShopConfigDrawer"/>）、

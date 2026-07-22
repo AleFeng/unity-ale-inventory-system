@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 商店商品条目。关联道具系统中的一个道具，描述其交易数量、价格倍率、可交易次数与刷新覆盖。

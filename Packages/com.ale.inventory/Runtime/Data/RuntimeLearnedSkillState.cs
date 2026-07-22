@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 单个角色的运行时已学技能状态：该角色已学会的技能 ID 列表（保持学习顺序）。

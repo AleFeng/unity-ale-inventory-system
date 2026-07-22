@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 槽位列表。一个装备组通常包含多个槽位列表，每个槽位列表包含多个装备槽。

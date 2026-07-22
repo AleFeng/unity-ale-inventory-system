@@ -6,11 +6,11 @@ using InventoryText = UnityEngine.UI.Text;
 
 using System.Collections;
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 制作蓝图详情面板（MonoBehaviour）。自上而下显示：主产出（图标/名称/描述）、副产出图标（悬停弹详情）、

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 蓝图 Inspector（右侧列）：身份（ID / 名称 / 本地化 / 描述 / 来源模板）、分组标签（主 + 副）、

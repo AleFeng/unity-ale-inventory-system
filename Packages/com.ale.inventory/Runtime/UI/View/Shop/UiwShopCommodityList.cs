@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 商店商品条目数据模型。虚拟滚动下，选中<b>交易次数</b>必须存放于数据模型而非格子——

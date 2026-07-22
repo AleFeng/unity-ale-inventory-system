@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 装备拖拽全局上下文（静态）。记录当前拖拽载荷（被拖道具 ID + 来源），并维护一个跟随光标的幽灵图标。

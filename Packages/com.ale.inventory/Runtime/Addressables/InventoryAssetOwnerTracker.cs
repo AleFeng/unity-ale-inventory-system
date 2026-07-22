@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace InventorySystem.Runtime.AddressableSupport
+namespace Ale.Inventory.Runtime.AddressableSupport
 {
     /// <summary>
     /// 挂在资源绑定宿主 GameObject 上的生命周期跟踪器。宿主销毁时自动通知

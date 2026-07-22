@@ -2,7 +2,7 @@ using System;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 挂在 <see cref="ScrollRect.viewport"/> 上的轻量辅助组件。覆写

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>技能信息来源：决定运行时技能 UI 从何处采集要显示的技能集合。</summary>
     public enum ESkillSource

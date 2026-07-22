@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 货币栏（MonoBehaviour）。与具体系统解耦的通用组件：宿主提供「货币 ID 列表」与

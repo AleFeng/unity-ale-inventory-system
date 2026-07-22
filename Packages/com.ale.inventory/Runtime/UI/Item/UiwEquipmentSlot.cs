@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 装备槽显示组件。继承 <see cref="UiwInventoryItemSlotBase"/> 复用图标 / 名称 / 品质背景 / 悬停弹窗 / 拖拽字段。

@@ -1,8 +1,8 @@
 using System;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// AssetReference 授权字段绘制器抽象。启用 IS_ADDRESSABLE 时，受约束的 Addressable 编辑器程序集

@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 按 <see cref="EFieldType"/> 绘制单个 <see cref="AttributeValue"/>（支持标量与数组形态）。

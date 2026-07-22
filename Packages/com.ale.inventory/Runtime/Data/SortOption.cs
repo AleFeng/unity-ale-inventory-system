@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 整理选项。对应仓库模板中 <see cref="SortPriority.field"/> 的一个唯一值，

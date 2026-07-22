@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 制作配方中的一个「道具 + 数量」条目。用于蓝图的产出道具列表与消耗道具列表。

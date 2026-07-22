@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 技能悬停详情弹窗的运行时抽象。具体实现在 UI 层（<c>UiwSkillTooltip</c>）。

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 过滤页签栏（MonoBehaviour）。以功能标签按钮形式呈现一组过滤项（可选首位「全部」），

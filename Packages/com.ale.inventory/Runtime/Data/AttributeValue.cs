@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 灵活属性值（标签联合 / 变体）。整个仓库系统属性系统的核心。

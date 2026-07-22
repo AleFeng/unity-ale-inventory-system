@@ -1,8 +1,8 @@
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 仓库系统数据文件创建菜单。替代 [CreateAssetMenu]，在创建时支持从配置的模板深拷贝数据。

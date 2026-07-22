@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 排序整理栏（MonoBehaviour）。封装 排序条件下拉 + 升降序切换 + 自动整理按钮 三个控件，

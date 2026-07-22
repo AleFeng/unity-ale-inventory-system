@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// PlayerSettings 脚本宏定义与程序集反射工具。

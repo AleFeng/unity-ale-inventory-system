@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 制作蓝图列表条目（MonoBehaviour）。左侧显示主产出道具图标，右上显示蓝图名称，

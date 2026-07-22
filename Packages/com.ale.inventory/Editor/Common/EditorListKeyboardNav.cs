@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 条目列表键盘导航：某条目已选中时，按 上/下 方向键切换到可见（已过滤）列表中的相邻条目，

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 制作蓝图列表（虚拟滚动，单列纵向）。以 <see cref="UiwCraftingBlueprintCell"/> 为条目，

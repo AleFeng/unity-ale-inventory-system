@@ -6,7 +6,7 @@ using InventoryText = UnityEngine.UI.Text;
 
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// UI 视图公共基类（背包 / 商店 / 制作等）。承载与具体视图无关的通用能力：

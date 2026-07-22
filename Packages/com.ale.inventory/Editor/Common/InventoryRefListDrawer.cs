@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 「仓库引用列表」（有序，Index 即优先级）的共享 IMGUI 绘制：标题 + 「+」添加下拉 + 可拖拽重排的条目行

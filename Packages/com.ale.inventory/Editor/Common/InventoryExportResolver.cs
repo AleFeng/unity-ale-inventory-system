@@ -1,7 +1,7 @@
 using System;
-using InventorySystem.Runtime.Serialization;
+using Ale.Inventory.Runtime.Serialization;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 导出资源解析器选择钩子。core 编辑器程序集对 Addressables 零依赖：

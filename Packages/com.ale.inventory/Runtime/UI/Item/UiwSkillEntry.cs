@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 技能条目显示组件（网格 / 顺序列表共用；网格预制体可不接描述与自定义字段）。

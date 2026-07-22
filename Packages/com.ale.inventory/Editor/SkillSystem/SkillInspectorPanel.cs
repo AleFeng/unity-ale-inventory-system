@@ -1,8 +1,8 @@
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 技能 Inspector（右侧列）：身份（ID / 名称 / 本地化 / 描述 / 图标 / 来源模板）、分组标签（主 + 副）、自定义属性值。

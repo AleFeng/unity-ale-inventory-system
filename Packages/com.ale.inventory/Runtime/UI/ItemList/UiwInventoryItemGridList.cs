@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 仓库<b>网格</b>道具列表（虚拟滚动，多列 / 多行）。以 <see cref="UiwInventoryItemCell"/> 为格子，

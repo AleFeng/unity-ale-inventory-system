@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Text;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 道具查询辅助：根据道具来源（模板 + 功能标签）解析其属性定义，用于显示名称与搜索过滤。

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 装备主界面（MonoBehaviour，继承 <see cref="UiwViewBase"/>）。

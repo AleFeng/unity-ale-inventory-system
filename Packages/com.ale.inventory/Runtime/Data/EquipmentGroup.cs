@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 装备组。描述一整套装备的槽位结构（例如一个角色身上穿的整组装备的槽位结构）。

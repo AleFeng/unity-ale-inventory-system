@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 技能系统分组标签。用于对技能进行分组，便于 UI 中筛选与查找

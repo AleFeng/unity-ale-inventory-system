@@ -10,7 +10,7 @@ using UnityEngine.Localization.Settings;
 using TMPro;
 #endif
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 用于本地化 TextMeshPro 字体资源的 LocalizedAsset 封装类型。

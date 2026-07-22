@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 仓库道具格子的通用 UI 事件总线（静态）。背包 / 仓库 UI 中任意道具格子被右键点击时，

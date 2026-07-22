@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 装备组共享可配置项绘制器：槽位列表（嵌套：道具限制 + 装备槽 + 槽过滤条件）+ 装备属性字段列表。

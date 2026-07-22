@@ -1,11 +1,11 @@
-using InventorySystem.Runtime.Serialization;
+using Ale.Inventory.Runtime.Serialization;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// Addressable 模式下的导出解析器。把被引用资源转为其 GUID 作为运行时加载键

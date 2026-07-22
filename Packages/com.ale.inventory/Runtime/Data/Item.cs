@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 道具实例。携带一个唯一 <see cref="id"/>、来源模板引用、一组功能标签引用，以及具体属性值列表。

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 单个商店的运行时状态（每玩家）。仅保存交易进度——商品目录本身是配置数据。

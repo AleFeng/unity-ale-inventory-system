@@ -2,17 +2,17 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
 #if IS_TMP
 using TMPro;
 #endif
 
 #if IS_TMP && IS_LOCALIZATION
-using InventorySystem.Runtime.UI;
+using Ale.Inventory.Runtime.UI;
 #endif
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 仓库系统欢迎窗口。提供快捷入口、数据模板配置和插件宏开关。

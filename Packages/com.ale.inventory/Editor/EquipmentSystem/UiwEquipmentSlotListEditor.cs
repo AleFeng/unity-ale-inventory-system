@@ -1,8 +1,8 @@
 using UnityEditor;
 using UnityEngine;
-using InventorySystem.Runtime.UI;
+using Ale.Inventory.Runtime.UI;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// <see cref="UiwEquipmentSlotList"/> 的自定义 Inspector：按「装备槽布局方式」开关，

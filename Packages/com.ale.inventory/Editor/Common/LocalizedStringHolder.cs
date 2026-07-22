@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Localization;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 内部辅助 ScriptableObject：为 AttributeFieldDrawer 提供一个可被 SerializedObject 绑定的

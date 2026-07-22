@@ -9,7 +9,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 商店道具明细显示组件（MonoBehaviour），对应背包列表项 <see cref="UiwInventoryItemDetail"/>。

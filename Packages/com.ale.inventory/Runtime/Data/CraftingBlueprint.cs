@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 制作蓝图（配方）。携带唯一 <see cref="id"/>、分组标签、产出/消耗道具列表、制作时间/次数、

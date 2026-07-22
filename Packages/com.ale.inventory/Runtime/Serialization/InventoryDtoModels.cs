@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace InventorySystem.Runtime.Serialization
+namespace Ale.Inventory.Runtime.Serialization
 {
     /// <summary>
     /// 扁平 DTO 模型，用于导出 JSON / 二进制 与运行时加载。与运行时数据模型一一镜像，

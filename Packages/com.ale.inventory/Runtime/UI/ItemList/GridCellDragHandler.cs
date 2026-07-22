@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 道具格子拖拽中转组件（挂在 <see cref="UiwInventoryItemCell"/> 或其子物体上，并关联到格子的 dragHandler 字段）。

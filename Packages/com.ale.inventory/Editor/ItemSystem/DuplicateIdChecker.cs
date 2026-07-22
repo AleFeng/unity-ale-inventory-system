@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 扫描数据库中的道具 ID，返回重复（出现 ≥2 次）或空白的 ID 集合，用于编辑器红色高亮与导出阻止。

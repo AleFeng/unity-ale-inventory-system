@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using InventorySystem.Runtime;
-using InventorySystem.Runtime.Serialization;
+using Ale.Inventory.Runtime;
+using Ale.Inventory.Runtime.Serialization;
 using UnityEditor;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 编辑器面板与主窗口之间的交互契约。面板通过它访问数据库、记录 Undo、标记脏、查询重复 ID 等，

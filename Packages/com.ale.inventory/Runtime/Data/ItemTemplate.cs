@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 道具模板。定义一组基础属性字段（如 ID/名称/描述/品质/价值/图标/堆叠上限），

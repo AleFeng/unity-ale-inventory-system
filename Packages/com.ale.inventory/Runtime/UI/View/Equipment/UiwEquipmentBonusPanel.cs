@@ -7,7 +7,7 @@ using UnityEngine.Localization;
 using UnityEngine.Localization.Components;
 #endif
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 装备属性加成面板显示组件。读取 <see cref="EquipmentRuntimeManager.GetTotalBonuses"/> 的结果，

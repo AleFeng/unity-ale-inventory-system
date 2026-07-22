@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 装备组可配置项的共享契约。由装备组实例 <see cref="EquipmentGroup"/> 与

@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 蓝图 UI 设置中的「属性字段显示」配置项：在蓝图条目/详情上显示主产出道具的某个属性值，

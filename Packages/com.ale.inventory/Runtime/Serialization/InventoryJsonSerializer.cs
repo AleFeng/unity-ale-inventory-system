@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace InventorySystem.Runtime.Serialization
+namespace Ale.Inventory.Runtime.Serialization
 {
     /// <summary>
     /// 仓库系统 JSON 序列化器。导出：DB -> 可读 JSON 文本；导入：JSON 文本 -> 新的 InventoryDatabase 实例。

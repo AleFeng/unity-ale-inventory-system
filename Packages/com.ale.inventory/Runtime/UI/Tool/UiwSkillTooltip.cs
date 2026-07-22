@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 技能信息悬停弹窗（实现 <see cref="ISkillTooltip"/>）。渲染技能固定字段（图标 / 名称 / 描述）、「位阶」枚举项名称，

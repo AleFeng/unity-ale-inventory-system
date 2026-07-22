@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
-using InventorySystem.Runtime;
-using InventorySystem.Runtime.Serialization;
+using Ale.Inventory.Runtime;
+using Ale.Inventory.Runtime.Serialization;
 using UnityEditor;
 using UnityEngine;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 仓库系统配置编辑器主窗口（IMGUI）。顶部为系统页签（道具/仓库/商店/装备/制作/技能），

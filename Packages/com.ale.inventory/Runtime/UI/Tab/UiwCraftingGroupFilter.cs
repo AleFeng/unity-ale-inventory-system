@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 制作分组折叠页签（MonoBehaviour）。顶部恒有「全部」（跨所有主分组）；其下按蓝图出现的主分组生成

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 商店模板。定义自定义属性字段 + 一整套商店可配置项的默认值，作为创建新商店的蓝本。

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 商店可配置项的共享契约。<see cref="Shop"/>（实例）与 <see cref="ShopTemplate"/>（模板）共同实现，

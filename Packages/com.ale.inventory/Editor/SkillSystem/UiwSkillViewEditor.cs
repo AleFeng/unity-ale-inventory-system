@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEngine;
-using InventorySystem.Runtime;
-using InventorySystem.Runtime.UI;
+using Ale.Inventory.Runtime;
+using Ale.Inventory.Runtime.UI;
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// <see cref="UiwSkillView"/> 的自定义 Inspector：按当前「技能来源」<see cref="ESkillSource"/>，

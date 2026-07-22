@@ -3,15 +3,17 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
-using InventorySystem.Runtime;
-using InventorySystem.Runtime.UI;
+using Ale.Inventory.Runtime;
+using Ale.Inventory.Runtime.UI;
 
 #if  IS_TMP
 using TMPro;
 #endif
 
-namespace InventorySystem.Editor
+namespace Ale.Inventory.Editor
 {
+    // 类型 Inventory 与命名空间段 Ale.Inventory 同名，此处显式别名消歧义（否则 CS0118）。
+    using Inventory = global::Ale.Inventory.Runtime.Inventory;
     /// <summary>
     /// 编辑器向导：一键生成背包系统测试用的 ScriptableObject 资产和 UI Prefab。
     /// 菜单：Tools > InventorySystem > 生成测试 Prefab

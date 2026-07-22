@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>单条数字格式化规则。当数值 ≥ <see cref="threshold"/> 时适用。规则列表应按 threshold 从大到小排列。</summary>
     [Serializable]

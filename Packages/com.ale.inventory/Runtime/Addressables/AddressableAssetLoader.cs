@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace InventorySystem.Runtime.AddressableSupport
+namespace Ale.Inventory.Runtime.AddressableSupport
 {
     /// <summary>
     /// 基于 Addressables 的资源加载器。优先使用属性值里的实时引用（兼容直接打包 SO 的场景），

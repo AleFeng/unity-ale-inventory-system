@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 制作系统运行时管理器（非 MonoBehaviour 单例，首次访问自动创建）。

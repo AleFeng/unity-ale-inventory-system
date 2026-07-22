@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 用户自定义枚举类型。包含一个有序的 <see cref="EnumItem"/> 列表与一组属性字段定义。

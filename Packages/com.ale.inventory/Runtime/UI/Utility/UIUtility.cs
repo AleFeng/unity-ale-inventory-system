@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// UI 共用工具方法集合（静态）。用于沉淀各处 UI 通用的辅助 / 工具方法，避免重复代码；后续可按主题分区扩充。

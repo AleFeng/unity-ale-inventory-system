@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 装备系统分组标签。用于对装备组的「装备属性字段（属性加成）」条目进行分组，便于在 UI 上分组显示

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 技能<b>网格</b>列表（虚拟滚动，多列 / 多行）。以 <see cref="UiwSkillEntry"/> 为条目，

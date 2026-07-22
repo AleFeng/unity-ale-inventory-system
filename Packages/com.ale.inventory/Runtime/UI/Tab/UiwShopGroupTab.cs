@@ -6,7 +6,7 @@ using InventoryText = UnityEngine.UI.Text;
 
 using UnityEngine;
 
-namespace InventorySystem.Runtime.UI
+namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 商店商品组页签按钮（MonoBehaviour）。

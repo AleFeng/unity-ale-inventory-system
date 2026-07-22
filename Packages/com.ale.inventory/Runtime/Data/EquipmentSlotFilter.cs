@@ -1,6 +1,6 @@
 using System;
 
-namespace InventorySystem.Runtime
+namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 装备槽级「过滤条件」：对单个道具属性做等值判定的子过滤，用于在槽位列表限制之上进一步收窄
