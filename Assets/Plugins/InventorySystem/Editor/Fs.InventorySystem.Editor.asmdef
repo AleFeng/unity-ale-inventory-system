@@ -1,0 +1,24 @@
+{
+    "name": "Fs.InventorySystem.Editor",
+    "rootNamespace": "InventorySystem.Editor",
+    "references": [
+        "Fs.InventorySystem.Runtime",
+        "Fs.InventorySystem.UI",
+        "Fs.InventorySystem.UI.Localization",
+        "Unity.TextMeshPro",
+        "GUID:79a91290c90aadb43a0bc75cc667306c",
+        "Unity.Localization",
+        "Unity.Localization.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

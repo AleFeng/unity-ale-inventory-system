@@ -1,0 +1,118 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2693684776969391972
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5383120399852784606}
+  - component: {fileID: 4218109776647130148}
+  m_Layer: 0
+  m_Name: InventoryManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5383120399852784606
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2693684776969391972}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4218109776647130148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2693684776969391972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5acfbbdf47d84eb47bbaa9b14c969ba3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: InventorySystem.Runtime::InventorySystem.Runtime.InventoryRuntimeManager
+  databases:
+  - {fileID: 11400000, guid: 4f57aed696d57c24a8a897eeecf03a0b, type: 2}
+  coverUiRoot: {fileID: 0}
+  applyCoverUiLayer: 0
+  coverUiLayer: 0
+  itemTooltipPrefab: {fileID: 8435185310791491822, guid: b87e821e39d056144aa3482f12a917b7, type: 3}
+  skillTooltipPrefab: {fileID: 5373138738588705772, guid: 046c7e6e53f55fa4ca502298b4d44938, type: 3}
+  autoPopulateOnStart: 1
+  testInventoryId: "\u73A9\u5BB6\u80CC\u5305"
+  testItems:
+  - itemId: "\u7C97\u7CD9\u7684\u9762\u5305"
+    count: 2
+  - itemId: "\u52A3\u8D28\u6CBB\u7597\u836F\u6C34"
+    count: 3
+  - itemId: "\u521D\u7EA7\u6CBB\u7597\u836F\u6C34"
+    count: 10
+  - itemId: "\u521D\u7EA7\u6CD5\u529B\u836F\u6C34"
+    count: 5
+  - itemId: "\u521D\u7EA7\u4F53\u529B\u836F\u6C34"
+    count: 7
+  - itemId: "\u5E03\u5E3D"
+    count: 1
+  - itemId: "\u732A\u76AE\u7532"
+    count: 1
+  - itemId: "\u94C1\u76D4"
+    count: 1
+  - itemId: "\u7834\u635F\u7684\u9879\u94FE"
+    count: 1
+  - itemId: "\u5947\u602A\u7684\u96D5\u50CF"
+    count: 1
+  - itemId: "\u91D1\u5E01"
+    count: 530
+  - itemId: "\u94BB\u77F3"
+    count: 1730
+  - itemId: "\u795E\u8840\u6676"
+    count: 35
+  - itemId: "\u788E\u77F3\u5757"
+    count: 12
+  - itemId: "\u836F\u8349"
+    count: 50
+  - itemId: "\u94C1\u77FF"
+    count: 25
+  - itemId: "\u94C1\u952D"
+    count: 17
+  - itemId: "\u94A2\u952D"
+    count: 23
+  - itemId: "\u79D8\u94F6\u77FF"
+    count: 35
+  - itemId: "\u6E90\u8D28\u77FF"
+    count: 25
+  - itemId: "\u6C2A\u91D1\u952D"
+    count: 15
+  - itemId: "\u6CF0\u5766\u795E\u94C1"
+    count: 5
+  - itemId: "\u6728\u5315\u9996"
+    count: 1
+  - itemId: "\u94C1\u5251"
+    count: 3
+  - itemId: "\u94A2\u5251"
+    count: 2
+  - itemId: "\u6A61\u6728\u6CD5\u6756"
+    count: 1
+  - itemId: "\u6728\u5F13"
+    count: 2
+  - itemId: "\u94DC\u6212\u6307"
+    count: 3
+  - itemId: "\u6C34\u84DD\u77F3\u6212\u6307"
+    count: 2
+  - itemId: "\u6CD5\u529B\u6212\u6307"
+    count: 1
+  addAllConfiguredItems: 1
+  addAllItemCount: 1

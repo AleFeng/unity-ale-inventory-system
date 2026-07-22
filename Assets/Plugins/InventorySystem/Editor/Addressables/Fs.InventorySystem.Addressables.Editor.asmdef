@@ -1,0 +1,24 @@
+{
+    "name": "Fs.InventorySystem.Addressables.Editor",
+    "rootNamespace": "InventorySystem.Editor.AddressableSupport",
+    "references": [
+        "Fs.InventorySystem.Runtime",
+        "Fs.InventorySystem.Editor",
+        "Unity.Addressables",
+        "Unity.Addressables.Editor",
+        "Unity.ResourceManager"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "IS_ADDRESSABLE"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

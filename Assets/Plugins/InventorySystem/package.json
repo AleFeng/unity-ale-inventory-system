@@ -1,0 +1,24 @@
+{
+  "name": "com.fs.inventorysystem",
+  "version": "1.4.0",
+  "displayName": "Inventory System",
+  "description": "道具/仓库/商店/制作/装备/技能 一体化的库存系统插件，基于 Fs Game Framework 构建。",
+  "unity": "2022.3",
+  "keywords": ["inventory", "item", "equipment", "crafting", "skill", "framework"],
+  "author": {
+    "name": "Able Games",
+    "url": "https://github.com/Able-Games/unity-fs-game-framework"
+  },
+  "category": "Gameplay",
+  "dependencies": {
+    "com.unity.localization": "1.5.11"
+  },
+  "samples": [
+    {
+      "displayName": "Inventory System Demo",
+      "description": "库存系统演示：数据库资产（InventoryDatabase）、管理器预制体与 UI 示例场景。",
+      "path": "Samples~/Demo"
+    }
+  ],
+  "documentationUrl": "README.md"
+}
