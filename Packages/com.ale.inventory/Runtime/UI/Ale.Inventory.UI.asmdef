@@ -1,12 +1,10 @@
 {
-    "name": "Fs.InventorySystem.UI.Localization",
-    "rootNamespace": "InventorySystem.Runtime.UI",
+    "name": "Ale.Inventory.UI",
+    "rootNamespace": "Ale.Inventory.Runtime.UI",
     "references": [
-        "Fs.InventorySystem.Runtime",
-        "Fs.InventorySystem.UI",
+        "Ale.Inventory.Runtime",
         "Unity.TextMeshPro",
-        "Unity.Localization",
-        "Unity.ResourceManager"
+        "Unity.Localization"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -14,9 +12,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [
-        "IS_LOCALIZATION"
-    ],
+    "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }

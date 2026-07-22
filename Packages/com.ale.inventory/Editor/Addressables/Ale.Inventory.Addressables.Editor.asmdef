@@ -1,9 +1,9 @@
 {
-    "name": "Fs.InventorySystem.Addressables.Editor",
-    "rootNamespace": "InventorySystem.Editor.AddressableSupport",
+    "name": "Ale.Inventory.Addressables.Editor",
+    "rootNamespace": "Ale.Inventory.Editor.AddressableSupport",
     "references": [
-        "Fs.InventorySystem.Runtime",
-        "Fs.InventorySystem.Editor",
+        "Ale.Inventory.Runtime",
+        "Ale.Inventory.Editor",
         "Unity.Addressables",
         "Unity.Addressables.Editor",
         "Unity.ResourceManager"

@@ -1,10 +1,10 @@
 {
-    "name": "Fs.InventorySystem.Editor",
-    "rootNamespace": "InventorySystem.Editor",
+    "name": "Ale.Inventory.Editor",
+    "rootNamespace": "Ale.Inventory.Editor",
     "references": [
-        "Fs.InventorySystem.Runtime",
-        "Fs.InventorySystem.UI",
-        "Fs.InventorySystem.UI.Localization",
+        "Ale.Inventory.Runtime",
+        "Ale.Inventory.UI",
+        "Ale.Inventory.UI.Localization",
         "Unity.TextMeshPro",
         "GUID:79a91290c90aadb43a0bc75cc667306c",
         "Unity.Localization",

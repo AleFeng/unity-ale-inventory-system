@@ -1,8 +1,8 @@
 {
-    "name": "Fs.InventorySystem.Addressables.Runtime",
-    "rootNamespace": "InventorySystem.Runtime.AddressableSupport",
+    "name": "Ale.Inventory.Addressables.Runtime",
+    "rootNamespace": "Ale.Inventory.Runtime.AddressableSupport",
     "references": [
-        "Fs.InventorySystem.Runtime",
+        "Ale.Inventory.Runtime",
         "Unity.Addressables",
         "Unity.ResourceManager"
     ],
