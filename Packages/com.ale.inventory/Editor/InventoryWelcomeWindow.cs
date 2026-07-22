@@ -516,9 +516,8 @@ namespace Ale.Inventory.Editor
 
             _logoLoadAttempted = true;
 
-            string logoPath = System.IO.Path.Combine(
-                Application.dataPath,
-                "Plugins/InventorySystem/Docs~/Images/InventorySystem_Logo.png");
+            string logoPath = System.IO.Path.GetFullPath(
+                "Packages/com.ale.inventory/Docs~/Images/InventorySystem_Logo.png");
 
             if (!System.IO.File.Exists(logoPath)) return null;
 
@@ -546,10 +545,10 @@ namespace Ale.Inventory.Editor
 
         private static void OpenDocumentation()
         {
-            // README.md 在 Assets/Plugins/InventorySystem/ 根目录下。
-            // .md 文件不被 AssetDatabase 索引，直接用 Application.dataPath 拼接绝对路径后用系统默认程序打开。
+            // README.md 在 Packages/com.ale.inventory/ 根目录下。
+            // .md 文件不被 AssetDatabase 索引，直接取绝对路径后用系统默认程序打开。
             string absolutePath = System.IO.Path.GetFullPath(
-                System.IO.Path.Combine(Application.dataPath, "../Assets/Plugins/InventorySystem/README.md"));
+                "Packages/com.ale.inventory/README.md");
 
             if (System.IO.File.Exists(absolutePath))
             {
@@ -558,7 +557,7 @@ namespace Ale.Inventory.Editor
             else
             {
                 EditorUtility.DisplayDialog("文档未找到",
-                    "未能找到文档文件：\nAssets/Plugins/InventorySystem/README.md", "确定");
+                    "未能找到文档文件：\nPackages/com.ale.inventory/README.md", "确定");
             }
         }
 
