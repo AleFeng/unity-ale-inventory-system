@@ -1,8 +1,8 @@
 {
-  "name": "com.fs.inventorysystem",
+  "name": "com.ale.inventory",
   "version": "1.4.0",
   "displayName": "Inventory System",
-  "description": "道具/仓库/商店/制作/装备/技能 一体化的库存系统插件，基于 Fs Game Framework 构建。",
+  "description": "道具/仓库/商店/制作/装备/技能 一体化的库存系统插件。",
   "unity": "2022.3",
   "keywords": ["inventory", "item", "equipment", "crafting", "skill", "framework"],
   "author": {
@@ -19,6 +19,5 @@
       "description": "库存系统演示：数据库资产（InventoryDatabase）、管理器预制体与 UI 示例场景。",
       "path": "Samples~/Demo"
     }
-  ],
-  "documentationUrl": "README.md"
+  ]
 }

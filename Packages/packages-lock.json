@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.fs.inventorysystem": {
+    "com.ale.inventory": {
       "version": "file:com.ale.inventory",
       "depth": 0,
       "source": "embedded",
