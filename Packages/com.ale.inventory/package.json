@@ -10,10 +10,7 @@
     "url": "https://github.com/Able-Games/unity-fs-game-framework"
   },
   "category": "Gameplay",
-  "dependencies": {
-    "com.unity.localization": "1.5.11",
-    "com.unity.addressables": "2.9.1"
-  },
+  "dependencies": {},
   "samples": [
     {
       "displayName": "Inventory System Demo",
