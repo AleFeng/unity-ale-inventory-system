@@ -1,7 +1,7 @@
 {
   "name": "com.ale.inventory",
   "version": "1.4.0",
-  "displayName": "Inventory System",
+  "displayName": "Ale Inventory System",
   "description": "道具/仓库/商店/制作/装备/技能 一体化的库存系统插件。",
   "unity": "2022.3",
   "keywords": ["inventory", "item", "equipment", "crafting", "skill", "framework"],
@@ -11,7 +11,8 @@
   },
   "category": "Gameplay",
   "dependencies": {
-    "com.unity.localization": "1.5.11"
+    "com.unity.localization": "1.5.11",
+    "com.unity.addressables": "2.9.1"
   },
   "samples": [
     {

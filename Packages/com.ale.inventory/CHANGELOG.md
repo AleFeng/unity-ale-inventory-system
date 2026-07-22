@@ -1,8 +1,10 @@
 # 更新日志（Changelog）
 
-本文件记录 Inventory System（`com.fs.inventorysystem`）的所有重要变更。
+本文件记录 Inventory System（`com.ale.inventory`）的所有重要变更。
 
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+
+> 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
 ## [1.4.0] - 2026-07-06
 ### 新增
@@ -116,7 +118,7 @@
 
 ## [1.0.2] - 2026-07-04
 ### 变更
-- **UPM 插件化**：拆分为独立 UPM 包（`com.fs.inventorysystem`），调整依赖插件包。
+- **UPM 插件化**：拆分为独立 UPM 包（`com.ale.inventory`），调整依赖插件包。
 - 程序集命名空间统一更新。
 - 新增弹窗 UI 父节点设置 API。
 - WelcomeWindow 界面优化：测试工具新增"预制体自动生成"列表。

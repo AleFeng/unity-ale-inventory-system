@@ -10,7 +10,7 @@
 
 ## 子系统概览
 
-![alt text](.\Docs~\Images\image.png)
+![alt text](Docs~/Images/image.png)
 
 | 子系统 | 配置内容 | 运行时管理器 | 详细文档 |
 |--------|---------|------------|---------|
@@ -81,7 +81,7 @@
 
 ## 欢迎窗口（Welcome Window）
 
-![alt text](.\Docs~\Images\image-1.png)
+![alt text](Docs~/Images/image-1.png)
 
 插件的统一入口面板，集中了「创建数据 / 打开编辑器 / 查看文档 / 生成示例 / 插件宏开关」等常用操作。每次 Unity 会话首次会自动弹出一次，也可随时手动打开：
 
