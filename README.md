@@ -12,6 +12,13 @@
 </p>
 
 <p align="center">
+  🌍
+  中文 |
+  <a href="./README_EN.md">English</a> |
+  <a href="./README_JA.md">日本語</a>
+</p>
+
+<p align="center">
   📥
   <a href="#-安装">安装</a> |
   <a href="#-快速开始">快速开始</a> |
@@ -56,8 +63,6 @@ Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件
 2. **灵活属性** —— 道具与各配置条目的字段由一套**灵活属性系统**承载（Bool / Int / Float / String / Text / Vector / Color / Enum / Sprite / Prefab / AudioClip / AnimationCurve… 每种都支持数组形态），可按功能标签成组增删，无需改代码即可扩展数据结构。
 3. **运行时开箱即用** —— 各子系统配套轻量运行时管理器与虚拟滚动 UI 组件，查询、增删、整理、交易、制作、装备、学习技能、存档 / 读档均有现成接口。
 4. **零硬依赖** —— TextMeshPro / Localization / Addressables 全部经编译宏可选启用，未开启时插件照常工作。
-
-![alt text](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
 
 ### 项目特性
 | 特性 | 描述 |
@@ -158,6 +163,8 @@ InventoryRuntimeManager.Instance.LoadSaveData(saveData);
 Tools > Inventory System > Welcome Window
 ```
 
+![alt text](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
+
 窗口自上而下分为四个区域：**快捷操作**（创建数据 / 打开各编辑器与工具窗口 / 一键生成示例预制体）、**数据模板**（指定一个 `InventoryDatabase` 作为新建蓝本）、**插件支持**（三个可选宏一键开关，见下）、**启动时自动显示**（是否每次会话自动弹窗）。
 
 ## 🧩 可选宏开关
@@ -213,7 +220,6 @@ Packages/com.ale.inventory/          ← 包根
 
 ## 📋 待办事项
 - 商店「等价交换」类型的完整实现（当前为占位）。
-- 提供英文 / 日文 README。
 - 更多示例场景与运行时用例。
 
 ## 📄 许可
