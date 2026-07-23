@@ -394,19 +394,35 @@ namespace Ale.Inventory.Runtime.UI
         private void OnSortChanged(int index, bool ascending) => SortCurrentInventory();
 
         /// <summary>
-        /// 从 UI 当前状态构建排序优先级列表（主条件 + tiebreakers，全部使用排序栏当前方向）。
+        /// 从 UI 当前状态构建排序优先级列表（主条件 + tiebreakers）。
+        /// 与 <see cref="UiwInventoryListBase{TData,TCell}.CurrentSortPriorities"/> 语义一致：
+        /// <b>有排序栏</b>时主条件取下拉选中项、全部使用排序栏当前方向；
+        /// <b>无排序栏</b>（合法配置：不想要整理栏）时以第一条排序条件为默认，主条件与各 tiebreaker
+        /// <b>各自沿用配置的升降序</b>——而非一律降序。
         /// </summary>
         private List<SortPriority> BuildCurrentSortPriorities()
         {
             if (_currentSortPriorities.Count == 0) return new List<SortPriority>();
-            int  idx = sortToolbar ? Mathf.Clamp(sortToolbar.SortIndex, 0, _currentSortPriorities.Count - 1) : 0;
-            bool asc = sortToolbar && sortToolbar.Ascending;
-            var primary = new SortPriority(_currentSortPriorities[idx].field, asc);
-            var invDef  = GetActiveInventoryDef();
-            var allKeys = new List<SortPriority> { primary };
-            foreach (var tb in invDef?.sortTiebreakers ?? new List<SortPriority>())
-                allKeys.Add(new SortPriority(tb.field, asc));
-            return allKeys;
+            var invDef      = GetActiveInventoryDef();
+            var tiebreakers = invDef?.sortTiebreakers ?? new List<SortPriority>();
+
+            // 无排序栏：主条件取第一条、沿用其自身方向；各 tiebreaker 亦沿用各自方向。
+            if (!sortToolbar)
+            {
+                var def = new List<SortPriority>
+                    { new SortPriority(_currentSortPriorities[0].field, _currentSortPriorities[0].ascending) };
+                foreach (var tb in tiebreakers)
+                    def.Add(new SortPriority(tb.field, tb.ascending));
+                return def;
+            }
+
+            // 有排序栏：主条件取下拉选中项，全部使用排序栏当前方向。
+            int  idx = Mathf.Clamp(sortToolbar.SortIndex, 0, _currentSortPriorities.Count - 1);
+            bool asc = sortToolbar.Ascending;
+            var  all = new List<SortPriority> { new SortPriority(_currentSortPriorities[idx].field, asc) };
+            foreach (var tb in tiebreakers)
+                all.Add(new SortPriority(tb.field, asc));
+            return all;
         }
 
         /// <summary>
