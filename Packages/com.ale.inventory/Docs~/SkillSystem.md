@@ -143,7 +143,7 @@ skill.GetEntry(位阶attrId).value → 枚举值 + 枚举类型引用
 
 ```csharp
 using System.Collections.Generic;
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
 // ── 采集要显示的技能集合（四种来源；去重、保序）──
 var all      = SkillCollector.Collect(ESkillSource.InventoryDatabase, null, null);
@@ -177,7 +177,7 @@ int    damage  = skill.GetAttributeValue<int>("伤害");      // 数值类型
 
 # 技能 UI
 
-技能 UI 在 `Runtime/UI/`（程序集 `InventorySystem.UI`）：
+技能 UI 在 `Runtime/UI/`（程序集 `Ale.Inventory.UI`）：
 
 | 组件 | 说明 |
 |------|------|

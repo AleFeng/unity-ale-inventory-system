@@ -144,7 +144,7 @@ Hierarchy
 # 运行时 API
 
 ```csharp
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
 var rm = InventoryRuntimeManager.Instance;
 
@@ -221,7 +221,7 @@ InventoryRuntimeManager.Instance.LoadSaveData(wrapper.inventories);
 `UiwInventoryView`（`Runtime/UI/View/Inventory/`）是背包主界面控制器，组合：多仓库页签、货币栏、虚拟滚动列表、过滤页签栏、排序整理栏。
 
 ```csharp
-using InventorySystem.Runtime.UI;
+using Ale.Inventory.Runtime.UI;
 
 inventoryView.Open(new[] { "backpack", "stash" });  // 打开并显示这些仓库
 inventoryView.Close();

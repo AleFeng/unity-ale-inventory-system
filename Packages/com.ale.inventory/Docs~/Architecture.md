@@ -182,11 +182,11 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 
 | asmdef | 内容 |
 |--------|------|
-| `InventorySystem.Runtime` | 数据模型、管理器、序列化（运行时核心） |
-| `InventorySystem.UI` | 运行时 UI 组件；引用 Runtime 与 TextMeshPro |
-| `InventorySystem.Editor` | 编辑器窗口与面板 |
-| `InventorySystem.Addressables.Runtime` / `.Editor` | Addressable 资源加载支持 |
-| `InventorySystem.UI.Localization` | TMP 文本 / 字体本地化事件 |
+| `Ale.Inventory.Runtime` | 数据模型、管理器、序列化（运行时核心） |
+| `Ale.Inventory.UI` | 运行时 UI 组件；引用 Runtime 与 TextMeshPro |
+| `Ale.Inventory.Editor` | 编辑器窗口与面板 |
+| `Ale.Inventory.Addressables.Runtime` / `.Editor` | Addressable 资源加载支持 |
+| `Ale.Inventory.UI.Localization` | TMP 文本 / 字体本地化事件 |
 
 ---
 

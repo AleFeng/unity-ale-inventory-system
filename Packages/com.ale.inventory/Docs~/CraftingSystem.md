@@ -137,7 +137,7 @@
 `CraftingRuntimeManager` 是轻量单例，无自身状态、不存档。道具数据经 `InventoryDataManager` 查询；仓库读写经 `InventoryRuntimeManager`（消耗 / 产出会触发其 `OnInventoryChanged`，UI 据此刷新）。
 
 ```csharp
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
 var cm = CraftingRuntimeManager.Instance;
 CraftingBlueprint bp = InventoryDataManager.Instance.GetCraftingBlueprint("craft_sword");

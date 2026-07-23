@@ -160,7 +160,7 @@
 `EquipmentRuntimeManager` 是轻量单例（首次访问自动创建，仿 `ShopRuntimeManager`），按 `装备组 ID → (槽位 ID → 已装备道具 ID)` 维护运行时状态。装备组目录经 `InventoryDataManager` 查询；仓库读写一律经 `InventoryRuntimeManager`（装备 / 卸下会触发其 `OnInventoryChanged`，背包 UI 据此刷新）。
 
 ```csharp
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
 var eq = EquipmentRuntimeManager.Instance;
 
@@ -210,7 +210,7 @@ eq.ResetAll();                        // 清空（如开始新游戏）
 
 # 装备 UI
 
-装备 UI 在 `Runtime/UI/`（程序集 `InventorySystem.UI`）：
+装备 UI 在 `Runtime/UI/`（程序集 `Ale.Inventory.UI`）：
 
 | 组件 | 说明 |
 |------|------|

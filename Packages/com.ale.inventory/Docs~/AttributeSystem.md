@@ -73,7 +73,7 @@
 道具 / 仓库 / 商店 / 蓝图都继承或实现了属性访问（道具经 `AttributeOwner` 基类）：
 
 ```csharp
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
 Item item = InventoryDataManager.Instance.GetItem("sword_01");
 
@@ -95,7 +95,7 @@ AttributeValue av = item.GetAttributeValue("价格");
 对象类字段（Sprite / Prefab / Texture / Material / AudioClip / AnimationClip / PhysicsMaterial / PhysicsMaterial2D）的加载统一经 `InventoryAssets` 门面，与是否启用 Addressables 解耦：
 
 ```csharp
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
 // 绑定道具某属性的资源到 UI，宿主 GameObject 销毁时自动释放句柄
 InventoryAssets.Bind<Sprite>(item, "图标", image.gameObject, s => { image.sprite = s; });

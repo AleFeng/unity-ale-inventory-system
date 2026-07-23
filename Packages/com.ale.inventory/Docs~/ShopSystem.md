@@ -142,7 +142,7 @@ Dictionary<string,int> total = ShopRuntimeManager.Instance.GetTotalPrice(shop, c
 # 运行时 API
 
 ```csharp
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
 var sm = ShopRuntimeManager.Instance;
 

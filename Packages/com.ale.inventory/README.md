@@ -75,7 +75,7 @@
 - **导出**：`InventoryDtoMapper` → JSON / 二进制；对象引用以 AssetGUID 承载；可选 Addressable 异步加载。
 
 ### UI 组件
-位于 `Runtime/UI/`，程序集 `InventorySystem.UI`，命名空间 `InventorySystem.Runtime.UI`。提供背包 / 商店 / 制作 / 装备 / 技能主界面与可复用的货币栏、过滤栏、排序栏、悬停弹窗、数字计数器、折叠页签等通用组件。各主界面均派生自 `UiwViewBase`：无参 `Open()` 为基类模板方法（激活面板），子类覆写实现各自打开逻辑；背包 / 装备 / 商店视图把目标 ID（`inventoryIds` / `groupId` / `shopId`）暴露到 Inspector，可预设默认值。
+位于 `Runtime/UI/`，程序集 `Ale.Inventory.UI`，命名空间 `Ale.Inventory.Runtime.UI`。提供背包 / 商店 / 制作 / 装备 / 技能主界面与可复用的货币栏、过滤栏、排序栏、悬停弹窗、数字计数器、折叠页签等通用组件。各主界面均派生自 `UiwViewBase`：无参 `Open()` 为基类模板方法（激活面板），子类覆写实现各自打开逻辑；背包 / 装备 / 商店视图把目标 ID（`inventoryIds` / `groupId` / `shopId`）暴露到 Inspector，可预设默认值。
 
 - **统一虚拟滚动列表**：所有"显示大量条目 / Item"的列表都建立在同一套虚拟滚动引擎之上（基类 `UiwInventoryItemListBase<TData,TCell>` → 通用 `UiwInventoryGridList` / `UiwInventoryOrderList` → 各系统叶子）。**网格与顺序列表都是虚拟滚动**：只渲染可见区域 + 缓冲、滚动循环复用；网格支持纵向 / 横向两种滚动、跨轴数量按视口自动计算；仓库网格在虚拟滚动下仍支持拖拽整理换位。为新系统加列表只需继承通用网格 / 顺序层、重写"绑定 / 清空格子"。
 - **列表性能与体验**（引擎内建）：
@@ -186,7 +186,7 @@ Project 面板右键 > Create > Inventory System > Inventory Database
 在场景中新建 GameObject，添加 `InventoryRuntimeManager` 组件，将 `.asset` 拖入 `databases` 数组。游戏启动时自动注册数据库并初始化各仓库空状态。
 
 ```csharp
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
 // 查询静态数据
 Item item = InventoryDataManager.Instance.GetItem("sword_01");

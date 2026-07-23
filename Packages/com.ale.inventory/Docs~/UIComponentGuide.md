@@ -9,9 +9,9 @@
 
 - 返回 [说明文档](../README.md)
 
-本文档说明 `InventorySystem.UI` 程序集中各 UI 组件的功能、Inspector 参数及预制体制作方法。覆盖背包、商店、制作、装备四套界面与可复用的通用组件。
+本文档说明 `Ale.Inventory.UI` 程序集中各 UI 组件的功能、Inspector 参数及预制体制作方法。覆盖背包、商店、制作、装备四套界面与可复用的通用组件。
 
-> **命名空间**：所有 UI 脚本声明在 `InventorySystem.Runtime.UI`，引用时 `using InventorySystem.Runtime.UI;`。（asmdef 的 `rootNamespace` 字段虽写作 `UI.InventorySystem`，但仅影响新建脚本默认值，现有代码以实际声明为准。）
+> **命名空间**：所有 UI 脚本声明在 `Ale.Inventory.Runtime.UI`，引用时 `using Ale.Inventory.Runtime.UI;`。
 
 ---
 
@@ -35,7 +35,7 @@
 
 ### 位置与目录结构
 
-脚本按类型分置于 `Assets/Plugins/InventorySystem/Runtime/UI/` 下的子文件夹（命名空间统一为 `InventorySystem.Runtime.UI`，不随文件夹改变）：
+脚本按类型分置于 `Packages/com.ale.inventory/Runtime/UI/` 下的子文件夹（命名空间统一为 `Ale.Inventory.Runtime.UI`，不随文件夹改变）：
 
 ```
 Runtime/UI/
@@ -49,18 +49,18 @@ Runtime/UI/
 │   ├── Crafting/   UiwCraftingView、UiwCraftingDetail
 │   └── Equipment/  UiwEquipmentView、UiwEquipmentGroupPanel、UiwEquipmentSlotList、UiwEquipmentBonusPanel、UiwEquipmentSelectPanel、UiwEquipmentCandidateList、UiwEquipmentDragContext
 ├── Common/    通用小部件（UiwTextLabel）
-└── InventorySystem.UI.asmdef   （位于根目录，自动覆盖全部子文件夹）
+└── Ale.Inventory.UI.asmdef   （位于根目录，自动覆盖全部子文件夹）
 ```
 
 > 货币栏 / 排序整理栏 / 悬停弹窗 / 数字计数器（`Tool/`）与 过滤页签栏 / 折叠页签（`Tab/`）均为独立通用组件；各主界面（`UiwInventoryView`、`UiwShopViewBase`、`UiwCraftingView`，均派生自 `UiwViewBase`）以「组合」方式持有其引用，在背包 / 商店 / 制作各系统 UI 间复用。
 
 ### 程序集
 
-`InventorySystem.UI`（`InventorySystem.UI.asmdef`）
+`Ale.Inventory.UI`（`Ale.Inventory.UI.asmdef`）
 
-- 引用 `InventorySystem.Runtime`（运行时数据与管理器）
+- 引用 `Ale.Inventory.Runtime`（运行时数据与管理器）
 - 引用 `Unity.TextMeshPro`（可通过宏开关）
-- 代码命名空间：`InventorySystem.Runtime.UI`（asmdef 的 `rootNamespace` 字段虽为 `UI.InventorySystem`，但仅影响新建脚本默认值，以实际声明为准）
+- 代码命名空间：`Ale.Inventory.Runtime.UI`（与 asmdef 的 `rootNamespace` 一致）
 
 ### TextMeshPro 宏开关
 
@@ -509,7 +509,7 @@ Prefab_InventoryView  [UiwInventoryView]
 ### 公开 API
 
 ```csharp
-using InventorySystem.Runtime.UI;
+using Ale.Inventory.Runtime.UI;
 
 // 打开背包（传入要显示的仓库 ID 数组，可选默认过滤标签）
 inventoryView.Open(new[] { "backpack", "stash" }, defaultFilter: null);
@@ -585,7 +585,7 @@ Hierarchy
 ### 步骤四：打开背包
 
 ```csharp
-using InventorySystem.Runtime.UI;
+using Ale.Inventory.Runtime.UI;
 using UnityEngine;
 
 public class InventoryUIController : MonoBehaviour

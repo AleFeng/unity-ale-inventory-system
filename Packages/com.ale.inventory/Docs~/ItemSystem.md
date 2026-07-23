@@ -148,7 +148,7 @@
 道具数据为静态定义，运行时经 `InventoryDataManager` 查询：
 
 ```csharp
-using InventorySystem.Runtime;
+using Ale.Inventory.Runtime;
 
 // 按 ID 取道具
 Item item = InventoryDataManager.Instance.GetItem("sword_01");
