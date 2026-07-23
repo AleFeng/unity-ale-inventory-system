@@ -39,6 +39,16 @@ namespace Ale.Inventory.Editor
                 ? AddressableFieldDrawer.GetHeight(value, index)
                 : EditorGUIUtility.singleLineHeight;
 
+        /// <summary>
+        /// 单个逻辑元素在<b>数组行</b>中占用的高度：Text 走 <see cref="GetTextRowHeight"/>（含本地化选择器），
+        /// 对象类走 <see cref="GetObjectRowHeight"/>（授权模式随选择器变高），其余为单行。
+        /// <para>Rect 路径（<see cref="DrawRect"/>）与 Layout 路径（<see cref="DrawElementField"/>）此前各算一遍，现收口于此。</para>
+        /// </summary>
+        private static float RowHeight(AttributeValue value, int index)
+            => value.Type == EFieldType.Text ? GetTextRowHeight(value, index)
+             : value.Type.IsObjectBacked()   ? GetObjectRowHeight(value, index)
+             : EditorGUIUtility.singleLineHeight;
+
         /// <summary><see cref="EFieldType"/> 对象类型 → 对应 Unity 资源 <see cref="System.Type"/>。</summary>
         private static System.Type ObjectTypeFor(EFieldType type)
         {
@@ -75,23 +85,6 @@ namespace Ale.Inventory.Editor
             }
             EditorGUI.BeginChangeCheck();
             var v = EditorGUI.ObjectField(rect, value.GetObject(index), objType, false);
-            if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetObject(index, v));
-        }
-
-        /// <summary>绘制对象引用字段（GUILayout 版）。语义同 <see cref="DrawObjectFieldRect"/>。</summary>
-        private static void DrawObjectFieldLayout(IInventoryEditorContext ctx, AttributeValue value,
-            int index, System.Type objType)
-        {
-            if (AddressableFieldDrawer != null)
-            {
-                float h = AddressableFieldDrawer.GetHeight(value, index);
-                Rect rect = EditorGUILayout.GetControlRect(false, h);
-                if (AddressableFieldDrawer.Draw(rect, value, index, objType, null, out string guid))
-                    Apply(ctx, () => { value.SetObjAddress(index, guid); value.SetObject(index, null); });
-                return;
-            }
-            EditorGUI.BeginChangeCheck();
-            var v = EditorGUILayout.ObjectField(value.GetObject(index), objType, false) as Object;
             if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetObject(index, v));
         }
 
@@ -350,9 +343,7 @@ namespace Ale.Inventory.Editor
             {
                 const float idxW = 30f, delW = 22f, gap = 2f;
                 float fieldW = w - idxW - delW - gap * 2f;
-                float elemH  = value.Type == EFieldType.Text ? GetTextRowHeight(value, i)
-                             : value.Type.IsObjectBacked()   ? GetObjectRowHeight(value, i)
-                             : lh;
+                float elemH  = RowHeight(value, i);
 
                 var idxR   = new Rect(x,              y, idxW,   lh);
                 var fieldR = new Rect(x + idxW + gap, y, fieldW, elemH);
@@ -659,192 +650,17 @@ namespace Ale.Inventory.Editor
         // ─────────────────────────────────────────────────────────────────────
 
         /// <summary>绘制指定元素索引的字段（无标签）。</summary>
+        /// <summary>
+        /// Layout 路径的单元素绘制：取一个 <see cref="EditorGUILayout.GetControlRect(bool,float)"/> 矩形后
+        /// 转调 Rect 路径的 <see cref="DrawFieldControlRect"/>，使两条路径的字段外观完全一致。
+        /// <para><b>1.6.0 起的显示行为对齐</b>（此前 Layout 版与 Rect 版分歧）：
+        /// Vector4 不再多出一个空标签列；数组内 Sprite 采用与 Rect 版一致的正方形预览；
+        /// VectorInt4 / StringIntPair 由纵向堆叠改为与 Rect 版一致的横向分栏；未知类型显示类型名。</para>
+        /// </summary>
         private static void DrawElementField(IInventoryEditorContext ctx, AttributeValue value, EnumType enumType, int index)
         {
-            switch (value.Type)
-            {
-                case EFieldType.Int:
-                {
-                    EditorGUI.BeginChangeCheck();
-                    int v = EditorGUILayout.IntField(value.GetInt(index));
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetInt(index, v));
-                    break;
-                }
-                case EFieldType.Float:
-                {
-                    EditorGUI.BeginChangeCheck();
-                    float v = EditorGUILayout.FloatField(value.GetFloat(index));
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetFloat(index, v));
-                    break;
-                }
-                case EFieldType.String:
-                {
-                    EditorGUI.BeginChangeCheck();
-                    string v = EditorGUILayout.TextField(value.GetString(index));
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetString(index, v));
-                    break;
-                }
-                case EFieldType.Bool:
-                {
-                    EditorGUI.BeginChangeCheck();
-                    bool v = EditorGUILayout.Toggle(value.GetInt(index) != 0);
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetInt(index, v ? 1 : 0));
-                    break;
-                }
-                case EFieldType.Enum:
-                {
-                    DrawEnumPopup(ctx, value, enumType, index);
-                    break;
-                }
-                case EFieldType.Vector2:
-                {
-                    EditorGUI.BeginChangeCheck();
-                    Vector2 v = EditorGUILayout.Vector2Field(GUIContent.none, value.GetVector2(index));
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetVector2(index, v));
-                    break;
-                }
-                case EFieldType.Vector3:
-                {
-                    EditorGUI.BeginChangeCheck();
-                    Vector3 v = EditorGUILayout.Vector3Field(GUIContent.none, value.GetVector3(index));
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetVector3(index, v));
-                    break;
-                }
-                case EFieldType.Vector4:
-                {
-                    EditorGUI.BeginChangeCheck();
-                    Vector4 v = EditorGUILayout.Vector4Field(string.Empty, value.GetVector4(index));
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetVector4(index, v));
-                    break;
-                }
-                case EFieldType.Color:
-                {
-                    EditorGUI.BeginChangeCheck();
-                    Color v = EditorGUILayout.ColorField(value.GetColor(index));
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetColor(index, v));
-                    break;
-                }
-                case EFieldType.Sprite:
-                case EFieldType.Prefab:
-                case EFieldType.Texture:
-                case EFieldType.Material:
-                case EFieldType.AudioClip:
-                case EFieldType.AnimationClip:
-                case EFieldType.PhysicsMaterial:
-                case EFieldType.PhysicsMaterial2D:
-                    DrawObjectFieldLayout(ctx, value, index, ObjectTypeFor(value.Type));
-                    break;
-                case EFieldType.AnimationCurve:
-                {
-                    var curve = value.GetAnimationCurve(index) ?? DefaultCurve();
-                    EditorGUI.BeginChangeCheck();
-                    var newCurve = EditorGUILayout.CurveField(curve);
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetAnimationCurve(index, newCurve));
-                    break;
-                }
-                case EFieldType.VectorInt2:
-                {
-                    EditorGUI.BeginChangeCheck();
-                    Vector2Int v = EditorGUILayout.Vector2IntField(GUIContent.none, value.GetVector2Int(index));
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetVector2Int(index, v));
-                    break;
-                }
-                case EFieldType.VectorInt3:
-                {
-                    EditorGUI.BeginChangeCheck();
-                    Vector3Int v = EditorGUILayout.Vector3IntField(GUIContent.none, value.GetVector3Int(index));
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetVector3Int(index, v));
-                    break;
-                }
-                case EFieldType.VectorInt4:
-                {
-                    // Unity 无原生 Vector4IntField，横排 4 个 IntField
-                    var (x, y, z, w) = value.GetVector4Int(index);
-                    EditorGUI.BeginChangeCheck();
-                    int nx = EditorGUILayout.IntField(x);
-                    int ny = EditorGUILayout.IntField(y);
-                    int nz = EditorGUILayout.IntField(z);
-                    int nw = EditorGUILayout.IntField(w);
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetVector4Int(index, nx, ny, nz, nw));
-                    break;
-                }
-                case EFieldType.StringIntPair:
-                {
-                    var (key, val) = value.GetStringIntPair(index);
-                    EditorGUI.BeginChangeCheck();
-                    string newKey = EditorGUILayout.TextField(key);
-                    int    newVal = EditorGUILayout.IntField(val);
-                    if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetStringIntPair(index, newKey, newVal));
-                    break;
-                }
-                case EFieldType.EnumIntPair:
-                {
-                    var (_, val) = value.GetEnumIntPair(index);
-                    DrawEnumIntPairPopup(ctx, value, enumType, index);
-                    EditorGUI.BeginChangeCheck();
-                    int newVal = EditorGUILayout.IntField(val);
-                    if (EditorGUI.EndChangeCheck())
-                    {
-                        int keepEnum = value.GetEnumIntPair(index).enumValue;
-                        Apply(ctx, () => value.SetEnumIntPair(index, keepEnum, newVal));
-                    }
-                    break;
-                }
-            }
-        }
-
-        private static void DrawEnumPopup(IInventoryEditorContext ctx, AttributeValue value, EnumType enumType, int index)
-        {
-            if (enumType == null || enumType.items.Count == 0)
-            {
-                EditorGUILayout.LabelField($"<未找到枚举类型 \"{value.EnumTypeRef}\">", InventoryEditorStyles.StatusError);
-                return;
-            }
-
-            var names = new string[enumType.items.Count];
-            int current = -1;
-            int stored = value.GetInt(index);
-            for (int i = 0; i < enumType.items.Count; i++)
-            {
-                names[i] = enumType.items[i].name;
-                if (enumType.items[i].value == stored) current = i;
-            }
-
-            EditorGUI.BeginChangeCheck();
-            int picked = EditorGUILayout.Popup(current, names);
-            if (EditorGUI.EndChangeCheck() && picked >= 0 && picked < enumType.items.Count)
-            {
-                int newValue = enumType.items[picked].value;
-                Apply(ctx, () => value.SetInt(index, newValue));
-            }
-        }
-
-        /// <summary>GUILayout：EnumIntPair 的枚举键弹窗（仅改写 pair 的枚举分量，保留整数分量）。</summary>
-        private static void DrawEnumIntPairPopup(IInventoryEditorContext ctx, AttributeValue value, EnumType enumType, int index)
-        {
-            if (enumType == null || enumType.items.Count == 0)
-            {
-                EditorGUILayout.LabelField($"<未找到枚举类型 \"{value.EnumTypeRef}\">", InventoryEditorStyles.StatusError);
-                return;
-            }
-
-            var names   = new string[enumType.items.Count];
-            int current = -1;
-            int stored  = value.GetEnumIntPair(index).enumValue;
-            for (int i = 0; i < enumType.items.Count; i++)
-            {
-                names[i] = enumType.items[i].name;
-                if (enumType.items[i].value == stored) current = i;
-            }
-
-            EditorGUI.BeginChangeCheck();
-            int picked = EditorGUILayout.Popup(current, names);
-            if (EditorGUI.EndChangeCheck() && picked >= 0 && picked < enumType.items.Count)
-            {
-                int newEnum = enumType.items[picked].value;
-                int keepVal = value.GetEnumIntPair(index).value;
-                Apply(ctx, () => value.SetEnumIntPair(index, newEnum, keepVal));
-            }
+            Rect rect = EditorGUILayout.GetControlRect(false, RowHeight(value, index));
+            DrawFieldControlRect(ctx, value, enumType, index, rect);
         }
 
         // ─── Text：纯文本 fallback + 本地化选择器 ─────────────────────────────────
