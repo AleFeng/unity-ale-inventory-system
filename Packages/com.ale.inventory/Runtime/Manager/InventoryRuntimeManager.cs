@@ -49,28 +49,42 @@ namespace Ale.Inventory.Runtime
                     InventoryDataManager.Instance.Register(db);
             }
 
-            // 为每个已定义的 Inventory 初始化空运行时状态
+            // 为每个已定义的 Inventory 初始化空运行时状态（已有状态的仓库跳过，避免覆盖）
+            BuildEmptyStates(skipExisting: true);
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // 测试功能：向测试仓库自动注入道具（见 InventoryRuntimeManager.TestSeed.cs，发布构建中不参与编译）。
+            TestFunction();
+#endif
+        }
+
+        /// <summary>
+        /// 为所有已注册数据库中的每个 <see cref="Inventory"/> 建立空运行时状态
+        /// （固定容量仓库预分配带 slotId 的空槽，支持拖拽定位）。
+        /// </summary>
+        /// <param name="skipExisting">
+        /// true = 已存在状态的仓库跳过（<see cref="Init"/> 用，不覆盖已加载 / 已填充的状态）；
+        /// false = 无条件重建（<see cref="ResetAll"/> 用，调用方已先 <c>Clear()</c>）。
+        /// </param>
+        private void BuildEmptyStates(bool skipExisting)
+        {
+            if (databases == null) return;
             foreach (var db in databases)
             {
                 if (!db) continue;
                 foreach (var inv in db.Inventories)
                 {
-                    if (!string.IsNullOrEmpty(inv.id) && !_inventoryStates.ContainsKey(inv.id))
-                    {
-                        var state = new RuntimeInventoryState(inv.id);
-                        // 固定容量仓库预分配空槽，保证每个位置都有 slotId（支持拖拽定位）
-                        if (inv.capacity > 0)
-                            for (int i = 0; i < inv.capacity; i++)
-                                state.itemSlots.Add(new RuntimeItemSlot(Guid.NewGuid().ToString(), null, 0));
-                        _inventoryStates[inv.id] = state;
-                    }
+                    if (string.IsNullOrEmpty(inv.id)) continue;
+                    if (skipExisting && _inventoryStates.ContainsKey(inv.id)) continue;
+
+                    var state = new RuntimeInventoryState(inv.id);
+                    // 固定容量仓库预分配空槽，保证每个位置都有 slotId（支持拖拽定位）
+                    if (inv.capacity > 0)
+                        for (int i = 0; i < inv.capacity; i++)
+                            state.itemSlots.Add(new RuntimeItemSlot(Guid.NewGuid().ToString(), null, 0));
+                    _inventoryStates[inv.id] = state;
                 }
             }
-            
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            // 测试功能：向测试仓库自动注入道具（见 InventoryRuntimeManager.TestSeed.cs，发布构建中不参与编译）。
-            TestFunction();
-#endif
         }
 
         
@@ -560,6 +574,19 @@ namespace Ale.Inventory.Runtime
                     for (int i = state.itemSlots.Count; i < invDef.capacity; i++)
                         state.itemSlots.Add(new RuntimeItemSlot(Guid.NewGuid().ToString(), null, 0));
             }
+        }
+
+        /// <summary>
+        /// 清空全部仓库运行时状态并重建为初始空状态（固定容量仓库恢复预分配空槽），如开始新游戏。
+        /// 与 <see cref="EquipmentRuntimeManager.ResetAll"/> / <see cref="ShopRuntimeManager.ResetAll"/> 对齐；
+        /// 区别在于仓库有「按容量预分配空槽」的概念，故不能只 <c>Clear()</c>，需重建空状态。
+        /// <para>与 <see cref="LoadSaveData"/> 一致，本方法<b>不触发</b> <see cref="OnInventoryChanged"/>——
+        /// 批量替换状态后由调用方（游戏层）自行刷新 / 重开界面。</para>
+        /// </summary>
+        public void ResetAll()
+        {
+            _inventoryStates.Clear();
+            BuildEmptyStates(skipExisting: false);
         }
 
         #endregion
