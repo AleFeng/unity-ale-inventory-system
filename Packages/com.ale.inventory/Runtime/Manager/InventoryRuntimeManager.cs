@@ -161,12 +161,22 @@ namespace Ale.Inventory.Runtime
             return inv?.capacity ?? 0;
         }
         
-        /// <summary>获取指定仓库的所有格子列表。仓库不存在时返回空列表。</summary>
+        // 仓库不存在时返回的共享空列表：避免每次未命中都分配一个新 List
+        // （UI 刷新可能高频调用）。调用方<b>不得</b>写入 GetSlots 的返回值。
+        private static readonly List<RuntimeItemSlot> EmptySlots = new List<RuntimeItemSlot>();
+
+        /// <summary>
+        /// 获取指定仓库的所有格子列表。仓库不存在时返回一个共享的空列表。
+        /// <para><b>返回值仅供读取</b>：命中时返回的是运行时状态的实时引用，
+        /// 未命中时返回的是全局共享的空列表——两种情况下写入都会造成意外后果。
+        /// 需要修改内容请走 <see cref="TryAddItem"/> / <see cref="TryRemoveItem"/> /
+        /// <see cref="SetSlotContent"/> 等接口；需要自行排序 / 过滤请先拷贝一份。</para>
+        /// </summary>
         public List<RuntimeItemSlot> GetSlots(string inventoryId)
         {
             if (_inventoryStates.TryGetValue(inventoryId, out var state))
                 return state.itemSlots;
-            return new List<RuntimeItemSlot>();
+            return EmptySlots;
         }
         
         /// <summary>计算指定仓库当前所有道具的总重量（道具 weight × 数量 累加）。</summary>
@@ -245,15 +255,23 @@ namespace Ale.Inventory.Runtime
                 }
             }
 
-            // 2. 剩余数量 填入空槽（预分配模式）或开新格（无限容量模式）
+            // 2. 剩余数量 填入空槽（预分配模式）或开新格（无限容量模式）。
+            // 预分配模式用一个「只进不退」的游标扫空槽：本轮填过的槽不会再变空，
+            // 游标之前也不会重新出现空槽，故整个 while 合计只扫一遍列表。
+            // （原写法每轮都 state.itemSlots.Find(...) 从头扫，是 O(n²)，且每轮分配一个闭包委托。）
+            int emptyCursor = 0;
             while (remaining > 0)
             {
                 int take = stackMax > 0 ? Mathf.Min(stackMax, remaining) : remaining;
                 if (capMax > 0)
                 {
-                    // 预分配模式：找第一个空槽（itemId == null）
-                    var emptySlot = state.itemSlots.Find(s => string.IsNullOrEmpty(s.itemId));
-                    if (emptySlot == null) break; // 无空槽 = 仓库已满
+                    // 预分配模式：推进到第一个空槽（itemId 为空）
+                    while (emptyCursor < state.itemSlots.Count
+                           && !string.IsNullOrEmpty(state.itemSlots[emptyCursor].itemId))
+                        emptyCursor++;
+                    if (emptyCursor >= state.itemSlots.Count) break; // 无空槽 = 仓库已满
+
+                    var emptySlot = state.itemSlots[emptyCursor];
                     emptySlot.itemId = itemId;
                     emptySlot.count  = take;
                 }
