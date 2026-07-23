@@ -18,6 +18,8 @@
 | 仓库模板 / 仓库 / 整理排序 / 运行时 API / 存档 | [仓库系统](WarehouseSystem.md) |
 | 商店模板 / 商店 / 商品组 / 刷新 / 交易 API | [商店系统](ShopSystem.md) |
 | 分组标签 / 蓝图模板 / 蓝图 / 制作 API | [制作系统](CraftingSystem.md) |
+| 分组标签 / 装备组模板 / 槽位列表 / 道具限制 / 属性加成 / 装备 API | [装备系统](EquipmentSystem.md) |
+| 分组标签 / 技能模板 / 技能 / 道具技能引用 / 四种来源 / 已学技能 API | [技能系统](SkillSystem.md) |
 | 属性字段类型参考、取值 / 显示 / 排序比较 | [属性系统](AttributeSystem.md) |
 | UI 组件与预制体制作 | [UI 组件指南](UIComponentGuide.md) |
 | 架构与设计 | [架构说明](Architecture.md) |

@@ -6,52 +6,97 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
-## [未发布] 1.6.0
+## [1.6.0] - 2026-07-23
 
-> **本节随开发逐步补充**，发布前需通读补全（结构重构一轮的其余条目尚未录入）。
-> 已确定影响使用者的两项——**破坏性 API 移除**与**导出格式升版**——先记录在此。
+一轮以「**修 Bug + 补齐导出 + 结构重构**」为主的版本。**含破坏性变更**（移除已零调用的兼容 API、导出格式升版），升级前请先读本节末尾的「⚠️ 破坏性」与「升级指引」。
+
+### 修复
+
+- **无整理栏时自动整理一律降序**：`UiwInventoryView` 在未接 `UiwSortToolbar`（合法配置——不想给玩家排序栏时）
+  的情况下，把升降序恒当作降序，忽略每条排序条件自己配置的 `ascending`；基类 `UiwInventoryListBase`
+  的同位置逻辑并非如此，两者语义不一致。现改为：无排序栏时保留各条件自身的升降序，有排序栏时统一取排序栏的方向。
+- **载入存档后旧仓库残留**：`InventoryRuntimeManager.LoadSaveData` 此前不清空现有状态，直接按存档覆盖同名仓库——
+  于是「存档里没有、但内存里已存在」的仓库会带着上一局的内容留下来，与 `EquipmentRuntimeManager` /
+  `ShopRuntimeManager` 的覆盖语义不一致。现统一为覆盖（详见下方「存档契约」）。
+- **DemoWizard「生成」必定栈溢出**：`BeginPrefab` 误写成调用自身，导致生成的任一入口都会抛
+  `StackOverflowException`——该异常在 .NET 中不可捕获，会直接终止编辑器进程。
+- **DemoWizard 重新生成会静默打断资产引用**：预制体与数据库此前都是「先删除、再创建」，删除连带删掉 `.meta`，
+  资产 GUID 因此改变。单独重生成某个被依赖的预制体（如 `PF_UiwInventoryItemCell`）或数据库，会**静默打断**
+  依赖它的预制体 / 管理器对它的引用，而生成窗口的依赖对话框只**向下**遍历依赖、从不向上遍历被依赖者，因此不会提示。
+  现改为就地覆盖，GUID 保持不变。
+- **文档修正**：`Docs~/WarehouseSystem` 原称「存档中多余的仓库 ID 被忽略」，与实现不符（这类仓库实际会被载入内存）。
+
+### 新增
+
+- **`InventoryRuntimeManager.ResetAll()`**：清空全部仓库运行时状态并重建为初始空态（固定容量仓库恢复预分配空槽）。
+  此前 `EquipmentRuntimeManager` / `ShopRuntimeManager` / `SkillRuntimeManager` 都有 `ResetAll`，唯独仓库没有——
+  开新游戏 / 重置存档后仓库仍是上一局的满状态。
+- **`IInventorySaveable<TState>` / `IInventorySaveable`**：持有存档状态的四个运行时管理器
+  （仓库 / 装备 / 商店 / 技能）统一实现，把此前散落在四处注释里的存档契约钉在一处——
+  `GetSaveData` 返回**深拷贝**、`LoadSaveData` 为**覆盖而非合并**、三个方法都**不触发**变更事件。
+  非泛型部分只含 `ResetAll`，供游戏层「开新游戏」一次遍历重置全部系统。
+
+### 变更
+
+- **导出格式版本 v5 → v6，覆盖数据库全部 20 个列表**：此前 JSON / 二进制导出只含
+  枚举类型 / 功能标签 / 道具模板 / 道具四项，其余 16 个列表（仓库模板 / 仓库 / 整理选项 schema / 整理选项 /
+  数字格式配置 / 商店模板 / 商店 / 制作分组标签 / 蓝图模板 / 蓝图 / 装备分组标签 / 装备组模板 / 装备组 /
+  技能分组标签 / 技能模板 / 技能）在导出时**被静默丢弃**——这是 1.4.0 起的已知限制。现已全部纳入，另加
+  `localizationTableCollectionGuid`。
+  - 同时补上道具系统自身此前漏掉的字段：模板色点、`ItemTemplate` / `Item` 的 `weight` / `stackLimit` /
+    `hideInInventory`、功能标签的 UI 显示配置（显示名 / 描述的完整 `Text` 值含本地化引用、背景 Sprite、背景色、`hideInUI`）。
+  - **向后兼容**：二进制读取按文件头版本号跳过新增数据块，v5 导出的 `.bytes` 仍可正常导入（新增字段取默认值）；
+    反之 v6 导出的文件旧版本读不了——单向导出格式，升级后重新导出即可。
+  - **`IS_ADDRESSABLE` 下的行为变化**：功能标签的背景 Sprite 与技能 / 技能模板的图标现在也会经解析器登记进
+    Addressable 分组，未登记的资源会在导出时新增「未登记」告警。
+- **新建无模板数据库保持空白**：`InventoryDatabase.SeedDefaults()` 方法体为空却被创建流程调用，
+  「填充默认数据」的承诺实际是空操作。现移除该方法与两处调用，文档措辞同步改为「未配模板时创建空数据库」。
+  行为不变，只是不再误导。
+- **DemoWizard 生成的 Demo 道具属性可复现**：品质 / 部位 / 攻击力等随机属性此前取自全局 `UnityEngine.Random`，
+  每次重新生成都不同；现由**道具 ID 派生**固定种子（FNV-1a），同一 ID 恒定，且与 `AddItem` 的调用顺序无关。
+  **注意**：本次改动后重新生成的 Demo 数据，其随机属性值与旧版不同。
+- **预制体保存失败不再静默**：DemoWizard 此前无论成败都打印「已保存」，现改用带结果的重载并在失败时报错。
+
+### 重构（不改变行为）
+
+> 本轮结构重构逐步进行、每步单独验证，公开行为保持不变；下列为对二次开发者有意义的结构变化。
+
+- **共享基类与服务抽取**：
+  - `AttributeOwner`——承载属性值集合的对象基类，封装懒加载 O(1) 字典缓存与属性值泛型 Get / Set，
+    由 `Item` / `EnumItem` / `Inventory` / `Shop` / `SortOption` / `CraftingBlueprint` / `EquipmentGroup` / `Skill` 共用。
+  - `AttributeSync.Sync`——各实体 `RebuildAttributes` 中「按 schema 增补 / 移除 / 类型漂移重置」的共用实现。
+  - `ConfigTemplateBase`——六大系统模板共有的名称 / 色点 / 属性字段定义。
+  - `InventorySortService`——排序实现从 `InventoryRuntimeManager` 独立为静态服务（无实例状态）。
+  - `EquipmentBonusCalculator`——装备总加成汇总独立成类。
+- **巨型文件按职责拆为分部**：`AttributeValue`（核心 / `.Elements` / `.Text`）、
+  `InventoryRuntimeManager`（核心 / `.Time` / `.UiHost` / `.TestSeed`）、`InventoryDemoWizard`（按子系统拆为 13 个文件）。
+- **序列化层重组**：`InventoryDtoModels.cs` 只放 DTO 定义；双向映射拆为 `InventoryDtoMapper*.cs`、
+  二进制块读写拆为 `InventoryBinarySerializer*.cs`，均按系统分部（核心 + 仓库 / 商店 / 制作 / 装备 / 技能）。
+- **属性字段绘制的 Layout / Rect 两条路径合并**为一套实现，此前是两个并行维护的大 switch。
+- **`#region` 覆盖**：全部 180 行以上的源文件均已分节。
 
 ### ⚠️ 破坏性
 
 - **移除 `InventoryRuntimeManager` 上的 `public static` 排序兼容转发**：`SortSlots` / `SortByItemId` /
   `CompareSlots` / `CompareByField` / `IsIgnoredByField` / `FindAttrDef` / `ContainsStr` / `GetTagOrder`。
-  这批成员是 1.5.0 把排序实现迁到 `InventorySortService` 时刻意保留的薄封装，现已无包内调用。
-  **迁移**：把调用处的 `InventoryRuntimeManager.Xxx(...)` 改为 `InventorySortService.Xxx(...)`，参数与语义完全一致。
-  写运行时状态并触发事件的**实例**方法 `InventoryRuntimeManager.SortInventory` 不受影响，无需改动。
+  这批成员是排序实现迁到 `InventorySortService` 时为项目层保留的薄封装，现已无任何调用。
+  写运行时状态并触发事件的**实例**方法 `InventoryRuntimeManager.SortInventory` 不受影响。
+- **移除 `InventoryDatabase.SeedDefaults()`**（空实现，见上）。
+- **移除零调用的公开成员**：`RuntimeInventoryState.FindByItemId`、`InventoryAssets.PreloadItem` /
+  `InventoryAssets.ReleaseItem`（后者还忽略自己的 `item` 参数）、`InventoryEditorStyles.ListRow` /
+  `ListRowSelected`。
+- **导出格式升版**：v6 导出的 `.json` / `.bytes` 无法被 1.5.0 及更早版本读取（反向兼容，见「变更」）。
 
-### 变更
+### 升级指引
 
-- **导出格式版本 v5 → v6，覆盖数据库全部 20 个列表**：此前 JSON / 二进制导出只含
-  枚举类型 / 功能标签 / 道具模板 / 道具四项，其余 16 个列表（仓库、整理选项、数字格式、商店、制作、装备、技能）
-  **被静默丢弃**；道具系统自身也漏了模板色点、`weight` / `stackLimit` / `hideInInventory`、功能标签的 UI 显示配置。
-  现已全部纳入，并新增 `localizationTableCollectionGuid`。
-  - **向后兼容**：二进制读取按文件头版本号跳过新增数据块，v5 导出的 `.bytes` 仍可正常导入（新增字段取默认值）；
-    反之 v6 导出的文件旧版本读不了——单向导出格式，升级后重新导出即可。
-  - **`IS_ADDRESSABLE` 下的行为变化**：功能标签的背景 Sprite 与技能 / 技能模板的图标现在也会经解析器登记进
-    Addressable 分组，未登记的资源会在导出时新增「未登记」告警。
-- **DemoWizard 生成的 Demo 道具属性改为可复现**：品质 / 部位 / 攻击力等随机属性此前取自全局
-  `UnityEngine.Random`，每次重新生成都不同；现由**道具 ID 派生**固定种子，同一 ID 恒定，且与
-  `AddItem` 的调用顺序无关。**注意**：本次改动后重新生成的 Demo 数据，其随机属性值与旧版不同。
-
-### 修复
-
-- **DemoWizard 生成功能栈溢出**：`BeginPrefab` 误写成调用自身，导致「生成」的任一入口都会
-  `StackOverflowException`（不可捕获，直接终止编辑器进程）。
-- **DemoWizard 重新生成会打断资产引用**：预制体与数据库此前都是「先删除、再创建」，删除连带删掉 `.meta`，
-  资产 GUID 因此改变——单独重生成某个被依赖的预制体（如 `PF_UiwInventoryItemCell`）或数据库，会**静默打断**
-  依赖它的预制体的引用，而生成窗口的依赖对话框只向下遍历依赖、不会提示。现改为就地覆盖，GUID 保持不变。
-- **无整理栏时 `autoSort` 忽略各条件的升降序**：`UiwInventoryView` 在未接 `sortToolbar`（合法配置）时
-  把升降序一律当作降序，与基类 `UiwInventoryListBase` 的语义不一致。现改为保留各排序条件自身配置的 `ascending`。
-
-### 新增
-
-- **`InventoryRuntimeManager.ResetAll()`**：清空全部仓库运行时状态并重建为初始空态（固定容量仓库恢复预分配空槽），
-  补齐与 `EquipmentRuntimeManager` / `ShopRuntimeManager` 的对称缺口——此前开新游戏后仓库仍是上一局的内容。
-- **`IInventorySaveable<TState>` / `IInventorySaveable`**：持有存档状态的四个运行时管理器
-  （仓库 / 装备 / 商店 / 技能）统一实现，把「深拷贝、覆盖而非合并、不触发变更事件」的契约钉在一处；
-  非泛型部分只含 `ResetAll`，供游戏层「开新游戏」一次遍历重置全部系统。
-
----
+1. **项目层若调用过上述 `public static` 排序转发**：把 `InventoryRuntimeManager.Xxx(...)` 改为
+   `InventorySortService.Xxx(...)`，参数与语义完全一致，无其它改动。
+2. **若使用 JSON / 二进制导出**：升级后重新导出一次。旧的 `.bytes` 仍可被新版导入，但只含道具系统数据；
+   重新导出才能拿到仓库 / 商店 / 制作 / 装备 / 技能的完整数据。
+3. **若用 DemoWizard 生成过 Demo**：可直接重新生成——本版起就地覆盖、GUID 不变，不会再打断引用。
+   注意 Demo 道具的随机属性值会因随机源更换而与旧版不同（此后固定）。
+4. **存档兼容**：存档数据结构未变，旧存档可直接读取。但 `InventoryRuntimeManager.LoadSaveData` 现为覆盖语义——
+   若你的游戏层依赖「载入后保留存档中未出现的仓库」这一旧行为，需自行在载入后补回。
 
 ## [1.5.0] - 2026-07-23
 

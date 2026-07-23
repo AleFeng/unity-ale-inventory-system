@@ -673,6 +673,15 @@ Open the **Welcome Window** (`Tools > Inventory System > Welcome Window`) → ex
 - "Generate All (Database + All Prefabs)" generates the sample database + all UI prefabs + inventory / shop / crafting / equipment panels + managers in one click (the equipment panel auto-opens "Character Equipment" and attaches the backpack right-click equip bridge);
 - The list lets you generate individual prefabs (when generating a dependent prefab it asks whether to generate child prefabs as well, and confirms before overwriting an existing asset).
 
+> **Regenerating is safe (since 1.6.0)**: prefabs and the database are **overwritten in place**, so asset GUIDs stay
+> the same — regenerating a single depended-upon prefab (e.g. `PF_UiwInventoryItemCell`) or the database will not
+> break the references held by prefabs / managers that depend on it. Previously it was "delete then create", which
+> changed the GUID and silently broke those references (the dependency dialog only walks dependencies downward,
+> so it never warned).
+>
+> **Demo items' random attributes are reproducible (since 1.6.0)**: quality / attack and friends are derived from a
+> fixed seed based on the item ID, so the same ID yields the same values every time.
+
 > The Welcome Window's "Plugin Support" area can also toggle the three macros `IS_TMP` / `IS_LOCALIZATION` / `IS_ADDRESSABLE` in one click, and configure the default TMP font used by the wizard when generating prefabs.
 
 ---

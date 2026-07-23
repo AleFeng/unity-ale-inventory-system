@@ -172,6 +172,11 @@ string effect  = skill.GetAttributeValue<string>("effect");   // String / Text
 int    damage  = skill.GetAttributeValue<int>("damage");      // numeric type
 ```
 
+> **Save contract (1.6.0)**: this manager implements `IInventorySaveable<TState>` — `GetSaveData` returns a deep
+> copy, `LoadSaveData` **replaces rather than merges** (entries in memory but absent from the save do not survive),
+> and none of the three methods fires a change event (the caller refreshes the UI after a bulk swap). All four
+> saveable managers share these semantics — see [Architecture](Architecture_EN.md#subsystem-runtime-managers).
+
 - **`SkillRuntimeManager`**: maintains only the mutable "learned skills" state; everything else (name / attributes, etc.) is read from the skill definition. `Learn` / `Forget` / `ClearLearned` trigger `OnLearnedChanged(characterId)` on change for UI refresh; the save unit is `RuntimeLearnedSkillState` (character ID + skill ID list).
 - **`SkillCollector`**: a static tool with no runtime state. `Equipment` iterates the equipped items of each slot in the equipment group, `Inventory` iterates each item in the warehouse, reading the item's `skillRefAttrId` (String / array) to resolve skill IDs; `Character` reads `SkillRuntimeManager.GetLearnedSkills`; `InventoryDatabase` takes all skills.
 

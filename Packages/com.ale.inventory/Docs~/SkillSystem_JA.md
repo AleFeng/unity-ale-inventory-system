@@ -172,6 +172,11 @@ string effect  = skill.GetAttributeValue<string>("効果");   // String / Text
 int    damage  = skill.GetAttributeValue<int>("ダメージ");  // 数値型
 ```
 
+> **セーブ契約（1.6.0）**：本マネージャは `IInventorySaveable<TState>` を実装します —— `GetSaveData` はディープ
+> コピーを返し、`LoadSaveData` は**マージではなく上書き**（セーブに無くメモリに在るエントリは残りません）、
+> 3 つのメソッドはいずれも変更イベントを**発火しません**（一括差し替え後は呼び出し側が UI を更新）。
+> セーブ対象の 4 マネージャで意味は共通です。[アーキテクチャ](Architecture_JA.md#サブシステムのランタイムマネージャー) を参照。
+
 - **`SkillRuntimeManager`**：可変状態である「習得済みスキル」のみを管理し、それ以外（名称 / 属性など）はスキル定義から読み取ります。`Learn` / `Forget` / `ClearLearned` は変化時に `OnLearnedChanged(characterId)` を発火して UI をリフレッシュします。セーブ単位は `RuntimeLearnedSkillState`（キャラクター ID + スキル ID リスト）です。
 - **`SkillCollector`**：静的ツールで、ランタイム状態を持ちません。`Equipment` は装備グループの各スロットの装備中アイテムを走査し、`Inventory` は倉庫の各アイテムを走査して、アイテムの `skillRefAttrId`（String / 配列）を読んでスキル ID を解決します。`Character` は `SkillRuntimeManager.GetLearnedSkills` を読み、`InventoryDatabase` はすべてのスキルを取得します。
 

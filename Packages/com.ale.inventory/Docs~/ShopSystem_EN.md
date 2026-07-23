@@ -188,6 +188,11 @@ ShopRuntimeManager.Instance.LoadSaveData(save);
 ShopRuntimeManager.Instance.ResetAll();
 ```
 
+> **Save contract (1.6.0)**: this manager implements `IInventorySaveable<TState>` — `GetSaveData` returns a deep
+> copy, `LoadSaveData` **replaces rather than merges** (entries in memory but absent from the save do not survive),
+> and none of the three methods fires a change event (the caller refreshes the UI after a bulk swap). All four
+> saveable managers share these semantics — see [Architecture](Architecture_EN.md#subsystem-runtime-managers).
+
 > **Progress is keyed by stable `guid` (1.5.0)**: each trade-progress entry is recorded under
 > "commodity-group `guid` + commodity `guid`". Both are assigned at creation and never change, so
 > **renaming a group, or drag-reordering commodities or groups, no longer misaligns existing saves**.

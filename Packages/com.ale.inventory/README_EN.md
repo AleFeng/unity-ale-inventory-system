@@ -72,7 +72,8 @@ A Unity plugin providing designer-facing static-data configuration tooling. A si
 - **`InventoryDataManager`** (data-query singleton): registers databases, queries items / warehouses / shops / blueprints / enum types, etc. by ID; supports loading from `.asset`, JSON, and binary sources. Lookups go through a lazily built dictionary index (O(1)), invalidated and rebuilt when databases are registered / unregistered.
 - **`InventoryRuntimeManager`** (MonoBehaviour singleton): warehouse slot state, sorting, save data, the time-injection entry point, the cover-UI root node / Layer config (popups / hover popups / drag ghost icons, etc., are re-assigned the specified Layer after instantiation), and registers databases into `InventoryDataManager`; includes editor test-item population (`autoPopulateOnStart` / `testInventoryId` / `testItems`, filled at `Init` time, data-only, no UI opened) and a one-click "add all configured items" (`addAllConfiguredItems` + `addAllItemCount`).
 - **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager` / `SkillRuntimeManager`** (lightweight singletons): trade / craft / equip / skill logic (equipped state and learned state can both be saved, and shops have trade-progress save data); the skill display set is additionally collected by `SkillCollector` from the four sources.
-- **Export**: `InventoryDtoMapper` → JSON / binary; object references are carried as AssetGUIDs; optional async loading via Addressables.
+- **Export**: `InventoryDtoMapper` → JSON / binary, **covering all 20 database lists** (nothing from the six subsystems is left out; format version v6); object references are carried as AssetGUIDs; optional async loading via Addressables. `.bytes` exported by v5 and earlier still imports.
+- **Save contract**: the inventory / equipment / shop / skill managers all implement `IInventorySaveable<TState>` — `GetSaveData` returns a deep copy, `LoadSaveData` **replaces rather than merges**, and none of them fires a change event; the non-generic `IInventorySaveable` carries only `ResetAll`, so "new game" can reset every system in one loop.
 
 ### UI Components
 Located under `Runtime/UI/`, assembly `Ale.Inventory.UI`, namespace `Ale.Inventory.Runtime.UI`. Provides the inventory / shop / crafting / equipment / skill main screens plus reusable common components such as a currency bar, filter bar, sort bar, hover popup, number counter, and collapsible tabs. Each main screen derives from `UiwViewBase`: the parameterless `Open()` is a base-class template method (activates the panel), which subclasses override to implement their own open logic; the inventory / equipment / shop views expose their target IDs (`inventoryIds` / `groupId` / `shopId`) to the Inspector so defaults can be preset.
@@ -195,9 +196,12 @@ Item item = InventoryDataManager.Instance.GetItem("sword_01");
 InventoryRuntimeManager.Instance.TryAddItem("backpack", "sword_01", 1);
 bool has = InventoryRuntimeManager.Instance.HasItem("backpack", "sword_01");
 
-// Save / load
+// Save / load (LoadSaveData replaces: inventories absent from the save return to their initial empty state)
 var saveData = InventoryRuntimeManager.Instance.GetSaveData();
 InventoryRuntimeManager.Instance.LoadSaveData(saveData);
+
+// New game: clear all runtime state (fixed-capacity inventories get their pre-allocated empty slots back)
+InventoryRuntimeManager.Instance.ResetAll();
 ```
 
 ### 6. One-Click Demo
@@ -213,7 +217,7 @@ InventorySystem/
 ├── Runtime/
 │   ├── Data/           Data models (Item / Inventory / Shop / Crafting* / AttributeValue, etc.)
 │   ├── Manager/        InventoryDataManager / InventoryRuntimeManager / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager / SkillRuntimeManager / SkillCollector
-│   ├── Serialization/  DTO + JSON / binary serialization
+│   ├── Serialization/  DTO definitions + mapping / JSON / binary (mapping and binary blocks split per system)
 │   ├── Assets/         Asset-loading abstraction (direct loading)
 │   ├── Addressables/   Addressables asset-loading support
 │   ├── Localization/   TMP text / font localization events

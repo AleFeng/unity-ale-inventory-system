@@ -53,7 +53,7 @@ A warehouse template defines a warehouse's default configuration; warehouses cre
 | **Take-out function tags** | Only items carrying these tags may be taken out; empty = no restriction |
 | **Operate function tags** | Restricts the operations allowed on items in the warehouse; empty = no restriction |
 | **Filter tags** | The function-tag filter buttons in the warehouse UI ("All" always exists and needs no configuration) |
-| Auto sort | When checked, automatically sorts by the sort rules on every item change |
+| Auto sort | When checked, automatically sorts by the sort rules on every item change. **Where the direction comes from**: if the view has a sort toolbar (`UiwSortToolbar`), its current direction applies to every rule; without a toolbar each rule uses its own ascending / descending setting (fixed in 1.6.0 — previously everything was forced to descending when there was no toolbar) |
 | Drag sort | When checked, allows the player to drag-reorder items in the UI |
 | **Sort list** | The primary sort rules; each entry picks a sort field + ascending/descending |
 | **Sort priority** | The secondary sort rules; compared in turn when the primary sort values are equal |
@@ -204,9 +204,21 @@ string json = JsonUtility.ToJson(new SaveWrapper { inventories = save });
 // Load: after deserializing, call once Init has completed
 var wrapper = JsonUtility.FromJson<SaveWrapper>(json);
 InventoryRuntimeManager.Instance.LoadSaveData(wrapper.inventories);
+
+// New game: clear every warehouse and rebuild the initial empty state
+InventoryRuntimeManager.Instance.ResetAll();
 ```
 
-`RuntimeInventoryState` = `inventoryId` + `slots` (ordered slot list). Warehouses that exist in the database but not in the save stay empty; extra warehouse IDs in the save are ignored.
+`RuntimeInventoryState` = `inventoryId` + `slots` (ordered slot list).
+
+> **`LoadSaveData` replaces rather than merges (since 1.6.0)**: it first clears the in-memory state and
+> rebuilds an empty skeleton for every warehouse in the database (fixed-capacity warehouses get their
+> pre-allocated empty slots back), then overlays the saved slots. So —
+> warehouses **in the database but not in the save** return to their initial empty state (last session's
+> contents do not survive); warehouse IDs **in the save but not in the database** are still loaded into
+> memory (no definition found, treated as unlimited capacity) rather than discarded.
+> The contract matches the other three runtime managers — see
+> [Architecture – Save contract](Architecture_EN.md#subsystem-runtime-managers).
 
 # Data Sources and Loading
 

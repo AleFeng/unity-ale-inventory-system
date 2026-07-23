@@ -18,6 +18,8 @@ This document originally covered the editor configuration of items + warehouses 
 | Warehouse templates / warehouses / sorting / runtime API / save data | [Warehouse System](WarehouseSystem_EN.md) |
 | Shop templates / shops / product groups / refresh / trade API | [Shop System](ShopSystem_EN.md) |
 | Group tags / blueprint templates / blueprints / crafting API | [Crafting System](CraftingSystem_EN.md) |
+| Group tags / equipment-group templates / slot lists / item limits / attribute bonuses / equip API | [Equipment System](EquipmentSystem_EN.md) |
+| Group tags / skill templates / skills / item skill references / four sources / learned-skill API | [Skill System](SkillSystem_EN.md) |
 | Attribute field type reference, retrieval / display / sort comparison | [Attribute System](AttributeSystem_EN.md) |
 | UI components and prefab authoring | [UI Component Guide](UIComponentGuide_EN.md) |
 | Architecture and design | [Architecture](Architecture_EN.md) |

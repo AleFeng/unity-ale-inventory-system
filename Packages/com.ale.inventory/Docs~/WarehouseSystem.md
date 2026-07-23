@@ -53,7 +53,7 @@
 | **取出功能标签** | 只允许携带这些标签的道具取出；空 = 不限制 |
 | **操作功能标签** | 限制可对仓库内道具执行的操作；空 = 不限制 |
 | **过滤标签** | 仓库 UI 中的功能标签过滤按钮（「全部」固定存在无需配置） |
-| 自动整理 | 勾选后每次道具变化自动按排序规则整理 |
+| 自动整理 | 勾选后每次道具变化自动按排序规则整理。**升降序的来源**：界面接了排序整理栏（`UiwSortToolbar`）时统一取排序栏当前方向；没接排序栏时，各条排序条件用自己配置的升 / 降序（1.6.0 修复——此前无排序栏一律按降序） |
 | 拖拽排序 | 勾选后允许玩家在 UI 中拖拽调整道具顺序 |
 | **整理列表** | 主排序规则；每项选排序字段 + 升降序 |
 | **整理优先级** | 次排序规则；主排序值相同时依次比较 |
@@ -202,9 +202,18 @@ string json = JsonUtility.ToJson(new SaveWrapper { inventories = save });
 // 读取：反序列化后在 Init 完成后调用
 var wrapper = JsonUtility.FromJson<SaveWrapper>(json);
 InventoryRuntimeManager.Instance.LoadSaveData(wrapper.inventories);
+
+// 开新游戏：清空全部仓库并重建为初始空态
+InventoryRuntimeManager.Instance.ResetAll();
 ```
 
-`RuntimeInventoryState` = `inventoryId` + `slots`（有序格子列表）。数据库中有但存档中没有的仓库保持空状态；存档中多余的仓库 ID 被忽略。
+`RuntimeInventoryState` = `inventoryId` + `slots`（有序格子列表）。
+
+> **`LoadSaveData` 为覆盖语义（1.6.0 起）**：先清空当前内存状态、按数据库重建所有仓库的空骨架
+> （固定容量仓库恢复预分配空槽），再叠加存档中的格子。因此——
+> **数据库中有、存档中没有**的仓库回到初始空态（不会残留上一局的内容）；
+> **存档中有、数据库中没有**的仓库 ID 仍会载入内存（查不到定义，按无限容量处理），不会被丢弃。
+> 契约与其余三个运行时管理器一致，见 [架构说明 - 存档契约](Architecture.md#子系统运行时管理器)。
 
 # 数据来源与加载
 

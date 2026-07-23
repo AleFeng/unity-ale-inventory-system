@@ -139,7 +139,7 @@ InventoryEditorWindow          メインウィンドウ + IInventoryEditorContex
 
 | クラス | 責務 |
 |----|------|
-| `AttributeFieldDrawer` | `EFieldType` に応じて単一の `AttributeValue` を描画（GUILayout パス + Rect パスの二重実装） |
+| `AttributeFieldDrawer` | `EFieldType` に応じて単一の `AttributeValue` を描画。GUILayout パスと Rect パスは**型ディスパッチの実装を共有**します（1.6.0 以前は並行して保守される 2 つの大きな switch でした） |
 | `AttributeDefinitionDrawer` | `AttributeDefinition` の完全な編集パネルを描画（Rect ベース、ReorderableList 用） |
 | `AttributeDefinitionListDrawer` | ドラッグ並べ替え付きの属性フィールド定義リスト（内部で `ReorderableList` を使用、drawElementCallback は全 Rect ベース） |
 
@@ -165,7 +165,7 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 - 初期化時にデータベースを `InventoryDataManager` に登録；
 - 定義済みの各倉庫に空の `RuntimeInventoryState`（スロットリスト）を作成；
 - ランタイム操作 `TryAddItem / TryRemoveItem / TryRemoveItemById / SortInventory` を提供；
-- `GetSaveData / LoadSaveData` インターフェースでゲームのセーブシステムと連携；
+- `GetSaveData / LoadSaveData / ResetAll` インターフェースでゲームのセーブシステムと連携（契約は下記「セーブ契約」）；
 - `OnInventoryChanged(inventoryId)` イベントを発行、UI 層が購読してリフレッシュ。
 
 `InventoryDataManager` の責務（純粋なデータクエリ、状態なし）：

@@ -72,7 +72,8 @@
 - **`InventoryDataManager`**（数据查询单例）：注册数据库、按 ID 查询道具 / 仓库 / 商店 / 蓝图 / 枚举类型等；支持从 `.asset`、JSON、二进制三种来源加载。查询走惰性构建的字典索引（O(1)），注册 / 注销数据库后自动失效重建。
 - **`InventoryRuntimeManager`**（MonoBehaviour 单例）：仓库格子状态、整理排序、存档、时间注入入口、覆盖式 UI 根节点 / Layer 配置（弹窗 / 悬停弹窗 / 拖拽幽灵图标等实例化后重新套用指定 Layer），并把数据库注册到 `InventoryDataManager`；含编辑器测试道具填充（`autoPopulateOnStart` / `testInventoryId` / `testItems`，`Init` 时机填入、仅数据不开 UI）与一键「添加所有配置表道具」（`addAllConfiguredItems` + `addAllItemCount`）。
 - **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager` / `SkillRuntimeManager`**（轻量单例）：交易 / 制作 / 装备 / 技能逻辑（装备已装备状态、技能已学状态均可存档，商店有交易进度存档）；技能展示集合另由 `SkillCollector` 按四种来源采集。
-- **导出**：`InventoryDtoMapper` → JSON / 二进制；对象引用以 AssetGUID 承载；可选 Addressable 异步加载。
+- **导出**：`InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部 20 个列表**（六大子系统的配置数据无一遗漏，格式版本 v6）；对象引用以 AssetGUID 承载；可选 Addressable 异步加载。v5 及更早导出的 `.bytes` 仍可导入。
+- **存档契约**：仓库 / 装备 / 商店 / 技能四个管理器统一实现 `IInventorySaveable<TState>`——`GetSaveData` 返回深拷贝、`LoadSaveData` 为**覆盖而非合并**、三者都不触发变更事件；非泛型的 `IInventorySaveable` 只含 `ResetAll`，供「开新游戏」一次遍历重置。
 
 ### UI 组件
 位于 `Runtime/UI/`，程序集 `Ale.Inventory.UI`，命名空间 `Ale.Inventory.Runtime.UI`。提供背包 / 商店 / 制作 / 装备 / 技能主界面与可复用的货币栏、过滤栏、排序栏、悬停弹窗、数字计数器、折叠页签等通用组件。各主界面均派生自 `UiwViewBase`：无参 `Open()` 为基类模板方法（激活面板），子类覆写实现各自打开逻辑；背包 / 装备 / 商店视图把目标 ID（`inventoryIds` / `groupId` / `shopId`）暴露到 Inspector，可预设默认值。
@@ -195,9 +196,12 @@ Item item = InventoryDataManager.Instance.GetItem("sword_01");
 InventoryRuntimeManager.Instance.TryAddItem("backpack", "sword_01", 1);
 bool has = InventoryRuntimeManager.Instance.HasItem("backpack", "sword_01");
 
-// 存档 / 读档
+// 存档 / 读档（LoadSaveData 为覆盖语义：存档中没有的仓库回到初始空态）
 var saveData = InventoryRuntimeManager.Instance.GetSaveData();
 InventoryRuntimeManager.Instance.LoadSaveData(saveData);
+
+// 开新游戏：清空全部运行时状态（固定容量仓库恢复预分配空槽）
+InventoryRuntimeManager.Instance.ResetAll();
 ```
 
 ### 6. 一键 Demo
@@ -213,7 +217,7 @@ InventorySystem/
 ├── Runtime/
 │   ├── Data/           数据模型（Item / Inventory / Shop / Crafting* / AttributeValue 等）
 │   ├── Manager/        InventoryDataManager / InventoryRuntimeManager / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager / SkillRuntimeManager / SkillCollector
-│   ├── Serialization/  DTO + JSON / 二进制序列化
+│   ├── Serialization/  DTO 定义 + 映射 / JSON / 二进制序列化（映射与二进制块按系统分部）
 │   ├── Assets/         资源加载抽象（直接加载）
 │   ├── Addressables/   Addressable 资源加载支持
 │   ├── Localization/   TMP 文本 / 字体本地化事件

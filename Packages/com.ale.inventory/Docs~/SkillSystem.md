@@ -172,6 +172,10 @@ string effect  = skill.GetAttributeValue<string>("效果");   // String / Text
 int    damage  = skill.GetAttributeValue<int>("伤害");      // 数值类型
 ```
 
+> **存档契约（1.6.0）**：本管理器实现 `IInventorySaveable<TState>`——`GetSaveData` 返回深拷贝、
+> `LoadSaveData` 为**覆盖而非合并**（存档中没有、内存里有的条目不会残留）、三个方法都**不触发**变更事件
+> （批量替换后由调用方自行刷新界面）。四个可存档管理器语义一致，见 [架构说明](Architecture.md#子系统运行时管理器)。
+
 - **`SkillRuntimeManager`**：仅维护「已学技能」这一可变状态，其余（名称 / 属性等）从技能定义读取。`Learn` / `Forget` / `ClearLearned` 发生变化时触发 `OnLearnedChanged(characterId)` 供 UI 刷新；存档单元为 `RuntimeLearnedSkillState`（角色 ID + 技能 ID 列表）。
 - **`SkillCollector`**：静态工具，无运行时状态。`Equipment` 遍历装备组每个槽位的已装备道具、`Inventory` 遍历仓库每个道具，读道具 `skillRefAttrId`（String / 数组）解析技能 ID；`Character` 读 `SkillRuntimeManager.GetLearnedSkills`；`InventoryDatabase` 取全部技能。
 

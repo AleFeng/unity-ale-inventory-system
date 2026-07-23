@@ -200,6 +200,11 @@ eq.LoadSaveData(save);                // restore on load
 eq.ResetAll();                        // clear (e.g. starting a new game)
 ```
 
+> **Save contract (1.6.0)**: this manager implements `IInventorySaveable<TState>` — `GetSaveData` returns a deep
+> copy, `LoadSaveData` **replaces rather than merges** (entries in memory but absent from the save do not survive),
+> and none of the three methods fires a change event (the caller refreshes the UI after a bulk swap). All four
+> saveable managers share these semantics — see [Architecture](Architecture_EN.md#subsystem-runtime-managers).
+
 - **Equip**: `Equip` first validates the limits and takes 1 item from the source warehouse; if the slot is already occupied, it returns the old item to the source warehouse (take before place, net occupancy unchanged; rolls back if it can't be returned, so no item is lost). When no source warehouse is provided, it only sets the slot (the old item is replaced directly, at the caller's own risk).
 - **Unequip**: `Unequip` returns the item to the specified target warehouse; if there's no room, it returns false and does not unequip. The UI's right-click unequip uses `UnequipToConfigured(groupId, slotId)` — from Index0 of the equipment group's "equipment warehouses" list, it finds the first warehouse with room; if none has room (or unconfigured with no fallback warehouse), it does not unequip and will not discard the item.
 - **Attribute bonuses**: `GetTotalBonuses`, for each equipment attribute field, aggregates across all equipped items, **recording differently depending on the source attribute's `AttributeValue.Type`**:

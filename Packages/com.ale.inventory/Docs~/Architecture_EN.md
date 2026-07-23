@@ -139,7 +139,7 @@ InventoryEditorWindow          Main window + IInventoryEditorContext implementat
 
 | Class | Responsibility |
 |----|------|
-| `AttributeFieldDrawer` | Draws a single `AttributeValue` by `EFieldType` (dual implementation: GUILayout path + Rect path) |
+| `AttributeFieldDrawer` | Draws a single `AttributeValue` by `EFieldType`. The GUILayout and Rect paths **share one type-dispatch implementation** (before 1.6.0 these were two large switches maintained in parallel) |
 | `AttributeDefinitionDrawer` | Draws the full edit panel of an `AttributeDefinition` (Rect-based, for ReorderableList) |
 | `AttributeDefinitionListDrawer` | An attribute field definition list with drag-reordering (uses `ReorderableList` internally, drawElementCallback fully Rect-based) |
 
@@ -165,7 +165,7 @@ InventoryRuntimeManager (MonoBehaviour singleton)
 - Registers the databases into `InventoryDataManager` on initialization;
 - Creates an empty `RuntimeInventoryState` (slot list) for each defined warehouse;
 - Provides the runtime operations `TryAddItem / TryRemoveItem / TryRemoveItemById / SortInventory`;
-- Provides `GetSaveData / LoadSaveData` interfaces to integrate with the game's save system;
+- Provides `GetSaveData / LoadSaveData / ResetAll` to integrate with the game's save system (contract under "Save contract" below);
 - Publishes the `OnInventoryChanged(inventoryId)` event for the UI layer to subscribe and refresh.
 
 `InventoryDataManager` responsibilities (pure data query, stateless):

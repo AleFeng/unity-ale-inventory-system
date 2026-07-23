@@ -75,7 +75,7 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
 | 6 サブシステム一体化 | アイテム / 倉庫 / ショップ / クラフト / 装備 / スキルが同じデータと属性システムを共有し、エントリ同士が相互参照します（例：装備アイテムに紐づくスキル、アイテム属性から取得するショップ価格）。 |
 | 統一された仮想スクロール UI | グリッドも順序リストも仮想スクロール（オブジェクトプール + 可視セルのみ描画）。差分による増分リフレッシュ、生成レート制限（`spawnPerSecond`）、セルごとのフェードインで大量のエントリでも快適です。 |
 | ランタイムマネージャー | `InventoryDataManager`（クエリ）に加え、倉庫 / ショップ / クラフト / 装備 / スキルそれぞれの専用ランタイムマネージャー。装備・スキルの状態やショップの進捗はいずれもセーブ可能です。 |
-| 一方向エクスポート | `InventoryDtoMapper` → JSON / バイナリ。オブジェクト参照は AssetGUID として保持され、Addressables 経由で非同期読み込みも可能です。 |
+| 一方向エクスポート | `InventoryDtoMapper` → JSON / バイナリ。**データベースの設定データを全て網羅**（6 サブシステムの 20 リスト）。オブジェクト参照は AssetGUID として保持され、Addressables 経由で非同期読み込みも可能です。 |
 | 3 つのオプションマクロ | TextMeshPro（`IS_TMP`）/ Unity Localization（`IS_LOCALIZATION`）/ Unity Addressables（`IS_ADDRESSABLE`）。いずれもウェルカムウィンドウからワンクリックで切り替え可能（対応パッケージの導入有無も検出）。パッケージ本体はハード依存ゼロ。 |
 | ローカライズツール | `InventoryDatabase` 向けの多言語テーブルをワンクリックで生成 / 関連付けし、データベース内のすべての `Text` フィールドを走査してキーを自動生成、エントリへ書き戻します（プログレスバー + ログ + キャンセル対応）。 |
 | ウェルカムウィンドウのウィザード | データ作成、エディタ / ツールウィンドウの起動、マクロ切り替え、そして「完全に動作するサンプルをワンクリック生成」（データベース + 全 UI プレハブ + マネージャー）を一箇所にまとめた入口です。 |
@@ -108,7 +108,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 これで `main` の最新コミットが入ります。**バージョンを固定するには、URL の末尾に `#<tag>` を付けます**（必ず `?path=` の後ろに）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.5.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.6.0
 ```
 
 利用可能なタグは [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) を参照してください。
@@ -137,6 +137,8 @@ Project パネルで右クリック > Create > Inventory System > Inventory Data
 ### 3. エクスポート（任意）
 ツールバーの「JSON エクスポート」または「バイナリエクスポート」を使います（空でない ID 重複がある間はボタンが無効。ID が空白のエントリはエクスポート時に自動でスキップされます）。エディタは常に ScriptableObject 上で動作し、エクスポートは一方向のフォーマットです。
 
+> **1.6.0（フォーマット v6）** より、エクスポートはデータベースの設定データを**すべて**網羅します —— 6 サブシステムの 20 リスト全部です。それ以前はアイテムシステムの 4 項目のみで、残りは黙って捨てられていました。
+
 ### 4. ランタイムのセットアップ
 シーンに GameObject を作成し、`InventoryRuntimeManager` コンポーネントを追加して、`.asset` を `databases` 配列にドラッグします。ゲーム開始時にデータベースが自動登録され、各倉庫が空の状態で初期化されます。
 
@@ -153,6 +155,9 @@ bool has = InventoryRuntimeManager.Instance.HasItem("backpack", "sword_01");
 // セーブ / ロード
 var saveData = InventoryRuntimeManager.Instance.GetSaveData();
 InventoryRuntimeManager.Instance.LoadSaveData(saveData);
+
+// ニューゲーム：ランタイム状態をすべてクリア
+InventoryRuntimeManager.Instance.ResetAll();
 ```
 
 ### 5. ワンクリック Demo

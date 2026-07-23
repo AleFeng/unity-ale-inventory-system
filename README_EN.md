@@ -75,7 +75,7 @@ Almost every game needs an "items + inventory + shop + crafting + equipment + sk
 | Six subsystems, unified | Item / Warehouse / Shop / Crafting / Equipment / Skill share the same data and attribute system, and entries cross-reference each other (e.g. skills attached to equippable items, shop prices sourced from item attributes). |
 | Unified virtual-scroll UI | Both grid and ordered lists are virtual-scrolling (object pooling + only visible cells rendered); incremental diff refresh, spawn rate limiting (`spawnPerSecond`), and per-cell fade-in keep huge lists smooth. |
 | Runtime managers | `InventoryDataManager` (queries) plus dedicated runtime managers for Warehouse / Shop / Crafting / Equipment / Skill — equipment & skill state and shop progress can all be saved. |
-| One-way export | `InventoryDtoMapper` → JSON / binary; object references are carried as AssetGUIDs and can be loaded asynchronously via Addressables. |
+| One-way export | `InventoryDtoMapper` → JSON / binary, **covering every piece of database config** (all 20 lists across the six subsystems); object references are carried as AssetGUIDs and can be loaded asynchronously via Addressables. |
 | Three optional macros | TextMeshPro (`IS_TMP`) / Unity Localization (`IS_LOCALIZATION`) / Unity Addressables (`IS_ADDRESSABLE`), each toggled from the Welcome Window (which also detects whether the corresponding package is installed); the package itself has zero hard dependencies. |
 | Localization tooling | One click to generate / link localization tables for an `InventoryDatabase`, then walk every `Text` field in the database to auto-generate keys and write them back to entries (progress bar + log + cancel). |
 | Welcome Window wizard | A single entry point: create data, open the editor / tool windows, toggle macros, and "generate a complete runnable sample in one click" (database + all UI prefabs + managers). |
@@ -108,7 +108,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 This installs the latest commit on `main`. **To pin a version, append `#<tag>` to the very end of the URL** (it must come after `?path=`):
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.5.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.6.0
 ```
 
 See [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) for available tags.
@@ -137,6 +137,8 @@ Right-click in the Project panel > Create > Inventory System > Inventory Databas
 ### 3. Export (Optional)
 Use the toolbar's "Export JSON" or "Export Binary" (the buttons are disabled while any non-empty duplicate ID exists; entries with a blank ID are skipped on export). The editor always works on ScriptableObjects, with export being a one-way format.
 
+> As of **1.6.0 (format v6)** the export covers **all** of the database's config data — all 20 lists across the six subsystems. Earlier versions exported only the four Item System lists and silently dropped the rest.
+
 ### 4. Runtime Setup
 Create a GameObject in your scene, add the `InventoryRuntimeManager` component, and drag the `.asset` into the `databases` array. On game start the database is registered automatically and each warehouse is initialized to an empty state.
 
@@ -150,9 +152,12 @@ Item item = InventoryDataManager.Instance.GetItem("sword_01");
 InventoryRuntimeManager.Instance.TryAddItem("backpack", "sword_01", 1);
 bool has = InventoryRuntimeManager.Instance.HasItem("backpack", "sword_01");
 
-// Save / load
+// Save / load (LoadSaveData replaces: inventories absent from the save return to their initial empty state)
 var saveData = InventoryRuntimeManager.Instance.GetSaveData();
 InventoryRuntimeManager.Instance.LoadSaveData(saveData);
+
+// New game: clear all runtime state
+InventoryRuntimeManager.Instance.ResetAll();
 ```
 
 ### 5. One-Click Demo

@@ -187,6 +187,10 @@ ShopRuntimeManager.Instance.LoadSaveData(save);
 ShopRuntimeManager.Instance.ResetAll();
 ```
 
+> **存档契约（1.6.0）**：本管理器实现 `IInventorySaveable<TState>`——`GetSaveData` 返回深拷贝、
+> `LoadSaveData` 为**覆盖而非合并**（存档中没有、内存里有的条目不会残留）、三个方法都**不触发**变更事件
+> （批量替换后由调用方自行刷新界面）。四个可存档管理器语义一致，见 [架构说明](Architecture.md#子系统运行时管理器)。
+
 > **进度以稳定 `guid` 定位（1.5.0）**：每条交易进度按「商品组 `guid` + 商品 `guid`」记录，
 > 这两个 `guid` 在条目创建时分配、此后不变——因此**组改名、商品或商品组被拖拽重排都不会让老存档错位**。
 > 1.4.0 及更早的数据没有该字段，用配置编辑器打开数据库时会自动补发（记得**保存资产**）；

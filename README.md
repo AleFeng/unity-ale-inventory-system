@@ -73,7 +73,7 @@ Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件
 | 六大子系统一体化 | 道具 / 仓库 / 商店 / 制作 / 装备 / 技能，共享同一份数据与属性系统，条目互相引用（如技能挂在装备道具上、商店价格取自道具属性）。 |
 | 统一虚拟滚动 UI | 网格与顺序列表均为虚拟滚动（对象池 + 仅渲染可见区）；增量差异刷新、生成限速（`spawnPerSecond`）、逐格浮现，海量条目不卡顿。 |
 | 运行时管理器 | `InventoryDataManager`（查询）+ 仓库 / 商店 / 制作 / 装备 / 技能各自的运行时管理器，装备 / 技能状态与商店进度均可存档。 |
-| 单向导出 | `InventoryDtoMapper` → JSON / 二进制；对象引用以 AssetGUID 承载，可选经 Addressable 异步加载。 |
+| 单向导出 | `InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部配置数据**（六大子系统 20 个列表）；对象引用以 AssetGUID 承载，可选经 Addressable 异步加载。 |
 | 三个可选宏 | TextMeshPro（`IS_TMP`）/ Unity Localization（`IS_LOCALIZATION`）/ Unity Addressables（`IS_ADDRESSABLE`），欢迎窗口一键开关并检测对应包是否安装，插件包本身零硬依赖。 |
 | 本地化工具 | 一键为 `InventoryDatabase` 生成 / 关联多语言表，遍历全库 `Text` 字段自动生成中文 Key 并回填条目（进度条 + 日志 + 取消）。 |
 | 欢迎窗口向导 | 统一入口：创建数据、打开编辑器 / 工具窗口、宏开关、以及「一键生成完整可运行示例」（数据库 + 全部 UI 预制体 + 管理器）。 |
@@ -106,7 +106,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 这样装的是 `main` 的最新提交。**要固定版本，把 `#<tag>` 加在整条 URL 的最末尾**（必须在 `?path=` 之后）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.5.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.6.0
 ```
 
 可用的 tag 见 [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases)。
@@ -135,6 +135,8 @@ Project 面板右键 > Create > Inventory System > Inventory Database
 ### 3. 导出（可选）
 工具栏「导出 JSON」或「导出二进制」（存在非空重复 ID 时按钮禁用；空白 ID 条目导出时自动跳过）。编辑器始终在 ScriptableObject 上工作，导出为单向格式。
 
+> 自 **1.6.0（格式 v6）** 起，导出覆盖数据库的**全部**配置数据——六大子系统的 20 个列表都在内。此前只导出道具系统四项，其余静默丢弃。
+
 ### 4. 运行时挂载
 在场景中新建 GameObject，添加 `InventoryRuntimeManager` 组件，把 `.asset` 拖入 `databases` 数组。游戏启动时自动注册数据库并初始化各仓库空状态。
 
@@ -148,9 +150,12 @@ Item item = InventoryDataManager.Instance.GetItem("sword_01");
 InventoryRuntimeManager.Instance.TryAddItem("backpack", "sword_01", 1);
 bool has = InventoryRuntimeManager.Instance.HasItem("backpack", "sword_01");
 
-// 存档 / 读档
+// 存档 / 读档（LoadSaveData 为覆盖语义：存档中没有的仓库回到初始空态）
 var saveData = InventoryRuntimeManager.Instance.GetSaveData();
 InventoryRuntimeManager.Instance.LoadSaveData(saveData);
+
+// 开新游戏：清空全部运行时状态
+InventoryRuntimeManager.Instance.ResetAll();
 ```
 
 ### 5. 一键 Demo
