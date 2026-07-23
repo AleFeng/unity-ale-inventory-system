@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace Ale.Inventory.Editor
@@ -13,7 +12,7 @@ namespace Ale.Inventory.Editor
     ///     1. 名称（<see cref="EFieldType.Text"/>：排序下拉显示名，纯文本 fallback + 可选本地化引用）
     ///     2. 忽略ID（排序时跳过的条目 ID 列表，可拖拽重排、手动输入）
     /// </summary>
-    public class SortOptionPanel
+    public class SortOptionPanel : EditorMasterListPanel<SortOption>
     {
         // ── 字段名 → 显示名 ──────────────────────────────────────────────────────────
         private static string GetFieldDisplayName(string field)
@@ -24,11 +23,6 @@ namespace Ale.Inventory.Editor
         }
 
         // ── 主列表 ReorderableList 状态 ────────────────────────────────────────────
-        private ReorderableList         _masterList;
-        private List<SortOption>        _boundList;
-        private int                     _selectedIndex = -1;
-        private IInventoryEditorContext _masterCtx;
-
         // ── 忽略ID 列表的拖拽重排状态 ──────────────────────────────────────────────
         private readonly EditorReorderableDrag _ignoreDrag = new EditorReorderableDrag("SortOptionIgnoreDrag");
 
@@ -40,95 +34,45 @@ namespace Ale.Inventory.Editor
             fontSize = 11
         };
 
-        // ── 主列表 ────────────────────────────────────────────────────────────────
-
         // 上次执行 RebuildSortOptions 时「排序字段来源」的签名；-1 = 尚未同步过。
-        // 每帧只算这个签名（无分配的整数哈希），签名不变说明重建必为空操作，直接跳过。
         private int _lastSourceSignature = -1;
 
+        #region 主列表配置
+
+        protected override List<SortOption> GetList(InventoryDatabase db) => db.SortOptions;
+        protected override string Noun => "整理选项";
+        protected override string RowLabel(SortOption so) => GetFieldDisplayName(so.field);
+
+        // 整理选项由 RebuildSortOptions 依数据源自动产出，不可手动增删 / 重排。
+        protected override bool Draggable => false;
+        protected override bool CanAdd    => false;
+        protected override bool CanDelete => false;
+
+        protected override string HeaderHelp       => "列表包含所有可用的排序字段，不可手动增删。";
+        protected override string EmptyPlaceholder => "（暂无排序字段，请先添加道具模板属性或功能标签）";
+
         /// <summary>
-        /// 绘制主列表（左侧面板），返回当前选中索引。
-        /// 按需执行 <see cref="InventoryDatabase.RebuildSortOptions"/>，保证列表与模板数据保持同步。
+        /// 按需同步：RebuildSortOptions 的产出完全由「道具模板属性 + 功能标签属性 +
+        /// 整理选项 schema」决定，故先算一个覆盖这三者的签名；签名不变则重建必为空操作。
+        /// （此前是每次 OnGUI 都无条件重建一次——含遍历、多次分配与一次排序。）
         /// </summary>
-        public int DrawMasterList(IInventoryEditorContext ctx, int selectedIndex)
+        protected override void BeforeDrawList(IInventoryEditorContext ctx)
         {
-            var db   = ctx.Database;
-            _masterCtx = ctx;
-
-            // 按需同步：RebuildSortOptions 的产出完全由「道具模板属性 + 功能标签属性 +
-            // 整理选项 schema」决定，故先算一个覆盖这三者的签名；签名不变则重建必为空操作。
-            // （此前是每次 OnGUI 都无条件重建一次——含遍历、多次分配与一次排序。）
+            var db = ctx.Database;
             int signature = ComputeSourceSignature(db);
-            if (signature != _lastSourceSignature)
-            {
-                _lastSourceSignature = signature;
+            if (signature == _lastSourceSignature) return;
 
-                int prevCount = db.SortOptions.Count;
-                db.RebuildSortOptions();
-                if (db.SortOptions.Count != prevCount)
-                    ctx.MarkDirty();
-            }
-
-            var list = db.SortOptions;
-
-            if (_masterList == null || !ReferenceEquals(_boundList, list))
-            {
-                _selectedIndex = Mathf.Clamp(selectedIndex, -1, list.Count - 1);
-                BuildMasterList(list);
-            }
-            else
-            {
-                int clamped = Mathf.Clamp(selectedIndex, -1, list.Count - 1);
-                if (_selectedIndex != clamped)
-                {
-                    _selectedIndex    = clamped;
-                    _masterList.index = clamped;
-                }
-            }
-
-            // ── 标题栏（只读，无添加按钮）─────────────────────────────────────
-            EditorGUILayout.LabelField("整理选项", InventoryEditorStyles.Header);
-            EditorGUILayout.HelpBox("列表包含所有可用的排序字段，不可手动增删。", MessageType.None);
-
-            if (list.Count == 0)
-            {
-                EditorGUILayout.LabelField("（暂无排序字段，请先添加道具模板属性或功能标签）",
-                    InventoryEditorStyles.Placeholder);
-            }
-            else
-            {
-                _masterList.DoLayoutList();
-            }
-
-            return _selectedIndex;
+            _lastSourceSignature = signature;
+            int prevCount = db.SortOptions.Count;
+            db.RebuildSortOptions();
+            if (db.SortOptions.Count != prevCount)
+                ctx.MarkDirty();
         }
 
-        private void BuildMasterList(List<SortOption> list)
-        {
-            _boundList  = list;
-            _masterList = new ReorderableList(list, typeof(SortOption),
-                draggable: false, displayHeader: false,
-                displayAddButton: false, displayRemoveButton: false);
+        protected override void OnInvalidate() => _lastSourceSignature = -1;   // 换库 / Undo-Redo 后强制重新同步一次
 
-            _masterList.elementHeight = 22f;
-            _masterList.index         = _selectedIndex;
+        #endregion
 
-            _masterList.drawElementBackgroundCallback = (rect, index, active, focused) =>
-            {
-                if (active)
-                    InventoryEditorStyles.DrawRowBackground(rect, InventoryEditorStyles.SelectedColor);
-            };
-
-            _masterList.drawElementCallback = (rect, index, active, focused) =>
-            {
-                if (index < 0 || index >= list.Count) return;
-                float cy = rect.y + (rect.height - EditorGUIUtility.singleLineHeight) * 0.5f;
-                GUI.Label(new Rect(rect.x + 4, cy, rect.width - 4, EditorGUIUtility.singleLineHeight),
-                    GetFieldDisplayName(list[index].field));
-            };
-
-            _masterList.onSelectCallback = rl => _selectedIndex = rl.index;
-        }
 
         // ── Inspector ─────────────────────────────────────────────────────────────
 
@@ -195,14 +139,6 @@ namespace Ale.Inventory.Editor
             });
         }
 
-        /// <summary>数据库切换或 Undo/Redo 时调用，清空所有缓存列表。</summary>
-        public void Invalidate()
-        {
-            _masterList          = null;
-            _boundList           = null;
-            _selectedIndex       = -1;
-            _lastSourceSignature = -1;   // 换库 / Undo-Redo 后强制重新同步一次
-        }
 
         /// <summary>
         /// 计算「排序字段来源」的签名：覆盖 <see cref="InventoryDatabase.RebuildSortOptions"/>

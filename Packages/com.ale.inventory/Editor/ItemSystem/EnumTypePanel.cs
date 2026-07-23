@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
-using UnityEditorInternal;
+using UnityEditorInternal;   // 枚举项列表仍自持一个 ReorderableList（主列表已下沉基类）
 using UnityEngine;
 
 namespace Ale.Inventory.Editor
@@ -15,15 +15,8 @@ namespace Ale.Inventory.Editor
     ///     3. 枚举项列表（可重排，名称可编辑，值只读）
     ///     4. 选中枚举项的属性值编辑区
     /// </summary>
-    public class EnumTypePanel
+    public class EnumTypePanel : EditorMasterListPanel<EnumType>
     {
-        // ── 主列表 ReorderableList 状态 ────────────────────────────────────────────
-        private ReorderableList         _masterList;
-        private List<EnumType>          _boundMasterList;
-        private int                     _selectedIndex      = -1;
-        private int                     _pendingDeleteIndex = -1;
-        private IInventoryEditorContext _masterCtx;
-
         // ── 枚举项列表 ReorderableList 状态 ───────────────────────────────────────
         private ReorderableList         _itemList;
         private EnumType                _boundEnum;
@@ -41,101 +34,26 @@ namespace Ale.Inventory.Editor
             fontSize = 11
         };
 
-        // ── 主列表 ────────────────────────────────────────────────────────────────
+        #region 主列表配置
 
-        public int DrawMasterList(IInventoryEditorContext ctx, int selectedIndex)
+        protected override List<EnumType> GetList(InventoryDatabase db) => db.EnumTypes;
+        protected override string Noun => "枚举类型";
+        protected override string RowLabel(EnumType e) => $"{e.name}  ({e.items.Count})";
+
+        protected override EnumType CreateNew(InventoryDatabase db, List<EnumType> list)
+            => new EnumType("新枚举");
+
+        protected override void OnInvalidate()
         {
-            var db   = ctx.Database;
-            var list = db.EnumTypes;
-            _masterCtx = ctx;
-
-            if (_masterList == null || !ReferenceEquals(_boundMasterList, list))
-            {
-                _selectedIndex = Mathf.Clamp(selectedIndex, -1, list.Count - 1);
-                BuildMasterList(list);
-            }
-            else
-            {
-                int clamped = Mathf.Clamp(selectedIndex, -1, list.Count - 1);
-                if (_selectedIndex != clamped)
-                {
-                    _selectedIndex    = clamped;
-                    _masterList.index = clamped;
-                }
-            }
-
-            // ── 标题栏 + 添加按钮 ──────────────────────────────────────────────
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("枚举类型", InventoryEditorStyles.Header);
-            if (GUILayout.Button("+", GUILayout.Width(24)))
-            {
-                ctx.RecordUndo("添加枚举类型");
-                list.Add(new EnumType("新枚举"));
-                ctx.MarkDirty();
-                _selectedIndex    = list.Count - 1;
-                _masterList.index = _selectedIndex;
-            }
-            EditorGUILayout.EndHorizontal();
-
-            _masterList.DoLayoutList();
-
-            // ── 延迟删除 ──────────────────────────────────────────────────────
-            if (_pendingDeleteIndex >= 0)
-            {
-                int di = _pendingDeleteIndex;
-                _pendingDeleteIndex = -1;
-                if (di < list.Count)
-                {
-                    ctx.RecordUndo("删除枚举类型");
-                    list.RemoveAt(di);
-                    ctx.MarkDirty();
-                    _selectedIndex    = Mathf.Clamp(_selectedIndex, -1, list.Count - 1);
-                    _masterList.index = _selectedIndex;
-                }
-            }
-
-            return _selectedIndex;
+            // 枚举项列表缓存
+            _itemList          = null;
+            _boundEnum         = null;
+            _selectedItemIndex = -1;
+            // 属性字段定义列表缓存
+            _attrDefsDrawer.Invalidate();
         }
 
-        private void BuildMasterList(List<EnumType> list)
-        {
-            _boundMasterList = list;
-            _masterList = new ReorderableList(list, typeof(EnumType),
-                draggable: true, displayHeader: false,
-                displayAddButton: false, displayRemoveButton: false);
-
-            _masterList.elementHeight = 22f;
-            _masterList.index         = _selectedIndex;
-
-            _masterList.drawElementBackgroundCallback = (rect, index, active, focused) =>
-            {
-                if (active)
-                    InventoryEditorStyles.DrawRowBackground(rect, InventoryEditorStyles.SelectedColor);
-            };
-
-            _masterList.drawElementCallback = (rect, index, active, focused) =>
-            {
-                if (index < 0 || index >= list.Count) return;
-                var e    = list[index];
-                float cy = rect.y + (rect.height - EditorGUIUtility.singleLineHeight) * 0.5f;
-
-                var delRect   = new Rect(rect.xMax - 22, cy, 20f, EditorGUIUtility.singleLineHeight);
-                var labelRect = new Rect(rect.x, cy,
-                    rect.xMax - 22 - rect.x - 4, EditorGUIUtility.singleLineHeight);
-                GUI.Label(labelRect, $"{e.name}  ({e.items.Count})");
-
-                if (GUI.Button(delRect, "✕", EditorStyles.miniButton))
-                    _pendingDeleteIndex = index;
-            };
-
-            _masterList.onSelectCallback = rl => _selectedIndex = rl.index;
-
-            _masterList.onReorderCallback = _ =>
-            {
-                _masterCtx.RecordUndo("调整枚举类型顺序");
-                _masterCtx.MarkDirty();
-            };
-        }
+        #endregion
 
         // ── Inspector ─────────────────────────────────────────────────────────────
 
@@ -274,20 +192,5 @@ namespace Ale.Inventory.Editor
             };
         }
 
-        /// <summary>数据库切换、外部重置或 Undo/Redo 时调用，清空所有缓存列表。</summary>
-        public void Invalidate()
-        {
-            // 主列表缓存
-            _masterList         = null;
-            _boundMasterList    = null;
-            _selectedIndex      = -1;
-            _pendingDeleteIndex = -1;
-            // 枚举项列表缓存
-            _itemList           = null;
-            _boundEnum          = null;
-            _selectedItemIndex  = -1;
-            // 属性字段定义列表缓存
-            _attrDefsDrawer.Invalidate();
-        }
     }
 }

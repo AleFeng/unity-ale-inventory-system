@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 
 namespace Ale.Inventory.Editor
@@ -10,126 +9,22 @@ namespace Ale.Inventory.Editor
     /// 功能标签面板：左侧主列表（功能标签行，可拖拽排序）+ 右侧 Inspector（名称、说明、属性字段定义列表）。
     /// 功能标签的顺序会影响「整理列表」中「功能标签」的排序依据。
     /// </summary>
-    public class FunctionTagPanel
+    public class FunctionTagPanel : EditorMasterListPanel<FunctionTag>
     {
-        // ── 主列表 ReorderableList 状态 ────────────────────────────────────────────
-        private ReorderableList         _masterList;
-        private List<FunctionTag>       _boundList;
-        private int                     _selectedIndex      = -1;
-        private int                     _pendingDeleteIndex = -1;
-        private IInventoryEditorContext _masterCtx;
-
-        // ── 属性字段定义列表绘制器（实例持有，保持拖拽排序缓存）──────────────────────
         private readonly AttributeDefinitionListDrawer _attrDefsDrawer = new AttributeDefinitionListDrawer();
 
-        // ── 主列表 ────────────────────────────────────────────────────────────────
+        #region 主列表配置
 
-        public int DrawMasterList(IInventoryEditorContext ctx, int selectedIndex)
-        {
-            var db   = ctx.Database;
-            var list = db.FunctionTags;
-            _masterCtx = ctx;
+        protected override List<FunctionTag> GetList(InventoryDatabase db) => db.FunctionTags;
+        protected override string Noun => "功能标签";
+        protected override string RowLabel(FunctionTag t) => t.name;
 
-            if (_masterList == null || !ReferenceEquals(_boundList, list))
-            {
-                _selectedIndex = Mathf.Clamp(selectedIndex, -1, list.Count - 1);
-                BuildMasterList(list);
-            }
-            else
-            {
-                // 外部同步：当调用方（Tab）重置了索引（如选中了中间列的条目），
-                // 以调用方的值为准，避免面板返回旧索引触发错误的 ActivateEntity。
-                int clamped = Mathf.Clamp(selectedIndex, -1, list.Count - 1);
-                if (_selectedIndex != clamped)
-                {
-                    _selectedIndex    = clamped;
-                    _masterList.index = clamped;
-                }
-            }
+        protected override FunctionTag CreateNew(InventoryDatabase db, List<FunctionTag> list)
+            => new FunctionTag("新标签");
 
-            // ── 标题栏 + 添加按钮 ──────────────────────────────────────────────
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("功能标签", InventoryEditorStyles.Header);
-            if (GUILayout.Button("+", GUILayout.Width(24)))
-            {
-                ctx.RecordUndo("添加功能标签");
-                list.Add(new FunctionTag("新标签"));
-                ctx.MarkDirty();
-                _selectedIndex    = list.Count - 1;
-                if (_masterList != null) _masterList.index = _selectedIndex;
-            }
-            EditorGUILayout.EndHorizontal();
+        protected override void OnInvalidate() => _attrDefsDrawer.Invalidate();
 
-            if (_masterList != null)
-            {
-                _masterList.DoLayoutList();
-
-                // ── 延迟删除（在 DoLayoutList 完成后处理，避免在回调中修改集合）──────
-                if (_pendingDeleteIndex >= 0)
-                {
-                    int di = _pendingDeleteIndex;
-                    _pendingDeleteIndex = -1;
-                    if (di < list.Count)
-                    {
-                        ctx.RecordUndo("删除功能标签");
-                        list.RemoveAt(di);
-                        ctx.MarkDirty();
-                        _selectedIndex = Mathf.Clamp(_selectedIndex, -1, list.Count - 1);
-                        _masterList.index = _selectedIndex;
-                    }
-                }
-            }
-
-            return _selectedIndex;
-        }
-
-        private void BuildMasterList(List<FunctionTag> list)
-        {
-            _boundList  = list;
-            _masterList = new ReorderableList(list, typeof(FunctionTag),
-                draggable: true, displayHeader: false,
-                displayAddButton: false, displayRemoveButton: false);
-
-            _masterList.elementHeight = 22f;
-            _masterList.index         = _selectedIndex;
-
-            _masterList.drawElementBackgroundCallback = (rect, _, active, _) =>
-            {
-                if (active)
-                    InventoryEditorStyles.DrawRowBackground(rect, InventoryEditorStyles.SelectedColor);
-            };
-
-            _masterList.drawElementCallback = (rect, index, _, _) =>
-            {
-                if (index < 0 || index >= list.Count) return;
-                var t      = list[index];
-                float cy   = rect.y + (rect.height - EditorGUIUtility.singleLineHeight) * 0.5f;
-                var delRect   = new Rect(rect.xMax - 22, cy, 20, EditorGUIUtility.singleLineHeight);
-                var labelRect = new Rect(rect.x, cy, rect.xMax - 22 - rect.x - 4,
-                    EditorGUIUtility.singleLineHeight);
-                GUI.Label(labelRect, t.name);
-                if (GUI.Button(delRect, "✕", EditorStyles.miniButton))
-                    _pendingDeleteIndex = index;
-            };
-
-            _masterList.onSelectCallback = rl => _selectedIndex = rl.index;
-
-            _masterList.onReorderCallback = _ =>
-            {
-                _masterCtx.RecordUndo("调整功能标签顺序");
-                _masterCtx.MarkDirty();
-            };
-        }
-
-        /// <summary>数据库切换或外部重置时调用，清空主列表缓存。</summary>
-        public void Invalidate()
-        {
-            _masterList         = null;
-            _boundList          = null;
-            _selectedIndex      = -1;
-            _pendingDeleteIndex = -1;
-            _attrDefsDrawer.Invalidate();
-        }
+        #endregion
 
         // ── Inspector ────────────────────────────────────────────────────────────
 
