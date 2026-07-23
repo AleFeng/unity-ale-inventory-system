@@ -33,12 +33,14 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>过滤变化事件。参数为标签名，<c>null</c> = 全部。</summary>
         public event Action<string> OnFilterChanged;
 
-        private readonly List<Button> _buttons   = new List<Button>();
-        private readonly List<string> _tagValues = new List<string>(); // 与 _buttons 平行；null = 全部
-        private string _activeFilter;
+        // 页签实例 / 取值 / 显示名 / 高亮由 UiwTabStrip 统一维护（与仓库 / 商店 / 蓝图三处页签同源）。
+        private readonly UiwTabStrip<Button, string> _tabStrip = new UiwTabStrip<Button, string>();
+
+        private readonly List<string> _tagValues = new List<string>();   // null = 全部
+        private readonly List<string> _tagLabels = new List<string>();   // 与 _tagValues 平行
 
         /// <summary>当前激活的过滤标签（null = 全部）。</summary>
-        public string ActiveFilter => _activeFilter;
+        public string ActiveFilter => _tabStrip.SelectedValue;
 
         /// <summary>
         /// 重建过滤按钮：可选「全部」首位 + 各标签。
@@ -50,69 +52,50 @@ namespace Ale.Inventory.Runtime.UI
         /// <param name="autoApply">是否在重建后立即按默认选中项触发一次 <see cref="OnFilterChanged"/>。</param>
         public void SetFilters(IReadOnlyList<string> tagNames, bool showAll = true, bool autoApply = true)
         {
-            Clear();
-            if (!filterButtonPrefab || !filterContainer) return;
+            _tagValues.Clear();
+            _tagLabels.Clear();
 
-            if (showAll) AddButton(allLabel, null);
+            if (showAll) { _tagValues.Add(null); _tagLabels.Add(allLabel); }
             if (tagNames != null)
                 foreach (var tag in tagNames)
-                    AddButton(tag, tag);
+                {
+                    _tagValues.Add(tag);
+                    _tagLabels.Add(tag);
+                }
 
-            // 默认选中项：有「全部」→ null（全部）；否则取第一个标签；都没有 → null（不过滤）。
-            string defaultFilter = showAll
-                ? null
-                : (_tagValues.Count > 0 ? _tagValues[0] : null);
+            _tabStrip.Configure(filterButtonPrefab, filterContainer, BindButton,
+                (_, tagName) => OnFilterChanged?.Invoke(tagName));
 
-            _activeFilter = defaultFilter;
-            UpdateHighlights();
-            if (autoApply) ApplyFilter(defaultFilter, true);
+            // 默认选中首项：有「全部」→ 首项即「全部」(null)；否则为第一个标签。
+            _tabStrip.SetTabs(_tagValues, _tagLabels, selectedIndex: 0, notify: autoApply);
+
+            if (!autoApply) return;
+
+            // 无任何页签（不显示「全部」且标签列表为空 / 未配置预制体）：页签条不会回调，
+            // 此处补发一次「不过滤」通知，与原实现一致——否则宿主收不到初始过滤状态。
+            if (_tabStrip.Count == 0) { OnFilterChanged?.Invoke(null); return; }
+
+            // 重建后把焦点放到默认选中的按钮上。
+            _tabStrip.TabAt(_tabStrip.SelectedIndex)?.Select();
         }
 
         /// <summary>销毁所有过滤按钮。</summary>
         public void Clear()
         {
-            foreach (var btn in _buttons)
-                if (btn) Destroy(btn.gameObject);
-            _buttons.Clear();
+            _tabStrip.Clear();
             _tagValues.Clear();
-            _activeFilter = null;
+            _tagLabels.Clear();
         }
 
-        private void AddButton(string display, string tagName)
+        // 写入按钮文本与选中高亮（normalColor）。
+        private void BindButton(Button btn, string tagName, string display, bool selected)
         {
-            var btn = Instantiate(filterButtonPrefab, filterContainer);
             var txt = btn.GetComponentInChildren<InventoryText>();
             if (txt) txt.text = display;
 
-            string captured = tagName;
-            btn.onClick.AddListener(() => ApplyFilter(captured));
-            _buttons.Add(btn);
-            _tagValues.Add(tagName);
-        }
-
-        private void ApplyFilter(string tagName, bool forceSelectBtn = false)
-        {
-            _activeFilter = tagName;
-            var selected = UpdateHighlights();
-            OnFilterChanged?.Invoke(tagName);
-            if (forceSelectBtn) selected?.Select();
-        }
-
-        // 按 _activeFilter 更新所有按钮 normalColor，返回选中的按钮。
-        private Button UpdateHighlights()
-        {
-            Button selected = null;
-            for (int i = 0; i < _buttons.Count; i++)
-            {
-                var btn = _buttons[i];
-                if (!btn) continue;
-                bool active = _tagValues[i] == _activeFilter;
-                var colors = btn.colors;
-                colors.normalColor = active ? activeColor : inactiveColor;
-                btn.colors = colors;
-                if (active) selected = btn;
-            }
-            return selected;
+            var colors = btn.colors;
+            colors.normalColor = selected ? activeColor : inactiveColor;
+            btn.colors = colors;
         }
     }
 }

@@ -40,7 +40,7 @@ namespace Ale.Inventory.Runtime.UI
                 InventoryRuntimeManager.Instance.OnInventoryChanged += OnInventoryChanged;
 
             BuildTemplateTabs();
-            if (_templateTabs.Count > 0)
+            if (_tabStrip.Count > 0)
                 SwitchTemplate(0);
             else
             {
@@ -110,46 +110,49 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("「全部」模板页签显示名。")]
         public string          allTemplateLabel = "全部";
 
-        private readonly List<UiwInventoryTab> _templateTabs = new List<UiwInventoryTab>();
-        private readonly List<string>          _templateRefs = new List<string>(); // 与 _templateTabs 平行；null = 全部
-        // private int    _currentTemplateIndex = -1;
+        // 蓝图模板页签条（实例 / 取值 / 显示名 / 高亮由 UiwTabStrip 统一维护）
+        private readonly UiwTabStrip<UiwInventoryTab, string> _tabStrip
+            = new UiwTabStrip<UiwInventoryTab, string>();
+
+        private readonly List<string> _templateRefs  = new List<string>(); // null = 全部
+        private readonly List<string> _templateNames = new List<string>(); // 与 _templateRefs 平行
+
         private string _currentTemplate;                  // null = 全部
         private CraftingBlueprintTemplate _currentTemplateObj;
 
         private void BuildTemplateTabs()
         {
-            foreach (var t in _templateTabs) if (t) Destroy(t.gameObject);
-            _templateTabs.Clear();
             _templateRefs.Clear();
+            _templateNames.Clear();
 
-            if (!templateTabPrefab || !templateTabContainer) return;
+            if (showAllTemplateTab)
+            {
+                _templateRefs.Add(null);
+                _templateNames.Add(allTemplateLabel);
+            }
+            foreach (var t in _templates)
+            {
+                _templateRefs.Add(t.name);
+                _templateNames.Add(t.name);
+            }
 
-            if (showAllTemplateTab) AddTemplateTab(null, allTemplateLabel);
-            foreach (var t in _templates) AddTemplateTab(t.name, t.name);
+            _tabStrip.Configure(templateTabPrefab, templateTabContainer,
+                (tab, templateRef, label, selected) => tab.SetData(templateRef ?? string.Empty, label, selected),
+                (index, _) => OnTemplateTabSelected(index));
+
+            // 仅重建页签实例，不在此触发切换（打开流程稍后统一调 SwitchTemplate(0)）。
+            _tabStrip.SetTabs(_templateRefs, _templateNames, selectedIndex: 0, notify: false);
         }
 
-        private void AddTemplateTab(string templateRef, string display)
-        {
-            int idx = _templateTabs.Count;
-            var tab = Instantiate(templateTabPrefab, templateTabContainer);
-            tab.SetData(templateRef ?? string.Empty, display, false);
-            var btn = tab.GetComponent<Button>();
-            if (btn) btn.onClick.AddListener(() => SwitchTemplate(idx));
-            _templateTabs.Add(tab);
-            _templateRefs.Add(templateRef);
-        }
+        private void SwitchTemplate(int index) => _tabStrip.Select(index);
 
-        private void SwitchTemplate(int index)
+        /// <summary>模板页签切换后的实际响应：重置搜索与分组筛选，重排并刷新蓝图列表。</summary>
+        private void OnTemplateTabSelected(int index)
         {
-            if (index < 0 || index >= _templateTabs.Count) return;
+            if (index < 0 || index >= _templateRefs.Count) return;
 
-            // _currentTemplateIndex = index;
             _currentTemplate      = _templateRefs[index];
             _currentTemplateObj   = FindTemplate(_currentTemplate);
-
-            for (int i = 0; i < _templateTabs.Count; i++)
-                _templateTabs[i]?.SetData(_templateRefs[i] ?? string.Empty,
-                    i == 0 && showAllTemplateTab ? allTemplateLabel : _templateRefs[i], i == index);
 
             // 重置搜索 + 分组筛选
             _search = string.Empty;

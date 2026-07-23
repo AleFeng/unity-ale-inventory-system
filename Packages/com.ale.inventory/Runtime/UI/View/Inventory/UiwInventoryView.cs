@@ -254,7 +254,9 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("仓库页签Prefab（UiwInventoryTab）。")]
         public UiwInventoryTab tabPrefab;
         
-        private readonly List<UiwInventoryTab> _inventoryTabInstances = new List<UiwInventoryTab>(); // 仓库页签 实例列表（与 _inventoryIds 下标对应）
+        // 仓库页签条（实例 / 取值 / 显示名 / 高亮由 UiwTabStrip 统一维护；下标与 inventoryIds 对应）
+        private readonly UiwTabStrip<UiwInventoryTab, string> _tabStrip = new UiwTabStrip<UiwInventoryTab, string>();
+        private readonly List<string> _tabLabels = new List<string>();   // 复用的显示名缓冲，避免每次重建都分配
 
         [Header("仓库")]
         [Tooltip("要显示的仓库 ID 列表（按顺序生成页签）。可在 Inspector 预设：本视图始终使用该值，直到经 Open(inventoryIds) 或 Inspector 改动。")]
@@ -290,33 +292,30 @@ namespace Ale.Inventory.Runtime.UI
         /// </summary>
         private void BuildInventoryTabs()
         {
-            // 清除 旧过滤页签
-            foreach (var tab in _inventoryTabInstances)
-                if (tab) Destroy(tab.gameObject);
-            _inventoryTabInstances.Clear();
+            _tabLabels.Clear();
+            foreach (var id in inventoryIds)
+                _tabLabels.Add(ResolveInventoryDisplayName(id));
 
-            if (!tabPrefab || !tabContainer) return;
-            
-            // 创建 新过滤页签
-            for (int i = 0; i < inventoryIds.Length; i++)
-            {
-                int idx  = i; // 闭包捕获
-                var tab  = Instantiate(tabPrefab, tabContainer);
-                tab.SetData(inventoryIds[i], ResolveInventoryDisplayName(inventoryIds[i]), false);
+            _tabStrip.Configure(tabPrefab, tabContainer,
+                (tab, id, label, selected) => tab.SetData(id, label, selected),
+                (index, _) => OnInventoryTabSelected(index));
 
-                var btn = tab.GetComponent<Button>();
-                if (btn)
-                    btn.onClick.AddListener(() => SwitchInventoryTab(idx));
-
-                _inventoryTabInstances.Add(tab);
-            }
+            // 仅重建页签实例，不在此触发切换（打开流程稍后统一调 SwitchInventoryTab(0)）。
+            _tabStrip.SetTabs(inventoryIds, _tabLabels, selectedIndex: 0, notify: false);
         }
-        
+
         /// <summary>
-        /// 切换 仓库页签。
+        /// 切换 仓库页签（经页签条统一刷新高亮，随后回调 <see cref="OnInventoryTabSelected"/>）。
         /// </summary>
         /// <param name="index"></param>
         private void SwitchInventoryTab(int index)
+        {
+            // 未配置页签预制体 / 容器时页签条为空，此时仍需直接初始化视图内容（与页签无关）。
+            if (!_tabStrip.Select(index)) OnInventoryTabSelected(index);
+        }
+
+        /// <summary>页签切换后的实际响应：同步激活下标、标题、数字格式、过滤与排序栏、道具列表。</summary>
+        private void OnInventoryTabSelected(int index)
         {
             if (inventoryIds == null || index < 0 || index >= inventoryIds.Length) return;
 
@@ -325,11 +324,6 @@ namespace Ale.Inventory.Runtime.UI
 
             // 更新标题为当前选中仓库名称
             RefreshTitle();
-
-            // 更新页签选中状态
-            for (int i = 0; i < _inventoryTabInstances.Count; i++)
-                _inventoryTabInstances[i]?.SetData(
-                    inventoryIds[i], ResolveInventoryDisplayName(inventoryIds[i]), i == _inventoryIdsActiveIndex);
 
             var invDef = GetActiveInventoryDef();
 

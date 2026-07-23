@@ -114,7 +114,7 @@ namespace Ale.Inventory.Runtime.UI
             Subscribe();
 
             // 有页签 → 选中首个（「全部」或首个商品组）；无任何页签（隐藏全部且无商品组）→ 直接显示全部商品。
-            if (_groupTabs.Count > 0) SwitchGroup(0);
+            if (_tabStrip.Count > 0) SwitchGroup(0);
             else                      PopulateCommodities(null);
         }
 
@@ -172,50 +172,39 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("「全部」页签显示名。")]
         public string          allTabName = "全部";
 
-        private readonly List<UiwShopGroupTab>     _groupTabs = new List<UiwShopGroupTab>();
-        private readonly List<ShopCommodityGroup>  _tabGroups = new List<ShopCommodityGroup>(); // 与 _groupTabs 平行；null = 全部
-        private readonly List<string>              _tabNames  = new List<string>();             // 与 _groupTabs 平行
+        // 商品组页签条（实例 / 取值 / 显示名 / 高亮由 UiwTabStrip 统一维护）
+        private readonly UiwTabStrip<UiwShopGroupTab, ShopCommodityGroup> _tabStrip
+            = new UiwTabStrip<UiwShopGroupTab, ShopCommodityGroup>();
+
+        private readonly List<ShopCommodityGroup> _tabGroups = new List<ShopCommodityGroup>(); // null = 全部
+        private readonly List<string>             _tabNames  = new List<string>();             // 与 _tabGroups 平行
 
         private void BuildGroupTabs()
         {
-            foreach (var t in _groupTabs)
-                if (t) Destroy(t.gameObject);
-            _groupTabs.Clear();
             _tabGroups.Clear();
             _tabNames.Clear();
 
-            if (!groupTabPrefab || !groupTabContainer) return;
-
             // 「全部」页签：由 showAllFilterTab 决定是否显示（关闭时默认选中第一个商品组）。
             if (Shop.showAllFilterTab)
-                AddGroupTab(null, allTabName);
+            {
+                _tabGroups.Add(null);
+                _tabNames.Add(allTabName);
+            }
             foreach (var g in Shop.groups)
-                AddGroupTab(g, string.IsNullOrEmpty(g.name) ? "未命名" : g.name);
+            {
+                _tabGroups.Add(g);
+                _tabNames.Add(string.IsNullOrEmpty(g.name) ? "未命名" : g.name);
+            }
+
+            _tabStrip.Configure(groupTabPrefab, groupTabContainer,
+                (tab, group, label, selected) => tab.SetData(group, label, selected),
+                (_, group) => PopulateCommodities(group));
+
+            // 仅重建页签实例，不在此触发切换（打开流程稍后统一调 SwitchGroup(0)）。
+            _tabStrip.SetTabs(_tabGroups, _tabNames, selectedIndex: 0, notify: false);
         }
 
-        private void AddGroupTab(ShopCommodityGroup group, string display)
-        {
-            int idx = _groupTabs.Count;
-            var tab = Instantiate(groupTabPrefab, groupTabContainer);
-            tab.SetData(group, display, false);
-
-            var btn = tab.GetComponent<Button>();
-            if (btn) btn.onClick.AddListener(() => SwitchGroup(idx));
-
-            _groupTabs.Add(tab);
-            _tabGroups.Add(group);
-            _tabNames.Add(display);
-        }
-
-        private void SwitchGroup(int index)
-        {
-            if (index < 0 || index >= _groupTabs.Count) return;
-
-            for (int i = 0; i < _groupTabs.Count; i++)
-                _groupTabs[i]?.SetData(_tabGroups[i], _tabNames[i], i == index);
-
-            PopulateCommodities(_tabGroups[index]);
-        }
+        private void SwitchGroup(int index) => _tabStrip.Select(index);
         #endregion
 
         #region 商品列表
