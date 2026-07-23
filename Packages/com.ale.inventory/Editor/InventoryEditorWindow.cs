@@ -37,12 +37,9 @@ namespace Ale.Inventory.Editor
         private readonly SkillSystemTab     _skillSystemTab     = new SkillSystemTab();
 
         // 重复 ID 缓存。
-        private HashSet<string> _duplicateIds          = new HashSet<string>();
-        private HashSet<string> _inventoryDuplicateIds = new HashSet<string>();
-        private HashSet<string> _shopDuplicateIds      = new HashSet<string>();
-        private HashSet<string> _craftingDuplicateIds  = new HashSet<string>();
-        private HashSet<string> _equipmentDuplicateIds = new HashSet<string>();
-        private HashSet<string> _skillDuplicateIds     = new HashSet<string>();
+        // 六类实体的重复 / 空 ID 缓存（种类 → 集合），由 EditorDuplicateIdScanner.ScanAll 整体刷新。
+        private Dictionary<EInventoryEntityKind, HashSet<string>> _duplicateIds
+            = EditorDuplicateIdScanner.ScanAll(null);
         private bool _needDuplicateCheck = true;
 
         // 模板属性字段变化后需对所有关联道具/仓库执行 RebuildAttributes 同步。
@@ -142,12 +139,7 @@ namespace Ale.Inventory.Editor
         public SerializedObject Serialized => _serialized;
         public IAssetRefResolver Resolver =>
             InventoryExportResolver.Resolve(InventoryEditorPrefs.IsAddressableEnabled());
-        public HashSet<string> DuplicateIds          => _duplicateIds;
-        public HashSet<string> InventoryDuplicateIds => _inventoryDuplicateIds;
-        public HashSet<string> ShopDuplicateIds      => _shopDuplicateIds;
-        public HashSet<string> CraftingDuplicateIds  => _craftingDuplicateIds;
-        public HashSet<string> EquipmentDuplicateIds => _equipmentDuplicateIds;
-        public HashSet<string> SkillDuplicateIds     => _skillDuplicateIds;
+        public HashSet<string> DuplicateIdsOf(EInventoryEntityKind kind) => _duplicateIds[kind];
 
         public void RecordUndo(string actionName)
         {
@@ -189,13 +181,8 @@ namespace Ale.Inventory.Editor
                 // 2. 刷新重复 ID 缓存。
                 if (_needDuplicateCheck)
                 {
-                    _duplicateIds          = DuplicateIdChecker.Scan(_db);
-                    _inventoryDuplicateIds = ScanInventoryDuplicateIds(_db);
-                    _shopDuplicateIds      = ScanShopDuplicateIds(_db);
-                    _craftingDuplicateIds  = ScanCraftingDuplicateIds(_db);
-                    _equipmentDuplicateIds = ScanEquipmentDuplicateIds(_db);
-                    _skillDuplicateIds     = ScanSkillDuplicateIds(_db);
-                    _needDuplicateCheck    = false;
+                    _duplicateIds       = EditorDuplicateIdScanner.ScanAll(_db);
+                    _needDuplicateCheck = false;
                 }
                 _snapStatusMessage = BuildStatusMessage();
             }
@@ -231,10 +218,13 @@ namespace Ale.Inventory.Editor
             using (new EditorGUI.DisabledScope(!_db))
             {
                 // 仅当存在"非空重复 ID"时禁用导出；空 ID 条目在导出时自动跳过，不阻塞。
+                // 六类实体一并检查——此前只看道具，仓库 / 商店 / 蓝图 / 装备组 / 技能的重复 ID
+                // 只在状态栏出警告却不拦截导出。
                 bool hasNonEmptyDups = false;
                 if (_db)
-                    foreach (var id in _duplicateIds)
-                        if (!string.IsNullOrEmpty(id)) { hasNonEmptyDups = true; break; }
+                    foreach (var kind in EditorDuplicateIdScanner.AllKinds)
+                        if (EditorDuplicateIdScanner.HasNonEmpty(_duplicateIds[kind]))
+                        { hasNonEmptyDups = true; break; }
 
                 using (new EditorGUI.DisabledScope(hasNonEmptyDups))
                 {
@@ -307,60 +297,19 @@ namespace Ale.Inventory.Editor
 
             var parts = new List<string>();
 
-            if (_duplicateIds.Count > 0)
+            foreach (var kind in EditorDuplicateIdScanner.AllKinds)
             {
-                bool hasNonEmpty = false;
-                foreach (var id in _duplicateIds)
-                    if (!string.IsNullOrEmpty(id)) { hasNonEmpty = true; break; }
+                var set = _duplicateIds[kind];
+                if (set.Count == 0) continue;
 
-                var ids = new List<string>();
-                foreach (var id in _duplicateIds)
+                var ids = new List<string>(set.Count);
+                foreach (var id in set)
                     ids.Add(string.IsNullOrEmpty(id) ? "(空ID)" : id);
 
-                string suffix = hasNonEmpty
-                    ? "（道具重复 ID，导出已禁用）"
-                    : "（空 ID 道具将在导出时跳过）";
-                parts.Add("⚠ " + string.Join(", ", ids) + " " + suffix);
-            }
-
-            if (_inventoryDuplicateIds.Count > 0)
-            {
-                var ids = new List<string>();
-                foreach (var id in _inventoryDuplicateIds)
-                    ids.Add(string.IsNullOrEmpty(id) ? "(空ID)" : id);
-                parts.Add("⚠ 仓库重复 ID：" + string.Join(", ", ids));
-            }
-
-            if (_shopDuplicateIds.Count > 0)
-            {
-                var ids = new List<string>();
-                foreach (var id in _shopDuplicateIds)
-                    ids.Add(string.IsNullOrEmpty(id) ? "(空ID)" : id);
-                parts.Add("⚠ 商店重复 ID：" + string.Join(", ", ids));
-            }
-
-            if (_craftingDuplicateIds.Count > 0)
-            {
-                var ids = new List<string>();
-                foreach (var id in _craftingDuplicateIds)
-                    ids.Add(string.IsNullOrEmpty(id) ? "(空ID)" : id);
-                parts.Add("⚠ 蓝图重复 ID：" + string.Join(", ", ids));
-            }
-
-            if (_equipmentDuplicateIds.Count > 0)
-            {
-                var ids = new List<string>();
-                foreach (var id in _equipmentDuplicateIds)
-                    ids.Add(string.IsNullOrEmpty(id) ? "(空ID)" : id);
-                parts.Add("⚠ 装备组重复 ID：" + string.Join(", ", ids));
-            }
-
-            if (_skillDuplicateIds.Count > 0)
-            {
-                var ids = new List<string>();
-                foreach (var id in _skillDuplicateIds)
-                    ids.Add(string.IsNullOrEmpty(id) ? "(空ID)" : id);
-                parts.Add("⚠ 技能重复 ID：" + string.Join(", ", ids));
+                string noun = EditorDuplicateIdScanner.NounOf(kind);
+                parts.Add(EditorDuplicateIdScanner.HasNonEmpty(set)
+                    ? $"⚠ {noun}重复 ID：{string.Join(", ", ids)}（导出已禁用）"
+                    : $"⚠ {noun}存在空 ID（导出时将跳过）");
             }
 
             return string.Join("  |  ", parts);
@@ -385,81 +334,6 @@ namespace Ale.Inventory.Editor
                 g.RebuildAttributes(db);
             foreach (var s in db.Skills)
                 s.RebuildAttributes(db);
-        }
-
-        private static HashSet<string> ScanInventoryDuplicateIds(InventoryDatabase db)
-        {
-            var result = new HashSet<string>();
-            if (!db) return result;
-
-            var seen = new HashSet<string>();
-            foreach (var inv in db.Inventories)
-            {
-                string id = string.IsNullOrWhiteSpace(inv.id) ? string.Empty : inv.id;
-                if (!seen.Add(id))
-                    result.Add(id);
-            }
-            return result;
-        }
-
-        private static HashSet<string> ScanShopDuplicateIds(InventoryDatabase db)
-        {
-            var result = new HashSet<string>();
-            if (!db) return result;
-
-            var seen = new HashSet<string>();
-            foreach (var shop in db.Shops)
-            {
-                string id = string.IsNullOrWhiteSpace(shop.id) ? string.Empty : shop.id;
-                if (!seen.Add(id))
-                    result.Add(id);
-            }
-            return result;
-        }
-
-        private static HashSet<string> ScanCraftingDuplicateIds(InventoryDatabase db)
-        {
-            var result = new HashSet<string>();
-            if (!db) return result;
-
-            var seen = new HashSet<string>();
-            foreach (var bp in db.CraftingBlueprints)
-            {
-                string id = string.IsNullOrWhiteSpace(bp.id) ? string.Empty : bp.id;
-                if (!seen.Add(id))
-                    result.Add(id);
-            }
-            return result;
-        }
-
-        private static HashSet<string> ScanEquipmentDuplicateIds(InventoryDatabase db)
-        {
-            var result = new HashSet<string>();
-            if (!db) return result;
-
-            var seen = new HashSet<string>();
-            foreach (var g in db.EquipmentGroups)
-            {
-                string id = string.IsNullOrWhiteSpace(g.id) ? string.Empty : g.id;
-                if (!seen.Add(id))
-                    result.Add(id);
-            }
-            return result;
-        }
-
-        private static HashSet<string> ScanSkillDuplicateIds(InventoryDatabase db)
-        {
-            var result = new HashSet<string>();
-            if (!db) return result;
-
-            var seen = new HashSet<string>();
-            foreach (var s in db.Skills)
-            {
-                string id = string.IsNullOrWhiteSpace(s.id) ? string.Empty : s.id;
-                if (!seen.Add(id))
-                    result.Add(id);
-            }
-            return result;
         }
 
         #endregion

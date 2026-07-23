@@ -33,7 +33,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "技能", skill.id,
-                ctx.SkillDuplicateIds, v => skill.id = v);
+                ctx.DuplicateIdsOf(EInventoryEntityKind.Skill), v => skill.id = v);
 
             // 名称 / 本地化名 / 描述 / 本地化描述 / 图标（与技能模板共用绘制）
             SkillConfigDrawer.DrawDisplayFields(ctx, skill);

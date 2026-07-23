@@ -79,7 +79,7 @@ namespace Ale.Inventory.Editor
 
                 visible.Add(bp);
 
-                bool isDup    = ctx.CraftingDuplicateIds.Contains(
+                bool isDup    = ctx.DuplicateIdsOf(EInventoryEntityKind.Crafting).Contains(
                     string.IsNullOrWhiteSpace(bp.id) ? string.Empty : bp.id);
                 bool selected = (bp == selectedBlueprint);
 

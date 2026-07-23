@@ -78,7 +78,7 @@ namespace Ale.Inventory.Editor
 
                 visible.Add(g);
 
-                bool isDup    = ctx.EquipmentDuplicateIds.Contains(
+                bool isDup    = ctx.DuplicateIdsOf(EInventoryEntityKind.Equipment).Contains(
                     string.IsNullOrWhiteSpace(g.id) ? string.Empty : g.id);
                 bool selected = (g == selectedGroup);
 

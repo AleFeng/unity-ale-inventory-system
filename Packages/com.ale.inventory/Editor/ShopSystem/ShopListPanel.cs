@@ -82,7 +82,7 @@ namespace Ale.Inventory.Editor
 
                 visible.Add(shop);
 
-                bool isDup    = ctx.ShopDuplicateIds.Contains(
+                bool isDup    = ctx.DuplicateIdsOf(EInventoryEntityKind.Shop).Contains(
                     string.IsNullOrWhiteSpace(shop.id) ? string.Empty : shop.id);
                 bool selected = (shop == selectedShop);
 

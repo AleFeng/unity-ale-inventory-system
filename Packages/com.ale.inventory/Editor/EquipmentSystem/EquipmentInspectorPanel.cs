@@ -35,7 +35,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "装备组", group.id,
-                ctx.EquipmentDuplicateIds, v => group.id = v);
+                ctx.DuplicateIdsOf(EInventoryEntityKind.Equipment), v => group.id = v);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器；名称为空时 UI 退回使用 ID）
             AttributeFieldDrawer.Draw(ctx, "名称", group.displayNameText, null);

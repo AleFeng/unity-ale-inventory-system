@@ -78,7 +78,7 @@ namespace Ale.Inventory.Editor
 
                 visible.Add(skill);
 
-                bool isDup    = ctx.SkillDuplicateIds.Contains(
+                bool isDup    = ctx.DuplicateIdsOf(EInventoryEntityKind.Skill).Contains(
                     string.IsNullOrWhiteSpace(skill.id) ? string.Empty : skill.id);
                 bool selected = (skill == selectedSkill);
 

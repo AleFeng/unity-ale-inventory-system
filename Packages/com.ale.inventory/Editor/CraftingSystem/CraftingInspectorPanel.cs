@@ -54,7 +54,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "蓝图", bp.id,
-                ctx.CraftingDuplicateIds, v => bp.id = v);
+                ctx.DuplicateIdsOf(EInventoryEntityKind.Crafting), v => bp.id = v);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器）
             AttributeFieldDrawer.Draw(ctx, "名称", bp.displayText, null);

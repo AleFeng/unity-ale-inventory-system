@@ -20,23 +20,13 @@ namespace Ale.Inventory.Editor
         /// <summary>导出/资源引用解析器（编辑器实现）。</summary>
         IAssetRefResolver Resolver { get; }
 
-        /// <summary>当前重复（或空）道具 ID 集合，用于红色高亮。</summary>
-        HashSet<string> DuplicateIds { get; }
-
-        /// <summary>当前重复（或空）仓库 ID 集合，用于仓库列表与 Inspector 红色高亮。</summary>
-        HashSet<string> InventoryDuplicateIds { get; }
-
-        /// <summary>当前重复（或空）商店 ID 集合，用于商店列表与 Inspector 红色高亮。</summary>
-        HashSet<string> ShopDuplicateIds { get; }
-
-        /// <summary>当前重复（或空）蓝图 ID 集合，用于蓝图列表与 Inspector 红色高亮。</summary>
-        HashSet<string> CraftingDuplicateIds { get; }
-
-        /// <summary>当前重复（或空）装备组 ID 集合，用于装备组列表与 Inspector 红色高亮。</summary>
-        HashSet<string> EquipmentDuplicateIds { get; }
-
-        /// <summary>当前重复（或空）技能 ID 集合，用于技能列表与 Inspector 红色高亮。</summary>
-        HashSet<string> SkillDuplicateIds { get; }
+        /// <summary>
+        /// 取该种类当前重复（或空）的 ID 集合，用于列表与 Inspector 的红色高亮。
+        /// <para>此前是六个并列属性（<c>DuplicateIds</c> / <c>InventoryDuplicateIds</c> / …），
+        /// 新增一个系统就要同步改接口、窗口字段、扫描器、缓存刷新与状态栏五处；
+        /// 收成按种类查表后，遗漏某一处不再可能。</para>
+        /// </summary>
+        HashSet<string> DuplicateIdsOf(EInventoryEntityKind kind);
 
         /// <summary>在修改前调用，记录 Undo。</summary>
         void RecordUndo(string actionName);

@@ -31,7 +31,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "商店", shop.id,
-                ctx.ShopDuplicateIds, v => shop.id = v);
+                ctx.DuplicateIdsOf(EInventoryEntityKind.Shop), v => shop.id = v);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器）
             AttributeFieldDrawer.Draw(ctx, "名称", shop.displayNameText, null);

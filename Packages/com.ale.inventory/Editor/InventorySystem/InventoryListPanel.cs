@@ -94,7 +94,7 @@ namespace Ale.Inventory.Editor
 
                 visible.Add(inv);
 
-                bool isDup    = ctx.InventoryDuplicateIds.Contains(
+                bool isDup    = ctx.DuplicateIdsOf(EInventoryEntityKind.Inventory).Contains(
                     string.IsNullOrWhiteSpace(inv.id) ? string.Empty : inv.id);
                 bool selected = (inv == selectedInventory);
 

@@ -56,7 +56,7 @@ namespace Ale.Inventory.Editor
 
             // ── ID ──────────────────────────────────────────────────────────────────
             EditorEntityHeader.DrawIdField(ctx, "道具", item.id,
-                ctx.DuplicateIds, v => item.id = v,
+                ctx.DuplicateIdsOf(EInventoryEntityKind.Item), v => item.id = v,
                 dupHint: "⚠ ID 重复或为空（导出时空 ID 条目将被跳过）");
 
             // ── 来源模板（只读，创建后不可更改）────────────────────────────────────
