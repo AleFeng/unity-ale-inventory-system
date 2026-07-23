@@ -30,35 +30,15 @@ namespace Ale.Inventory.Editor
             // ── 1. 基础属性 ───────────────────────────────────────────────────────────
             EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
 
-            bool isDup = ctx.InventoryDuplicateIds.Contains(
-                string.IsNullOrWhiteSpace(inventory.id) ? string.Empty : inventory.id);
-
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("ID");
-            EditorGUI.BeginChangeCheck();
-            string newId = EditorGUILayout.TextField(
-                inventory.id, isDup ? InventoryEditorStyles.RedField : EditorStyles.textField);
-            if (EditorGUI.EndChangeCheck())
-            {
-                ctx.RecordUndo("修改仓库 ID");
-                inventory.id = newId;
-                ctx.MarkDirty();
-            }
-            EditorGUILayout.EndHorizontal();
-            if (isDup)
-                EditorGUILayout.LabelField("⚠ ID 重复或为空", InventoryEditorStyles.StatusError);
+            EditorEntityHeader.DrawIdField(ctx, "仓库", inventory.id,
+                ctx.InventoryDuplicateIds, v => inventory.id = v);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器；名称为空时 UI 退回使用 ID）
             AttributeFieldDrawer.Draw(ctx, "名称", inventory.displayNameText, null);
             AttributeFieldDrawer.Draw(ctx, "描述", inventory.descriptionText, null);
 
             // 来源模板（只读，创建后不可更改）
-            using (new EditorGUI.DisabledScope(true))
-            {
-                string tmplDisplay = string.IsNullOrEmpty(inventory.templateRef)
-                    ? "（无）" : inventory.templateRef;
-                EditorGUILayout.TextField("来源模板", tmplDisplay);
-            }
+            EditorEntityHeader.DrawTemplateRefReadonly(inventory.templateRef);
 
             // 容量
             EditorGUILayout.BeginHorizontal();
@@ -151,29 +131,10 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 6. 自定义属性值（来自模板）────────────────────────────────────────────
-            EditorGUILayout.LabelField("自定义属性", InventoryEditorStyles.Header);
-
-            if (inventory.values.Count == 0)
-            {
-                EditorGUILayout.LabelField(
-                    "⚠  该仓库暂无自定义属性字段。请先在左侧「仓库模板」中添加属性字段，" +
-                    "再为仓库选择对应模板。", WarnStyle);
-            }
-            else
-            {
-                var template = db.GetInventoryTemplate(inventory.templateRef);
-                foreach (var entry in inventory.values)
-                {
-                    AttributeDefinition def = null;
-                    if (template != null)
-                        foreach (var d in template.attributes)
-                            if (d.id == entry.id) { def = d; break; }
-
-                    var enumType = def != null && def.type == EFieldType.Enum
-                        ? db.GetEnumType(def.enumTypeRef) : null;
-                    AttributeFieldDrawer.Draw(ctx, entry.id, entry.value, enumType);
-                }
-            }
+            EditorEntityHeader.DrawCustomAttributes(ctx, inventory.values,
+                db.GetInventoryTemplate(inventory.templateRef)?.attributes,
+                "⚠  该仓库暂无自定义属性字段。请先在左侧「仓库模板」中添加属性字段，" +
+                "再为仓库选择对应模板。", WarnStyle);
         }
 
         private static void DrawFilterTagList(IInventoryEditorContext ctx, List<string> filterTagRefs)

@@ -53,33 +53,14 @@ namespace Ale.Inventory.Editor
         {
             EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
 
-            bool isDup = ctx.CraftingDuplicateIds.Contains(
-                string.IsNullOrWhiteSpace(bp.id) ? string.Empty : bp.id);
-
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("ID");
-            EditorGUI.BeginChangeCheck();
-            string newId = EditorGUILayout.TextField(
-                bp.id, isDup ? InventoryEditorStyles.RedField : EditorStyles.textField);
-            if (EditorGUI.EndChangeCheck())
-            {
-                ctx.RecordUndo("修改蓝图 ID");
-                bp.id = newId;
-                ctx.MarkDirty();
-            }
-            EditorGUILayout.EndHorizontal();
-            if (isDup)
-                EditorGUILayout.LabelField("⚠ ID 重复或为空", InventoryEditorStyles.StatusError);
+            EditorEntityHeader.DrawIdField(ctx, "蓝图", bp.id,
+                ctx.CraftingDuplicateIds, v => bp.id = v);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器）
             AttributeFieldDrawer.Draw(ctx, "名称", bp.displayText, null);
             AttributeFieldDrawer.Draw(ctx, "描述", bp.descriptionText, null);
 
-            using (new EditorGUI.DisabledScope(true))
-            {
-                string tmplDisplay = string.IsNullOrEmpty(bp.templateRef) ? "（无）" : bp.templateRef;
-                EditorGUILayout.TextField("来源模板", tmplDisplay);
-            }
+            EditorEntityHeader.DrawTemplateRefReadonly(bp.templateRef);
         }
 
         // ── 分组标签 ──────────────────────────────────────────────────────────────
@@ -292,29 +273,9 @@ namespace Ale.Inventory.Editor
 
         private static void DrawCustomAttributes(IInventoryEditorContext ctx, CraftingBlueprint bp)
         {
-            var db = ctx.Database;
-
-            EditorGUILayout.LabelField("自定义属性", InventoryEditorStyles.Header);
-
-            if (bp.values.Count == 0)
-            {
-                EditorGUILayout.LabelField(
-                    "（该蓝图暂无自定义属性字段；可在左侧「蓝图模板」中添加）", EditorStyles.miniLabel);
-                return;
-            }
-
-            var template = db.GetCraftingBlueprintTemplate(bp.templateRef);
-            foreach (var entry in bp.values)
-            {
-                AttributeDefinition def = null;
-                if (template != null)
-                    foreach (var d in template.attributes)
-                        if (d.id == entry.id) { def = d; break; }
-
-                var enumType = def != null && def.type == EFieldType.Enum
-                    ? db.GetEnumType(def.enumTypeRef) : null;
-                AttributeFieldDrawer.Draw(ctx, entry.id, entry.value, enumType);
-            }
+            var template = ctx.Database.GetCraftingBlueprintTemplate(bp.templateRef);
+            EditorEntityHeader.DrawCustomAttributes(ctx, bp.values, template?.attributes,
+                "（该蓝图暂无自定义属性字段；可在左侧「蓝图模板」中添加）");
         }
     }
 }

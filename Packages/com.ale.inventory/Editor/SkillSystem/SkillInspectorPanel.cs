@@ -32,61 +32,22 @@ namespace Ale.Inventory.Editor
         {
             EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
 
-            bool isDup = ctx.SkillDuplicateIds.Contains(
-                string.IsNullOrWhiteSpace(skill.id) ? string.Empty : skill.id);
-
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("ID");
-            EditorGUI.BeginChangeCheck();
-            string newId = EditorGUILayout.TextField(
-                skill.id, isDup ? InventoryEditorStyles.RedField : EditorStyles.textField);
-            if (EditorGUI.EndChangeCheck())
-            {
-                ctx.RecordUndo("修改技能 ID");
-                skill.id = newId;
-                ctx.MarkDirty();
-            }
-            EditorGUILayout.EndHorizontal();
-            if (isDup)
-                EditorGUILayout.LabelField("⚠ ID 重复或为空", InventoryEditorStyles.StatusError);
+            EditorEntityHeader.DrawIdField(ctx, "技能", skill.id,
+                ctx.SkillDuplicateIds, v => skill.id = v);
 
             // 名称 / 本地化名 / 描述 / 本地化描述 / 图标（与技能模板共用绘制）
             SkillConfigDrawer.DrawDisplayFields(ctx, skill);
 
-            using (new EditorGUI.DisabledScope(true))
-            {
-                string tmplDisplay = string.IsNullOrEmpty(skill.templateRef) ? "（无）" : skill.templateRef;
-                EditorGUILayout.TextField("来源模板", tmplDisplay);
-            }
+            EditorEntityHeader.DrawTemplateRefReadonly(skill.templateRef);
         }
 
         // ── 自定义属性 ──────────────────────────────────────────────────────────────
 
         private static void DrawCustomAttributes(IInventoryEditorContext ctx, Skill skill)
         {
-            var db = ctx.Database;
-
-            EditorGUILayout.LabelField("自定义属性", InventoryEditorStyles.Header);
-
-            if (skill.values.Count == 0)
-            {
-                EditorGUILayout.LabelField(
-                    "（该技能暂无自定义属性字段；可在左侧「技能模板」中添加）", EditorStyles.miniLabel);
-                return;
-            }
-
-            var template = db.GetSkillTemplate(skill.templateRef);
-            foreach (var entry in skill.values)
-            {
-                AttributeDefinition def = null;
-                if (template != null)
-                    foreach (var d in template.attributes)
-                        if (d.id == entry.id) { def = d; break; }
-
-                var enumType = def != null && def.type == EFieldType.Enum
-                    ? db.GetEnumType(def.enumTypeRef) : null;
-                AttributeFieldDrawer.Draw(ctx, entry.id, entry.value, enumType);
-            }
+            var template = ctx.Database.GetSkillTemplate(skill.templateRef);
+            EditorEntityHeader.DrawCustomAttributes(ctx, skill.values, template?.attributes,
+                "（该技能暂无自定义属性字段；可在左侧「技能模板」中添加）");
         }
     }
 }

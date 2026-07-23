@@ -55,32 +55,12 @@ namespace Ale.Inventory.Editor
             var db = ctx.Database;
 
             // ── ID ──────────────────────────────────────────────────────────────────
-            bool isDup = ctx.DuplicateIds.Contains(
-                string.IsNullOrWhiteSpace(item.id) ? string.Empty : item.id);
-
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("ID");
-            EditorGUI.BeginChangeCheck();
-            string newId = EditorGUILayout.TextField(
-                item.id, isDup ? InventoryEditorStyles.RedField : EditorStyles.textField);
-            if (EditorGUI.EndChangeCheck())
-            {
-                ctx.RecordUndo("修改道具 ID");
-                item.id = newId;
-                ctx.MarkDirty();
-            }
-            EditorGUILayout.EndHorizontal();
-            if (isDup)
-                EditorGUILayout.LabelField("⚠ ID 重复或为空（导出时空 ID 条目将被跳过）",
-                    InventoryEditorStyles.StatusError);
+            EditorEntityHeader.DrawIdField(ctx, "道具", item.id,
+                ctx.DuplicateIds, v => item.id = v,
+                dupHint: "⚠ ID 重复或为空（导出时空 ID 条目将被跳过）");
 
             // ── 来源模板（只读，创建后不可更改）────────────────────────────────────
-            using (new EditorGUI.DisabledScope(true))
-            {
-                string tmplDisplay = string.IsNullOrEmpty(item.templateRef)
-                    ? "（无）" : item.templateRef;
-                EditorGUILayout.TextField("来源模板", tmplDisplay);
-            }
+            EditorEntityHeader.DrawTemplateRefReadonly(item.templateRef);
 
             EditorGUILayout.Space(6);
 

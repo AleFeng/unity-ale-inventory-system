@@ -34,62 +34,23 @@ namespace Ale.Inventory.Editor
         {
             EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
 
-            bool isDup = ctx.EquipmentDuplicateIds.Contains(
-                string.IsNullOrWhiteSpace(group.id) ? string.Empty : group.id);
-
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("ID");
-            EditorGUI.BeginChangeCheck();
-            string newId = EditorGUILayout.TextField(
-                group.id, isDup ? InventoryEditorStyles.RedField : EditorStyles.textField);
-            if (EditorGUI.EndChangeCheck())
-            {
-                ctx.RecordUndo("修改装备组 ID");
-                group.id = newId;
-                ctx.MarkDirty();
-            }
-            EditorGUILayout.EndHorizontal();
-            if (isDup)
-                EditorGUILayout.LabelField("⚠ ID 重复或为空", InventoryEditorStyles.StatusError);
+            EditorEntityHeader.DrawIdField(ctx, "装备组", group.id,
+                ctx.EquipmentDuplicateIds, v => group.id = v);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器；名称为空时 UI 退回使用 ID）
             AttributeFieldDrawer.Draw(ctx, "名称", group.displayNameText, null);
             AttributeFieldDrawer.Draw(ctx, "描述", group.descriptionText, null);
 
-            using (new EditorGUI.DisabledScope(true))
-            {
-                string tmplDisplay = string.IsNullOrEmpty(group.templateRef) ? "（无）" : group.templateRef;
-                EditorGUILayout.TextField("来源模板", tmplDisplay);
-            }
+            EditorEntityHeader.DrawTemplateRefReadonly(group.templateRef);
         }
 
         // ── 自定义属性 ──────────────────────────────────────────────────────────────
 
         private static void DrawCustomAttributes(IInventoryEditorContext ctx, EquipmentGroup group)
         {
-            var db = ctx.Database;
-
-            EditorGUILayout.LabelField("自定义属性", InventoryEditorStyles.Header);
-
-            if (group.values.Count == 0)
-            {
-                EditorGUILayout.LabelField(
-                    "（该装备组暂无自定义属性字段；可在左侧「装备组模板」中添加）", EditorStyles.miniLabel);
-                return;
-            }
-
-            var template = db.GetEquipmentGroupTemplate(group.templateRef);
-            foreach (var entry in group.values)
-            {
-                AttributeDefinition def = null;
-                if (template != null)
-                    foreach (var d in template.attributes)
-                        if (d.id == entry.id) { def = d; break; }
-
-                var enumType = def != null && def.type == EFieldType.Enum
-                    ? db.GetEnumType(def.enumTypeRef) : null;
-                AttributeFieldDrawer.Draw(ctx, entry.id, entry.value, enumType);
-            }
+            var template = ctx.Database.GetEquipmentGroupTemplate(group.templateRef);
+            EditorEntityHeader.DrawCustomAttributes(ctx, group.values, template?.attributes,
+                "（该装备组暂无自定义属性字段；可在左侧「装备组模板」中添加）");
         }
     }
 }

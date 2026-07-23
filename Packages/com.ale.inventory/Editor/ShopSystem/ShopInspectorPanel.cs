@@ -30,62 +30,23 @@ namespace Ale.Inventory.Editor
         {
             EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
 
-            bool isDup = ctx.ShopDuplicateIds.Contains(
-                string.IsNullOrWhiteSpace(shop.id) ? string.Empty : shop.id);
-
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.PrefixLabel("ID");
-            EditorGUI.BeginChangeCheck();
-            string newId = EditorGUILayout.TextField(
-                shop.id, isDup ? InventoryEditorStyles.RedField : EditorStyles.textField);
-            if (EditorGUI.EndChangeCheck())
-            {
-                ctx.RecordUndo("修改商店 ID");
-                shop.id = newId;
-                ctx.MarkDirty();
-            }
-            EditorGUILayout.EndHorizontal();
-            if (isDup)
-                EditorGUILayout.LabelField("⚠ ID 重复或为空", InventoryEditorStyles.StatusError);
+            EditorEntityHeader.DrawIdField(ctx, "商店", shop.id,
+                ctx.ShopDuplicateIds, v => shop.id = v);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器）
             AttributeFieldDrawer.Draw(ctx, "名称", shop.displayNameText, null);
             AttributeFieldDrawer.Draw(ctx, "描述", shop.descriptionText, null);
 
-            using (new EditorGUI.DisabledScope(true))
-            {
-                string tmplDisplay = string.IsNullOrEmpty(shop.templateRef) ? "（无）" : shop.templateRef;
-                EditorGUILayout.TextField("来源模板", tmplDisplay);
-            }
+            EditorEntityHeader.DrawTemplateRefReadonly(shop.templateRef);
         }
 
         // ── 自定义属性 ──────────────────────────────────────────────────────────────
 
         private static void DrawCustomAttributes(IInventoryEditorContext ctx, Shop shop)
         {
-            var db = ctx.Database;
-
-            EditorGUILayout.LabelField("自定义属性", InventoryEditorStyles.Header);
-
-            if (shop.values.Count == 0)
-            {
-                EditorGUILayout.LabelField(
-                    "（该商店暂无自定义属性字段；可在左侧「商店模板」中添加）", EditorStyles.miniLabel);
-                return;
-            }
-
-            var template = db.GetShopTemplate(shop.templateRef);
-            foreach (var entry in shop.values)
-            {
-                AttributeDefinition def = null;
-                if (template != null)
-                    foreach (var d in template.attributes)
-                        if (d.id == entry.id) { def = d; break; }
-
-                var enumType = def != null && def.type == EFieldType.Enum
-                    ? db.GetEnumType(def.enumTypeRef) : null;
-                AttributeFieldDrawer.Draw(ctx, entry.id, entry.value, enumType);
-            }
+            var template = ctx.Database.GetShopTemplate(shop.templateRef);
+            EditorEntityHeader.DrawCustomAttributes(ctx, shop.values, template?.attributes,
+                "（该商店暂无自定义属性字段；可在左侧「商店模板」中添加）");
         }
     }
 }
