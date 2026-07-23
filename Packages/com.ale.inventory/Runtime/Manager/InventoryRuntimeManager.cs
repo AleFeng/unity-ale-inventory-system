@@ -656,10 +656,13 @@ namespace Ale.Inventory.Runtime
                     return ContainsStr(ignoreIds, v.AsString);
                 case EFieldType.Enum:
                 {
-                    var def      = FindAttrDef(field, db);
-                    var enumType = db ? db.GetEnumType(def?.enumTypeRef) : null;
-                    string name  = (enumType != null && v.AsInt >= 0 && v.AsInt < enumType.items.Count)
-                                   ? enumType.items[v.AsInt].name : v.AsInt.ToString();
+                    // 枚举存的是 EnumItem.value（自增、永不回收的不可变值），不是 items 的下标——
+                    // 删过枚举项后二者会错位，必须按值查找（与 AttributeValue.EnumValueName 一致）。
+                    // 枚举类型引用优先取属性定义，取不到时回退属性值自身持久化的 EnumTypeRef。
+                    var    def      = FindAttrDef(field, db);
+                    string enumRef  = !string.IsNullOrEmpty(def?.enumTypeRef) ? def.enumTypeRef : v.EnumTypeRef;
+                    var    enumType = db ? db.GetEnumType(enumRef) : null;
+                    string name     = enumType?.GetItemByValue(v.AsEnumValue)?.name ?? v.AsEnumValue.ToString();
                     return ContainsStr(ignoreIds, name);
                 }
                 case EFieldType.Int:
