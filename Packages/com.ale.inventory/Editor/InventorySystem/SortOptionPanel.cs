@@ -42,21 +42,32 @@ namespace Ale.Inventory.Editor
 
         // ── 主列表 ────────────────────────────────────────────────────────────────
 
+        // 上次执行 RebuildSortOptions 时「排序字段来源」的签名；-1 = 尚未同步过。
+        // 每帧只算这个签名（无分配的整数哈希），签名不变说明重建必为空操作，直接跳过。
+        private int _lastSourceSignature = -1;
+
         /// <summary>
         /// 绘制主列表（左侧面板），返回当前选中索引。
-        /// 每次调用时自动执行 <see cref="InventoryDatabase.RebuildSortOptions"/>，
-        /// 保证列表与模板数据保持同步。
+        /// 按需执行 <see cref="InventoryDatabase.RebuildSortOptions"/>，保证列表与模板数据保持同步。
         /// </summary>
         public int DrawMasterList(IInventoryEditorContext ctx, int selectedIndex)
         {
             var db   = ctx.Database;
             _masterCtx = ctx;
 
-            // 每帧同步（幂等）：从模板重建整理选项列表，仅在列表内容有变化时标脏
-            int prevCount = db.SortOptions.Count;
-            db.RebuildSortOptions();
-            if (db.SortOptions.Count != prevCount)
-                ctx.MarkDirty();
+            // 按需同步：RebuildSortOptions 的产出完全由「道具模板属性 + 功能标签属性 +
+            // 整理选项 schema」决定，故先算一个覆盖这三者的签名；签名不变则重建必为空操作。
+            // （此前是每次 OnGUI 都无条件重建一次——含遍历、多次分配与一次排序。）
+            int signature = ComputeSourceSignature(db);
+            if (signature != _lastSourceSignature)
+            {
+                _lastSourceSignature = signature;
+
+                int prevCount = db.SortOptions.Count;
+                db.RebuildSortOptions();
+                if (db.SortOptions.Count != prevCount)
+                    ctx.MarkDirty();
+            }
 
             var list = db.SortOptions;
 
@@ -211,9 +222,46 @@ namespace Ale.Inventory.Editor
         /// <summary>数据库切换或 Undo/Redo 时调用，清空所有缓存列表。</summary>
         public void Invalidate()
         {
-            _masterList    = null;
-            _boundList     = null;
-            _selectedIndex = -1;
+            _masterList          = null;
+            _boundList           = null;
+            _selectedIndex       = -1;
+            _lastSourceSignature = -1;   // 换库 / Undo-Redo 后强制重新同步一次
+        }
+
+        /// <summary>
+        /// 计算「排序字段来源」的签名：覆盖 <see cref="InventoryDatabase.RebuildSortOptions"/>
+        /// 产出所依赖的全部输入——道具模板属性 ID（含顺序）、功能标签属性 ID（含顺序）、
+        /// 功能标签数量（决定是否存在 <c>__tagOrder__</c>）与整理选项 schema。
+        /// 纯整数哈希、无任何分配，可安全地每帧调用。
+        /// </summary>
+        private static int ComputeSourceSignature(InventoryDatabase db)
+        {
+            unchecked
+            {
+                int h = 17;
+                foreach (var tmpl in db.ItemTemplates)
+                {
+                    h = h * 31 + 0x1F35A7;   // 分段标记，避免不同来源的 ID 串接后哈希碰撞
+                    foreach (var def in tmpl.attributes)
+                        h = h * 31 + (def.id != null ? def.id.GetHashCode() : 0);
+                }
+                foreach (var tag in db.FunctionTags)
+                {
+                    h = h * 31 + 0x5BF036;
+                    foreach (var def in tag.attributes)
+                        h = h * 31 + (def.id != null ? def.id.GetHashCode() : 0);
+                }
+                h = h * 31 + db.FunctionTags.Count;
+
+                foreach (var def in db.SortOptionAttributes)
+                {
+                    if (def == null) continue;
+                    h = h * 31 + (def.id != null ? def.id.GetHashCode() : 0);
+                    h = h * 31 + (int)def.type;
+                    h = h * 31 + (def.isArray ? 1 : 0);
+                }
+                return h;
+            }
         }
     }
 }

@@ -329,46 +329,53 @@ namespace Ale.Inventory.Runtime
         /// </summary>
         public void RebuildSortOptions()
         {
-            // 收集所有可用排序字段（与"整理列表"下拉选项一致）
-            var seenFields = new HashSet<string>();
+            // 收集所有可用排序字段（与"整理列表"下拉选项一致）。
+            // fieldOrder 一表三用：去重、下方的「是否仍是可用字段」判定、以及排序时的 O(1) 序号查询。
+            var fieldOrder    = new Dictionary<string, int>();
             var orderedFields = new List<string>();
 
+            void AddField(string id)
+            {
+                if (string.IsNullOrEmpty(id) || fieldOrder.ContainsKey(id)) return;
+                fieldOrder[id] = orderedFields.Count;
+                orderedFields.Add(id);
+            }
+
             // 道具 ID 始终第一个
-            seenFields.Add("__id__");
-            orderedFields.Add("__id__");
+            AddField("__id__");
 
             // 道具模板属性
             foreach (var tmpl in itemTemplates)
                 foreach (var def in tmpl.attributes)
-                    if (!string.IsNullOrEmpty(def.id) && seenFields.Add(def.id))
-                        orderedFields.Add(def.id);
+                    AddField(def.id);
 
             // 功能标签属性
             foreach (var tag in functionTags)
                 foreach (var def in tag.attributes)
-                    if (!string.IsNullOrEmpty(def.id) && seenFields.Add(def.id))
-                        orderedFields.Add(def.id);
+                    AddField(def.id);
 
             // 功能页签顺序（有功能标签时才加入）
             if (functionTags.Count > 0)
-                orderedFields.Add("__tagOrder__");
+                AddField("__tagOrder__");
 
-            // 移除不再是可用排序字段的 SortOption
-            var fieldSet = new HashSet<string>(orderedFields);
-            sortOptions.RemoveAll(so => !fieldSet.Contains(so.field));
+            // 移除不再是可用排序字段的 SortOption（field 为 null 的脏数据一并清掉）
+            sortOptions.RemoveAll(so => so.field == null || !fieldOrder.ContainsKey(so.field));
 
-            // 追加新出现的 field，按首次出现顺序插入
+            // 追加新出现的 field，按首次出现顺序插入。
+            // 先把现有 field 收进集合，避免逐个 GetSortOption 线性查找（原为 O(n²)）。
+            var existingFields = new HashSet<string>();
+            foreach (var so in sortOptions)
+                existingFields.Add(so.field);
             foreach (var field in orderedFields)
-            {
-                if (GetSortOption(field) == null)
+                if (existingFields.Add(field))
                     sortOptions.Add(new SortOption(field));
-            }
 
-            // 按 orderedFields 排序（维持与模板中 sortPriorities 顺序一致）
+            // 按 orderedFields 顺序排序（维持与模板中 sortPriorities 顺序一致）。
+            // 用序号字典而非 List.IndexOf：后者在比较器内是 O(n)，会让整个排序退化为 O(n² log n)。
             sortOptions.Sort((a, b) =>
             {
-                int ia = orderedFields.IndexOf(a.field);
-                int ib = orderedFields.IndexOf(b.field);
+                int ia = a.field != null && fieldOrder.TryGetValue(a.field, out int va) ? va : -1;
+                int ib = b.field != null && fieldOrder.TryGetValue(b.field, out int vb) ? vb : -1;
                 return ia.CompareTo(ib);
             });
 
