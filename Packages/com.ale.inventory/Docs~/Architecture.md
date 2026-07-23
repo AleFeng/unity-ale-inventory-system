@@ -95,7 +95,10 @@ InventoryDatabase (SO)  ──编辑──▶  仍是 SO
                          Addressable 模式：AddressableAssetRefResolver 按地址异步加载）
 ```
 
-DTO 层（`Runtime/Serialization/InventoryDtoModels.cs`）是与数据模型一一镜像的扁平结构，唯一区别是对象引用以 GUID 字符串承载。
+DTO 层是与数据模型一一镜像的扁平结构，唯一区别是对象引用以 GUID 字符串承载。
+`InventoryDtoModels.cs` 只放 DTO 定义；双向映射在 `InventoryDtoMapper*.cs` 中按系统分部，二进制块读写在 `InventoryBinarySerializer*.cs` 中同法分部。
+
+**格式版本**（`InventoryDtoMapper.Version`）：v5 起属性值带 `curveData`（AnimationCurve）；**v6 起导出覆盖仓库 / 整理选项 / 数字格式 / 商店**，并补上道具系统此前静默丢弃的字段（模板色点、`weight` / `stackLimit` / `hideInInventory`、功能标签的 UI 显示配置）。二进制读取按文件头版本号跳过新增块，v5 导出的 `.bytes` 仍可导入。
 
 ---
 
@@ -216,6 +219,6 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 2. 在 `Editor/` 下新建子目录，实现三列面板（复用 `AttributeDefinitionListDrawer` 和 `AttributeFieldDrawer`）；
 3. 在 `InventoryEditorWindow` 注册新页签（+ 重复 ID 扫描 / `RebuildAllAttributes`）；
 4. 在 `InventoryDataManager` 添加对应查询方法；运行时逻辑用轻量单例（`InventorySystemSingleton<T>`）承担；
-5. （可选）在 `InventoryDtoModels.cs` 增加 DTO 镜像——商店 / 制作 / 装备均未做，因运行时直接消费已注册的 `InventoryDatabase`（ScriptableObject），DTO 导出目前仅覆盖道具系统数据。
+5. 在 `InventoryDtoModels.cs` 增加 DTO 镜像，并按系统新建一对 `InventoryDtoMapper.<系统>.cs` / `InventoryBinarySerializer.<系统>.cs` 分部（照抄仓库 / 商店两组即可）——否则该系统的数据会在导出时被静默丢弃。当前 DTO 导出覆盖道具 / 仓库 / 整理选项 / 数字格式 / 商店；制作 / 装备 / 技能尚未纳入。
 
 属性系统（`AttributeValue / AttributeDefinition / EFieldType`）、枚举类型、功能标签、DTO 序列化框架均可直接复用。

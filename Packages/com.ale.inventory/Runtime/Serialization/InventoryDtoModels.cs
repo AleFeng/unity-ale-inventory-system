@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Ale.Inventory.Runtime.Serialization
 {
@@ -11,16 +6,37 @@ namespace Ale.Inventory.Runtime.Serialization
     /// 扁平 DTO 模型，用于导出 JSON / 二进制 与运行时加载。与运行时数据模型一一镜像，
     /// 区别在于 Unity 对象引用以 GUID 字符串承载（便于跨工程移植），而非 instanceID。
     /// 所有字段为 public 且类型受 JsonUtility 支持（基础类型 + 数组 + 嵌套 [Serializable]）。
+    ///
+    /// <para>本文件<b>只放 DTO 定义</b>；与运行时模型的双向映射见 <see cref="InventoryDtoMapper"/>
+    /// （按系统拆成多个分部文件）。</para>
     /// </summary>
     [Serializable]
     public class InventoryDatabaseDto
     {
         public int version = InventoryDtoMapper.Version;
-        public EnumTypeDto[] enumTypes;
+
+        // ── 道具系统 ──────────────────────────────────────────────────────────────
+        public EnumTypeDto[]    enumTypes;
         public FunctionTagDto[] functionTags;
         public ItemTemplateDto[] itemTemplates;
-        public ItemDto[] items;
+        public ItemDto[]        items;
+
+        // ── 仓库系统（v6 新增）────────────────────────────────────────────────────
+        public InventoryTemplateDto[]   inventoryTemplates;
+        public InventoryDto[]           inventories;
+        public AttributeDefinitionDto[] sortOptionAttributes;
+        public SortOptionDto[]          sortOptions;
+        public NumberFormatConfigDto[]  numberFormatConfigs;
+
+        // ── 商店系统（v6 新增）────────────────────────────────────────────────────
+        public ShopTemplateDto[] shopTemplates;
+        public ShopDto[]         shops;
+
+        /// <summary>关联的 Localization String Table 集合的 SharedTableData GUID（v6 新增；空 = 未关联）。</summary>
+        public string localizationTableCollectionGuid;
     }
+
+    #region 属性系统
 
     [Serializable]
     public class AttributeValueDto
@@ -56,6 +72,23 @@ namespace Ale.Inventory.Runtime.Serialization
         public AttributeValueDto value;
     }
 
+    /// <summary>
+    /// 六大系统模板共有的三项（对应运行时的 <see cref="ConfigTemplateBase"/>）：名称、色点、属性字段定义。
+    /// 各具体模板 DTO 由此派生——JsonUtility 与 Unity 序列化一样会把基类的 public 字段并入子类。
+    /// </summary>
+    [Serializable]
+    public class ConfigTemplateDto
+    {
+        public string name;
+        /// <summary>模板色点，RGBA 四个 0-1 浮点（v6 新增）。缺省（v5 及更早的数据）按 <c>Color.gray</c> 处理。</summary>
+        public float[] color;
+        public AttributeDefinitionDto[] attributes;
+    }
+
+    #endregion
+
+    #region 道具系统
+
     [Serializable]
     public class EnumItemDto
     {
@@ -79,17 +112,36 @@ namespace Ale.Inventory.Runtime.Serialization
     public class FunctionTagDto
     {
         public string name;
+        /// <summary>
+        /// 描述的纯文本 fallback。v5 及更早唯一的描述载体；v6 起完整描述见 <see cref="descriptionText"/>，
+        /// 本字段仍随导出写出（供只认旧格式的消费方），导入时仅在 <see cref="descriptionText"/> 缺省时启用。
+        /// </summary>
         public string description;
         public AttributeDefinitionDto[] attributes;
+
+        // ── UI 显示配置（v6 新增；此前整体不入导出）────────────────────────────
+        /// <summary>UI 显示名（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto displayNameText;
+        /// <summary>描述（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto descriptionText;
+        /// <summary>标签背景 Sprite 的 GUID / Addressable 地址（约定同 <see cref="AttributeValueDto.objGuids"/>）。</summary>
+        public string backgroundSpriteGuid;
+        /// <summary>标签背景颜色，RGBA 四个 0-1 浮点。缺省按 <c>Color.white</c> 处理。</summary>
+        public float[] backgroundColor;
+        /// <summary>UI 中隐藏此标签。</summary>
+        public bool hideInUI;
     }
 
     [Serializable]
-    public class ItemTemplateDto
+    public class ItemTemplateDto : ConfigTemplateDto
     {
-        public string name;
-        public AttributeDefinitionDto[] attributes;
         /// <summary>模板默认携带的功能标签名称列表（v4 新增）。</summary>
         public string[] tagRefs;
+
+        // ── v6 新增：此前静默丢弃的道具默认值 ──────────────────────────────────
+        public float weight;
+        public int   stackLimit;
+        public bool  hideInInventory;
     }
 
     [Serializable]
@@ -99,310 +151,177 @@ namespace Ale.Inventory.Runtime.Serialization
         public string templateRef;
         public string[] tagRefs;
         public AttributeEntryDto[] values;
+
+        // ── v6 新增：此前静默丢弃的道具本体字段 ────────────────────────────────
+        public float weight;
+        public int   stackLimit;
+        public bool  hideInInventory;
     }
 
-    /// <summary>
-    /// 运行时数据模型 与 DTO 之间的双向映射。导出时用 <see cref="IAssetRefResolver"/> 把对象引用转 GUID，
-    /// 导入时反向解析。
-    /// </summary>
-    public static class InventoryDtoMapper
+    #endregion
+
+    #region 仓库系统
+
+    [Serializable]
+    public class SortPriorityDto
     {
-        /// <summary>序列化格式版本号。</summary>
-        public const int Version = 5;  // v5: AttributeValueDto 追加 curveData（AnimationCurve 支持）
-
-        #region 导出：DB -> DTO
-
-        public static InventoryDatabaseDto ToDto(InventoryDatabase db, IAssetRefResolver resolver)
-        {
-            resolver ??= NullAssetRefResolver.Instance;
-            return new InventoryDatabaseDto
-            {
-                version = Version,
-                enumTypes = ToArray(db.EnumTypes, e => ToDto(e, resolver)),
-                functionTags = ToArray(db.FunctionTags, t => ToDto(t, resolver)),
-                itemTemplates = ToArray(db.ItemTemplates, t => ToDto(t, resolver)),
-                items = ToArrayFiltered(db.Items, i => !string.IsNullOrWhiteSpace(i.id), i => ToDto(i, resolver))
-            };
-        }
-
-        private static EnumTypeDto ToDto(EnumType e, IAssetRefResolver resolver)
-        {
-            return new EnumTypeDto
-            {
-                name      = e.name,
-                nextValue = e.nextValue,
-                attributes = ToArray(e.attributes, a => ToDto(a, resolver)),
-                items = ToArray(e.items, it => new EnumItemDto
-                {
-                    name  = it.name,
-                    value = it.value,
-                    attributeValues = ToArray(it.attributeValues,
-                        av => new AttributeEntryDto { id = av.id, value = ToDto(av.value, resolver) })
-                })
-            };
-        }
-
-        private static FunctionTagDto ToDto(FunctionTag t, IAssetRefResolver resolver)
-        {
-            return new FunctionTagDto
-            {
-                name = t.name,
-                // 描述现为 Text；导出纯文本 fallback（本地化引用与 displayNameText 一样不入导出）。
-                description = t.descriptionText != null ? t.descriptionText.GetTextValue(0) : null,
-                attributes = ToArray(t.attributes, a => ToDto(a, resolver))
-            };
-        }
-
-        private static ItemTemplateDto ToDto(ItemTemplate t, IAssetRefResolver resolver)
-        {
-            return new ItemTemplateDto
-            {
-                name = t.name,
-                attributes = ToArray(t.attributes, a => ToDto(a, resolver)),
-                tagRefs = t.tagRefs != null ? t.tagRefs.ToArray() : Array.Empty<string>()
-            };
-        }
-
-        private static ItemDto ToDto(Item item, IAssetRefResolver resolver)
-        {
-            return new ItemDto
-            {
-                id = item.id,
-                templateRef = item.templateRef,
-                tagRefs = item.tagRefs != null ? item.tagRefs.ToArray() : Array.Empty<string>(),
-                values = ToArray(item.values, v => new AttributeEntryDto { id = v.id, value = ToDto(v.value, resolver) })
-            };
-        }
-
-        private static AttributeDefinitionDto ToDto(AttributeDefinition d, IAssetRefResolver resolver)
-        {
-            return new AttributeDefinitionDto
-            {
-                id = d.id,
-                type = (int)d.type,
-                isArray = d.isArray,
-                enumTypeRef = d.enumTypeRef,
-                defaultValue = ToDto(d.defaultValue, resolver)
-            };
-        }
-
-        private static AttributeValueDto ToDto(AttributeValue v, IAssetRefResolver resolver)
-        {
-            if (v == null) return new AttributeValueDto();
-
-            string[] guids = null;
-            if (v.Type.IsObjectBacked())
-            {
-                var raw = v.RawObjects;
-                guids = new string[raw.Count];
-                for (int i = 0; i < raw.Count; i++)
-                    // 有实时引用（直接模式）→ 经解析器转 GUID 并登记进分组；
-                    // 无实时引用（IS_ADDRESSABLE 下 AssetReference 授权，objRefs 槽为 null）→ 直接用授权 GUID。
-                    guids[i] = raw[i] != null ? resolver.ToGuid(raw[i]) : v.GetObjAddress(i);
-            }
-
-            string[] curveData = null;
-            if (v.Type.IsAnimationCurveBacked())
-            {
-                var raw = v.RawCurves;
-                curveData = new string[raw.Count];
-                for (int i = 0; i < raw.Count; i++)
-                    curveData[i] = SerializeCurve(raw[i]);
-            }
-
-            return new AttributeValueDto
-            {
-                type       = (int)v.Type,
-                isArray    = v.IsArray,
-                enumTypeRef = v.EnumTypeRef,
-                ints       = v.RawInts.ToArray(),
-                floats     = v.RawFloats.ToArray(),
-                strings    = v.RawStrings.ToArray(),
-                objGuids   = guids     ?? Array.Empty<string>(),
-                curveData  = curveData ?? Array.Empty<string>()
-            };
-        }
-
-        // ─── AnimationCurve 序列化辅助 ────────────────────────────────────────────
-
-        private static string SerializeCurve(AnimationCurve curve)
-        {
-            if (curve == null || curve.length == 0) return string.Empty;
-            var sb = new StringBuilder();
-            for (int i = 0; i < curve.length; i++)
-            {
-                if (i > 0) sb.Append('|');
-                var k = curve.keys[i];
-                sb.Append(k.time.ToString("R", CultureInfo.InvariantCulture));     sb.Append(',');
-                sb.Append(k.value.ToString("R", CultureInfo.InvariantCulture));    sb.Append(',');
-                sb.Append(k.inTangent.ToString("R", CultureInfo.InvariantCulture)); sb.Append(',');
-                sb.Append(k.outTangent.ToString("R", CultureInfo.InvariantCulture)); sb.Append(',');
-                sb.Append(k.inWeight.ToString("R", CultureInfo.InvariantCulture)); sb.Append(',');
-                sb.Append(k.outWeight.ToString("R", CultureInfo.InvariantCulture)); sb.Append(',');
-                sb.Append((int)k.weightedMode);
-            }
-            return sb.ToString();
-        }
-
-        private static AnimationCurve DeserializeCurve(string s)
-        {
-            var curve = new AnimationCurve();
-            if (string.IsNullOrEmpty(s)) return curve;
-            foreach (var frame in s.Split('|'))
-            {
-                var vals = frame.Split(',');
-                if (vals.Length < 7) continue;
-                if (!float.TryParse(vals[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float t))  continue;
-                if (!float.TryParse(vals[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float v))  continue;
-                if (!float.TryParse(vals[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float it)) continue;
-                if (!float.TryParse(vals[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float ot)) continue;
-                if (!float.TryParse(vals[4], NumberStyles.Float, CultureInfo.InvariantCulture, out float iw)) continue;
-                if (!float.TryParse(vals[5], NumberStyles.Float, CultureInfo.InvariantCulture, out float ow)) continue;
-                if (!int.TryParse(vals[6], out int wm)) continue;
-                var key = new Keyframe(t, v, it, ot, iw, ow) { weightedMode = (WeightedMode)wm };
-                curve.AddKey(key);
-            }
-            return curve;
-        }
-
-        #endregion
-
-        #region 导入：DTO -> DB（写入给定的 InventoryDatabase 实例）
-
-        public static void FromDto(InventoryDatabaseDto dto, InventoryDatabase target, IAssetRefResolver resolver)
-        {
-            resolver ??= NullAssetRefResolver.Instance;
-
-            target.EnumTypes.Clear();
-            target.FunctionTags.Clear();
-            target.ItemTemplates.Clear();
-            target.Items.Clear();
-
-            if (dto == null) return;
-
-            if (dto.enumTypes != null)
-                foreach (var e in dto.enumTypes) target.EnumTypes.Add(FromDto(e, resolver));
-            if (dto.functionTags != null)
-                foreach (var t in dto.functionTags) target.FunctionTags.Add(FromDto(t, resolver));
-            if (dto.itemTemplates != null)
-                foreach (var t in dto.itemTemplates) target.ItemTemplates.Add(FromDto(t, resolver));
-            if (dto.items != null)
-                foreach (var i in dto.items) target.Items.Add(FromDto(i, resolver));
-        }
-
-        private static EnumType FromDto(EnumTypeDto dto, IAssetRefResolver resolver)
-        {
-            var e = new EnumType(dto.name) { nextValue = dto.nextValue };
-            if (dto.attributes != null)
-                foreach (var a in dto.attributes)
-                    e.attributes.Add(FromDto(a, resolver));
-            if (dto.items != null)
-                foreach (var it in dto.items)
-                {
-                    var item = new EnumItem(it.name, it.value);
-                    if (it.attributeValues != null)
-                        foreach (var av in it.attributeValues)
-                            item.attributeValues.Add(new AttributeEntry(av.id, FromDto(av.value, resolver)));
-                    e.items.Add(item);
-                }
-            return e;
-        }
-
-        private static FunctionTag FromDto(FunctionTagDto dto, IAssetRefResolver resolver)
-        {
-            var t = new FunctionTag(dto.name, dto.description);
-            if (dto.attributes != null)
-                foreach (var a in dto.attributes)
-                    t.attributes.Add(FromDto(a, resolver));
-            return t;
-        }
-
-        private static ItemTemplate FromDto(ItemTemplateDto dto, IAssetRefResolver resolver)
-        {
-            var t = new ItemTemplate(dto.name);
-            if (dto.attributes != null)
-                foreach (var a in dto.attributes)
-                    t.attributes.Add(FromDto(a, resolver));
-            if (dto.tagRefs != null)
-                t.tagRefs = new List<string>(dto.tagRefs);
-            return t;
-        }
-
-        private static Item FromDto(ItemDto dto, IAssetRefResolver resolver)
-        {
-            var item = new Item(dto.id, dto.templateRef);
-            if (dto.tagRefs != null) item.tagRefs = new List<string>(dto.tagRefs);
-            if (dto.values != null)
-                foreach (var v in dto.values)
-                    item.values.Add(new AttributeEntry(v.id, FromDto(v.value, resolver)));
-            return item;
-        }
-
-        private static AttributeDefinition FromDto(AttributeDefinitionDto dto, IAssetRefResolver resolver)
-        {
-            return new AttributeDefinition
-            {
-                id = dto.id,
-                type = (EFieldType)dto.type,
-                isArray = dto.isArray,
-                enumTypeRef = dto.enumTypeRef,
-                defaultValue = FromDto(dto.defaultValue, resolver)
-            };
-        }
-
-        private static AttributeValue FromDto(AttributeValueDto dto, IAssetRefResolver resolver)
-        {
-            var v = new AttributeValue();
-            if (dto == null) return v;
-
-            var type = (EFieldType)dto.type;
-
-            List<Object> objs = null;
-            List<string> addresses = null;
-            if (type.IsObjectBacked() && dto.objGuids != null)
-            {
-                objs = new List<Object>(dto.objGuids.Length);
-                foreach (var guid in dto.objGuids)
-                    objs.Add(resolver.FromGuid(guid));
-
-                // 同时把原始 GUID/地址保留下来：运行时（NullResolver）对象引用为 null，
-                // 此地址供 Addressable 取用门面按需异步加载。
-                addresses = new List<string>(dto.objGuids);
-            }
-
-            List<AnimationCurve> curves = null;
-            if (type.IsAnimationCurveBacked() && dto.curveData != null)
-            {
-                curves = new List<AnimationCurve>(dto.curveData.Length);
-                foreach (var s in dto.curveData)
-                    curves.Add(DeserializeCurve(s));
-            }
-
-            v.SetRaw(type, dto.isArray, dto.enumTypeRef,
-                dto.ints, dto.floats, dto.strings, objs,
-                curveList: curves, addressList: addresses);
-            return v;
-        }
-
-        #endregion
-
-        private static TOut[] ToArray<TIn, TOut>(List<TIn> source, Func<TIn, TOut> map)
-        {
-            if (source == null) return Array.Empty<TOut>();
-            var result = new TOut[source.Count];
-            for (int i = 0; i < source.Count; i++)
-                result[i] = map(source[i]);
-            return result;
-        }
-
-        /// <summary>带过滤器的 ToArray，仅映射满足条件的元素。</summary>
-        private static TOut[] ToArrayFiltered<TIn, TOut>(List<TIn> source, Func<TIn, bool> filter, Func<TIn, TOut> map)
-        {
-            if (source == null) return Array.Empty<TOut>();
-            var list = new List<TOut>(source.Count);
-            foreach (var item in source)
-                if (filter(item)) list.Add(map(item));
-            return list.ToArray();
-        }
+        public string field;
+        public bool ascending;
     }
+
+    [Serializable]
+    public class InventoryTemplateDto : ConfigTemplateDto
+    {
+        public int   capacity;
+        public float weightLimit;
+        public string[] allowPutTagRefs;
+        public string[] allowTakeTagRefs;
+        public string[] allowOperateTagRefs;
+        public string[] filterTagRefs;
+        public bool showAllFilterTab;
+        public bool autoSort;
+        public bool dragSort;
+        public string numberFormatRef;
+        public SortPriorityDto[] sortPriorities;
+        public SortPriorityDto[] sortTiebreakers;
+    }
+
+    [Serializable]
+    public class InventoryDto
+    {
+        public string id;
+        public string templateRef;
+        /// <summary>显示名（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto displayNameText;
+        /// <summary>描述（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto descriptionText;
+        public int   capacity;
+        public float weightLimit;
+        public string[] allowPutTagRefs;
+        public string[] allowTakeTagRefs;
+        public string[] allowOperateTagRefs;
+        public string[] filterTagRefs;
+        public bool showAllFilterTab;
+        public bool autoSort;
+        public bool dragSort;
+        public string numberFormatRef;
+        public SortPriorityDto[] sortPriorities;
+        public SortPriorityDto[] sortTiebreakers;
+        /// <summary>来自模板的自定义属性值。</summary>
+        public AttributeEntryDto[] values;
+    }
+
+    [Serializable]
+    public class SortOptionDto
+    {
+        public string field;
+        /// <summary>内置：排序下拉显示名（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto displayName;
+        /// <summary>内置：排序时忽略（跳过）的条目 ID 列表。</summary>
+        public string[] ignoreIds;
+        /// <summary>额外自定义属性值（schema 见 <see cref="InventoryDatabaseDto.sortOptionAttributes"/>）。</summary>
+        public AttributeEntryDto[] attributeValues;
+    }
+
+    [Serializable]
+    public class NumberFormatRuleDto
+    {
+        public long   threshold;
+        public double divisor;
+        /// <summary>后缀（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto suffixText;
+        public int    decimalPlaces;
+    }
+
+    [Serializable]
+    public class NumberFormatLocaleDto
+    {
+        public string languageCode;
+        public NumberFormatRuleDto[] rules;
+    }
+
+    [Serializable]
+    public class NumberFormatConfigDto
+    {
+        public string name;
+        public NumberFormatLocaleDto[] locales;
+    }
+
+    #endregion
+
+    #region 商店系统
+
+    [Serializable]
+    public class ShopRefreshScheduleDto
+    {
+        public int    refreshType;
+        public int    timeType;
+        public string timeZoneId;
+        public int    hour;
+        public int    minute;
+        public int    dayOfWeek;
+        public int    dayOfMonth;
+    }
+
+    [Serializable]
+    public class ShopCommodityDto
+    {
+        public string guid;
+        public string itemId;
+        public int    count;
+        public float  priceMultiplier;
+        public int    tradeLimit;
+        public bool   overrideRefresh;
+        public ShopRefreshScheduleDto refresh;
+    }
+
+    [Serializable]
+    public class ShopCommodityGroupDto
+    {
+        public string guid;
+        public string name;
+        public string description;
+        public ShopRefreshScheduleDto refresh;
+        public ShopCommodityDto[] commodities;
+    }
+
+    [Serializable]
+    public class ShopTemplateDto : ConfigTemplateDto
+    {
+        public int shopType;
+        public string[] tradeInventoryRefs;
+        public string[] tradeTagRefs;
+        public string[] filterTagRefs;
+        public bool showAllFilterTab;
+        public string numberFormatRef;
+        public string priceAttrSource;
+        public SortPriorityDto[] sortPriorities;
+        public SortPriorityDto[] sortTiebreakers;
+        public ShopCommodityGroupDto[] groups;
+    }
+
+    [Serializable]
+    public class ShopDto
+    {
+        public string id;
+        public string templateRef;
+        /// <summary>显示名（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto displayNameText;
+        /// <summary>描述（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto descriptionText;
+        public int shopType;
+        public string[] tradeInventoryRefs;
+        public string[] tradeTagRefs;
+        public string[] filterTagRefs;
+        public bool showAllFilterTab;
+        public string numberFormatRef;
+        public string priceAttrSource;
+        public SortPriorityDto[] sortPriorities;
+        public SortPriorityDto[] sortTiebreakers;
+        public ShopCommodityGroupDto[] groups;
+        /// <summary>来自模板的自定义属性值。</summary>
+        public AttributeEntryDto[] values;
+    }
+
+    #endregion
 }
