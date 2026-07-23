@@ -402,18 +402,22 @@ namespace Ale.Inventory.Editor
             item.RebuildAttributes(db);
             db.Items.Add(item);
 
+            // 随机属性由道具 ID 派生（见 RandomFor）：同一 ID 每次生成的值都一样，
+            // 且与调用顺序无关——中途插入 / 删除别的 AddItem 不会改动其余道具的属性。
+            var rng = RandomFor(id);
+
             // 设置 属性字段的值
             item.SetAttributeValue("名称", id);
-            item.SetAttributeValue("品质", Random.Range(0, 6));
-            item.SetAttributeValue("部位", Random.Range(0, 12));
-            item.SetAttributeValue("装备类型", Random.Range(0, 4));
-            item.SetAttributeValue("武器主类型", Random.Range(0, 6));
-            item.SetAttributeValue("武器次类型", Random.Range(0, 12));
+            item.SetAttributeValue("品质", rng.Next(0, 6));
+            item.SetAttributeValue("部位", rng.Next(0, 12));
+            item.SetAttributeValue("装备类型", rng.Next(0, 4));
+            item.SetAttributeValue("武器主类型", rng.Next(0, 6));
+            item.SetAttributeValue("武器次类型", rng.Next(0, 12));
             // 装备系统 总加成示例字段（仅在道具具备对应属性时生效，其余 SetAttributeValue 静默跳过）
-            item.SetAttributeValue("物品等级", Random.Range(1, 60));
-            item.SetAttributeValue("攻击力",   Random.Range(5, 50));
-            item.SetAttributeValue("防御力",   Random.Range(3, 30));
-            item.SetAttributeValue("生命值",   Random.Range(10, 100));
+            item.SetAttributeValue("物品等级", rng.Next(1, 60));
+            item.SetAttributeValue("攻击力",   rng.Next(5, 50));
+            item.SetAttributeValue("防御力",   rng.Next(3, 30));
+            item.SetAttributeValue("生命值",   rng.Next(10, 100));
 
             // 价格（StringIntPair 数组首元素 金币→goldPrice），供商店 priceAttrSource 读取
             if (goldPrice > 0)
@@ -424,6 +428,30 @@ namespace Ale.Inventory.Editor
                     if (priceAv.Count == 0) priceAv.AddElement();
                     priceAv.SetStringIntPair(0, "金币", goldPrice);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 取一个由道具 ID 派生的伪随机数发生器，使 Demo 道具的随机属性<b>可复现</b>
+        /// （此前用全局的 <c>UnityEngine.Random</c>，每次重新生成的品质 / 攻击力等都不一样，
+        /// 无法拿两次生成结果做对比，也没法照着截图复现问题）。
+        /// <para>种子用 FNV-1a 自行计算，<b>不用</b> <see cref="string.GetHashCode"/>——后者不保证跨运行 /
+        /// 跨运行时稳定（.NET Core 默认给字符串哈希加随机盐），用它「可复现」就落空了。</para>
+        /// <para>用 <see cref="System.Random"/> 实例而非给 <c>UnityEngine.Random</c> 播种：后者是全局状态，
+        /// 播种会连带影响编辑器里其它用到它的代码。</para>
+        /// </summary>
+        static System.Random RandomFor(string itemId)
+        {
+            unchecked
+            {
+                uint hash = 2166136261u;              // FNV offset basis
+                string s = itemId ?? string.Empty;
+                for (int i = 0; i < s.Length; i++)
+                {
+                    hash ^= s[i];
+                    hash *= 16777619u;                // FNV prime
+                }
+                return new System.Random((int)hash);
             }
         }
         #endregion
