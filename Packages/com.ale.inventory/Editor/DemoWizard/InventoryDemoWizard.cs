@@ -46,20 +46,90 @@ namespace Ale.Inventory.Editor
     /// </summary>
     public static class InventoryDemoWizard
     {
-        // 文件夹路径
-        private const string KDemoRoot    = "Assets/Plugins/InventorySystem/Demo";
+        // ── Demo 根目录（动态解析）──────────────────────────────────────────────
+        // 1.4.0 迁入 UPM 包后，Demo 不再固定于 Assets/Plugins/InventorySystem/Demo（该目录已不存在）：
+        // 本仓库内在 Assets/Demo，而经 Package Manager 导入 Sample 则落在
+        // Assets/Samples/<显示名>/<版本>/Demo。故按标志性图片资产反查根目录，不再写死路径。
+
+        /// <summary>反查失败时的回退根目录（此时静态图片会缺失，仅保证生成流程不中断）。</summary>
+        private const string DemoRootFallback = "Assets/Demo";
+
+        /// <summary>标志资产：Demo 图片集里位置最稳定的一张，位于 <c>&lt;DemoRoot&gt;/Assets/UI/Image/Quality/</c> 下。</summary>
+        private const string DemoMarkerSprite = "T_Quality_Frame_Poor";
+
+        /// <summary>标志资产所在目录相对 Demo 根的层级（Assets / UI / Image / Quality 共 4 级）。</summary>
+        private const int DemoMarkerDepth = 4;
+
+        private static string _demoRoot;
+        private static bool   _demoRootWarned;   // 回退告警每次域重载只打一条，避免逐次求值刷屏
+
+        /// <summary>
+        /// Demo 根目录（资产路径）。按 <see cref="DemoMarkerSprite"/> 反查，同时覆盖
+        /// 「仓库内 Assets/Demo」与「Package Manager 导入的 Assets/Samples/…/Demo」两种落地方式；
+        /// 查不到时回退 <see cref="DemoRootFallback"/> 并告警。
+        /// <para>只缓存**成功**的解析结果，使用户导入 Sample 后无需重编译即可生效。</para>
+        /// </summary>
+        private static string DemoRoot
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(_demoRoot) && AssetDatabase.IsValidFolder(_demoRoot))
+                    return _demoRoot;
+
+                string found = FindDemoRoot();
+                if (!string.IsNullOrEmpty(found))
+                {
+                    _demoRootWarned = false;
+                    return _demoRoot = found;
+                }
+
+                if (!_demoRootWarned)
+                {
+                    _demoRootWarned = true;
+                    Debug.LogWarning($"[InventoryDemoWizard] 未找到 Demo 标志资产「{DemoMarkerSprite}」，" +
+                        $"回退到「{DemoRootFallback}」。生成出的预制体将缺少静态图片——" +
+                        "请先在 Package Manager 中导入本包的「Inventory System Demo」样本。");
+                }
+                return DemoRootFallback;
+            }
+        }
+
+        /// <summary>按标志图片资产反查 Demo 根目录；未找到返回 null。</summary>
+        private static string FindDemoRoot()
+        {
+            foreach (string guid in AssetDatabase.FindAssets($"{DemoMarkerSprite} t:Texture2D"))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                // 只认工程 Assets/ 下的资产；FindAssets 是模糊匹配，故文件名需完全一致
+                if (string.IsNullOrEmpty(path) || !path.StartsWith("Assets/")) continue;
+                if (System.IO.Path.GetFileNameWithoutExtension(path) != DemoMarkerSprite) continue;
+
+                // 去掉文件名，再上溯 DemoMarkerDepth 级目录即为 Demo 根
+                string dir = path;
+                for (int i = 0; i <= DemoMarkerDepth; i++)
+                {
+                    int sep = dir.LastIndexOf('/');
+                    if (sep < 0) { dir = null; break; }
+                    dir = dir.Substring(0, sep);
+                }
+                if (!string.IsNullOrEmpty(dir) && AssetDatabase.IsValidFolder(dir)) return dir;
+            }
+            return null;
+        }
+
+        // 文件夹路径（全部基于 DemoRoot 求值，故为属性而非常量）
         // 预制体根目录：按类型分子目录（Tab/ Item/ ItemList/ Tool/ View/ Common/），与 Runtime/UI 保持一致
-        private const string KPrefabRoot  = "Assets/Plugins/InventorySystem/Demo/Assets/UI/Prefab";
-        private const string KDataDir     = "Assets/Plugins/InventorySystem/Demo/Data"; // 配置数据文件夹
+        private static string PrefabRoot => DemoRoot + "/Assets/UI/Prefab";
+        private static string DataDir    => DemoRoot + "/Data"; // 配置数据文件夹
 
         // 资产路径
-        private const string KDatabasePath = KDataDir + "/InventoryDatabase.asset";
-        private const string KManagerPath  = KDemoRoot + "/InventoryManager.prefab"; // 管理器（Demo 入口，非 UI 组件，置于 Demo 根）
+        private static string DatabasePath => DataDir  + "/InventoryDatabase.asset";
+        private static string ManagerPath  => DemoRoot + "/InventoryManager.prefab"; // 管理器（Demo 入口，非 UI 组件，置于 Demo 根）
 
         // Demo 内静态精灵路径（由 LoadSprite 加载并赋给对应 Image）
-        private const string KSpriteBackSphere   = "Assets/Plugins/InventorySystem/Demo/Assets/UI/Image/Background/T_Back_Sphere.png";
-        private const string KSpriteQualityPoor  = "Assets/Plugins/InventorySystem/Demo/Assets/UI/Image/Quality/T_Quality_Frame_Poor.png";
-        private const string KSpriteItemGoldCoin = "Assets/Plugins/InventorySystem/Demo/Assets/UI/Image/Item/T_Item_GoldCoin.png";
+        private static string SpriteBackSphere   => DemoRoot + "/Assets/UI/Image/Background/T_Back_Sphere.png";
+        private static string SpriteQualityPoor  => DemoRoot + "/Assets/UI/Image/Quality/T_Quality_Frame_Poor.png";
+        private static string SpriteItemGoldCoin => DemoRoot + "/Assets/UI/Image/Item/T_Item_GoldCoin.png";
 
         // 预制体名称：统一采用 PF_(组件类名) 形式，便于识别与查找；子文件夹见 PrefabSubfolder()
         private const string KPfInventoryTab       = "PF_UiwInventoryTab";          // 仓库页签 UiwInventoryTab          → Tab/
@@ -177,14 +247,14 @@ namespace Ale.Inventory.Editor
             }
         }
 
-        /// <summary>预制体资产路径：管理器置于 Demo 根，其余按子文件夹放入 <see cref="KPrefabRoot"/>。</summary>
+        /// <summary>预制体资产路径：管理器置于 Demo 根，其余按子文件夹放入 <see cref="PrefabRoot"/>。</summary>
         private static string Pfb(string name)
         {
-            if (name == KPfInventoryManager) return KManagerPath;
+            if (name == KPfInventoryManager) return ManagerPath;
             string sub = PrefabSubfolder(name);
             return string.IsNullOrEmpty(sub)
-                ? KPrefabRoot + "/" + name + ".prefab"
-                : KPrefabRoot + "/" + sub + "/" + name + ".prefab";
+                ? PrefabRoot + "/" + name + ".prefab"
+                : PrefabRoot + "/" + sub + "/" + name + ".prefab";
         }
 
         private static List<GenItem> BuildItems()
@@ -192,7 +262,7 @@ namespace Ale.Inventory.Editor
             NumberFormatConfig Fmt() => GetOrCreateNumberFormat();
             return new List<GenItem>
             {
-                new GenItem { Category = CatCommon, Key = "DB",       DisplayName = "数据库 InventoryDatabase",         AssetPath = KDatabasePath,                  DepKeys = new string[0],
+                new GenItem { Category = CatCommon, Key = "DB",       DisplayName = "数据库 InventoryDatabase",         AssetPath = DatabasePath,                  DepKeys = new string[0],
                     Build = () => GetOrCreateDatabase() },
                 new GenItem { Category = CatInventory, Key = "Tab",      DisplayName = $"仓库页签 {KPfInventoryTab}",      AssetPath = Pfb(KPfInventoryTab),           DepKeys = new string[0],
                     Build = () => BuildTabPrefab() },
@@ -297,7 +367,7 @@ namespace Ale.Inventory.Editor
                         LoadPrefabComp<Button>(Pfb(KPfFilterButton))) },
                 new GenItem { Category = CatCommon, Key = "Manager",  DisplayName = $"管理器 {KPfInventoryManager}",   AssetPath = Pfb(KPfInventoryManager),       DepKeys = new[] { "DB", "Panel", "ShopPanel", "CraftView", "EquipView", "SkillView", "Tooltip", "SkillTooltip" },
                     Build = () => BuildInventoryManagerPrefab(
-                        AssetDatabase.LoadAssetAtPath<InventoryDatabase>(KDatabasePath),
+                        AssetDatabase.LoadAssetAtPath<InventoryDatabase>(DatabasePath),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfInventoryPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfShopPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfCraftingView)),
@@ -316,7 +386,7 @@ namespace Ale.Inventory.Editor
             if (!ConfirmOverwrite(all)) return;
             BuildSubset(all);
             EditorUtility.DisplayDialog("生成完成",
-                $"已生成全部资产：\n{KDataDir}/\n{KPrefabRoot}/\n\n" +
+                $"已生成全部资产：\n{DataDir}/\n{PrefabRoot}/\n\n" +
                 "将 InventoryManager.prefab 拖入场景，点击 Play 即可验证。", "OK");
         }
 
@@ -416,14 +486,15 @@ namespace Ale.Inventory.Editor
 
         private static void EnsureFolders()
         {
-            EnsureFolder(KDemoRoot);
-            EnsureFolder(KDataDir);
-            EnsureFolder(KPrefabRoot + "/Tab");
-            EnsureFolder(KPrefabRoot + "/Item");
-            EnsureFolder(KPrefabRoot + "/ItemList");
-            EnsureFolder(KPrefabRoot + "/Tool");
-            EnsureFolder(KPrefabRoot + "/View");
-            EnsureFolder(KPrefabRoot + "/Common");
+            EnsureFolder(DemoRoot);
+            EnsureFolder(DataDir);
+            EnsureFolder(PrefabRoot);   // 显式建根：PrefabSubfolder 返回空时预制体直接落在此处
+            EnsureFolder(PrefabRoot + "/Tab");
+            EnsureFolder(PrefabRoot + "/Item");
+            EnsureFolder(PrefabRoot + "/ItemList");
+            EnsureFolder(PrefabRoot + "/Tool");
+            EnsureFolder(PrefabRoot + "/View");
+            EnsureFolder(PrefabRoot + "/Common");
         }
 
         #endregion
@@ -435,7 +506,7 @@ namespace Ale.Inventory.Editor
         /// <returns></returns>
         static void GetOrCreateDatabase()
         {
-            string path = KDatabasePath;
+            string path = DatabasePath;
             DeleteIfExists(path);
 
             var db = ScriptableObject.CreateInstance<InventoryDatabase>();
@@ -1432,7 +1503,7 @@ namespace Ale.Inventory.Editor
             Stretch(qualityGo.AddComponent<RectTransform>());
             var qualityImg = qualityGo.AddComponent<Image>();
             qualityImg.color = Color.white; qualityImg.preserveAspect = true;
-            qualityImg.sprite = LoadSprite(KSpriteQualityPoor);
+            qualityImg.sprite = LoadSprite(SpriteQualityPoor);
             cell.qualityBackground = qualityImg;
 
             var iconGo = ChildGameObject("Icon", frameGo.transform);
@@ -1678,7 +1749,7 @@ namespace Ale.Inventory.Editor
             Stretch(bgGo.AddComponent<RectTransform>());
             var bgImg = bgGo.AddComponent<Image>();
             bgImg.color   = new Color(0.44276467f, 1f, 0.28773582f, 0.9019608f);
-            bgImg.sprite  = LoadSprite(KSpriteBackSphere);
+            bgImg.sprite  = LoadSprite(SpriteBackSphere);
             bgImg.type    = Image.Type.Sliced;
             bgImg.pixelsPerUnitMultiplier = 12f;
             SetLayoutElement(bgGo, ignore: true);
@@ -1955,7 +2026,7 @@ namespace Ale.Inventory.Editor
             sfRt.anchoredPosition = new Vector2(-8f, -8f);
             var sfImg = sfGo.AddComponent<Image>();
             sfImg.color  = new Color(1f, 0.15566039f, 0.1996756f, 1f);
-            sfImg.sprite = LoadSprite(KSpriteBackSphere);
+            sfImg.sprite = LoadSprite(SpriteBackSphere);
             comp.stackFullIcon = sfImg;
             comp.stackFullFadeDuration = 0.12f;
 
@@ -1968,7 +2039,7 @@ namespace Ale.Inventory.Editor
             qualityRt.anchoredPosition = new Vector2(4f, 0f);
             var qualityImg = qualityGo.AddComponent<Image>();
             qualityImg.color  = Color.white;
-            qualityImg.sprite = LoadSprite(KSpriteQualityPoor);
+            qualityImg.sprite = LoadSprite(SpriteQualityPoor);
             qualityImg.preserveAspect = true;
             comp.qualityBackground = qualityImg;
 
@@ -1979,7 +2050,7 @@ namespace Ale.Inventory.Editor
             iconRt.sizeDelta = new Vector2(-16f, -16f);
             var iconImg = iconGo.AddComponent<Image>();
             iconImg.color  = Color.white;
-            iconImg.sprite = LoadSprite(KSpriteItemGoldCoin);
+            iconImg.sprite = LoadSprite(SpriteItemGoldCoin);
             iconImg.preserveAspect = true;
             comp.iconImage = iconImg;
 
@@ -2408,7 +2479,7 @@ namespace Ale.Inventory.Editor
             Stretch(qualityGo.AddComponent<RectTransform>());
             var qualityImg = qualityGo.AddComponent<Image>();
             qualityImg.color = Color.white; qualityImg.preserveAspect = true; qualityImg.raycastTarget = false;
-            qualityImg.sprite = LoadSprite(KSpriteQualityPoor);
+            qualityImg.sprite = LoadSprite(SpriteQualityPoor);
             cell.qualityBackground = qualityImg;
 
             var iconGo = ChildGameObject("Icon", frameGo.transform);
@@ -3912,8 +3983,14 @@ namespace Ale.Inventory.Editor
 
         // ── 对齐辅助（精灵 / 依赖加载 / 布局组件复制）──────────────────────────
 
-        /// <summary>从指定资产路径加载 Sprite（把 Demo 静态精灵赋给 Image）。</summary>
-        static Sprite LoadSprite(string assetPath) => AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+        /// <summary>从指定资产路径加载 Sprite（把 Demo 静态精灵赋给 Image）；缺失时告警，不再静默留空。</summary>
+        static Sprite LoadSprite(string assetPath)
+        {
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+            if (!sprite)
+                Debug.LogWarning($"[InventoryDemoWizard] 未找到精灵资产：{assetPath}（对应 Image 将留空）。");
+            return sprite;
+        }
 
         /// <summary>加载预制体根节点上的指定组件（用于依赖引用）。</summary>
         static T LoadPrefabComp<T>(string path) where T : Component
