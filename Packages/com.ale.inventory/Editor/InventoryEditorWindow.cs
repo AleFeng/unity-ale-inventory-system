@@ -8,9 +8,9 @@ using UnityEngine;
 namespace Ale.Inventory.Editor
 {
     /// <summary>
-    /// 仓库系统配置编辑器主窗口（IMGUI）。顶部为系统页签（道具/仓库/商店/装备/制作/技能），
-    /// 第一期仅实现「道具系统」页签，其余为占位。所有编辑基于 ScriptableObject，支持 Undo/Redo，
-    /// JSON / 二进制 仅用于单向导出。
+    /// 仓库系统配置编辑器主窗口（IMGUI）。顶部为系统页签（道具 / 仓库 / 商店 / 制作 / 装备 / 技能），
+    /// 六个页签均已实现，各自由对应的 <c>*SystemTab</c> 承载。所有编辑基于 ScriptableObject，
+    /// 支持 Undo/Redo；JSON / 二进制 仅用于单向导出。
     /// </summary>
     public class InventoryEditorWindow : EditorWindow, IInventoryEditorContext
     {
@@ -255,26 +255,17 @@ namespace Ale.Inventory.Editor
         {
             GUILayout.BeginArea(rect);
             var inner = new Rect(0, 0, rect.width, rect.height);
-            if (_systemTab == 0)
-                _itemSystemTab.OnGUI(inner, this);
-            else if (_systemTab == 1)
-                _inventorySystemTab.OnGUI(inner, this);
-            else if (_systemTab == 2)
-                _shopSystemTab.OnGUI(inner, this);
-            else if (_systemTab == 3)
-                _craftingSystemTab.OnGUI(inner, this);
-            else if (_systemTab == 4)
-                _equipmentSystemTab.OnGUI(inner, this);
-            else if (_systemTab == 5)
-                _skillSystemTab.OnGUI(inner, this);
-            else
-                DrawStub(inner, SystemTabs[_systemTab]);
+            // 与 SystemTabs 一一对应；_systemTab 由 GUILayout.Toolbar 产出，恒在合法范围内。
+            switch (_systemTab)
+            {
+                case 0: _itemSystemTab.OnGUI(inner, this);      break;
+                case 1: _inventorySystemTab.OnGUI(inner, this); break;
+                case 2: _shopSystemTab.OnGUI(inner, this);      break;
+                case 3: _craftingSystemTab.OnGUI(inner, this);  break;
+                case 4: _equipmentSystemTab.OnGUI(inner, this); break;
+                case 5: _skillSystemTab.OnGUI(inner, this);     break;
+            }
             GUILayout.EndArea();
-        }
-
-        private static void DrawStub(Rect rect, string title)
-        {
-            GUI.Label(rect, $"「{title}」将在后续阶段实现", InventoryEditorStyles.Placeholder);
         }
 
         private void DrawNoDatabase(Rect rect)

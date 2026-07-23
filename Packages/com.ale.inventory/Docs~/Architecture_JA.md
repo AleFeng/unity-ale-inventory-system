@@ -120,13 +120,15 @@ InventoryEditorWindow          メインウィンドウ + IInventoryEditorContex
 │   ├── CraftingGroupTagPanel  グループタグ一覧 + 編集パネル
 │   ├── CraftingTemplatePanel  ブループリントテンプレート一覧 + 編集パネル
 │   └── CraftingListPanel      ブループリント一覧 + CraftingInspectorPanel
-└── EquipmentSystemTab        装備システムタブ
-    ├── EquipmentGroupTagPanel グループタグ一覧 + 編集パネル
-    ├── EquipmentTemplatePanel 装備グループテンプレート一覧 + 編集パネル（名称/色 + 共有設定 + カスタム属性フィールド）
-    └── EquipmentListPanel     装備グループ一覧 + EquipmentInspectorPanel（ネストしたスロットリスト / 装備スロット / アイテム制限 / 属性フィールド）
+├── EquipmentSystemTab        装備システムタブ
+│   ├── EquipmentGroupTagPanel グループタグ一覧 + 編集パネル
+│   ├── EquipmentTemplatePanel 装備グループテンプレート一覧 + 編集パネル（名称/色 + 共有設定 + カスタム属性フィールド）
+│   └── EquipmentListPanel     装備グループ一覧 + EquipmentInspectorPanel（ネストしたスロットリスト / 装備スロット / アイテム制限 / 属性フィールド）
+└── SkillSystemTab            スキルシステムタブ
+    ├── SkillGroupTagPanel     グループタグ一覧 + 編集パネル
+    ├── SkillTemplatePanel     スキルテンプレート一覧 + 編集パネル（スキル既定情報 + カスタム属性フィールド）
+    └── SkillListPanel         スキル一覧 + SkillInspectorPanel（名称 / 説明 / アイコン / グループタグ / カスタム属性値）
 ```
-
-「スキルシステム」タブは現在プレースホルダー（DrawStub）で、後の段階で実装予定です。
 
 > 装備システムの「スロットリスト + 装備属性フィールド」は `Editor/Common/EquipmentConfigDrawer` が統一的に描画します（装備グループ Inspector と装備グループテンプレート Inspector で再利用）。ネストしたサブリストのドラッグ並べ替えは、パスをキーとする `Dictionary<string, EditorReorderableDrag>` で分離します。
 

@@ -120,13 +120,15 @@ InventoryEditorWindow          Main window + IInventoryEditorContext implementat
 │   ├── CraftingGroupTagPanel  Group tag list + edit panel
 │   ├── CraftingTemplatePanel  Blueprint template list + edit panel
 │   └── CraftingListPanel      Blueprint list + CraftingInspectorPanel
-└── EquipmentSystemTab        Equipment System tab
-    ├── EquipmentGroupTagPanel Group tag list + edit panel
-    ├── EquipmentTemplatePanel Equipment-group template list + edit panel (name/color + shared config + custom attribute fields)
-    └── EquipmentListPanel     Equipment-group list + EquipmentInspectorPanel (nested slot lists / equipment slots / item limits / attribute fields)
+├── EquipmentSystemTab        Equipment System tab
+│   ├── EquipmentGroupTagPanel Group tag list + edit panel
+│   ├── EquipmentTemplatePanel Equipment-group template list + edit panel (name/color + shared config + custom attribute fields)
+│   └── EquipmentListPanel     Equipment-group list + EquipmentInspectorPanel (nested slot lists / equipment slots / item limits / attribute fields)
+└── SkillSystemTab            Skill System tab
+    ├── SkillGroupTagPanel     Group tag list + edit panel
+    ├── SkillTemplatePanel     Skill template list + edit panel (skill default info + custom attribute fields)
+    └── SkillListPanel         Skill list + SkillInspectorPanel (name / description / icon / group tags / custom attribute values)
 ```
-
-The "Skill System" tab is currently a placeholder (DrawStub), to be implemented in a later phase.
 
 > The Equipment System's "slot list + equipment attribute fields" are drawn uniformly by `Editor/Common/EquipmentConfigDrawer` (reused by the equipment-group Inspector and the equipment-group template Inspector), and the drag-reordering of nested sub-lists is isolated via a `Dictionary<string, EditorReorderableDrag>` keyed by path.
 
