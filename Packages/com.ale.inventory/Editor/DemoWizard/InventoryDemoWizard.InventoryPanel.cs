@@ -34,8 +34,7 @@ namespace Ale.Inventory.Editor
             GameObject             listPanelPrefab,
             GameObject             gridPrefab)
         {
-            string panelPath = Pfb(KPfInventoryPanel);
-            DeleteIfExists(panelPath);
+            string panelPath = BeginPrefab(KPfInventoryPanel);
 
             // ── 面板根节点（锚定居中，固定尺寸 540×660）─────────────────────────
             var panelGo = NewGameObject(KPfInventoryPanel);
@@ -210,14 +209,7 @@ namespace Ale.Inventory.Editor
                 viewComp.itemGridList = gridInst.GetComponent<UiwInventoryItemGridList>();
             }
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(panelGo);
-#endif
-
-            MovePrimaryUiwToTop(panelGo);
-            PrefabUtility.SaveAsPrefabAsset(panelGo, panelPath);
-            Object.DestroyImmediate(panelGo);   // 临时 GO 使命完成，立即销毁
-            Debug.Log("[InventoryDemoWizard] 面板 Prefab 已保存：" + panelPath);
+            SavePrefab(panelGo, panelPath);
         }
         #endregion
     }

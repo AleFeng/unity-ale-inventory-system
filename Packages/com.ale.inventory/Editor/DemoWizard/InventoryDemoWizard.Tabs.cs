@@ -25,8 +25,7 @@ namespace Ale.Inventory.Editor
         /// <returns></returns>
         static void BuildTabPrefab()
         {
-            string path = Pfb(KPfInventoryTab);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfInventoryTab);
 
             // root: Button + Image + UiwInventoryTab
             var root = NewGameObject(KPfInventoryTab);
@@ -56,10 +55,6 @@ namespace Ale.Inventory.Editor
             selGo.SetActive(false);
             tab.selectedIndicator = selGo;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
-
             SavePrefab(root, path);
         }
         
@@ -69,8 +64,7 @@ namespace Ale.Inventory.Editor
         /// <returns></returns>
         static void BuildFilterButtonPrefab()
         {
-            string path = Pfb(KPfFilterButton);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfFilterButton);
 
             var root = NewGameObject(KPfFilterButton);
             SetRectSize(root.AddComponent<RectTransform>(), 72, 28);
@@ -84,10 +78,6 @@ namespace Ale.Inventory.Editor
             Stretch(labelGo.AddComponent<RectTransform>());
             AddText(labelGo, "全部", 12, Color.white);
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
-
             SavePrefab(root, path);
         }
 
@@ -97,8 +87,7 @@ namespace Ale.Inventory.Editor
         /// </summary>
         static void BuildFoldTabPrefab()
         {
-            string path = Pfb(KPfFoldTab);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfFoldTab);
 
             // 根：可点击页签（背景图 + Button），横向布局 [图标][文本]
             var root = NewGameObject(KPfFoldTab);
@@ -130,10 +119,6 @@ namespace Ale.Inventory.Editor
             SetLayoutElement(labelGo, flexW: 1);
             var labelTxt = AddText(labelGo, "全部", 12, Color.white, TextAnchor.MiddleLeft);
             SetSerializedRef(foldTab, "label", labelTxt);
-
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
 
             SavePrefab(root, path);
         }

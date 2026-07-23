@@ -23,8 +23,7 @@ namespace Ale.Inventory.Editor
         /// <summary>构建 PF_ShopGroupTab（商店商品组页签：Button + UiwShopGroupTab，对齐 PF_InventoryTab）。</summary>
         static void BuildShopGroupTabPrefab()
         {
-            string path = Pfb(KPfShopGroupTab);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfShopGroupTab);
 
             var root = NewGameObject(KPfShopGroupTab);
             SetRectSize(root.AddComponent<RectTransform>(), 96, 32);
@@ -49,10 +48,6 @@ namespace Ale.Inventory.Editor
             selGo.SetActive(false);
             tab.selectedIndicator = selGo;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
-
             SavePrefab(root, path);
         }
 
@@ -62,8 +57,7 @@ namespace Ale.Inventory.Editor
         /// </summary>
         static void BuildNumberCounterPrefab()
         {
-            string path = Pfb(KPfNumberCounter);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfNumberCounter);
 
             // 根：横向一行（- 值 +），并带 LayoutElement 便于嵌入父级布局组时给出自然尺寸
             var root = NewGameObject(KPfNumberCounter);
@@ -91,10 +85,6 @@ namespace Ale.Inventory.Editor
             SetLayoutElement(plusBtn.gameObject, minW: 28, prefW: 28, minH: 28, prefH: 28);
             counter.plusButton = plusBtn;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
-
             SavePrefab(root, path);
         }
 
@@ -102,8 +92,7 @@ namespace Ale.Inventory.Editor
         static void BuildShopItemDetailPrefab(NumberFormatConfig numFmt, UiwInventoryItemSimple pricePrefab,
             UiwNumberCounter counterPrefab)
         {
-            string path = Pfb(KPfShopItemDetail);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfShopItemDetail);
 
             var root = NewGameObject(KPfShopItemDetail);
             SetRectSize(root.AddComponent<RectTransform>(), 460f, 56f);
@@ -185,10 +174,6 @@ namespace Ale.Inventory.Editor
             }
             else Debug.LogWarning("[InventoryDemoWizard] 缺少 PF_UiwNumberCounter，商店条目无法调整交易次数。");
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
-
             SavePrefab(root, path);
         }
 
@@ -196,8 +181,7 @@ namespace Ale.Inventory.Editor
         static void BuildShopPanelPrefab(UiwShopGroupTab groupTabPrefab,
             UiwShopItemDetail cellPrefab, UiwInventoryItemSimple itemSimplePrefab)
         {
-            string path = Pfb(KPfShopPanel);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfShopPanel);
 
             // 面板根（居中，480×620）
             var panelGo = NewGameObject(KPfShopPanel);
@@ -317,14 +301,7 @@ namespace Ale.Inventory.Editor
             if (shopIdProp   != null) shopIdProp.stringValue = "杂货商店";
             vso.ApplyModifiedPropertiesWithoutUndo();
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(panelGo);
-#endif
-
-            MovePrimaryUiwToTop(panelGo);
-            PrefabUtility.SaveAsPrefabAsset(panelGo, path);
-            Object.DestroyImmediate(panelGo);
-            Debug.Log("[InventoryDemoWizard] 商店面板 Prefab 已保存：" + path);
+            SavePrefab(panelGo, path);
         }
 
         /// <summary>添加并设置 VerticalLayoutGroup（参数对齐 <see cref="SetHlg"/>）。</summary>

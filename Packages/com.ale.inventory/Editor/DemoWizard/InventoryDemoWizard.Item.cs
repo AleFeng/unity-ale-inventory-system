@@ -31,8 +31,7 @@ namespace Ale.Inventory.Editor
         static void BuildItemDetailPrefab(NumberFormatConfig numFmt,
             UiwTextLabel labelPrefab, UiwInventoryItemSimple pricePrefab)
         {
-            string path = Pfb(KPfItemDetail);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfItemDetail);
 
             // root：500×80
             var root = NewGameObject(KPfItemDetail);
@@ -149,10 +148,6 @@ namespace Ale.Inventory.Editor
             comp.priceCurrencyPrefab = pricePrefab;
             comp.priceContainer      = priceGo.transform;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
-
             SavePrefab(root, path);
         }
         #endregion
@@ -165,8 +160,7 @@ namespace Ale.Inventory.Editor
         /// <param name="numFmt"></param>
         static void BuildItemCellPrefab(NumberFormatConfig numFmt)
         {
-            string path = Pfb(KPfItemCell);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfItemCell);
 
             const float slotSize = 72f;
             var root   = NewGameObject(KPfItemCell);
@@ -230,10 +224,6 @@ namespace Ale.Inventory.Editor
             sfImg.color = new Color(1f, 0.2f, 0.2f, 1f);
             comp.stackFullIcon = sfImg;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
-
             SavePrefab(root, path);
         }
         
@@ -246,8 +236,7 @@ namespace Ale.Inventory.Editor
         /// <param name="numFmt"></param>
         static void BuildItemSimplePrefab(NumberFormatConfig numFmt)
         {
-            string path = Pfb(KPfItemSimple);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfItemSimple);
 
             // root：54×20，横向布局（图标 + 数量）
             var root = NewGameObject(KPfItemSimple);
@@ -276,10 +265,6 @@ namespace Ale.Inventory.Editor
             qRt.sizeDelta = Vector2.zero;
             var qTxt = AddText(qGo, "9999", 12, Color.white, TextAnchor.MiddleLeft);
             SetSerializedRef(comp, "countText", qTxt);
-
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
 
             SavePrefab(root, path);
         }

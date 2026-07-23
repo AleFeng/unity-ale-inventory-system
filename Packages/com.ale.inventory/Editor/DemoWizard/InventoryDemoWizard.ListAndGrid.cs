@@ -23,8 +23,7 @@ namespace Ale.Inventory.Editor
         /// <summary>构建 PF_ItemLabel（功能标签：背景图 + 文本，对齐 Demo 现有预制体）。</summary>
         static void BuildItemLabelPrefab()
         {
-            string path = Pfb(KPfItemLabel);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfItemLabel);
 
             var root = NewGameObject(KPfItemLabel);
             SetRectSize(root.AddComponent<RectTransform>(), 28f, 16f);
@@ -52,18 +51,13 @@ namespace Ale.Inventory.Editor
             SetSerializedRef(comp, "backgroundImage", bgImg);
             SetSerializedRef(comp, "labelText", nameTxt);
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
-
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_ItemPrice（价格货币格：图标 + 数量，UiwInventoryItemSimple）。</summary>
         static void BuildItemPricePrefab(NumberFormatConfig numFmt)
         {
-            string path = Pfb(KPfItemPrice);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfItemPrice);
 
             var root = NewGameObject(KPfItemPrice);
             SetRectSize(root.AddComponent<RectTransform>(), 36f, 16f);
@@ -93,18 +87,13 @@ namespace Ale.Inventory.Editor
             var qTxt = AddText(qGo, "999", 10, Color.white, TextAnchor.MiddleLeft);
             SetSerializedRef(comp, "countText", qTxt);
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
-
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_InventoryListPanel（独立列表面板：UiwInventoryList + ScrollRect + Scrollbar）。</summary>
         static void BuildInventoryListPanelPrefab(UiwInventoryItemDetail detailPrefab)
         {
-            string path = Pfb(KPfInventoryOrderList);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfInventoryOrderList);
 
             var root   = NewGameObject(KPfInventoryOrderList);
             var rootRt = root.AddComponent<RectTransform>();
@@ -120,18 +109,13 @@ namespace Ale.Inventory.Editor
             listComp.scrollRect = sr;
             listComp.content    = contentRt;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
-
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_InventoryGridPanel（网格面板：ScrollRect + 虚拟滚动 UiwInventoryItemGridList，纵向滚动·自动列数）。</summary>
         static void BuildInventoryGridPrefab(UiwInventoryItemCell cellPrefab)
         {
-            string path = Pfb(KPfInventoryGridList);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfInventoryGridList);
 
             var root   = NewGameObject(KPfInventoryGridList);
             var rootRt = root.AddComponent<RectTransform>();
@@ -149,10 +133,6 @@ namespace Ale.Inventory.Editor
             var sr = MakeVerticalScrollView(root, out var contentRt);
             comp.scrollRect = sr;
             comp.content    = contentRt;
-
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
 
             SavePrefab(root, path);
         }

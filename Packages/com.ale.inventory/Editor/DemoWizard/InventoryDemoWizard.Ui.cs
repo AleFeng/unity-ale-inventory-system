@@ -263,6 +263,11 @@ namespace Ale.Inventory.Editor
         // 保存 Prefab 到指定路径并销毁临时 GameObject
         static void SavePrefab(GameObject root, string path)
         {
+#if IS_TMP && IS_LOCALIZATION
+            // 双宏下统一在保存前挂本地化字体事件（此前各 builder 尾部各写一遍；装备类曾漏挂，
+            // 收口到此处后自动补齐）。AttachFontEvent 会扫描全部子节点建立字体绑定，故须在层级搭好后调用。
+            AttachFontEvent(root);
+#endif
             MovePrimaryUiwToTop(root);
             PrefabUtility.SaveAsPrefabAsset(root, path);
             Object.DestroyImmediate(root);
@@ -307,6 +312,16 @@ namespace Ale.Inventory.Editor
         {
             if (AssetDatabase.LoadAssetAtPath<Object>(path))
                 AssetDatabase.DeleteAsset(path);
+        }
+
+        /// <summary>
+        /// 每个 builder 开头的固定两步：由预制体名解析出目标资产路径（<see cref="Pfb"/>），
+        /// 并删除同名旧资产（<see cref="DeleteIfExists"/>，保证用最新版本重生成），返回该路径。
+        /// </summary>
+        static string BeginPrefab(string prefabName)
+        {
+            string path = BeginPrefab(prefabName);
+            return path;
         }
 
         // ── 对齐辅助（精灵 / 依赖加载 / 布局组件复制）──────────────────────────

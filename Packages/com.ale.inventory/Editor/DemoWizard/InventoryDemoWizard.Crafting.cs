@@ -23,8 +23,7 @@ namespace Ale.Inventory.Editor
         /// <summary>构建 PF_UiwItemTooltip（通用道具悬停弹窗：内嵌一个 UiwInventoryItemDetail 渲染详情）。</summary>
         static void BuildItemTooltipPrefab(GameObject detailPrefab)
         {
-            string path = Pfb(KPfItemTooltip);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfItemTooltip);
 
             var root = NewGameObject(KPfItemTooltip);
             var rt   = root.AddComponent<RectTransform>();
@@ -52,8 +51,7 @@ namespace Ale.Inventory.Editor
         /// <summary>构建 PF_UiwCraftingInputCell（消耗道具行：图标 + 名称 + 持有/需求，支持悬停弹窗）。</summary>
         static void BuildCraftingInputCellPrefab(NumberFormatConfig numFmt)
         {
-            string path = Pfb(KPfCraftingInputCell);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfCraftingInputCell);
 
             var root = NewGameObject(KPfCraftingInputCell);
             SetRectSize(root.AddComponent<RectTransform>(), 300f, 32f);
@@ -87,17 +85,13 @@ namespace Ale.Inventory.Editor
             var amtTxt = AddText(amtGo, "0/0", 12, Color.white, TextAnchor.MiddleRight);
             SetSerializedRef(cell, "amountText", amtTxt);
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_UiwCraftingBlueprintCell（蓝图条目：主产出图标 + 蓝图名 + 属性显示行 + 选中条 + 点击选中）。</summary>
         static void BuildCraftingBlueprintCellPrefab(NumberFormatConfig numFmt, UiwTextLabel labelPrefab)
         {
-            string path = Pfb(KPfCraftingBlueprintCell);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfCraftingBlueprintCell);
 
             var root = NewGameObject(KPfCraftingBlueprintCell);
             SetRectSize(root.AddComponent<RectTransform>(), 320f, 72f);
@@ -158,17 +152,13 @@ namespace Ale.Inventory.Editor
             cell.attrLineContainer = attrGo.transform;
             cell.attrLinePrefab    = labelPrefab;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_UiwCraftingBlueprintList（蓝图虚拟列表：UiwCraftingBlueprintList + ScrollRect + Scrollbar）。</summary>
         static void BuildCraftingBlueprintListPrefab(UiwCraftingBlueprintCell cellPrefab)
         {
-            string path = Pfb(KPfCraftingBlueprintList);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfCraftingBlueprintList);
 
             var root   = NewGameObject(KPfCraftingBlueprintList);
             var rootRt = root.AddComponent<RectTransform>();
@@ -184,9 +174,6 @@ namespace Ale.Inventory.Editor
             listComp.scrollRect = sr;
             listComp.content    = contentRt;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
             SavePrefab(root, path);
         }
 
@@ -195,8 +182,7 @@ namespace Ale.Inventory.Editor
             GameObject detailPrefab, UiwInventoryItemSimple simplePrefab, UiwInventoryTab tabPrefab, UiwFoldTab foldTabPrefab,
             UiwNumberCounter counterPrefab)
         {
-            string path = Pfb(KPfCraftingView);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfCraftingView);
 
             var panelGo = NewGameObject(KPfCraftingView);
             var panelRt = panelGo.AddComponent<RectTransform>();
@@ -375,14 +361,7 @@ namespace Ale.Inventory.Editor
             if (autoOpenProp != null) autoOpenProp.boolValue = true;
             vso.ApplyModifiedPropertiesWithoutUndo();
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(panelGo);
-#endif
-
-            MovePrimaryUiwToTop(panelGo);
-            PrefabUtility.SaveAsPrefabAsset(panelGo, path);
-            Object.DestroyImmediate(panelGo);
-            Debug.Log("[InventoryDemoWizard] 制作主界面 Prefab 已保存：" + path);
+            SavePrefab(panelGo, path);
         }
 
         /// <summary>创建一个标准 UI InputField（文本组件为 UnityEngine.UI.Text，与 UiwCraftingView.searchInput 类型一致）。</summary>

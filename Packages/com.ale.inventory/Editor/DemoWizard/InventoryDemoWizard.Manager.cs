@@ -27,8 +27,7 @@ namespace Ale.Inventory.Editor
             GameObject shopPanelPrefab, GameObject craftViewPrefab, GameObject tooltipPrefab,
             GameObject equipViewPrefab, GameObject skillViewPrefab, GameObject skillTooltipPrefab)
         {
-            string path = Pfb(KPfInventoryManager);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfInventoryManager);
 
             // ── Root ──────────────────────────────────────────────────────────
             var root  = NewGameObject(KPfInventoryManager);

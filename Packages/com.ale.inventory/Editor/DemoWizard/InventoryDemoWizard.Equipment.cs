@@ -23,8 +23,7 @@ namespace Ale.Inventory.Editor
         /// <summary>构建 PF_UiwEquipmentSlot（装备槽：品质背景 + 图标 + 名称 + 悬停 + 选中指示 + 绿/红有效性叠加）。</summary>
         static void BuildEquipmentSlotPrefab(NumberFormatConfig numFmt)
         {
-            string path = Pfb(KPfEquipSlot);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfEquipSlot);
 
             const float slotSize = 72f;
             var root = NewGameObject(KPfEquipSlot);
@@ -96,17 +95,13 @@ namespace Ale.Inventory.Editor
             valImg.enabled = false;
             comp.validityOverlay = valImg;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_UiwEquipmentCandidateCell（可装备道具格子：UiwInventoryItemCell + GridCellDragHandler；品质背景 + 图标 + 名称 + 数量 + 悬停；右键快速装备 / 左键拖拽装备）。</summary>
         static void BuildEquipmentCandidateCellPrefab(NumberFormatConfig numFmt)
         {
-            string path = Pfb(KPfEquipCandidateCell);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfEquipCandidateCell);
 
             const float slotSize = 64f;
             var root = NewGameObject(KPfEquipCandidateCell);
@@ -162,17 +157,13 @@ namespace Ale.Inventory.Editor
             hoverImg.raycastTarget = false;
             comp.hoverBorder = hoverImg;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_UiwEquipmentBonusEntry（属性加成条目：左标签 + 右数值，一行）。亦用作分组标题行（数值留空）。</summary>
         static void BuildEquipmentBonusEntryPrefab()
         {
-            string path = Pfb(KPfEquipBonusEntry);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfEquipBonusEntry);
 
             var root = NewGameObject(KPfEquipBonusEntry);
             var rt   = root.AddComponent<RectTransform>();
@@ -197,17 +188,13 @@ namespace Ale.Inventory.Editor
             var valTxt = AddText(valGo, "0", 12, Color.white, TextAnchor.MiddleRight, FontStyle.Bold);
             SetSerializedRef(comp, "valueText", valTxt);
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_UiwEquipmentSlotList（槽位列表：名称 + HorizontalLayoutGroup 装备槽容器）。</summary>
         static void BuildEquipmentSlotListPrefab(UiwEquipmentSlot slotPrefab)
         {
-            string path = Pfb(KPfEquipSlotList);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfEquipSlotList);
 
             var root = NewGameObject(KPfEquipSlotList);
             var rt   = root.AddComponent<RectTransform>();
@@ -239,8 +226,7 @@ namespace Ale.Inventory.Editor
         /// <summary>构建 PF_UiwEquipmentCandidateList（可装备道具列表：ScrollRect + 虚拟滚动 UiwEquipmentCandidateList，纵向滚动·自动列数）。</summary>
         static void BuildEquipmentCandidateListPrefab(UiwInventoryItemCell cellPrefab)
         {
-            string path = Pfb(KPfEquipCandidateList);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfEquipCandidateList);
 
             var root = NewGameObject(KPfEquipCandidateList);
             var rt   = root.AddComponent<RectTransform>();
@@ -292,8 +278,7 @@ namespace Ale.Inventory.Editor
         /// <summary>构建 PF_UiwEquipmentGroupPanel（装备组面板：名称 + VerticalLayoutGroup 槽位列表容器）。</summary>
         static void BuildEquipmentGroupPanelPrefab(UiwEquipmentSlotList slotListPrefab)
         {
-            string path = Pfb(KPfEquipGroupPanel);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfEquipGroupPanel);
 
             var root = NewGameObject(KPfEquipGroupPanel);
             var rt   = root.AddComponent<RectTransform>();
@@ -325,8 +310,7 @@ namespace Ale.Inventory.Editor
         /// <summary>构建 PF_UiwEquipmentBonusPanel（属性加成面板：标题 + VerticalLayoutGroup 条目容器；分组标题复用条目预制体）。</summary>
         static void BuildEquipmentBonusPanelPrefab(UiwEquipmentBonusEntry entryPrefab)
         {
-            string path = Pfb(KPfEquipBonusPanel);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfEquipBonusPanel);
 
             var root = NewGameObject(KPfEquipBonusPanel);
             var rt   = root.AddComponent<RectTransform>();
@@ -378,8 +362,7 @@ namespace Ale.Inventory.Editor
         /// </summary>
         static void BuildEquipmentSelectPanelPrefab(GameObject slotListPrefab, GameObject candidateListPrefab)
         {
-            string path = Pfb(KPfEquipSelectPanel);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfEquipSelectPanel);
 
             var root = NewGameObject(KPfEquipSelectPanel);
             var rootRt = root.AddComponent<RectTransform>();
@@ -450,8 +433,7 @@ namespace Ale.Inventory.Editor
         /// </summary>
         static void BuildEquipmentViewPrefab(GameObject groupPanelPrefab, GameObject bonusPanelPrefab, GameObject selectPanelPrefab)
         {
-            string path = Pfb(KPfEquipView);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfEquipView);
 
             var root = NewGameObject(KPfEquipView);
             var rootRt = root.AddComponent<RectTransform>();

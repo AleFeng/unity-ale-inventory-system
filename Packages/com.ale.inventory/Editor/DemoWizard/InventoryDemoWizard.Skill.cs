@@ -23,8 +23,7 @@ namespace Ale.Inventory.Editor
         /// <summary>构建 PF_UiwSkillCell（技能网格条目：位阶背景框 + 图标 + 名称，支持悬停弹窗）。</summary>
         static void BuildSkillCellPrefab()
         {
-            string path = Pfb(KPfSkillCell);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfSkillCell);
 
             var root = NewGameObject(KPfSkillCell);
             SetRectSize(root.AddComponent<RectTransform>(), 72f, 72f);
@@ -63,17 +62,13 @@ namespace Ale.Inventory.Editor
             var nameTxt = AddText(nameGo, "技能名", 10, Color.white);
             SetSerializedRef(entry, "nameText", nameTxt);
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_UiwSkillDetail（技能列表条目：图标(含位阶背景框) + 名称 + 描述，支持悬停弹窗）。</summary>
         static void BuildSkillDetailPrefab()
         {
-            string path = Pfb(KPfSkillDetail);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfSkillDetail);
 
             var root = NewGameObject(KPfSkillDetail);
             SetRectSize(root.AddComponent<RectTransform>(), 320f, 60f);
@@ -124,17 +119,13 @@ namespace Ale.Inventory.Editor
             var descTxt = AddText(descGo, "技能描述", 11, new Color(0.72f, 0.72f, 0.80f), TextAnchor.UpperLeft);
             SetSerializedRef(entry, "descText", descTxt);
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_UiwSkillGridList（技能网格列表：ScrollRect + 虚拟滚动 UiwSkillGridList，纵向滚动·自动列数）。</summary>
         static void BuildSkillGridListPrefab(UiwSkillEntry cellPrefab)
         {
-            string path = Pfb(KPfSkillGridList);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfSkillGridList);
 
             var root = NewGameObject(KPfSkillGridList);
             Stretch(root.AddComponent<RectTransform>());
@@ -151,17 +142,13 @@ namespace Ale.Inventory.Editor
             comp.content    = contentRt;
             comp.scrollRect = sr;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_UiwSkillOrderList（技能顺序列表：ScrollRect + 虚拟滚动 UiwSkillOrderList）。</summary>
         static void BuildSkillOrderListPrefab(UiwSkillEntry detailPrefab)
         {
-            string path = Pfb(KPfSkillOrderList);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfSkillOrderList);
 
             var root = NewGameObject(KPfSkillOrderList);
             Stretch(root.AddComponent<RectTransform>());
@@ -175,17 +162,13 @@ namespace Ale.Inventory.Editor
             comp.content    = contentRt;
             comp.scrollRect = sr;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
             SavePrefab(root, path);
         }
 
         /// <summary>构建 PF_UiwSkillTooltip（技能悬停弹窗：图标 + 名称 + 位阶名 + 描述；由 InventoryManager 全局实例化）。</summary>
         static void BuildSkillTooltipPrefab()
         {
-            string path = Pfb(KPfSkillTooltip);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfSkillTooltip);
 
             var root = NewGameObject(KPfSkillTooltip);
             var rt   = root.AddComponent<RectTransform>();
@@ -241,9 +224,6 @@ namespace Ale.Inventory.Editor
             SetVlg(fieldsGo, new RectOffset(0, 0, 0, 0), 2f, TextAnchor.UpperLeft, true, true, true, false);
             tip.customFieldContainer = fieldsGo.transform;
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(root);
-#endif
             SavePrefab(root, path);
         }
 
@@ -292,8 +272,7 @@ namespace Ale.Inventory.Editor
         /// <summary>构建 PF_UiwSkillView（技能主界面：标题 + 视图切换 + 搜索 + 主/副分组页签 + 网格/顺序列表）。</summary>
         static void BuildSkillViewPrefab(GameObject gridListPrefab, GameObject orderListPrefab, Button filterButtonPrefab)
         {
-            string path = Pfb(KPfSkillView);
-            DeleteIfExists(path);
+            string path = BeginPrefab(KPfSkillView);
 
             var panelGo = NewGameObject(KPfSkillView);
             var panelRt = panelGo.AddComponent<RectTransform>();
@@ -368,13 +347,7 @@ namespace Ale.Inventory.Editor
             if (view.orderList) { view.orderList.filterBar = primaryBar; view.orderList.secondaryFilterBar = secondaryBar; }
             if (view.gridList)  { view.gridList.filterBar  = primaryBar; view.gridList.secondaryFilterBar  = secondaryBar; }
 
-#if IS_TMP && IS_LOCALIZATION
-            AttachFontEvent(panelGo);
-#endif
-            MovePrimaryUiwToTop(panelGo);
-            PrefabUtility.SaveAsPrefabAsset(panelGo, path);
-            Object.DestroyImmediate(panelGo);
-            Debug.Log("[InventoryDemoWizard] 技能主界面 Prefab 已保存：" + path);
+            SavePrefab(panelGo, path);
         }
 
         #endregion
