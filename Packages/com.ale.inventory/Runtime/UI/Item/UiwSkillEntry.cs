@@ -6,7 +6,6 @@ using InventoryText = UnityEngine.UI.Text;
 
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Ale.Inventory.Runtime.UI
@@ -14,9 +13,10 @@ namespace Ale.Inventory.Runtime.UI
     /// <summary>
     /// 技能条目显示组件（网格 / 顺序列表共用；网格预制体可不接描述与自定义字段）。
     /// 显示：图标、名称、「位阶」枚举项背景框，以及可选的描述与自定义属性字段行。
-    /// 鼠标悬停经 <see cref="UiwSkillTooltip"/> 弹出技能详情。
+    /// 鼠标悬停经 <see cref="UiwSkillTooltip"/> 弹出技能详情
+    /// （进入 / 移出 / 停用三条路径由基类 <see cref="UiwHoverTooltipSource"/> 统一处理）。
     /// </summary>
-    public class UiwSkillEntry : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public class UiwSkillEntry : UiwHoverTooltipSource
     {
         [Header("技能信息")]
         [Tooltip("技能图标图片。")]
@@ -51,11 +51,18 @@ namespace Ale.Inventory.Runtime.UI
         private Skill _skill;
         private readonly List<GameObject> _customLines = new List<GameObject>();
 
-        // 本格当前是否正显示（由本格触发且尚未隐藏）技能弹窗。用于本格被停用时主动关闭，避免残留。
-        private bool _tooltipShown;
-
         /// <summary>当前绑定的技能。</summary>
         public Skill Skill => _skill;
+
+        // ── 悬停详情（基类 UiwHoverTooltipSource 的契约）────────────────────────────
+        protected override bool HoverTooltipEnabled    => showTooltip;
+        protected override bool HasHoverTooltipPayload => _skill != null;
+
+        protected override void ShowHoverTooltip(Vector2 screenPos)
+            => InventoryRuntimeManager.Instance.ShowSkillTooltip(_skill, screenPos);
+
+        protected override void HideHoverTooltip()
+            => InventoryRuntimeManager.Instance.HideSkillTooltip();
 
         /// <summary>绑定并显示一个技能。</summary>
         public void SetSkill(Skill skill)
@@ -146,29 +153,6 @@ namespace Ale.Inventory.Runtime.UI
         {
             foreach (var go in _customLines) if (go) Destroy(go);
             _customLines.Clear();
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            if (!showTooltip || _skill == null || !InventoryRuntimeManager.Instance) return;
-            Vector2 pos = eventData != null ? eventData.position : (Vector2)Input.mousePosition;
-            InventoryRuntimeManager.Instance.ShowSkillTooltip(_skill, pos);
-            _tooltipShown = true;
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            if (!showTooltip) return;
-            _tooltipShown = false;
-            if (InventoryRuntimeManager.Instance) InventoryRuntimeManager.Instance.HideSkillTooltip();
-        }
-
-        // 本条目被停用（列表回收 / 面板关闭）时不会派发 OnPointerExit，若本格正显示弹窗则主动隐藏，避免残留。
-        private void OnDisable()
-        {
-            if (!_tooltipShown) return;
-            _tooltipShown = false;
-            if (InventoryRuntimeManager.Instance) InventoryRuntimeManager.Instance.HideSkillTooltip();
         }
     }
 }

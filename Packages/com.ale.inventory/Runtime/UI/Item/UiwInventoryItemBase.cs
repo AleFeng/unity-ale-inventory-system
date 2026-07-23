@@ -5,7 +5,6 @@ using InventoryText = UnityEngine.UI.Text;
 #endif
 
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Ale.Inventory.Runtime.UI
@@ -17,9 +16,10 @@ namespace Ale.Inventory.Runtime.UI
     /// <see cref="qualityBackground"/> 时，对应 Apply 方法静默跳过，不影响其它显示。</para>
     /// <para>悬停信息弹窗为「可选能力」：启用 <see cref="showDetailTooltip"/> 且子类绑定道具时调用过
     /// <see cref="SetTooltipItemId"/>，鼠标悬停即弹出该道具的详情。弹窗为全局唯一，经
-    /// <see cref="InventoryRuntimeManager.ShowItemTooltip"/> / <see cref="InventoryRuntimeManager.HideItemTooltip"/> 统一调用。</para>
+    /// <see cref="InventoryRuntimeManager.ShowItemTooltip"/> / <see cref="InventoryRuntimeManager.HideItemTooltip"/> 统一调用；
+    /// 进入 / 移出 / 停用三条路径由基类 <see cref="UiwHoverTooltipSource"/> 统一处理。</para>
     /// </summary>
-    public abstract class UiwInventoryItemBase : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    public abstract class UiwInventoryItemBase : UiwHoverTooltipSource
     {
         #region 道具信息
         
@@ -148,58 +148,26 @@ namespace Ale.Inventory.Runtime.UI
         private string _tooltipItemId;
         // 当前绑定道具的持有数量（随 SetTooltipItemId 一并记录），悬停时透传给弹窗显示。
         private int    _tooltipCount;
-        // 本格当前是否正显示（由本格触发且尚未隐藏）详情弹窗。用于在本格因刷新被清空 / 停用时主动关闭弹窗——
-        // 快速装备等会在悬停时移除本格道具并刷新（甚至停用本格），使本格收不到 PointerExit，导致弹窗残留。
-        private bool _tooltipShown;
+
+        protected override bool HoverTooltipEnabled    => showDetailTooltip;
+        protected override bool HasHoverTooltipPayload => !string.IsNullOrEmpty(_tooltipItemId);
+
+        protected override void ShowHoverTooltip(Vector2 screenPos)
+            => InventoryRuntimeManager.Instance.ShowItemTooltip(_tooltipItemId, _tooltipCount, screenPos);
+
+        protected override void HideHoverTooltip()
+            => InventoryRuntimeManager.Instance.HideItemTooltip();
 
         /// <summary>
         /// 由子类在绑定 / 清空道具时调用，记录当前道具 ID 与持有数量供悬停弹窗使用（传 null 清空）。
-        /// 若正悬停显示本格弹窗且道具发生变化（被移除 / 换成别的道具），主动关闭残留弹窗。
+        /// 若正悬停显示本格弹窗且道具发生变化（被移除 / 换成别的道具），主动关闭残留弹窗——
+        /// 快速装备等会在悬停时移除本格道具并刷新，使本格收不到 PointerExit，导致弹窗残留。
         /// </summary>
         protected void SetTooltipItemId(string itemId, int count = 0)
         {
-            if (_tooltipShown && itemId != _tooltipItemId) HideTooltipIfShowing();
+            if (HoverTooltipShown && itemId != _tooltipItemId) HideHoverTooltipIfShowing();
             _tooltipItemId = itemId;
             _tooltipCount  = count;
-        }
-
-        /// <summary>
-        /// 鼠标进入：启用弹窗且已绑定道具时，经 <see cref="InventoryRuntimeManager"/> 在光标处显示该道具的详情弹窗。
-        /// 子类可覆写以叠加其它悬停行为（覆写时请调用 base 以保留弹窗能力）。
-        /// </summary>
-        public virtual void OnPointerEnter(PointerEventData eventData)
-        {
-            if (!showDetailTooltip || string.IsNullOrEmpty(_tooltipItemId)) return;
-            Vector2 pos = eventData != null ? eventData.position : Input.mousePosition;
-            if (InventoryRuntimeManager.Instance)
-            {
-                InventoryRuntimeManager.Instance.ShowItemTooltip(_tooltipItemId, _tooltipCount, pos);
-                _tooltipShown = true;
-            }
-        }
-
-        /// <summary>鼠标移出：经 <see cref="InventoryRuntimeManager"/> 隐藏详情弹窗。子类覆写时请调用 base 以保留弹窗能力。</summary>
-        public virtual void OnPointerExit(PointerEventData eventData)
-        {
-            if (!showDetailTooltip) return;
-            _tooltipShown = false;
-            if (InventoryRuntimeManager.Instance)
-                InventoryRuntimeManager.Instance.HideItemTooltip();
-        }
-
-        /// <summary>
-        /// 本物体被停用时，若本格正显示着详情弹窗则关闭之：停用不会派发 <see cref="OnPointerExit"/>，
-        /// 会导致弹窗残留（如快速装备后本格被隐藏、或所属面板被关闭）。子类覆写时请调用 base 以保留此清理。
-        /// </summary>
-        protected virtual void OnDisable() => HideTooltipIfShowing();
-
-        /// <summary>若本格当前正显示详情弹窗，则隐藏并复位标记（仅隐藏由本格触发的弹窗，不误伤其它格）。</summary>
-        private void HideTooltipIfShowing()
-        {
-            if (!_tooltipShown) return;
-            _tooltipShown = false;
-            if (InventoryRuntimeManager.Instance)
-                InventoryRuntimeManager.Instance.HideItemTooltip();
         }
 
         #endregion
