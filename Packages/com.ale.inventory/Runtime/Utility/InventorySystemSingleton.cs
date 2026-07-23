@@ -59,6 +59,8 @@ namespace Ale.Inventory.Runtime
         // 是否已向 InventorySingletonRegistry 登记过重置动作（每个闭合泛型各一份）。
         private static bool _resetHookRegistered;
 
+        #region 实例与生命周期
+
         /// <summary>单例实例。首次访问时自动创建并调用 Init()。</summary>
         public static T Instance
         {
@@ -102,6 +104,10 @@ namespace Ale.Inventory.Runtime
             _instance = null;
         }
 
+        #endregion
+
+        #region 静态状态重置（关闭 Domain Reload 时）
+
         private static void EnsureResetHook()
         {
             if (_resetHookRegistered) return;
@@ -119,6 +125,8 @@ namespace Ale.Inventory.Runtime
             IsQuitting = false;
             // _resetHookRegistered 保持 true：登记表同样跨会话存活，无需重复登记。
         }
+
+        #endregion
     }
 
     // ── MonoBehaviour 单例基类 ──────────────────────────────────────────────────────
@@ -136,6 +144,8 @@ namespace Ale.Inventory.Runtime
 
         // 是否已向 InventorySingletonRegistry 登记过重置动作（每个闭合泛型各一份）。
         private static bool _resetHookRegistered;
+
+        #region 实例与生命周期
 
         /// <summary>单例实例。若尚未 Awake 则返回 null。</summary>
         public static T Instance => _instance;
@@ -176,6 +186,10 @@ namespace Ale.Inventory.Runtime
         /// <summary>Awake 中单例设置完毕后调用（替代 Awake 中的初始化逻辑）。子类覆写此方法。</summary>
         protected virtual void Init() { }
 
+        #endregion
+
+        #region 静态状态重置（关闭 Domain Reload 时）
+
         private static void EnsureResetHook()
         {
             if (_resetHookRegistered) return;
@@ -189,5 +203,7 @@ namespace Ale.Inventory.Runtime
             _instance  = null;
             IsQuitting = false;
         }
+
+        #endregion
     }
 }
