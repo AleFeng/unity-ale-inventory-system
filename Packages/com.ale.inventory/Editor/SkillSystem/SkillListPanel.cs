@@ -35,7 +35,7 @@ namespace Ale.Inventory.Editor
             return tmpl != null ? tmpl.color : Color.gray;
         }
 
-        protected override bool Matches(Skill skill, string term)
+        protected override bool Matches(InventoryDatabase db, Skill skill, string term)
         {
             if (string.IsNullOrWhiteSpace(term)) return true;
             if (!string.IsNullOrEmpty(skill.id) &&
@@ -50,7 +50,7 @@ namespace Ale.Inventory.Editor
         #region 行列布局
 
         protected override void DrawRowColumns(InventoryDatabase db, Skill skill,
-            Rect keyRow, float cx, float vy, float vh)
+            Rect keyRow, float cx, float contentRight, float vy, float vh)
         {
             // ── 上行：列名表头 ──────────────────────────────────────────────────
             float kx = cx;

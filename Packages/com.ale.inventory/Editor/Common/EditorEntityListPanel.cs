@@ -82,8 +82,8 @@ namespace Ale.Inventory.Editor
         /// <summary>行首色点颜色（一般取来源模板的标识色）。</summary>
         protected abstract Color RowDotColor(InventoryDatabase db, TEntity e);
 
-        /// <summary>搜索匹配规则。</summary>
-        protected abstract bool Matches(TEntity e, string term);
+        /// <summary>搜索匹配规则（道具面板需要 <paramref name="db"/> 以按属性值匹配）。</summary>
+        protected abstract bool Matches(InventoryDatabase db, TEntity e, string term);
 
         /// <summary>从模板新建一个实体并加入数据库，返回之（含 RecordUndo / MarkDirty）。</summary>
         protected abstract TEntity AddFromTemplate(IInventoryEditorContext ctx, string templateName);
@@ -96,10 +96,11 @@ namespace Ale.Inventory.Editor
         /// 子类只需从 <paramref name="contentX"/> 起向右排布自己的列。
         /// </summary>
         /// <param name="contentX">内容区起始 X（已跳过句柄列与色点）。</param>
+        /// <param name="contentRight">内容区右边界（已扣掉删除按钮列）；动态列布局据此决定放得下几列。</param>
         /// <param name="valY">值行中已垂直居中的 Y。</param>
         /// <param name="valH">值行控件高（单行高）。</param>
         protected abstract void DrawRowColumns(InventoryDatabase db, TEntity e,
-            Rect keyRow, float contentX, float valY, float valH);
+            Rect keyRow, float contentX, float contentRight, float valY, float valH);
 
         /// <summary>「从模板添加」菜单在无可用模板时的提示。</summary>
         protected virtual string NoTemplateHint => $"（无可用{Noun}模板）";
@@ -145,7 +146,7 @@ namespace Ale.Inventory.Editor
                 var e = entities[i];
 
                 if (_templateFilter != null && TemplateRefOf(e) != _templateFilter) continue;
-                if (!Matches(e, _search)) continue;
+                if (!Matches(db, e, _search)) continue;
 
                 visible.Add(e);
 
@@ -184,9 +185,10 @@ namespace Ale.Inventory.Editor
                     RowDotColor(db, e));
                 cx += DotW + Pad;
 
-                float vy = valRow.y + (ValRowH - EditorGUIUtility.singleLineHeight) * 0.5f;
-                float vh = EditorGUIUtility.singleLineHeight;
-                DrawRowColumns(db, e, keyRow, cx, vy, vh);
+                float vy           = valRow.y + (ValRowH - EditorGUIUtility.singleLineHeight) * 0.5f;
+                float vh           = EditorGUIUtility.singleLineHeight;
+                float contentRight = fullRect.xMax - DelBtnW - Pad;
+                DrawRowColumns(db, e, keyRow, cx, contentRight, vy, vh);
 
                 // 行点击选中（排除删除按钮与拖拽句柄）
                 if (Event.current.type == EventType.MouseDown
