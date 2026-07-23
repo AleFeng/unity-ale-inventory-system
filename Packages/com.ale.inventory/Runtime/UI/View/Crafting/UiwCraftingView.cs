@@ -19,9 +19,9 @@ namespace Ale.Inventory.Runtime.UI
             if (blueprintList) blueprintList.OnBlueprintSelected += OnBlueprintSelected;
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
-            Unsubscribe();   // 取消按打开订阅的 OnInventoryChanged
+            base.OnDestroy();   // 取消按打开订阅的 OnInventoryChanged
             // 工具栏 / 搜索 / 列表事件随组件生命周期订阅（Start），此处一并取消
             if (groupFilter)   groupFilter.OnGroupChanged -= OnGroupChanged;
             if (searchInput)   searchInput.onValueChanged.RemoveListener(OnSearchChanged);

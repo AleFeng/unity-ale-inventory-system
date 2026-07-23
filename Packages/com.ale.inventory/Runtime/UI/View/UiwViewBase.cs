@@ -40,12 +40,17 @@ namespace Ale.Inventory.Runtime.UI
 
         #region 打开与关闭
         /// <summary>
-        /// 打开视图（模板方法）。基类实现只做各视图共有的唯一步骤——激活面板；
-        /// 子类覆写本方法：先调用 <c>base.Open()</c> 激活面板，再执行本视图特定的构建 / 订阅 / 刷新。
+        /// 打开视图（模板方法）。基类实现做各视图共有的两步——**先反订阅、再激活面板**；
+        /// 子类覆写本方法：先调用 <c>base.Open()</c>，再执行本视图特定的构建 / 订阅 / 刷新。
         /// 带参数的 <c>Open(...)</c> 重载应先把参数缓存到字段，再调用本无参方法。
+        /// <para>这里的 <see cref="Unsubscribe"/> 是**防重复订阅**：各视图都在 <c>base.Open()</c>
+        /// 之后才 <c>+=</c>，而 <c>Open()</c> 是可以不经 <see cref="Close"/> 反复调用的公开方法
+        /// （带参重载亦转调本方法）。不先退订的话，重复打开 N 次就会订阅 N 份，
+        /// 之后每个运行时事件都会触发 N 次刷新、把虚拟滚动列表整表重建 N 次。</para>
         /// </summary>
         public virtual void Open()
         {
+            Unsubscribe();
             gameObject.SetActive(true);
         }
 
@@ -72,6 +77,15 @@ namespace Ale.Inventory.Runtime.UI
 
         /// <summary>用上次打开时缓存的参数重新打开本视图（供 <see cref="ToggleOpenClose"/>）。</summary>
         protected abstract void Reopen();
+
+        /// <summary>
+        /// 销毁时兜底取消运行时事件订阅，使子类不会漏掉这一步。
+        /// 子类若需额外拆除自身组件事件，覆写本方法并调用 <c>base.OnDestroy()</c>。
+        /// </summary>
+        protected virtual void OnDestroy()
+        {
+            Unsubscribe();
+        }
         #endregion
 
         #region 数字格式

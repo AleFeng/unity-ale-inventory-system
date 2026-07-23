@@ -110,7 +110,7 @@ namespace Ale.Inventory.Runtime.UI
             Open(groupId);
         }
 
-        private void OnDestroy() => Unsubscribe();
+        // 销毁时的退订由基类 UiwViewBase.OnDestroy 统一兜底。
 
         #endregion
 

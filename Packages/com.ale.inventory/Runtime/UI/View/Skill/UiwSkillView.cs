@@ -80,9 +80,9 @@ namespace Ale.Inventory.Runtime.UI
             ApplyViewMode();
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
-            Unsubscribe();
+            base.OnDestroy();
             if (viewModeToggleButton) viewModeToggleButton.onClick.RemoveListener(OnToggleViewMode);
             if (searchInput)          searchInput.onValueChanged.RemoveListener(OnSearchChanged);
         }

@@ -30,7 +30,8 @@ namespace Ale.Inventory.Runtime.UI
             if (settleButton) settleButton.onClick.AddListener(BtnSettle);
         }
 
-        private void OnDestroy() => Unsubscribe();   // 过滤 / 排序改由商品列表组件自管，此处无需再退订
+        // 销毁时的退订由基类 UiwViewBase.OnDestroy 统一兜底；
+        // 过滤 / 排序改由商品列表组件自管，本视图无额外组件事件需要拆除。
 
         #region 类型挂钩（子类实现）
         /// <summary>本视图对应的商店类型。</summary>
