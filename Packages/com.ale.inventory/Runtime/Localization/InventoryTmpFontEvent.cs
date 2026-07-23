@@ -1,14 +1,17 @@
+// 本组件是 TMP 专用的字体本地化事件：基类 LocalizedAssetEvent<> 与两个 LocalizedAsset<> 子类
+// 都直接依赖 TMPro + Unity Localization，无法在缺任一包时提供退化实现，故整文件受双宏门控
+// （与 InventoryTmpTextEvent 的整文件 #if IS_LOCALIZATION 同一写法）。
+// 引用方 InventoryTmpTextEvent 与 InventoryWelcomeWindow 对本文件类型的引用亦均在 IS_TMP 块内。
+#if IS_TMP && IS_LOCALIZATION
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-
-#if IS_TMP && IS_LOCALIZATION
 using UnityEngine.Localization;
 using UnityEngine.Localization.Components;
 using UnityEngine.Localization.Settings;
 using TMPro;
-#endif
 
 namespace Ale.Inventory.Runtime.UI
 {
@@ -36,7 +39,6 @@ namespace Ale.Inventory.Runtime.UI
     public class InventoryTmpFontEvent
         : LocalizedAssetEvent<TMP_FontAsset, InventoryLocalizedTmpFont, UnityEvent<TMP_FontAsset>>
     {
-#if IS_TMP && IS_LOCALIZATION
         [SerializeField, Tooltip("受控的 TMP_Text 组件列表（自动扫描子节点）。")]
         private List<TMP_Text> texts;
 
@@ -229,5 +231,6 @@ namespace Ale.Inventory.Runtime.UI
             return true;
         }
     }
-#endif
 }
+
+#endif
