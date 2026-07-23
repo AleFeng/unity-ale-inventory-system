@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -147,176 +148,97 @@ namespace Ale.Inventory.Runtime
             set => localizationTableCollectionGuid = value;
         }
 
-        /// <summary>按名称查找枚举类型，未找到返回 null。</summary>
-        public EnumType GetEnumType(string enumName)
+        #endregion
+
+        #region 按键查找
+
+        /// <summary>
+        /// 在列表中按键线性查找首个匹配项，未找到返回 null。
+        /// <para>下方 19 个 <c>GetXxx</c> 曾各自重复这段循环。传入的键选择器均为<b>无捕获</b> lambda，
+        /// 由编译器缓存为静态委托，不产生每次调用的分配。</para>
+        /// <para><b>复杂度：</b>本资产是编辑期数据源，查找为 O(n)。运行时的高频查询请走
+        /// <see cref="InventoryDataManager"/>——它对全部条目建有 O(1) 字典索引，且可跨多个数据库。</para>
+        /// </summary>
+        private static T Find<T>(List<T> list, string key, Func<T, string> keyOf) where T : class
         {
-            if (string.IsNullOrEmpty(enumName)) return null;
-            foreach (var e in enumTypes)
-                if (e.name == enumName) return e;
+            if (string.IsNullOrEmpty(key) || list == null) return null;
+            for (int i = 0; i < list.Count; i++)
+            {
+                var e = list[i];
+                if (e != null && keyOf(e) == key) return e;
+            }
             return null;
         }
+
+        // ── 按名称 ────────────────────────────────────────────────────────────────
+
+        /// <summary>按名称查找枚举类型，未找到返回 null。</summary>
+        public EnumType GetEnumType(string enumName) => Find(enumTypes, enumName, e => e.name);
 
         /// <summary>按名称查找功能标签，未找到返回 null。</summary>
-        public FunctionTag GetTag(string tagName)
-        {
-            if (string.IsNullOrEmpty(tagName)) return null;
-            foreach (var t in functionTags)
-                if (t.name == tagName) return t;
-            return null;
-        }
+        public FunctionTag GetTag(string tagName) => Find(functionTags, tagName, t => t.name);
 
         /// <summary>按名称查找道具模板，未找到返回 null。</summary>
-        public ItemTemplate GetTemplate(string templateName)
-        {
-            if (string.IsNullOrEmpty(templateName)) return null;
-            foreach (var t in itemTemplates)
-                if (t.name == templateName) return t;
-            return null;
-        }
-
-        /// <summary>按 ID 查找道具，未找到返回 null。</summary>
-        public Item GetItem(string itemId)
-        {
-            if (string.IsNullOrEmpty(itemId)) return null;
-            foreach (var item in items)
-                if (item.id == itemId) return item;
-            return null;
-        }
+        public ItemTemplate GetTemplate(string templateName) => Find(itemTemplates, templateName, t => t.name);
 
         /// <summary>按名称查找仓库模板，未找到返回 null。</summary>
         public InventoryTemplate GetInventoryTemplate(string templateName)
-        {
-            if (string.IsNullOrEmpty(templateName)) return null;
-            foreach (var t in inventoryTemplates)
-                if (t.name == templateName) return t;
-            return null;
-        }
-
-        /// <summary>按 ID 查找仓库，未找到返回 null。</summary>
-        public Inventory GetInventory(string inventoryId)
-        {
-            if (string.IsNullOrEmpty(inventoryId)) return null;
-            foreach (var inv in inventories)
-                if (inv.id == inventoryId) return inv;
-            return null;
-        }
-
-        /// <summary>按 field 查找整理选项，未找到返回 null。</summary>
-        public SortOption GetSortOption(string field)
-        {
-            if (string.IsNullOrEmpty(field)) return null;
-            foreach (var so in sortOptions)
-                if (so.field == field) return so;
-            return null;
-        }
+            => Find(inventoryTemplates, templateName, t => t.name);
 
         /// <summary>按名称查找数字格式配置，未找到返回 null。</summary>
         public NumberFormatConfig GetNumberFormatConfig(string configName)
-        {
-            if (string.IsNullOrEmpty(configName)) return null;
-            foreach (var c in numberFormatConfigs)
-                if (c.name == configName) return c;
-            return null;
-        }
+            => Find(numberFormatConfigs, configName, c => c.name);
 
         /// <summary>按名称查找商店模板，未找到返回 null。</summary>
-        public ShopTemplate GetShopTemplate(string templateName)
-        {
-            if (string.IsNullOrEmpty(templateName)) return null;
-            foreach (var t in shopTemplates)
-                if (t.name == templateName) return t;
-            return null;
-        }
-
-        /// <summary>按 ID 查找商店，未找到返回 null。</summary>
-        public Shop GetShop(string shopId)
-        {
-            if (string.IsNullOrEmpty(shopId)) return null;
-            foreach (var s in shops)
-                if (s.id == shopId) return s;
-            return null;
-        }
-
-        /// <summary>按 ID 查找制作分组标签，未找到返回 null。</summary>
-        public CraftingGroupTag GetCraftingGroupTag(string tagId)
-        {
-            if (string.IsNullOrEmpty(tagId)) return null;
-            foreach (var t in craftingGroupTags)
-                if (t.id == tagId) return t;
-            return null;
-        }
+        public ShopTemplate GetShopTemplate(string templateName) => Find(shopTemplates, templateName, t => t.name);
 
         /// <summary>按名称查找蓝图模板，未找到返回 null。</summary>
         public CraftingBlueprintTemplate GetCraftingBlueprintTemplate(string templateName)
-        {
-            if (string.IsNullOrEmpty(templateName)) return null;
-            foreach (var t in craftingBlueprintTemplates)
-                if (t.name == templateName) return t;
-            return null;
-        }
-
-        /// <summary>按 ID 查找蓝图，未找到返回 null。</summary>
-        public CraftingBlueprint GetCraftingBlueprint(string blueprintId)
-        {
-            if (string.IsNullOrEmpty(blueprintId)) return null;
-            foreach (var b in craftingBlueprints)
-                if (b.id == blueprintId) return b;
-            return null;
-        }
-
-        /// <summary>按 ID 查找装备分组标签，未找到返回 null。</summary>
-        public EquipmentGroupTag GetEquipmentGroupTag(string tagId)
-        {
-            if (string.IsNullOrEmpty(tagId)) return null;
-            foreach (var t in equipmentGroupTags)
-                if (t.id == tagId) return t;
-            return null;
-        }
+            => Find(craftingBlueprintTemplates, templateName, t => t.name);
 
         /// <summary>按名称查找装备组模板，未找到返回 null。</summary>
         public EquipmentGroupTemplate GetEquipmentGroupTemplate(string templateName)
-        {
-            if (string.IsNullOrEmpty(templateName)) return null;
-            foreach (var t in equipmentGroupTemplates)
-                if (t.name == templateName) return t;
-            return null;
-        }
-
-        /// <summary>按 ID 查找装备组，未找到返回 null。</summary>
-        public EquipmentGroup GetEquipmentGroup(string groupId)
-        {
-            if (string.IsNullOrEmpty(groupId)) return null;
-            foreach (var g in equipmentGroups)
-                if (g.id == groupId) return g;
-            return null;
-        }
-
-        /// <summary>按 ID 查找技能分组标签，未找到返回 null。</summary>
-        public SkillGroupTag GetSkillGroupTag(string tagId)
-        {
-            if (string.IsNullOrEmpty(tagId)) return null;
-            foreach (var t in skillGroupTags)
-                if (t.id == tagId) return t;
-            return null;
-        }
+            => Find(equipmentGroupTemplates, templateName, t => t.name);
 
         /// <summary>按名称查找技能模板，未找到返回 null。</summary>
-        public SkillTemplate GetSkillTemplate(string templateName)
-        {
-            if (string.IsNullOrEmpty(templateName)) return null;
-            foreach (var t in skillTemplates)
-                if (t.name == templateName) return t;
-            return null;
-        }
+        public SkillTemplate GetSkillTemplate(string templateName) => Find(skillTemplates, templateName, t => t.name);
+
+        // ── 按 ID ─────────────────────────────────────────────────────────────────
+
+        /// <summary>按 ID 查找道具，未找到返回 null。</summary>
+        public Item GetItem(string itemId) => Find(items, itemId, i => i.id);
+
+        /// <summary>按 ID 查找仓库，未找到返回 null。</summary>
+        public Inventory GetInventory(string inventoryId) => Find(inventories, inventoryId, inv => inv.id);
+
+        /// <summary>按 ID 查找商店，未找到返回 null。</summary>
+        public Shop GetShop(string shopId) => Find(shops, shopId, s => s.id);
+
+        /// <summary>按 ID 查找制作分组标签，未找到返回 null。</summary>
+        public CraftingGroupTag GetCraftingGroupTag(string tagId) => Find(craftingGroupTags, tagId, t => t.id);
+
+        /// <summary>按 ID 查找蓝图，未找到返回 null。</summary>
+        public CraftingBlueprint GetCraftingBlueprint(string blueprintId)
+            => Find(craftingBlueprints, blueprintId, b => b.id);
+
+        /// <summary>按 ID 查找装备分组标签，未找到返回 null。</summary>
+        public EquipmentGroupTag GetEquipmentGroupTag(string tagId) => Find(equipmentGroupTags, tagId, t => t.id);
+
+        /// <summary>按 ID 查找装备组，未找到返回 null。</summary>
+        public EquipmentGroup GetEquipmentGroup(string groupId) => Find(equipmentGroups, groupId, g => g.id);
+
+        /// <summary>按 ID 查找技能分组标签，未找到返回 null。</summary>
+        public SkillGroupTag GetSkillGroupTag(string tagId) => Find(skillGroupTags, tagId, t => t.id);
 
         /// <summary>按 ID 查找技能，未找到返回 null。</summary>
-        public Skill GetSkill(string skillId)
-        {
-            if (string.IsNullOrEmpty(skillId)) return null;
-            foreach (var s in skills)
-                if (s.id == skillId) return s;
-            return null;
-        }
+        public Skill GetSkill(string skillId) => Find(skills, skillId, s => s.id);
+
+        /// <summary>按 field 查找整理选项，未找到返回 null。</summary>
+        public SortOption GetSortOption(string field) => Find(sortOptions, field, so => so.field);
+
+        #endregion
+
+        #region 整理选项同步
 
         /// <summary>
         /// 从所有 <see cref="InventoryTemplate"/> 的 <c>sortPriorities</c> 与 <c>sortTiebreakers</c>
@@ -383,32 +305,10 @@ namespace Ale.Inventory.Runtime
             // 随后从 schema 移除这两个定义，下方的属性同步会清掉各选项里对应的残留属性值。幂等（迁移完毕后为空操作）。
             MigrateBuiltinSortFields();
 
-            // 对每个 SortOption 按 schema 同步 attributeValues（增补缺失、移除孤立）
+            // 对每个 SortOption 按 schema 同步 attributeValues（增补缺失、移除孤立、类型漂移重置）
             foreach (var so in sortOptions)
             {
-                foreach (var def in sortOptionAttributes)
-                {
-                    AttributeEntry existing = null;
-                    foreach (var e in so.attributeValues)
-                        if (e.id == def.id) { existing = e; break; }
-
-                    if (existing == null)
-                    {
-                        so.attributeValues.Add(new AttributeEntry(def.id, def.CreateValue()));
-                    }
-                    else if (existing.value == null
-                          || existing.value.Type    != def.type
-                          || existing.value.IsArray != def.isArray)
-                    {
-                        existing.value = def.CreateValue();
-                    }
-                }
-                so.attributeValues.RemoveAll(e =>
-                {
-                    foreach (var def in sortOptionAttributes)
-                        if (def.id == e.id) return false;
-                    return true;
-                });
+                AttributeSync.Sync(so.attributeValues, sortOptionAttributes);
                 so.InvalidateEntryCache();
             }
         }
@@ -464,6 +364,10 @@ namespace Ale.Inventory.Runtime
             sortOptionAttributes.RemoveAll(d => d != null
                 && (d.id == SortOption.LegacyNameAttrId || d.id == SortOption.LegacyIgnoreAttrId));
         }
+
+        #endregion
+
+        #region 商品 guid 补齐
 
         /// <summary>
         /// 为所有商店 / 商店模板的商品组与商品补发缺失的稳定 <c>guid</c>

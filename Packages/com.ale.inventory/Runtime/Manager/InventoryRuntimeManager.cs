@@ -114,53 +114,26 @@ namespace Ale.Inventory.Runtime
         
         #region 数据获取
         
-        /// <summary>
-        /// 查找 仓库数据。优先从第一个数据库中查询到的定义返回。
-        /// </summary>
-        /// <param name="inventoryId"></param>
-        /// <returns></returns>
-        private Inventory FindInventoryDef(string inventoryId)
-        {
-            if (databases == null) return null;
-            foreach (var db in databases)
-            {
-                if (!db) continue;
-                var inv = db.GetInventory(inventoryId);
-                if (inv != null) return inv;
-            }
-            return null;
-        }
-        
-        /// <summary>
-        /// 查找 包含指定仓库定义的数据库。
-        /// 优先返回第一个包含该定义的数据库（通常是唯一的）。
-        /// 返回 null 表示未找到。注意返回的数据库可能不包含该定义（但至少包含一个同 ID 定义）。如果需要确保定义存在，请先调用 FindInventoryDef()。
-        /// </summary>
-        /// <param name="inventoryId"></param>
-        /// <returns></returns>
-        private InventoryDatabase FindDatabaseForInventory(string inventoryId)
-        {
-            if (databases == null) return null;
-            foreach (var db in databases)
-            {
-                if (!db) continue;
-                if (db.GetInventory(inventoryId) != null) return db;
-            }
-            return null;
-        }
-        
-        /// <summary>
-        /// 获取 仓库容量。
-        /// 返回 0 表示无限容量。优先从第一个数据库中查询到的定义返回。
-        /// </summary>
-        /// <param name="inventoryId"></param>
-        /// <returns></returns>
-        private int GetCapacity(string inventoryId)
-        {
-            var inv = FindInventoryDef(inventoryId);
-            return inv?.capacity ?? 0;
-        }
-        
+        // ── 定义查询：一律转调 InventoryDataManager 的 O(1) 索引 ────────────────────
+        // 此前这三个方法各自遍历本组件的 databases 数组、再在每个库里线性扫仓库列表；
+        // 而 GetCapacity 在 TryAddItem / TryRemoveItem / TryRemoveItemById / GetFreeSpaceFor /
+        // StackOrSwapSlots 上都是必经之路，等于每次增删都付两层嵌套线性扫描。
+        // InventoryDataManager 已对全部已注册数据库建有惰性 O(1) 索引（Init 中已注册本组件的 databases），
+        // 查询范围因此从「本组件的 databases」扩为「全部已注册数据库」——与商店 / 装备两个运行时管理器一致。
+
+        /// <summary>查找 仓库定义（跨全部已注册数据库，先注册者优先）。未找到返回 null。</summary>
+        private static Inventory FindInventoryDef(string inventoryId)
+            => InventoryDataManager.Instance.GetInventory(inventoryId);
+
+        /// <summary>查找 包含指定仓库定义的数据库（跨全部已注册数据库，先注册者优先）。未找到返回 null。</summary>
+        private static InventoryDatabase FindDatabaseForInventory(string inventoryId)
+            => InventoryDataManager.Instance.FindDatabaseForInventory(inventoryId);
+
+        /// <summary>获取 仓库容量。返回 0 表示无限容量。</summary>
+        private static int GetCapacity(string inventoryId)
+            => FindInventoryDef(inventoryId)?.capacity ?? 0;
+
+
         // 仓库不存在时返回的共享空列表：避免每次未命中都分配一个新 List
         // （UI 刷新可能高频调用）。调用方<b>不得</b>写入 GetSlots 的返回值。
         private static readonly List<RuntimeItemSlot> EmptySlots = new List<RuntimeItemSlot>();
@@ -183,13 +156,15 @@ namespace Ale.Inventory.Runtime
         public float GetTotalWeight(string inventoryId)
         {
             if (!_inventoryStates.TryGetValue(inventoryId, out var state)) return 0f;
-            var db = FindDatabaseForInventory(inventoryId);
-            if (!db) return 0f;
+
+            // 每槽经 InventoryDataManager 的 O(1) 索引取道具（原为「先线性定位数据库、再逐槽在库内线性找道具」，
+            // 整体 O(槽数 × 道具数)）；同时不再要求道具与仓库定义在同一个数据库里。
+            var dm    = InventoryDataManager.Instance;
             float total = 0f;
             foreach (var slot in state.itemSlots)
             {
                 if (string.IsNullOrEmpty(slot.itemId)) continue;
-                var item = db.GetItem(slot.itemId);
+                var item = dm.GetItem(slot.itemId);
                 if (item != null) total += item.weight * slot.count;
             }
             return total;
@@ -416,8 +391,8 @@ namespace Ale.Inventory.Runtime
         public void SwapSlotContents(string inventoryId, string slotIdA, string slotIdB)
         {
             if (!_inventoryStates.TryGetValue(inventoryId, out var state)) return;
-            var slotA = state.itemSlots.Find(itemSlot => itemSlot.slotId == slotIdA);
-            var slotB = state.itemSlots.Find(itemSlot => itemSlot.slotId == slotIdB);
+            var slotA = state.GetSlot(slotIdA);
+            var slotB = state.GetSlot(slotIdB);
             if (slotA == null || slotB == null) return;
 
             (slotA.itemId, slotB.itemId) = (slotB.itemId, slotA.itemId);
@@ -431,9 +406,8 @@ namespace Ale.Inventory.Runtime
         /// </summary>
         public RuntimeItemSlot GetSlot(string inventoryId, string slotId)
         {
-            if (string.IsNullOrEmpty(slotId)) return null;
             if (_inventoryStates.TryGetValue(inventoryId, out var state))
-                return state.itemSlots.Find(s => s.slotId == slotId);
+                return state.GetSlot(slotId);
             return null;
         }
 
@@ -445,7 +419,7 @@ namespace Ale.Inventory.Runtime
         public bool SetSlotContent(string inventoryId, string slotId, string itemId, int count)
         {
             if (!_inventoryStates.TryGetValue(inventoryId, out var state)) return false;
-            var slot = state.itemSlots.Find(s => s.slotId == slotId);
+            var slot = state.GetSlot(slotId);
             if (slot == null) return false;
 
             if (string.IsNullOrEmpty(itemId) || count <= 0) { slot.itemId = null; slot.count = 0; }
@@ -465,8 +439,8 @@ namespace Ale.Inventory.Runtime
         {
             if (string.IsNullOrEmpty(srcSlotId) || srcSlotId == targetSlotId) return;
             if (!_inventoryStates.TryGetValue(inventoryId, out var state)) return;
-            var src    = state.itemSlots.Find(s => s.slotId == srcSlotId);
-            var target = state.itemSlots.Find(s => s.slotId == targetSlotId);
+            var src    = state.GetSlot(srcSlotId);
+            var target = state.GetSlot(targetSlotId);
             if (src == null || target == null) return;
 
             // 同一道具（且非空）→ 先尝试堆叠。
