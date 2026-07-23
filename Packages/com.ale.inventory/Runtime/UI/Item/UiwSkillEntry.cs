@@ -74,18 +74,7 @@ namespace Ale.Inventory.Runtime.UI
             gameObject.SetActive(true);
             if (skill == null) { Clear(); return; }
 
-            if (iconImage)
-            {
-                var owner = iconImage.gameObject;
-                InventoryAssets.Release(owner);
-                int gen = ++_iconGen;
-                InventoryAssets.Bind<Sprite>(skill.icon, skill.iconAddress, owner, s =>
-                {
-                    if (gen != _iconGen || !iconImage) return;
-                    iconImage.sprite  = s;
-                    iconImage.enabled = s;
-                });
-            }
+            _iconSlot.Bind(iconImage, skill.icon, skill.iconAddress);
             if (nameText)  nameText.text = UiwSkillText.ResolveName(skill, fallbackToId);
             if (descText)  descText.text = UiwSkillText.ResolveDescription(skill);
             ApplyRankBackground(skill);
@@ -96,46 +85,23 @@ namespace Ale.Inventory.Runtime.UI
         public void Clear()
         {
             _skill = null;
-            if (iconImage)
-            {
-                InventoryAssets.Release(iconImage.gameObject);
-                _iconGen++;
-                iconImage.sprite = null; iconImage.enabled = false;
-            }
+            _iconSlot.Clear(iconImage);
             if (nameText)       nameText.text = string.Empty;
             if (descText)       descText.text = string.Empty;
-            if (rankBackground)
-            {
-                InventoryAssets.Release(rankBackground.gameObject);
-                _rankBgGen++;
-                rankBackground.sprite  = null;
-                rankBackground.enabled = false;
-            }
+            _rankBgSlot.Clear(rankBackground);
             ClearCustomLines();
         }
 
-        // 图标 / 位阶背景异步加载世代号：每次绑定自增，回调据此丢弃过期结果（对象池复用时避免错图）。
-        private int _iconGen;
-        private int _rankBgGen;
+        // 图标 / 位阶背景的异步绑定槽（内建代次守卫，对象池复用时避免错图）。见 SpriteSlot。
+        private readonly SpriteSlot _iconSlot   = new SpriteSlot();
+        private readonly SpriteSlot _rankBgSlot = new SpriteSlot();
 
         private void ApplyRankBackground(Skill skill)
         {
-            if (!rankBackground) return;
-            var owner = rankBackground.gameObject;
-            InventoryAssets.Release(owner);
-            int gen = ++_rankBgGen;
-
             var enumItem = SkillRankUtil.Resolve(skill, rankAttrId);
             var bgEntry  = enumItem != null && !string.IsNullOrEmpty(rankBackgroundAttrId)
                 ? enumItem.GetEntry(rankBackgroundAttrId) : null;
-            if (bgEntry?.value == null) { rankBackground.sprite = null; rankBackground.enabled = false; return; }
-
-            InventoryAssets.Bind<Sprite>(bgEntry.value, owner, s =>
-            {
-                if (gen != _rankBgGen || !rankBackground) return;   // 过期结果丢弃
-                rankBackground.sprite  = s;
-                rankBackground.enabled = s;
-            });
+            _rankBgSlot.Bind(rankBackground, bgEntry?.value);
         }
 
         private void ApplyCustomFields(Skill skill)

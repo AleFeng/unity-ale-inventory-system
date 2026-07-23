@@ -18,22 +18,20 @@ namespace Ale.Inventory.Runtime.UI
     {
         private void Start()
         {
-            // 视图切换按钮事件绑定（排序/过滤/货币 已抽到独立工具栏组件）
-            if (viewModeToggleButton) viewModeToggleButton.onClick.AddListener(OnToggleViewMode);
-
+            // 视图切换（排序/过滤/货币 已抽到独立工具栏组件）
             // 订阅工具栏组件事件
             if (filterBar)   filterBar.OnFilterChanged += OnFilterChanged;
             if (sortToolbar) { sortToolbar.OnSortChanged += OnSortChanged; sortToolbar.OnAutoSort += OnAutoSort; }
 
-            // 初始 视图模式。无切换按钮时，判断 道具列表组件 是否配置。
-            if (!viewModeToggleButton) _isOrderListMode = itemOrderList;
-            // 应用 当前视图模式
+            // 视图模式（含无切换按钮时自动采用已配置的那个列表）由基类统一处理。
+            SetupViewModeToggle(itemOrderList, itemGridList);
             ApplyViewMode();
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();   // 取消按打开订阅的 OnInventoryChanged
+            TeardownViewModeToggle();
             // 工具栏 / 过滤栏事件随组件生命周期订阅（Start），此处一并取消
             if (filterBar)   filterBar.OnFilterChanged -= OnFilterChanged;
             if (sortToolbar) { sortToolbar.OnSortChanged -= OnSortChanged; sortToolbar.OnAutoSort -= OnAutoSort; }
@@ -116,15 +114,6 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("网格道具列表。")]
         public UiwInventoryItemGridList itemGridList;
 
-        [Header("视图切换")]
-        [Tooltip("切换按钮（null = 自动使用非空的那个视图，不支持切换）。")]
-        public Button        viewModeToggleButton;
-        [Tooltip("切换按钮上的文本（可选）。")]
-        public InventoryText viewModeToggleLabel;
-
-        // 当前视图模式：true = 列表，false = 网格
-        private bool _isOrderListMode = true;
-
         /// <summary>
         /// 刷新 道具列表显示。
         /// </summary>
@@ -169,7 +158,7 @@ namespace Ale.Inventory.Runtime.UI
             }
 
             // 按当前视图模式 分发到对应组件
-            if (_isOrderListMode && itemOrderList)
+            if (!GridMode && itemOrderList)
             {
                 // 内容变化走增量更新（保留滚动位置）；其余场景全量重建并回到顶部。
                 if (preserveScroll) itemOrderList.UpdateItemSlotList(invId, itemSlotsDisplay);
@@ -188,28 +177,15 @@ namespace Ale.Inventory.Runtime.UI
             RefreshWeightDisplay();
         }
 
-        /// <summary>
-        /// 切换视图模式（列表 ↔ 网格）按钮回调。
-        /// </summary>
-        private void OnToggleViewMode()
+        /// <summary>激活当前模式对应的道具列表组件，隐藏另一个（基类 <see cref="UiwViewBase"/> 驱动）。</summary>
+        protected override void OnApplyViewMode(bool gridMode)
         {
-            _isOrderListMode = !_isOrderListMode;
-            // 应用 当前视图模式
-            ApplyViewMode();
-            // 刷新 道具列表内容
-            RefreshItemList();
+            if (itemOrderList) itemOrderList.gameObject.SetActive(!gridMode);
+            if (itemGridList)  itemGridList.gameObject.SetActive(gridMode);
         }
-        
-        /// <summary>
-        /// 应用 当前视图模式：激活对应视图组件，隐藏另一个。
-        /// </summary>
-        private void ApplyViewMode()
-        {
-            if (viewModeToggleLabel) viewModeToggleLabel.text = _isOrderListMode ? "列表" : "网格";
-            // 切换 列表/网格 组件显示
-            if (itemOrderList) itemOrderList.gameObject.SetActive(_isOrderListMode);
-            if (itemGridList) itemGridList.gameObject.SetActive(!_isOrderListMode);
-        }
+
+        /// <summary>切换模式后刷新道具列表内容。</summary>
+        protected override void OnViewModeChanged() => RefreshItemList();
         #endregion
         
         #region 货币栏

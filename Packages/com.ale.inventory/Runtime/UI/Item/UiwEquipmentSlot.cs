@@ -125,8 +125,7 @@ namespace Ale.Inventory.Runtime.UI
             string itemId = mgr != null ? mgr.GetEquipped(GroupId, SlotId) : null;
             if (string.IsNullOrEmpty(itemId)) return;   // 空槽不可拖出
 
-            var canvas = GetComponentInParent<Canvas>();
-            if (canvas) canvas = canvas.rootCanvas;
+            var canvas = UIUtility.ResolveRootCanvas(this);
             Sprite icon = iconImage ? iconImage.sprite : null;
 
             // 来源图标半透明与结束复位由拖拽上下文统一处理（传入本槽作为来源）。

@@ -5,7 +5,6 @@ using InventoryText = UnityEngine.UI.Text;
 #endif
 
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -386,12 +385,16 @@ namespace Ale.Inventory.Runtime.UI
         /// 重新计算总价 / 总收益，并更新总价文本与结算按钮状态。
         /// 前缀 / 超预算判断 / 结算可用性 由子类挂钩（<see cref="TotalPrefix"/> / <see cref="IsOverBudget"/> / <see cref="CanSettle"/>）决定。
         /// </summary>
+        // 总价聚合的复用缓冲：长按连发时 RecomputeTotals 最高约 30 次/秒，
+        // 原实现每次都新建 Dictionary 与 StringBuilder（StringBuilder 现已收进 UIFormat）。
+        private readonly Dictionary<string, int> _totals = new Dictionary<string, int>();
+
         protected void RecomputeTotals()
         {
             var shopMgr = ShopRuntimeManager.Instance;
             int maxPerOrder = commodityList && commodityList.cellPrefab ? commodityList.cellPrefab.maxQuantityPerOrder : 999;
 
-            var totals  = new Dictionary<string, int>();
+            _totals.Clear();
             int selected = 0;
             foreach (var e in Entries)
             {
@@ -408,23 +411,19 @@ namespace Ale.Inventory.Runtime.UI
                 if (unitPrice != null)
                     foreach (var kv in unitPrice)
                     {
-                        totals.TryGetValue(kv.Key, out var ex);
-                        totals[kv.Key] = ex + kv.Value * e.times;
+                        _totals.TryGetValue(kv.Key, out var ex);
+                        _totals[kv.Key] = ex + kv.Value * e.times;
                     }
             }
 
             bool over = false;
-            var sb = new StringBuilder();
-            foreach (var kv in totals)
-            {
-                if (IsOverBudget(kv.Key, kv.Value)) over = true;
-                if (sb.Length > 0) sb.Append("  ");
-                sb.Append(FmtNum(kv.Value)).Append(' ').Append(kv.Key);
-            }
+            foreach (var kv in _totals)
+                if (IsOverBudget(kv.Key, kv.Value)) { over = true; break; }
 
             if (totalLabel)
             {
-                totalLabel.text  = TotalPrefix + (sb.Length > 0 ? sb.ToString() : "0");
+                string priceText = UIFormat.PriceString(NumberFormat, _totals);
+                totalLabel.text  = TotalPrefix + (priceText.Length > 0 ? priceText : "0");
                 totalLabel.color = over ? overBudgetColor : normalColor;
             }
             if (settleButton)
@@ -455,7 +454,8 @@ namespace Ale.Inventory.Runtime.UI
             if (hintLabel) hintLabel.text = msg ?? string.Empty;
         }
 
-        protected string FmtNum(long v) => NumberFormat != null ? NumberFormat.Format(v) : v.ToString();
+        /// <summary>按当前数字格式格式化数值（无格式时退回 <c>ToString()</c>）。</summary>
+        protected string FmtNum(long v) => UIFormat.Number(NumberFormat, v);
         #endregion
 
         #region 事件

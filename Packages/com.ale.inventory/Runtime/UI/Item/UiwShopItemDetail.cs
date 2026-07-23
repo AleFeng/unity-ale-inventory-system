@@ -5,7 +5,6 @@ using InventoryText = UnityEngine.UI.Text;
 #endif
 
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -202,26 +201,13 @@ namespace Ale.Inventory.Runtime.UI
             }
 
             if (unitPriceText)
-                unitPriceText.text = BuildPriceString(_unitPrice, 1);
+                unitPriceText.text = UIFormat.PriceString(numberFormat, _unitPrice);
         }
 
         private void UpdateSubtotal()
         {
             if (subtotalText)
-                subtotalText.text = Times > 0 ? BuildPriceString(_unitPrice, Times) : string.Empty;
-        }
-
-        /// <summary>构造「金额 货币ID」串（多货币以两空格分隔），金额按数字格式显示。</summary>
-        private string BuildPriceString(Dictionary<string, int> price, int multiplier)
-        {
-            if (price == null || price.Count == 0) return string.Empty;
-            var sb = new StringBuilder();
-            foreach (var kv in price)
-            {
-                if (sb.Length > 0) sb.Append("  ");
-                sb.Append(FormatNumber((long)kv.Value * multiplier)).Append(' ').Append(kv.Key);
-            }
-            return sb.ToString();
+                subtotalText.text = Times > 0 ? UIFormat.PriceString(numberFormat, _unitPrice, Times) : string.Empty;
         }
 
         private void ApplyGray(bool disabled)

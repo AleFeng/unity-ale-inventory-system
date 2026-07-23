@@ -56,10 +56,10 @@ namespace Ale.Inventory.Runtime.UI
             nameText.text = display ?? string.Empty;
         }
         
-        // 图标 / 品质背景异步加载的世代号：每次绑定自增，回调据此丢弃过期结果，
-        // 避免对象池快速复用时旧的异步加载回调覆盖新内容（Addressable 模式）。
-        private int _iconGen;
-        private int _qualityBgGen;
+        // 图标 / 品质背景的异步绑定槽：内建代次守卫，避免对象池快速复用时旧的异步加载回调
+        // 覆盖新内容（Addressable 模式）。见 <see cref="SpriteSlot"/>。
+        private readonly SpriteSlot _iconSlot      = new SpriteSlot();
+        private readonly SpriteSlot _qualityBgSlot = new SpriteSlot();
 
         /// <summary>
         /// 从 item 属性中读取图标 Sprite 并写入 iconImage：经 <see cref="InventoryAssets"/> 门面
@@ -67,73 +67,43 @@ namespace Ale.Inventory.Runtime.UI
         /// </summary>
         protected void ApplyIcon(Item item)
         {
-            if (!iconImage) return;
-            var owner = iconImage.gameObject;
-            InventoryAssets.Release(owner);      // 释放上次绑定的句柄（对象池复用）
-            int gen = ++_iconGen;
-
             var entry = item != null && !string.IsNullOrEmpty(iconAttrId) ? item.GetEntry(iconAttrId) : null;
-            if (entry?.value == null) { iconImage.sprite = null; iconImage.enabled = false; return; }
-
-            InventoryAssets.Bind<Sprite>(entry.value, owner, s =>
-            {
-                if (gen != _iconGen || !iconImage) return;   // 过期结果丢弃
-                iconImage.sprite  = s;
-                iconImage.enabled = s;
-            });
+            _iconSlot.Bind(iconImage, entry?.value);
         }
 
         /// <summary>清空图标显示（并释放异步句柄、作废未完成的加载回调）。</summary>
-        protected void ClearIcon()
-        {
-            if (!iconImage) return;
-            InventoryAssets.Release(iconImage.gameObject);
-            _iconGen++;
-            iconImage.sprite  = null;
-            iconImage.enabled = false;
-        }
-        
+        protected void ClearIcon() => _iconSlot.Clear(iconImage);
+
         /// <summary>
         /// 从 item 的品质枚举属性中读取背景 Sprite 并写入 <see cref="qualityBackground"/>。
         /// 未配置 qualityBackground 时静默跳过（即不显示品质背景）。
+        /// <para>背景框常驻显示（enabled 恒为 true），未解析出 Sprite 时只是没有贴图 ——
+        /// 故绑定时不让 <see cref="SpriteSlot"/> 代管 enabled。</para>
         /// </summary>
         protected void ApplyQualityBackground(Item item)
         {
             if (!qualityBackground) return;
-            var owner = qualityBackground.gameObject;
-            InventoryAssets.Release(owner);
-            int gen = ++_qualityBgGen;
-
             qualityBackground.enabled = true;
-            if (item == null || string.IsNullOrEmpty(qualityAttrId)) { qualityBackground.sprite = null; return; }
 
-            var qualityAv = item.GetEntry(qualityAttrId)?.value;
-            if (qualityAv == null || string.IsNullOrEmpty(qualityBackgroundAttrId)) { qualityBackground.sprite = null; return; }
-
-            int qVal     = qualityAv.AsEnumValue;
-            var enumType = InventoryDataManager.Instance.GetEnumType(qualityAv.EnumTypeRef);
-            var enumItem = enumType?.GetItemByValue(qVal);
-            var bgEntry  = enumItem?.GetEntry(qualityBackgroundAttrId);
-            if (bgEntry?.value == null) { qualityBackground.sprite = null; return; }
-
-            InventoryAssets.Bind<Sprite>(bgEntry.value, owner, s =>
+            AttributeValue bgValue = null;
+            if (item != null && !string.IsNullOrEmpty(qualityAttrId) && !string.IsNullOrEmpty(qualityBackgroundAttrId))
             {
-                if (gen != _qualityBgGen || !qualityBackground) return;
-                qualityBackground.sprite = s;
-            });
+                var qualityAv = item.GetEntry(qualityAttrId)?.value;
+                if (qualityAv != null)
+                {
+                    var enumType = InventoryDataManager.Instance.GetEnumType(qualityAv.EnumTypeRef);
+                    var enumItem = enumType?.GetItemByValue(qualityAv.AsEnumValue);
+                    bgValue = enumItem?.GetEntry(qualityBackgroundAttrId)?.value;
+                }
+            }
+            _qualityBgSlot.Bind(qualityBackground, bgValue, toggleEnabled: false);
         }
 
         /// <summary>清空名称与品质背景显示（供空态 / 对象池回收复用）。</summary>
         protected void ClearNameAndQuality()
         {
             if (nameText) nameText.text = string.Empty;
-            if (qualityBackground)
-            {
-                InventoryAssets.Release(qualityBackground.gameObject);
-                _qualityBgGen++;
-                qualityBackground.sprite  = null;
-                qualityBackground.enabled = false;
-            }
+            _qualityBgSlot.Clear(qualityBackground);
         }
 
         #endregion
@@ -178,13 +148,11 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("数字显示格式（由 UiwInventoryView 根据当前仓库配置和语言自动赋值）。")]
         [HideInInspector] public NumberFormatLocale numberFormat;
 
-        /// <summary>根据 locale 规则格式化数值；无 locale 时退回 ToString()。</summary>
-        protected string FormatNumber(long value)
-        {
-            if (numberFormat == null) return value.ToString();
-            // 后缀本地化已内建于 NumberFormatRule.ResolveSuffix()（Text：本地化优先、回退纯文本）。
-            return numberFormat.Format(value);
-        }
+        /// <summary>
+        /// 根据 locale 规则格式化数值；无 locale 时退回 ToString()。
+        /// 后缀本地化已内建于 NumberFormatRule.ResolveSuffix()（Text：本地化优先、回退纯文本）。
+        /// </summary>
+        protected string FormatNumber(long value) => UIFormat.Number(numberFormat, value);
 
         #endregion
     }

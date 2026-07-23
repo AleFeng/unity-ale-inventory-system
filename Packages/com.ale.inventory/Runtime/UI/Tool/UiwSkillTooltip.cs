@@ -46,8 +46,8 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("自定义字段行预制体（单个 InventoryText）。")]
         public InventoryText customFieldLinePrefab;
 
-        // 图标异步加载世代号：改选 / 清空时自增，回调据此丢弃过期结果。
-        private int _iconGen;
+        // 图标的异步绑定槽（内建代次守卫，改选 / 清空时作废未完成的加载）。见 SpriteSlot。
+        private readonly SpriteSlot _iconSlot = new SpriteSlot();
 
         // 自定义字段行：改选技能时按需复用，不再销毁重建（全局单例弹窗，切换频繁）。
         private readonly UiwWidgetPool<InventoryText> _customLinePool = new UiwWidgetPool<InventoryText>();
@@ -63,18 +63,7 @@ namespace Ale.Inventory.Runtime.UI
 
         protected override void ApplyContent(Skill skill)
         {
-            if (iconImage)
-            {
-                var owner = iconImage.gameObject;
-                InventoryAssets.Release(owner);
-                int gen = ++_iconGen;
-                InventoryAssets.Bind<Sprite>(skill.icon, skill.iconAddress, owner, s =>
-                {
-                    if (gen != _iconGen || !iconImage) return;
-                    iconImage.sprite  = s;
-                    iconImage.enabled = s;
-                });
-            }
+            _iconSlot.Bind(iconImage, skill.icon, skill.iconAddress);
             if (nameText)  nameText.text = UiwSkillText.ResolveName(skill, true);
             if (descText)  descText.text = UiwSkillText.ResolveDescription(skill);
 
@@ -91,12 +80,7 @@ namespace Ale.Inventory.Runtime.UI
 
         protected override void ClearContent()
         {
-            if (iconImage)
-            {
-                InventoryAssets.Release(iconImage.gameObject);
-                _iconGen++;
-                iconImage.sprite = null; iconImage.enabled = false;
-            }
+            _iconSlot.Clear(iconImage);
             if (nameText)     nameText.text = string.Empty;
             if (descText)     descText.text = string.Empty;
             if (rankNameText) rankNameText.text = string.Empty;

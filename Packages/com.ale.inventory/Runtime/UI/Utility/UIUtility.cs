@@ -72,6 +72,20 @@ namespace Ale.Inventory.Runtime.UI
         }
 
         /// <summary>
+        /// 取 <paramref name="c"/> 自身或父级最近 Canvas 的<b>根</b> Canvas，未找到返回 null。
+        /// <para>子 Canvas 继承根 Canvas 的渲染模式与相机，涉及坐标换算 / 层级挂载时一律以根为准。
+        /// 拖拽残影挂载、指针坐标换算等三处此前各写了一遍这两行。</para>
+        /// <para><b>不带缓存</b>：<c>GetComponentInParent</c> 会逐级向上遍历，请勿在每帧路径上调用；
+        /// 每帧需要定位相机时用 <see cref="ResolveCanvasCamera"/>（带缓存）。</para>
+        /// </summary>
+        public static Canvas ResolveRootCanvas(Component c)
+        {
+            if (!c) return null;
+            var canvas = c.GetComponentInParent<Canvas>();
+            return canvas ? (canvas.rootCanvas ? canvas.rootCanvas : canvas) : null;
+        }
+
+        /// <summary>
         /// 取 <paramref name="rt"/> 自身或父级最近 Canvas 的定位相机：
         /// Overlay 返回 null；ScreenSpaceCamera / WorldSpace 返回 Canvas.worldCamera（缺省回退 <see cref="Camera.main"/>）。
         /// <paramref name="ignoreCache"/> 为 true 时忽略缓存、强制重新查找根 Canvas 并回填（默认 false）。
@@ -83,9 +97,7 @@ namespace Ale.Inventory.Runtime.UI
             // 命中且未被销毁 → 直接用；未缓存 / 已销毁 / 弹窗改换父级 / 显式忽略缓存 → 重新查找根 Canvas 并回填缓存。
             if (ignoreCache || !RootCanvasCache.TryGetValue(rt, out var root) || !root)
             {
-                var canvas = rt.GetComponentInParent<Canvas>();
-                // 子 Canvas 继承根 Canvas 的渲染模式与相机，以根 Canvas 为准。
-                root = canvas ? (canvas.rootCanvas ? canvas.rootCanvas : canvas) : null;
+                root = ResolveRootCanvas(rt);
                 PruneCanvasCache();
                 RootCanvasCache[rt] = root;
             }

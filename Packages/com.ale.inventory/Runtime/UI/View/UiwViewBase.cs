@@ -5,6 +5,7 @@ using InventoryText = UnityEngine.UI.Text;
 #endif
 
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Ale.Inventory.Runtime.UI
 {
@@ -86,6 +87,63 @@ namespace Ale.Inventory.Runtime.UI
         {
             Unsubscribe();
         }
+        #endregion
+
+        #region 视图模式（顺序列表 / 网格）
+        [Header("视图模式")]
+        [Tooltip("顺序列表 ↔ 网格 切换按钮。为空时固定使用可用的那个列表，不提供切换。")]
+        public Button viewModeToggleButton;
+        [Tooltip("切换按钮上的文本：显示**当前**所处的模式名。可空。")]
+        public InventoryText viewModeToggleLabel;
+        [Tooltip("处于顺序列表模式时，切换按钮显示的文本。")]
+        public string orderModeLabel = "列表";
+        [Tooltip("处于网格模式时，切换按钮显示的文本。")]
+        public string gridModeLabel = "网格";
+
+        /// <summary>当前是否为网格模式（false = 顺序列表）。</summary>
+        protected bool GridMode { get; private set; }
+
+        /// <summary>
+        /// 挂接切换按钮并按可用列表决定初始模式（在子类 Awake / OnEnable 中调用）。
+        /// 未配置 <see cref="viewModeToggleButton"/> 时不提供切换，且当只有网格列表可用时直接进网格模式。
+        /// </summary>
+        /// <param name="hasOrderList">顺序列表组件是否可用。</param>
+        /// <param name="hasGridList">网格列表组件是否可用。</param>
+        protected void SetupViewModeToggle(bool hasOrderList, bool hasGridList)
+        {
+            if (viewModeToggleButton) viewModeToggleButton.onClick.AddListener(ToggleViewMode);
+            else                      GridMode = !hasOrderList && hasGridList;
+        }
+
+        /// <summary>拆除切换按钮监听（在子类 OnDisable / OnDestroy 中调用）。</summary>
+        protected void TeardownViewModeToggle()
+        {
+            if (viewModeToggleButton) viewModeToggleButton.onClick.RemoveListener(ToggleViewMode);
+        }
+
+        /// <summary>切换视图模式并应用，随后通知子类刷新列表内容。</summary>
+        private void ToggleViewMode()
+        {
+            GridMode = !GridMode;
+            ApplyViewMode();
+            OnViewModeChanged();
+        }
+
+        /// <summary>把当前模式应用到按钮文本与两个列表组件的显隐。</summary>
+        protected void ApplyViewMode()
+        {
+            if (viewModeToggleLabel) viewModeToggleLabel.text = GridMode ? gridModeLabel : orderModeLabel;
+            OnApplyViewMode(GridMode);
+        }
+
+        /// <summary>
+        /// 子类据当前模式激活对应列表组件、隐藏另一个。
+        /// 只有同时提供「顺序列表 / 网格」两种呈现的视图（仓库 / 技能）需要覆写；其余视图不涉及。
+        /// </summary>
+        protected virtual void OnApplyViewMode(bool gridMode) { }
+
+        /// <summary>模式切换后的刷新钩子（默认什么都不做）。</summary>
+        protected virtual void OnViewModeChanged() { }
         #endregion
 
         #region 数字格式

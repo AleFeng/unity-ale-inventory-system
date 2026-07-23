@@ -165,8 +165,7 @@ namespace Ale.Inventory.Runtime.UI
             _dragScreenPos   = eventData.position;
 
             // 根 Canvas（幽灵挂最上层，避免被其它 UI 裁剪）。
-            var canvas = GetComponentInParent<Canvas>();
-            if (canvas) canvas = canvas.rootCanvas;
+            var canvas = UIUtility.ResolveRootCanvas(this);
             if (!canvas) { _dragSourceIndex = -1; return; }
 
             TryGetActiveCell(dataIndex, out var srcCell);
@@ -269,9 +268,9 @@ namespace Ale.Inventory.Runtime.UI
         {
             if (!scrollRect || !scrollRect.viewport || !content) return;
 
-            var vpRt   = scrollRect.viewport;
-            var canvas = scrollRect.GetComponentInParent<Canvas>();
-            var cam    = (canvas && canvas.renderMode != RenderMode.ScreenSpaceOverlay) ? canvas.worldCamera : null;
+            var vpRt = scrollRect.viewport;
+            // 本方法在拖拽期间每帧执行：走 UIUtility 的带缓存解析，避免每帧 GetComponentInParent 逐级上溯。
+            var cam  = UIUtility.ResolveCanvasCamera(vpRt);
             if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(vpRt, _dragScreenPos, cam, out var local))
                 return;
 

@@ -61,8 +61,7 @@ namespace Ale.Inventory.Runtime.UI
             // 未接入网格列表：驱动装备拖拽（拖到装备槽装备）。
             var cell = OwnerCell;
             if (!cell || string.IsNullOrEmpty(cell.ItemId)) return;
-            var canvas = GetComponentInParent<Canvas>();
-            if (canvas) canvas = canvas.rootCanvas;
+            var canvas = UIUtility.ResolveRootCanvas(this);
             Sprite icon = cell.iconImage ? cell.iconImage.sprite : null;
             // 来源图标半透明与结束复位由拖拽上下文统一处理（传入 cell 作为来源）。
             UiwEquipmentDragContext.BeginFromInventory(cell.ItemId, cell.InventoryId, cell, icon, canvas, eventData.position);

@@ -46,12 +46,6 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("网格技能列表。")]
         public UiwSkillGridList gridList;
 
-        [Header("视图切换")]
-        [Tooltip("切换按钮（null = 自动使用非空的那个视图，不支持切换）。")]
-        public Button viewModeToggleButton;
-        [Tooltip("切换按钮上的文本（可选）。")]
-        public InventoryText viewModeToggleLabel;
-
         [Header("分组页签")]
         [Tooltip("是否显示「全部」页签。")]
         public bool showAllTab = true;
@@ -62,7 +56,6 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("搜索输入框（按名称 / ID 过滤）。")]
         public InputField searchInput;
         
-        private bool   _isGridMode;         // false = 顺序列表
         private string _search = string.Empty; // 当前搜索过滤 token（名称 / ID；null / 空 = 全部）
         private bool   _subscribed; // 是否已订阅事件（避免重复订阅）
 
@@ -71,20 +64,19 @@ namespace Ale.Inventory.Runtime.UI
 
         private void Start()
         {
-            if (viewModeToggleButton) viewModeToggleButton.onClick.AddListener(OnToggleViewMode);
-            if (searchInput)          searchInput.onValueChanged.AddListener(OnSearchChanged);
+            if (searchInput) searchInput.onValueChanged.AddListener(OnSearchChanged);
             // 主 / 副分组页签栏事件由技能列表组件（UiwInventoryListBase）自管，此处不再订阅。
 
-            // 无切换按钮：自动采用已配置的那个视图（优先顺序列表）。
-            if (!viewModeToggleButton) _isGridMode = !orderList && gridList;
+            // 视图模式（含无切换按钮时自动采用已配置的那个视图）由基类统一处理。
+            SetupViewModeToggle(orderList, gridList);
             ApplyViewMode();
         }
 
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            if (viewModeToggleButton) viewModeToggleButton.onClick.RemoveListener(OnToggleViewMode);
-            if (searchInput)          searchInput.onValueChanged.RemoveListener(OnSearchChanged);
+            TeardownViewModeToggle();
+            if (searchInput) searchInput.onValueChanged.RemoveListener(OnSearchChanged);
         }
 
         #region 打开 / 关闭
@@ -96,9 +88,11 @@ namespace Ale.Inventory.Runtime.UI
 
             if (titleLabel) titleLabel.text = titleText;
 
-            BuildGroupTabs();
+            // 采集一次，页签构建与列表刷新共用（原实现各采集一遍，每次打开跑两趟）。
+            var skills = SkillCollector.Collect(source, ConfigIdForSource(), skillRefAttrId);
+            BuildGroupTabs(skills);
             Subscribe();
-            Refresh();
+            Refresh(skills);
         }
 
         /// <summary>切换来源并打开（configId 依来源写入对应字段）。</summary>
@@ -179,7 +173,8 @@ namespace Ale.Inventory.Runtime.UI
         /// 依当前来源技能实际配置到的主 / 副分组标签，生成主 / 副两栏页签（去掉无技能的空标签）。
         /// 由Open方法调用；运行时变化仅走 <see cref="Refresh"/> 重新过滤，不重建页签（避免重置选中）。
         /// </summary>
-        private void BuildGroupTabs()
+        /// <param name="skills">已采集的当前来源技能（由调用方提供，避免与 <see cref="Refresh"/> 重复采集）。</param>
+        private void BuildGroupTabs(List<Skill> skills)
         {
             _primaryTokens.Clear();
             _secondaryTokens.Clear();
@@ -190,7 +185,7 @@ namespace Ale.Inventory.Runtime.UI
                 // 收集当前来源技能实际用到的主 / 副分组标签 ID。
                 var primaryUsed   = new HashSet<string>();
                 var secondaryUsed = new HashSet<string>();
-                foreach (var s in SkillCollector.Collect(source, ConfigIdForSource(), skillRefAttrId))
+                foreach (var s in skills)
                 {
                     if (s == null) continue;
                     if (!string.IsNullOrEmpty(s.primaryGroupTag)) primaryUsed.Add(s.primaryGroupTag);
@@ -226,7 +221,7 @@ namespace Ale.Inventory.Runtime.UI
 
         /// <summary>当前激活的技能列表（网格 / 顺序），以基类类型返回以调用过滤 / 数据入口。</summary>
         private UiwInventoryListBase<Skill, UiwSkillEntry> ActiveList()
-            => _isGridMode
+            => GridMode
                 ? (gridList  ? gridList  : orderList)
                 : (orderList ? orderList : gridList);
         
@@ -276,26 +271,16 @@ namespace Ale.Inventory.Runtime.UI
         #endregion
 
         #region 视图模式
-        
-        /// <summary>
-        /// 视图模式 切换按钮点击回调。
-        /// </summary>
-        private void OnToggleViewMode()
+
+        /// <summary>激活当前模式对应的技能列表组件，隐藏另一个（基类 <see cref="UiwViewBase"/> 驱动）。</summary>
+        protected override void OnApplyViewMode(bool gridMode)
         {
-            _isGridMode = !_isGridMode;
-            ApplyViewMode();
-            Refresh();
+            if (orderList) orderList.gameObject.SetActive(!gridMode);
+            if (gridList)  gridList.gameObject.SetActive(gridMode);
         }
-        
-        /// <summary>
-        /// 应用 当前视图模式（网格 / 列表）到 UI 元素。
-        /// </summary>
-        private void ApplyViewMode()
-        {
-            if (viewModeToggleLabel) viewModeToggleLabel.text = _isGridMode ? "网格" : "列表";
-            if (orderList) orderList.gameObject.SetActive(!_isGridMode);
-            if (gridList)  gridList.gameObject.SetActive(_isGridMode);
-        }
+
+        /// <summary>切换模式后重新采集并刷新列表。</summary>
+        protected override void OnViewModeChanged() => Refresh();
 
         #endregion
 
@@ -303,8 +288,11 @@ namespace Ale.Inventory.Runtime.UI
 
         /// <summary>按当前来源 / 主副分组 / 搜索采集并刷新技能列表。</summary>
         public void Refresh()
+            => Refresh(SkillCollector.Collect(source, ConfigIdForSource(), skillRefAttrId));
+
+        /// <summary>用已采集好的技能列表刷新（供 <see cref="Open"/> 与页签构建共用同一次采集）。</summary>
+        private void Refresh(List<Skill> skills)
         {
-            var skills = SkillCollector.Collect(source, ConfigIdForSource(), skillRefAttrId);
             var active = ActiveList();
             if (active == null) return;
 
