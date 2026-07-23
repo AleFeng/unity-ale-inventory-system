@@ -362,17 +362,14 @@ namespace Ale.Inventory.Runtime.UI
             if (_extraFilter != null)
                 list.RemoveAll(d => !_extraFilter(d));
 
-            // 显示排序（「写运行时」模式不在此排序：源已是运行时顺序）
+            // 显示排序（「写运行时」模式不在此排序：源已是运行时顺序）。
+            // SortByItemId 整次排序只建一份字段查表、复用两个临时槽位——
+            // 旧写法在比较器里每次比较都要 new 两个 RuntimeItemSlot 并重复线性扫描数据库。
             if (_sortWriteHandler == null && _sortKeySelector != null && _sortDatabase && list.Count > 1)
             {
                 var priorities = CurrentSortPriorities();
                 if (priorities.Count > 0)
-                {
-                    list.Sort((a, b) => InventoryRuntimeManager.CompareSlots(
-                        new RuntimeItemSlot(null, _sortKeySelector(a), 0),
-                        new RuntimeItemSlot(null, _sortKeySelector(b), 0),
-                        priorities, _sortDatabase));
-                }
+                    InventoryRuntimeManager.SortByItemId(list, _sortKeySelector, priorities, _sortDatabase);
             }
 
             if (preserveScroll) RefreshItemsData(list);
