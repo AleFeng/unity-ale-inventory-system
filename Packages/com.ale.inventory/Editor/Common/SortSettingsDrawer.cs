@@ -25,15 +25,22 @@ namespace Ale.Inventory.Editor
         private static readonly Dictionary<List<SortPriority>, State> Cache
             = new Dictionary<List<SortPriority>, State>();
 
-        /// <summary>绘制「整理列表」+「整理优先级」。</summary>
+        /// <summary>
+        /// 绘制「整理列表」+「整理优先级」。
+        /// <para><paramref name="undoPrefix"/> 拼在 Undo 文案词根之前（仓库模板面板传 <c>"模板"</c>，
+        /// 得到「修改模板整理列表」等，与该面板原有文案一致）；面板标题不受其影响。
+        /// 注意 Undo 文案在首次为某个列表实例构建 <see cref="ReorderableList"/> 时即固化，
+        /// 因此同一个 <c>List&lt;SortPriority&gt;</c> 实例必须始终用同一个前缀绘制——
+        /// 每个列表实例只属于一个宿主对象，天然满足。</para>
+        /// </summary>
         public static void Draw(IInventoryEditorContext ctx,
-            List<SortPriority> priorities, List<SortPriority> tiebreakers)
+            List<SortPriority> priorities, List<SortPriority> tiebreakers, string undoPrefix = "")
         {
             BuildFieldOptions(ctx.Database, out var displays, out var values);
             DrawOne(ctx, priorities, displays, values,
-                "整理列表（玩家在 UI 中通过下拉菜单选择排序条件）", "整理列表");
+                "整理列表（玩家在 UI 中通过下拉菜单选择排序条件）", undoPrefix + "整理列表");
             DrawOne(ctx, tiebreakers, displays, values,
-                "整理优先级（整理列表条件值相同时，依次对比此列表直至值不同）", "整理优先级");
+                "整理优先级（整理列表条件值相同时，依次对比此列表直至值不同）", undoPrefix + "整理优先级");
         }
 
         private static void DrawOne(IInventoryEditorContext ctx, List<SortPriority> list,

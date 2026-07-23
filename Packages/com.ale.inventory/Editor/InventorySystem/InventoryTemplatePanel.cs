@@ -18,16 +18,10 @@ namespace Ale.Inventory.Editor
         private int                       _pendingDeleteIndex  = -1;
         private IInventoryEditorContext   _masterCtx;
 
-        // ── 整理列表 ReorderableList 状态 ─────────────────────────────────────────
-        private ReorderableList         _sortList;
-        private ReorderableList         _sortTiebreakerList;
-        private InventoryTemplate       _boundTemplate;
-        private IInventoryEditorContext _ctx;
+        // 整理列表 / 整理优先级由 SortSettingsDrawer 统一绘制并自持状态，本类不再缓存。
 
         // ── 属性字段定义列表绘制器（实例持有，保持拖拽排序缓存）──────────────────────
         private readonly AttributeDefinitionListDrawer _attrDefsDrawer = new AttributeDefinitionListDrawer();
-        private string[]                _fieldDisplays;
-        private string[]                _fieldValues;
 
         // ── 主列表 ────────────────────────────────────────────────────────────────
 
@@ -129,16 +123,13 @@ namespace Ale.Inventory.Editor
             };
         }
 
-        /// <summary>数据库切换或外部重置时调用，清空主列表与整理列表缓存。</summary>
+        /// <summary>数据库切换或外部重置时调用，清空主列表缓存。</summary>
         public void Invalidate()
         {
             _masterList          = null;
             _boundMasterList     = null;
             _masterSelectedIndex = -1;
             _pendingDeleteIndex  = -1;
-            _sortList            = null;
-            _sortTiebreakerList  = null;
-            _boundTemplate       = null;
             _attrDefsDrawer.Invalidate();
         }
 
@@ -244,8 +235,7 @@ namespace Ale.Inventory.Editor
                 ctx.MarkDirty();
             }
 
-            DrawSortPriorities(ctx, template);
-            DrawSortTiebreakers(ctx, template);
+            SortSettingsDrawer.Draw(ctx, template.sortPriorities, template.sortTiebreakers, undoPrefix: "模板");
 
             EditorGUILayout.Space(6);
 
@@ -257,191 +247,6 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             _attrDefsDrawer.Draw(ctx, template.attributes, "自定义属性字段");
-        }
-
-        // ── 整理列表 ──────────────────────────────────────────────────────────────
-
-        private void DrawSortPriorities(IInventoryEditorContext ctx, InventoryTemplate template)
-        {
-            _ctx = ctx;
-            BuildFieldOptions(ctx.Database, out _fieldDisplays, out _fieldValues);
-
-            if (_boundTemplate != template)
-            {
-                BuildSortList(template);           // 先 Build，会设置 _boundTemplate
-                BuildSortTiebreakerList(template); // 共用同一个绑定对象
-            }
-
-            _sortList?.DoLayoutList();
-        }
-
-        private void DrawSortTiebreakers(IInventoryEditorContext ctx, InventoryTemplate template)
-        {
-            if (_sortTiebreakerList == null)
-                BuildSortTiebreakerList(template);
-
-            _sortTiebreakerList?.DoLayoutList();
-        }
-
-        private void BuildSortList(InventoryTemplate template)
-        {
-            _boundTemplate = template;
-            _sortList = new ReorderableList(
-                template.sortPriorities, typeof(SortPriority),
-                draggable: true, displayHeader: true,
-                displayAddButton: true, displayRemoveButton: true);
-
-            _sortList.drawHeaderCallback = rect =>
-                EditorGUI.LabelField(rect, "整理列表（玩家在 UI 中通过下拉菜单选择排序条件）");
-
-            _sortList.drawElementCallback = (rect, index, active, focused) =>
-            {
-                if (index < 0 || index >= template.sortPriorities.Count) return;
-                var sp = template.sortPriorities[index];
-                rect.y += 2;
-
-                float ascW    = 58f;
-                var fieldRect = new Rect(rect.x, rect.y, rect.width - ascW - 4,
-                    EditorGUIUtility.singleLineHeight);
-                var ascRect   = new Rect(rect.xMax - ascW, rect.y, ascW,
-                    EditorGUIUtility.singleLineHeight);
-
-                var displays = _fieldDisplays ?? new[] { "道具 ID" };
-                var values   = _fieldValues   ?? new[] { "__id__" };
-                int curIdx   = FindOptionIndex(values, sp.field);
-
-                EditorGUI.BeginChangeCheck();
-                int  picked = EditorGUI.Popup(fieldRect, curIdx, displays);
-                bool newAsc = EditorGUI.Toggle(ascRect,
-                    new GUIContent(sp.ascending ? "升序" : "降序"), sp.ascending);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    _ctx.RecordUndo("修改模板整理列表");
-                    sp.field     = values[picked];
-                    sp.ascending = newAsc;
-                    _ctx.MarkDirty();
-                }
-            };
-
-            _sortList.onAddCallback = _ =>
-            {
-                _ctx.RecordUndo("添加模板整理列表项");
-                template.sortPriorities.Add(new SortPriority("__id__"));
-                _ctx.MarkDirty();
-            };
-
-            _sortList.onRemoveCallback = list =>
-            {
-                _ctx.RecordUndo("删除模板整理列表项");
-                template.sortPriorities.RemoveAt(list.index);
-                _ctx.MarkDirty();
-            };
-
-            _sortList.onReorderCallback = _ =>
-            {
-                _ctx.RecordUndo("调整模板整理列表顺序");
-                _ctx.MarkDirty();
-            };
-        }
-
-        private void BuildSortTiebreakerList(InventoryTemplate template)
-        {
-            _sortTiebreakerList = new ReorderableList(
-                template.sortTiebreakers, typeof(SortPriority),
-                draggable: true, displayHeader: true,
-                displayAddButton: true, displayRemoveButton: true);
-
-            _sortTiebreakerList.drawHeaderCallback = rect =>
-                EditorGUI.LabelField(rect, "整理优先级（整理列表条件值相同时，依次对比此列表直至值不同）");
-
-            _sortTiebreakerList.drawElementCallback = (rect, index, active, focused) =>
-            {
-                if (index < 0 || index >= template.sortTiebreakers.Count) return;
-                var sp  = template.sortTiebreakers[index];
-                rect.y += 2;
-
-                float ascW    = 58f;
-                var fieldRect = new Rect(rect.x, rect.y, rect.width - ascW - 4,
-                    EditorGUIUtility.singleLineHeight);
-                var ascRect   = new Rect(rect.xMax - ascW, rect.y, ascW,
-                    EditorGUIUtility.singleLineHeight);
-
-                var displays = _fieldDisplays ?? new[] { "道具 ID" };
-                var values   = _fieldValues   ?? new[] { "__id__" };
-                int curIdx   = FindOptionIndex(values, sp.field);
-
-                EditorGUI.BeginChangeCheck();
-                int  picked = EditorGUI.Popup(fieldRect, curIdx, displays);
-                bool newAsc = EditorGUI.Toggle(ascRect,
-                    new GUIContent(sp.ascending ? "升序" : "降序"), sp.ascending);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    _ctx.RecordUndo("修改模板整理优先级");
-                    sp.field     = values[picked];
-                    sp.ascending = newAsc;
-                    _ctx.MarkDirty();
-                }
-            };
-
-            _sortTiebreakerList.onAddCallback = _ =>
-            {
-                _ctx.RecordUndo("添加模板整理优先级项");
-                template.sortTiebreakers.Add(new SortPriority("__id__"));
-                _ctx.MarkDirty();
-            };
-
-            _sortTiebreakerList.onRemoveCallback = list =>
-            {
-                _ctx.RecordUndo("删除模板整理优先级项");
-                template.sortTiebreakers.RemoveAt(list.index);
-                _ctx.MarkDirty();
-            };
-
-            _sortTiebreakerList.onReorderCallback = _ =>
-            {
-                _ctx.RecordUndo("调整模板整理优先级顺序");
-                _ctx.MarkDirty();
-            };
-        }
-
-        /// <summary>
-        /// 构建整理条件选项。<br/>
-        /// displays 为下拉菜单显示文本（含分组前缀），values 为对应存储值：<br/>
-        ///   "__id__"       = 道具 ID；<br/>
-        ///   属性 ID 字符串 = 按该属性值排序；<br/>
-        ///   "__tagOrder__" = 按道具在功能标签列表中的顺序排序。
-        /// </summary>
-        private static void BuildFieldOptions(InventoryDatabase db,
-            out string[] displays, out string[] values)
-        {
-            var dList = new List<string> { "道具 ID" };
-            var vList = new List<string> { "__id__" };
-            var seen  = new HashSet<string>();
-
-            foreach (var tmpl in db.ItemTemplates)
-                foreach (var def in tmpl.attributes)
-                    if (!string.IsNullOrEmpty(def.id) && seen.Add(def.id))
-                    { dList.Add("属性/" + def.id); vList.Add(def.id); }
-
-            foreach (var tag in db.FunctionTags)
-                foreach (var def in tag.attributes)
-                    if (!string.IsNullOrEmpty(def.id) && seen.Add(def.id))
-                    { dList.Add("属性/" + def.id); vList.Add(def.id); }
-
-            // 单一「功能标签」选项：运行时按功能标签列表的全局顺序对道具排序
-            if (db.FunctionTags.Count > 0)
-            { dList.Add("功能标签"); vList.Add("__tagOrder__"); }
-
-            displays = dList.ToArray();
-            values   = vList.ToArray();
-        }
-
-        private static int FindOptionIndex(string[] values, string field)
-        {
-            if (string.IsNullOrEmpty(field) || field == "__id__") return 0;
-            for (int i = 1; i < values.Length; i++)
-                if (values[i] == field) return i;
-            return 0;
         }
 
         // ── 过滤标签勾选 ──────────────────────────────────────────────────────────
