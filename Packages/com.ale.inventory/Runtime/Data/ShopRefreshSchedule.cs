@@ -10,10 +10,10 @@ namespace Ale.Inventory.Runtime
     public class ShopRefreshSchedule
     {
         /// <summary>刷新周期。</summary>
-        public ShopRefreshType refreshType = ShopRefreshType.不刷新;
+        public ShopRefreshType refreshType = ShopRefreshType.Never;
 
         /// <summary>刷新依据的时钟类型。</summary>
-        public ShopTimeType timeType = ShopTimeType.本地时间;
+        public ShopTimeType timeType = ShopTimeType.LocalTime;
 
         /// <summary>时区 ID（IANA / Windows 时区标识；空 = 使用时钟自身的本地时区）。</summary>
         public string timeZoneId;

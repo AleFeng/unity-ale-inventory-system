@@ -277,7 +277,7 @@ namespace Ale.Inventory.Runtime.UI
 
             var   rect = vpRt.rect;
             float dt   = Time.unscaledDeltaTime;
-            bool  vertical = scrollDirection == EListScrollDirection.纵向;
+            bool  vertical = scrollDirection == EListScrollDirection.Vertical;
 
             if (vertical)
             {
@@ -298,7 +298,7 @@ namespace Ale.Inventory.Runtime.UI
         {
             var   pos = content.anchoredPosition;
             var   vp  = scrollRect.viewport.rect;
-            if (scrollDirection == EListScrollDirection.纵向)
+            if (scrollDirection == EListScrollDirection.Vertical)
             {
                 float maxY = Mathf.Max(0f, content.sizeDelta.y - vp.height);
                 pos.y = Mathf.Clamp(pos.y + amount, 0f, maxY);   // 向末尾 = content 上移 = y 增大

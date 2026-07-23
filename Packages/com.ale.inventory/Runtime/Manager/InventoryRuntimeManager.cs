@@ -76,7 +76,7 @@ namespace Ale.Inventory.Runtime
         /// <summary>
         /// 注册某种时钟类型的当前时间获取器，使 <see cref="GetNow"/> 能返回游戏层的
         /// 「游戏时间 / 服务器时间」。通常在 GameInstance 中统一对接，例如：
-        /// <code>InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.服务器时间, () =&gt; timeMgr.ServerNow);</code>
+        /// <code>InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.ServerTime, () =&gt; timeMgr.ServerNow);</code>
         /// 重复注册同一类型将覆盖之前的获取器；传入 null 则注销该类型。
         /// 「本地时间」无需注册——未注册时即回退系统本地时间。
         /// </summary>

@@ -171,8 +171,8 @@ The clock needed for refresh is provided uniformly by `InventoryRuntimeManager`.
 
 ```csharp
 // The enum members are Chinese identifiers in the source; keep them verbatim.
-InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.游戏时间,   () => GameClock.Now); // 游戏时间 = game time
-InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.服务器时间, () => NetTime.UtcNow); // 服务器时间 = server time
+InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.GameTime,   () => GameClock.Now); // 游戏时间 = game time
+InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.ServerTime, () => NetTime.UtcNow); // 服务器时间 = server time
 ```
 
 # Save and Load

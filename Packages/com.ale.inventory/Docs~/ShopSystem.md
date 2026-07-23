@@ -170,8 +170,8 @@ sm.OnShopChanged += shopId => RefreshShopUI(shopId);
 刷新所需的时钟由 `InventoryRuntimeManager` 统一提供。游戏 / 服务器时间需注册获取器，未注册时回退系统本地时间：
 
 ```csharp
-InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.游戏时间,   () => GameClock.Now);
-InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.服务器时间, () => NetTime.UtcNow);
+InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.GameTime,   () => GameClock.Now);
+InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.ServerTime, () => NetTime.UtcNow);
 ```
 
 # 存档与读档

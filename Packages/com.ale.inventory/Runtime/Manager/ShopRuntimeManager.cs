@@ -344,7 +344,7 @@ namespace Ale.Inventory.Runtime
         /// </summary>
         private void ApplyRefresh(ShopRefreshSchedule schedule, ShopCommodityProgress prog)
         {
-            if (schedule == null || schedule.refreshType == ShopRefreshType.不刷新) return;
+            if (schedule == null || schedule.refreshType == ShopRefreshType.Never) return;
 
             var now      = ResolveNow(schedule);
             var boundary = MostRecentBoundary(schedule, now);
@@ -391,12 +391,12 @@ namespace Ale.Inventory.Runtime
 
             switch (s.refreshType)
             {
-                case ShopRefreshType.每日:
+                case ShopRefreshType.Daily:
                 {
                     var today = new DateTime(now.Year, now.Month, now.Day, h, m, 0, now.Kind);
                     return now >= today ? today : today.AddDays(-1);
                 }
-                case ShopRefreshType.每周:
+                case ShopRefreshType.Weekly:
                 {
                     int target = Mathf.Clamp(s.dayOfWeek, 0, 6);            // 0 = 周日
                     var c      = new DateTime(now.Year, now.Month, now.Day, h, m, 0, now.Kind);
@@ -405,7 +405,7 @@ namespace Ale.Inventory.Runtime
                     if (c > now) c = c.AddDays(-7);
                     return c;
                 }
-                case ShopRefreshType.每月:
+                case ShopRefreshType.Monthly:
                 {
                     int day = Mathf.Clamp(s.dayOfMonth, 1, 31);
                     var c   = MakeMonthDate(now.Year, now.Month, day, h, m, now.Kind);

@@ -1840,7 +1840,7 @@ namespace Ale.Inventory.Editor
             var comp = root.AddComponent<UiwInventoryItemGridList>();
             comp.bufferCount     = 1;
             comp.cellPrefab      = cellPrefab;
-            comp.scrollDirection = EListScrollDirection.纵向;
+            comp.scrollDirection = EListScrollDirection.Vertical;
             comp.spacing         = new Vector2(6f, 6f);
             comp.padding         = new Vector2(6f, 6f);
 
@@ -2983,7 +2983,7 @@ namespace Ale.Inventory.Editor
             var comp = root.AddComponent<UiwEquipmentCandidateList>();
             comp.cellPrefab      = cellPrefab;
             comp.bufferCount     = 1;
-            comp.scrollDirection = EListScrollDirection.纵向;
+            comp.scrollDirection = EListScrollDirection.Vertical;
             comp.spacing         = new Vector2(6f, 6f);
             comp.padding         = new Vector2(6f, 6f);
 
@@ -3350,7 +3350,7 @@ namespace Ale.Inventory.Editor
             var comp = root.AddComponent<UiwSkillGridList>();
             comp.cellPrefab      = cellPrefab;
             comp.bufferCount     = 1;
-            comp.scrollDirection = EListScrollDirection.纵向;
+            comp.scrollDirection = EListScrollDirection.Vertical;
             comp.spacing         = new Vector2(6f, 6f);
             comp.padding         = new Vector2(6f, 6f);
             if (!cellPrefab) Debug.LogWarning("[InventoryDemoWizard] 缺少 PF_UiwSkillCell，技能网格列表条目为空。");

@@ -2,13 +2,18 @@ using UnityEngine;
 
 namespace Ale.Inventory.Runtime.UI
 {
-    /// <summary>列表滚动方向。决定虚拟滚动的主轴与跨轴（跨轴数量按视口对应边自动计算）。</summary>
+    /// <summary>
+    /// 列表滚动方向。决定虚拟滚动的主轴与跨轴（跨轴数量按视口对应边自动计算）。
+    ///
+    /// <para>枚举值<b>显式写死</b>，与 1.4.0 及之前的中文标识符版本逐一对应，
+    /// 因此已有 <c>.prefab</c> 数据无需迁移；<c>[InspectorName]</c> 保证 Inspector 仍显示中文。</para>
+    /// </summary>
     public enum EListScrollDirection
     {
         /// <summary>纵向滚动：主轴向下，跨轴向右；列数 = floor(视口宽 ÷ 格子宽)。</summary>
-        纵向,
+        [InspectorName("纵向")] Vertical   = 0,
         /// <summary>横向滚动：主轴向右，跨轴向下；行数 = floor(视口高 ÷ 格子高)。</summary>
-        横向,
+        [InspectorName("横向")] Horizontal = 1,
     }
 
     /// <summary>
@@ -28,7 +33,7 @@ namespace Ale.Inventory.Runtime.UI
     {
         [Header("网格布局")]
         [Tooltip("滚动方向：纵向（列数按视口宽自动算）/ 横向（行数按视口高自动算）。")]
-        public EListScrollDirection scrollDirection = EListScrollDirection.纵向;
+        public EListScrollDirection scrollDirection = EListScrollDirection.Vertical;
         [Tooltip("格子间距（x=水平间隔，y=垂直间隔），像素。")]
         public Vector2 spacing = new Vector2(6f, 6f);
         [Tooltip("内容起始内边距（x=左，y=上），像素。")]
@@ -40,7 +45,7 @@ namespace Ale.Inventory.Runtime.UI
         // 跨轴数量：纵向=列数，横向=行数。默认 1，避免 RecomputeLayout 之前的除零。
         private int _crossCount = 1;
 
-        private bool  IsVertical  => scrollDirection == EListScrollDirection.纵向;
+        private bool  IsVertical  => scrollDirection == EListScrollDirection.Vertical;
         private float ColStride   => _cellWidth  + spacing.x;   // 一列的步进（含水平间距）
         private float RowStride   => _cellHeight + spacing.y;   // 一行的步进（含垂直间距）
 

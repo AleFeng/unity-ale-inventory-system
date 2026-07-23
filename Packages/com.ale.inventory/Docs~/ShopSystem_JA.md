@@ -171,8 +171,8 @@ sm.OnShopChanged += shopId => RefreshShopUI(shopId);
 
 ```csharp
 // enum のメンバーはソースでは中国語の識別子です。そのまま維持してください。
-InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.游戏时间,   () => GameClock.Now); // 游戏时间 = ゲーム時間
-InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.服务器时间, () => NetTime.UtcNow); // 服务器时间 = サーバー時間
+InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.GameTime,   () => GameClock.Now); // 游戏时间 = ゲーム時間
+InventoryRuntimeManager.Instance.RegisterTimeGetter(ShopTimeType.ServerTime, () => NetTime.UtcNow); // 服务器时间 = サーバー時間
 ```
 
 # セーブとロード

@@ -35,7 +35,7 @@ namespace Ale.Inventory.Editor
             }
 
             // 不刷新时无需后续时间配置
-            if (schedule.refreshType != ShopRefreshType.不刷新)
+            if (schedule.refreshType != ShopRefreshType.Never)
             {
                 // 刷新时间类型
                 EditorGUI.BeginChangeCheck();
@@ -74,7 +74,7 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.EndHorizontal();
 
                 // 每周 → 星期几
-                if (schedule.refreshType == ShopRefreshType.每周)
+                if (schedule.refreshType == ShopRefreshType.Weekly)
                 {
                     EditorGUI.BeginChangeCheck();
                     int newDow = EditorGUILayout.Popup("星期", Mathf.Clamp(schedule.dayOfWeek, 0, 6), WeekDayNames);
@@ -87,7 +87,7 @@ namespace Ale.Inventory.Editor
                 }
 
                 // 每月 → 几号
-                if (schedule.refreshType == ShopRefreshType.每月)
+                if (schedule.refreshType == ShopRefreshType.Monthly)
                 {
                     EditorGUI.BeginChangeCheck();
                     int newDom = EditorGUILayout.IntField("几号（1-31）", schedule.dayOfMonth);
