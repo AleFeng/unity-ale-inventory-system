@@ -27,7 +27,7 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>点击选中事件。</summary>
         public event Action<CraftingBlueprint> OnClicked;
 
-        private readonly List<UiwTextLabel> _lines = new List<UiwTextLabel>();
+        private readonly UiwWidgetPool<UiwTextLabel> _linePool = new UiwWidgetPool<UiwTextLabel>();
 
         /// <summary>绑定蓝图并刷新显示。</summary>
         public void Bind(CraftingBlueprint bp, bool selected)
@@ -59,7 +59,7 @@ namespace Ale.Inventory.Runtime.UI
             ClearIcon();
             ClearNameAndQuality();
             SetTooltipItemId(null);
-            foreach (var l in _lines) if (l) l.gameObject.SetActive(false);
+            _linePool.RecycleAll();
             if (selectedIndicator) selectedIndicator.SetActive(false);
             gameObject.SetActive(false);
         }
@@ -73,7 +73,8 @@ namespace Ale.Inventory.Runtime.UI
         {
             if (!attrLineContainer || !attrLinePrefab) return;
 
-            int idx = 0;
+            _linePool.Configure(attrLinePrefab, attrLineContainer);
+            _linePool.Begin();
             if (bp != null && bp.attributeDisplays != null)
             {
                 foreach (var ad in bp.attributeDisplays)
@@ -82,15 +83,12 @@ namespace Ale.Inventory.Runtime.UI
                     string val  = item != null ? (item.GetEntry(ad.attrId)?.value?.ToDisplayString() ?? string.Empty) : string.Empty;
                     string text = string.IsNullOrEmpty(ad.label) ? val : (ad.label + " " + val);
 
-                    while (_lines.Count <= idx)
-                        _lines.Add(Instantiate(attrLinePrefab, attrLineContainer));
-                    _lines[idx].Setup(null, Color.clear, text);
-                    _lines[idx].gameObject.SetActive(true);
-                    idx++;
+                    var line = _linePool.Next();
+                    if (!line) break;
+                    line.Setup(null, Color.clear, text);
                 }
             }
-            for (int i = idx; i < _lines.Count; i++)
-                if (_lines[i]) _lines[i].gameObject.SetActive(false);
+            _linePool.End();
         }
 
         private static string ResolveName(CraftingBlueprint bp)

@@ -58,7 +58,10 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("手动绑定：每条指定一个槽位 ID 与层级中对应的装备槽物体。需自行在层级中摆放装备槽位置。")]
         public List<ManualSlotBinding> manualSlots = new List<ManualSlotBinding>();
 
-        private readonly List<UiwEquipmentSlot> _slots = new List<UiwEquipmentSlot>();
+        private readonly UiwWidgetPool<UiwEquipmentSlot> _slotPool = new UiwWidgetPool<UiwEquipmentSlot>();
+
+        /// <summary>自动模式下已实例化的装备槽（含被隐藏的）。</summary>
+        private IReadOnlyList<UiwEquipmentSlot> _slots => _slotPool.Items;
 
         /// <summary>所属装备组 ID。</summary>
         public string GroupId { get; private set; }
@@ -122,33 +125,23 @@ namespace Ale.Inventory.Runtime.UI
 
         private void BindAuto(string groupId, EquipmentSlotList def)
         {
-            int n = def != null ? def.slots.Count : 0;
-            EnsureSlots(n);
-            for (int i = 0; i < _slots.Count; i++)
-            {
-                if (i < n)
-                {
-                    _slots[i].gameObject.SetActive(true);
-                    if (def != null) _slots[i].Bind(groupId, def, def.slots[i]);
-                }
-                else
-                {
-                    _slots[i].gameObject.SetActive(false);
-                }
-            }
-        }
+            _slotPool.Configure(slotPrefab, slotContainer ? slotContainer : transform);
+            _slotPool.Begin();
 
-        private void EnsureSlots(int count)
-        {
-            if (!slotPrefab) return;
-            var parent = slotContainer ? slotContainer : transform;
-            while (_slots.Count < count)
+            int n = def != null ? def.slots.Count : 0;
+            for (int i = 0; i < n; i++)
             {
-                var s = Instantiate(slotPrefab, parent);
-                s.Clicked      += OnSlotClicked;
-                s.RightClicked += OnSlotRightClicked;
-                _slots.Add(s);
+                var s = _slotPool.Next(out bool created);
+                if (!s) break;
+                if (created)   // 仅新实例订阅一次，复用的不重复订阅
+                {
+                    s.Clicked      += OnSlotClicked;
+                    s.RightClicked += OnSlotRightClicked;
+                }
+                s.Bind(groupId, def, def.slots[i]);
             }
+
+            _slotPool.End();
         }
 
         #endregion

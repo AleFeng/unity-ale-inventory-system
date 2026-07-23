@@ -49,7 +49,8 @@ namespace Ale.Inventory.Runtime.UI
         // 图标异步加载世代号：改选 / 清空时自增，回调据此丢弃过期结果。
         private int _iconGen;
 
-        private readonly List<GameObject> _customLines = new List<GameObject>();
+        // 自定义字段行：改选技能时按需复用，不再销毁重建（全局单例弹窗，切换频繁）。
+        private readonly UiwWidgetPool<InventoryText> _customLinePool = new UiwWidgetPool<InventoryText>();
 
         #region 显示
 
@@ -104,23 +105,21 @@ namespace Ale.Inventory.Runtime.UI
 
         private void BuildCustomFields(Skill skill)
         {
-            ClearCustomLines();
-            if (!customFieldContainer || !customFieldLinePrefab || customFieldKeys == null) return;
-            foreach (var key in customFieldKeys)
-            {
-                string val = UiwSkillText.ResolveCustomField(skill, key);
-                if (string.IsNullOrEmpty(val)) continue;
-                var line = Instantiate(customFieldLinePrefab, customFieldContainer);
-                line.text = val;
-                _customLines.Add(line.gameObject);
-            }
+            _customLinePool.Configure(customFieldLinePrefab, customFieldContainer);
+            _customLinePool.Begin();
+            if (customFieldKeys != null)
+                foreach (var key in customFieldKeys)
+                {
+                    string val = UiwSkillText.ResolveCustomField(skill, key);
+                    if (string.IsNullOrEmpty(val)) continue;
+                    var line = _customLinePool.Next();
+                    if (!line) break;
+                    line.text = val;
+                }
+            _customLinePool.End();
         }
 
-        private void ClearCustomLines()
-        {
-            foreach (var go in _customLines) if (go) Destroy(go);
-            _customLines.Clear();
-        }
+        private void ClearCustomLines() => _customLinePool.RecycleAll();
 
         #endregion
     }

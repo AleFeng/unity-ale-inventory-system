@@ -65,7 +65,7 @@ namespace Ale.Inventory.Runtime.UI
         private int           _maxTimes;
         private bool          _tradable;
         private Dictionary<string, int> _unitPrice = new Dictionary<string, int>();
-        private readonly List<UiwInventoryItemSimple> _priceInstances = new List<UiwInventoryItemSimple>();
+        private readonly UiwWidgetPool<UiwInventoryItemSimple> _pricePool = new UiwWidgetPool<UiwInventoryItemSimple>();
         
         /// <summary>本行绑定的商品配置。</summary>
         public ShopCommodity Commodity => _commodity;
@@ -188,17 +188,16 @@ namespace Ale.Inventory.Runtime.UI
         {
             if (priceContainer && priceCurrencyPrefab)
             {
-                int i = 0;
+                _pricePool.Configure(priceCurrencyPrefab, priceContainer);
+                _pricePool.Begin();
                 foreach (var kv in _unitPrice)
                 {
-                    while (_priceInstances.Count <= i)
-                        _priceInstances.Add(Instantiate(priceCurrencyPrefab, priceContainer));
-                    _priceInstances[i].numberFormat = numberFormat;
-                    _priceInstances[i].SetItem(kv.Key, kv.Value);
-                    i++;
+                    var cell = _pricePool.Next();
+                    if (!cell) break;
+                    cell.numberFormat = numberFormat;
+                    cell.SetItem(kv.Key, kv.Value);
                 }
-                for (int j = i; j < _priceInstances.Count; j++)
-                    _priceInstances[j].gameObject.SetActive(false);
+                _pricePool.End();
                 priceContainer.gameObject.SetActive(_unitPrice.Count > 0);
             }
 

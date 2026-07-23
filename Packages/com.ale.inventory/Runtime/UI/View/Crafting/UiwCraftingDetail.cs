@@ -69,8 +69,8 @@ namespace Ale.Inventory.Runtime.UI
         private bool      _crafting;
         private Coroutine _craftRoutine;
 
-        private readonly List<UiwInventoryItemSimple> _secondaryPool = new List<UiwInventoryItemSimple>();
-        private readonly List<UiwCraftingInputCell>   _inputPool     = new List<UiwCraftingInputCell>();
+        private readonly UiwWidgetPool<UiwInventoryItemSimple> _secondaryPool = new UiwWidgetPool<UiwInventoryItemSimple>();
+        private readonly UiwWidgetPool<UiwCraftingInputCell>   _inputPool     = new UiwWidgetPool<UiwCraftingInputCell>();
 
         private void Awake()
         {
@@ -133,23 +133,21 @@ namespace Ale.Inventory.Runtime.UI
         {
             if (!secondaryOutputContainer || !secondaryOutputPrefab) return;
 
-            int count = 0;
+            _secondaryPool.Configure(secondaryOutputPrefab, secondaryOutputContainer);
+            _secondaryPool.Begin();
             if (_craftingBlueprint != null && _craftingBlueprint.outputs != null)
                 for (int i = 1; i < _craftingBlueprint.outputs.Count; i++)   // index 0 = 主产出
                 {
                     var o = _craftingBlueprint.outputs[i];
                     if (o == null || string.IsNullOrEmpty(o.itemId)) continue;
-                    while (_secondaryPool.Count <= count)
-                        _secondaryPool.Add(Instantiate(secondaryOutputPrefab, secondaryOutputContainer));
-                    var cell = _secondaryPool[count];
+                    var cell = _secondaryPool.Next();
+                    if (!cell) break;
                     cell.numberFormat      = _numberFormatLocale;
                     cell.showDetailTooltip = true;
                     cell.SetItem(o.itemId, o.count);
-                    count++;
                 }
-
-            for (int i = count; i < _secondaryPool.Count; i++)
-                if (_secondaryPool[i]) _secondaryPool[i].gameObject.SetActive(false);
+            int count = _secondaryPool.ActiveCount;
+            _secondaryPool.End();
 
             secondaryOutputContainer.gameObject.SetActive(count > 0);
         }
@@ -158,21 +156,19 @@ namespace Ale.Inventory.Runtime.UI
         {
             if (!inputContainer || !inputCellPrefab) return;
 
-            int count = 0;
+            _inputPool.Configure(inputCellPrefab, inputContainer);
+            _inputPool.Begin();
             if (_craftingBlueprint != null && _craftingBlueprint.inputs != null)
                 foreach (var input in _craftingBlueprint.inputs)
                 {
                     if (input == null || string.IsNullOrEmpty(input.itemId)) continue;
-                    while (_inputPool.Count <= count)
-                        _inputPool.Add(Instantiate(inputCellPrefab, inputContainer));
-                    var cell = _inputPool[count];
+                    var cell = _inputPool.Next();
+                    if (!cell) break;
                     cell.numberFormat = _numberFormatLocale;
                     cell.Bind(_craftingBlueprint, input);
-                    count++;
                 }
-
-            for (int i = count; i < _inputPool.Count; i++)
-                if (_inputPool[i]) _inputPool[i].SetEmpty();
+            // 多余的材料格保持显示但置空（与原实现一致：格位不消失，只是没有内容）。
+            _inputPool.End(c => c.SetEmpty());
         }
 
         #endregion

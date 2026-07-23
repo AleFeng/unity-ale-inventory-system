@@ -49,7 +49,10 @@ namespace Ale.Inventory.Runtime.UI
         public bool showTooltip = true;
 
         private Skill _skill;
-        private readonly List<GameObject> _customLines = new List<GameObject>();
+
+        // 自定义字段行：本条目本身就是虚拟滚动的池化格子，若每次重绑都销毁重建这些行，
+        // 滚动时会持续产生 GameObject 的销毁 / 实例化开销。改用实例池按需复用。
+        private readonly UiwWidgetPool<InventoryText> _customLinePool = new UiwWidgetPool<InventoryText>();
 
         /// <summary>当前绑定的技能。</summary>
         public Skill Skill => _skill;
@@ -137,22 +140,20 @@ namespace Ale.Inventory.Runtime.UI
 
         private void ApplyCustomFields(Skill skill)
         {
-            ClearCustomLines();
-            if (!customFieldContainer || !customFieldLinePrefab || customFieldKeys == null) return;
-            foreach (var key in customFieldKeys)
-            {
-                string val = UiwSkillText.ResolveCustomField(skill, key);
-                if (string.IsNullOrEmpty(val)) continue;
-                var line = Instantiate(customFieldLinePrefab, customFieldContainer);
-                line.text = val;
-                _customLines.Add(line.gameObject);
-            }
+            _customLinePool.Configure(customFieldLinePrefab, customFieldContainer);
+            _customLinePool.Begin();
+            if (customFieldKeys != null)
+                foreach (var key in customFieldKeys)
+                {
+                    string val = UiwSkillText.ResolveCustomField(skill, key);
+                    if (string.IsNullOrEmpty(val)) continue;
+                    var line = _customLinePool.Next();
+                    if (!line) break;
+                    line.text = val;
+                }
+            _customLinePool.End();
         }
 
-        private void ClearCustomLines()
-        {
-            foreach (var go in _customLines) if (go) Destroy(go);
-            _customLines.Clear();
-        }
+        private void ClearCustomLines() => _customLinePool.RecycleAll();
     }
 }

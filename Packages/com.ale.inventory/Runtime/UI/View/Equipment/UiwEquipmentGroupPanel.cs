@@ -66,7 +66,10 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("Start 时自动按上面的装备组 ID 绑定（独立使用时勾选；由视图驱动时不需要）。")]
         [SerializeField] private bool bindOnStart;
 
-        private readonly List<UiwEquipmentSlotList> _slotLists = new List<UiwEquipmentSlotList>();
+        private readonly UiwWidgetPool<UiwEquipmentSlotList> _slotListPool = new UiwWidgetPool<UiwEquipmentSlotList>();
+
+        /// <summary>自动模式下已实例化的槽位列表（含被隐藏的）。</summary>
+        private IReadOnlyList<UiwEquipmentSlotList> _slotLists => _slotListPool.Items;
         private bool _bound;
 
         /// <summary>当前绑定的装备组 ID。</summary>
@@ -124,33 +127,23 @@ namespace Ale.Inventory.Runtime.UI
 
         private void BindAuto(string newGroupId, EquipmentGroup group)
         {
-            int n = group != null ? group.slotLists.Count : 0;
-            EnsureSlotLists(n);
-            for (int i = 0; i < _slotLists.Count; i++)
-            {
-                if (i < n)
-                {
-                    _slotLists[i].gameObject.SetActive(true);
-                    if (group != null) _slotLists[i].Bind(newGroupId, group.slotLists[i]);
-                }
-                else
-                {
-                    _slotLists[i].gameObject.SetActive(false);
-                }
-            }
-        }
+            _slotListPool.Configure(slotListPrefab, slotListContainer ? slotListContainer : transform);
+            _slotListPool.Begin();
 
-        private void EnsureSlotLists(int count)
-        {
-            if (!slotListPrefab) return;
-            var parent = slotListContainer ? slotListContainer : transform;
-            while (_slotLists.Count < count)
+            int n = group != null ? group.slotLists.Count : 0;
+            for (int i = 0; i < n; i++)
             {
-                var sl = Instantiate(slotListPrefab, parent);
-                sl.SlotClicked      += OnSlotClicked;
-                sl.SlotRightClicked += OnSlotRightClicked;
-                _slotLists.Add(sl);
+                var sl = _slotListPool.Next(out bool created);
+                if (!sl) break;
+                if (created)   // 仅新实例订阅一次，复用的不重复订阅
+                {
+                    sl.SlotClicked      += OnSlotClicked;
+                    sl.SlotRightClicked += OnSlotRightClicked;
+                }
+                sl.Bind(newGroupId, group.slotLists[i]);
             }
+
+            _slotListPool.End();
         }
 
         #endregion

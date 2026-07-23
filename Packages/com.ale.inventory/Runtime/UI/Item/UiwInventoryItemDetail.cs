@@ -4,6 +4,7 @@ using InventoryText = TMPro.TMP_Text;
 using InventoryText = UnityEngine.UI.Text;
 #endif
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -46,10 +47,17 @@ namespace Ale.Inventory.Runtime.UI
         public Transform priceContainer;
 
         /// <summary>价格货币格子实例池（只增不减，多余的实例 SetActive(false) 复用）。</summary>
-        private readonly List<UiwInventoryItemSimple> _priceInstances = new List<UiwInventoryItemSimple>();
+        private readonly UiwWidgetPool<UiwInventoryItemSimple> _pricePool = new UiwWidgetPool<UiwInventoryItemSimple>();
 
         /// <summary>功能标签 UI 实例池（只增不减，多余的实例 SetActive(false) 复用）。</summary>
-        private readonly List<UiwTextLabel> _labelInstances = new List<UiwTextLabel>();
+        private readonly UiwWidgetPool<UiwTextLabel> _labelPool = new UiwWidgetPool<UiwTextLabel>();
+
+        // 回收功能标签行：除隐藏外还要释放 Addressable 背景图句柄。无捕获，编译器缓存为静态委托。
+        private static readonly Action<UiwTextLabel> RecycleLabel = lbl =>
+        {
+            InventoryAssets.Release(lbl.gameObject);
+            lbl.gameObject.SetActive(false);
+        };
 
         // ── 公开接口 ───────────────────────────────────────────────────────────────
 
@@ -88,21 +96,16 @@ namespace Ale.Inventory.Runtime.UI
                     var av    = item.GetAttributeValue(priceAttrId);
                     int count = av != null ? av.Count : 0;
 
-                    while (_priceInstances.Count < count)
-                        _priceInstances.Add(Instantiate(priceCurrencyPrefab, priceContainer));
-
-                    for (int i = 0; i < _priceInstances.Count; i++)
+                    _pricePool.Configure(priceCurrencyPrefab, priceContainer);
+                    _pricePool.Begin();
+                    for (int i = 0; i < count; i++)
                     {
-                        if (i < count && av != null)
-                        {
-                            var (currencyId, amount) = av.GetStringIntPair(i);
-                            _priceInstances[i].SetItem(currencyId, amount);
-                        }
-                        else
-                        {
-                            _priceInstances[i].gameObject.SetActive(false);
-                        }
+                        var cell = _pricePool.Next();
+                        if (!cell) break;
+                        var (currencyId, amount) = av.GetStringIntPair(i);
+                        cell.SetItem(currencyId, amount);
                     }
+                    _pricePool.End();
 
                     priceContainer.gameObject.SetActive(count > 0);
                 }
@@ -133,7 +136,8 @@ namespace Ale.Inventory.Runtime.UI
             if (priceContainer)     priceContainer.gameObject.SetActive(false);
             if (itemTagsContainer) itemTagsContainer.gameObject.SetActive(false);
             _tagGen++;
-            foreach (var lbl in _labelInstances) if (lbl) { InventoryAssets.Release(lbl.gameObject); lbl.gameObject.SetActive(false); }
+            _labelPool.RecycleAll(RecycleLabel);
+            _pricePool.RecycleAll();
             ClearStackFull();
             gameObject.SetActive(false);
         }
@@ -161,7 +165,8 @@ namespace Ale.Inventory.Runtime.UI
                 foreach (var t in tmpl.tagRefs) if (seen.Add(t)) tagNames.Add(t);
 
             int gen = ++_tagGen;
-            int idx = 0;
+            _labelPool.Configure(textTagsPrefab, itemTagsContainer);
+            _labelPool.Begin();
             foreach (var tagName in tagNames)
             {
                 var functionTag = InventoryDataManager.Instance.GetTag(tagName);
@@ -169,10 +174,9 @@ namespace Ale.Inventory.Runtime.UI
 
                 string resolved = functionTag.displayNameText != null ? functionTag.displayNameText.ResolveText() : null;
                 string text = string.IsNullOrEmpty(resolved) ? functionTag.name : resolved;
-                while (_labelInstances.Count <= idx)
-                    _labelInstances.Add(Instantiate(textTagsPrefab, itemTagsContainer));
 
-                var label = _labelInstances[idx];
+                var label = _labelPool.Next();
+                if (!label) break;
                 InventoryAssets.Release(label.gameObject);
                 // 先按直接引用设背景 + 色 + 文本（直接模式即正确）；授权模式 backgroundSprite 为空，随后异步回填。
                 label.Setup(functionTag.backgroundSprite, functionTag.backgroundColor, text);
@@ -182,17 +186,12 @@ namespace Ale.Inventory.Runtime.UI
                     if (gen != _tagGen || !label || !s) return;   // 过期 / 空结果丢弃（保留 Setup 已设的底图）
                     label.SetBackgroundSprite(s);
                 });
-                label.gameObject.SetActive(true);
-                idx++;
             }
 
-            for (int i = idx; i < _labelInstances.Count; i++)
-            {
-                InventoryAssets.Release(_labelInstances[i].gameObject);
-                _labelInstances[i].gameObject.SetActive(false);
-            }
+            int shown = _labelPool.ActiveCount;
+            _labelPool.End(RecycleLabel);
 
-            itemTagsContainer.gameObject.SetActive(idx > 0);
+            itemTagsContainer.gameObject.SetActive(shown > 0);
         }
     }
 }

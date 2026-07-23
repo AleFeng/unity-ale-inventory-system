@@ -19,8 +19,8 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("货币道具 ID 列表（直接在本组件上配置）。可被带 ids 参数的 Setup 重载在运行时覆盖（如商店按商品价格自动收集）。")]
         public string[]               currencyItemIds;
 
-        private readonly List<UiwInventoryItemSimple> _widgets = new List<UiwInventoryItemSimple>();
-        private readonly List<string>                 _ids     = new List<string>();
+        private readonly UiwWidgetPool<UiwInventoryItemSimple> _pool = new UiwWidgetPool<UiwInventoryItemSimple>();
+        private readonly List<string>                          _ids  = new List<string>();
         private Func<string, int>   _ownedGetter;
         private NumberFormatLocale   _numberFormat;
 
@@ -43,17 +43,20 @@ namespace Ale.Inventory.Runtime.UI
 
             var ids = currencyIds ?? currencyItemIds;
 
-            Clear();
-            if (!currencyPrefab || !currencyContainer || ids == null) return;
+            _ids.Clear();
+            _pool.Configure(currencyPrefab, currencyContainer);
+            _pool.Begin();
+            if (ids != null)
+                foreach (var id in ids)
+                {
+                    if (string.IsNullOrEmpty(id)) continue;
+                    var w = _pool.Next();
+                    if (!w) break;
+                    w.numberFormat = _numberFormat;
+                    _ids.Add(id);
+                }
+            _pool.End();
 
-            foreach (var id in ids)
-            {
-                if (string.IsNullOrEmpty(id)) continue;
-                var w = Instantiate(currencyPrefab, currencyContainer);
-                w.numberFormat = _numberFormat;
-                _widgets.Add(w);
-                _ids.Add(id);
-            }
             Refresh();
         }
 
@@ -61,7 +64,7 @@ namespace Ale.Inventory.Runtime.UI
         public void SetNumberFormat(NumberFormatLocale fmt)
         {
             _numberFormat = fmt;
-            foreach (var w in _widgets)
+            foreach (var w in _pool.Items)
                 if (w) w.numberFormat = fmt;
             Refresh();
         }
@@ -70,16 +73,17 @@ namespace Ale.Inventory.Runtime.UI
         public void Refresh()
         {
             if (_ownedGetter == null) return;
-            for (int i = 0; i < _widgets.Count && i < _ids.Count; i++)
-                if (_widgets[i]) _widgets[i].SetItem(_ids[i], _ownedGetter(_ids[i]));
+            for (int i = 0; i < _ids.Count; i++)
+            {
+                var w = _pool.At(i);
+                if (w) w.SetItem(_ids[i], _ownedGetter(_ids[i]));
+            }
         }
 
-        /// <summary>销毁所有货币格。</summary>
+        /// <summary>隐藏所有货币格（实例保留在池中，供下次 <see cref="Setup(IReadOnlyList{string},Func{string,int},NumberFormatLocale)"/> 复用）。</summary>
         public void Clear()
         {
-            foreach (var w in _widgets)
-                if (w) Destroy(w.gameObject);
-            _widgets.Clear();
+            _pool.RecycleAll();
             _ids.Clear();
         }
     }

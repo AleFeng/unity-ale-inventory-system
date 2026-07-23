@@ -32,61 +32,80 @@ namespace Ale.Inventory.Runtime.UI
         [SerializeField] private LocalizeStringEvent emptyTextLocalized;
 #endif
 
-        private readonly List<GameObject> _spawned = new List<GameObject>();
+        // 标题行与条目行是两种预制体、却交错排在同一父节点下，故用两个池分别复用，
+        // 再按统一的 sibling 序号排回交错顺序（原实现每次 Refresh 都销毁重建全部行）。
+        private readonly UiwWidgetPool<UiwEquipmentBonusEntry> _headerPool = new UiwWidgetPool<UiwEquipmentBonusEntry>();
+        private readonly UiwWidgetPool<UiwEquipmentBonusEntry> _entryPool  = new UiwWidgetPool<UiwEquipmentBonusEntry>();
+
+        // 分组聚合用的复用缓冲（每次 Refresh 清空重填，避免逐次分配）。
+        private readonly List<string> _tagOrder = new List<string>();
+        private readonly Dictionary<string, List<EquipmentBonus>> _byTag = new Dictionary<string, List<EquipmentBonus>>();
 
         /// <summary>按当前装备组的已装备道具刷新总属性加成显示。</summary>
         public void Refresh(string groupId)
         {
-            Clear();
+            var parent = entryContainer ? entryContainer : transform;
+            _headerPool.Configure(groupHeaderPrefab, parent);
+            _entryPool.Configure(entryPrefab, parent);
+            _headerPool.Begin();
+            _entryPool.Begin();
 
             var mgr = EquipmentRuntimeManager.Instance;
-            if (mgr == null || !entryPrefab) return;
-
-            var bonuses = mgr.GetTotalBonuses(groupId);
-            var parent  = entryContainer ? entryContainer : transform;
+            if (mgr == null || !entryPrefab) { _headerPool.End(); _entryPool.End(); return; }
 
             // 按分组标签聚合（保持首次出现顺序）。
-            var order = new List<string>();
-            var byTag = new Dictionary<string, List<EquipmentBonus>>();
-            foreach (var b in bonuses)
+            _tagOrder.Clear();
+            foreach (var kv in _byTag) kv.Value.Clear();
+            foreach (var b in mgr.GetTotalBonuses(groupId))
             {
                 string funcTag = b.GroupTag ?? string.Empty;
-                if (!byTag.TryGetValue(funcTag, out var list))
+                if (!_byTag.TryGetValue(funcTag, out var list))
                 {
                     list = new List<EquipmentBonus>();
-                    byTag[funcTag] = list;
-                    order.Add(funcTag);
+                    _byTag[funcTag] = list;
                 }
+                if (list.Count == 0 && !_tagOrder.Contains(funcTag)) _tagOrder.Add(funcTag);
                 list.Add(b);
             }
 
-            foreach (var funcTag in order)
+            int sibling = 0;
+            foreach (var funcTag in _tagOrder)
             {
                 if (groupHeaderPrefab && !string.IsNullOrEmpty(funcTag))
                 {
-                    var header = Instantiate(groupHeaderPrefab, parent);
-                    header.SetData(ResolveTagName(funcTag), string.Empty);
-                    _spawned.Add(header.gameObject);
+                    var header = _headerPool.Next();
+                    if (header)
+                    {
+                        header.SetData(ResolveTagName(funcTag), string.Empty);
+                        header.transform.SetSiblingIndex(sibling++);
+                    }
                 }
 
                 // 加成条目无条件生成：仅**分组标题**依赖 funcTag 非空（无分组自然没有标题），
                 // 条目本身不该受此约束——否则未配分组标签的加成会被静默丢弃，
                 // 若全部加成都没有分组，面板还会误显示「无属性加成」空态。
-                foreach (var b in byTag[funcTag])
+                foreach (var b in _byTag[funcTag])
                 {
-                    var attrBonus = Instantiate(entryPrefab, parent);
+                    var attrBonus = _entryPool.Next();
+                    if (!attrBonus) break;
                     attrBonus.SetData(b.Label, FormatValue(b.Total));
-                    _spawned.Add(attrBonus.gameObject);
+                    attrBonus.transform.SetSiblingIndex(sibling++);
                 }
             }
 
             // 空状态：没有任何可显示的属性加成时，用条目预制体显示一条提示文本（数值留空）。
-            if (_spawned.Count == 0 && !string.IsNullOrEmpty(emptyText))
+            if (sibling == 0 && !string.IsNullOrEmpty(emptyText))
             {
-                var empty = Instantiate(entryPrefab, parent);
-                empty.SetData(ResolveEmptyText(), string.Empty);
-                _spawned.Add(empty.gameObject);
+                var empty = _entryPool.Next();
+                if (empty)
+                {
+                    empty.SetData(ResolveEmptyText(), string.Empty);
+                    empty.transform.SetSiblingIndex(sibling++);
+                }
             }
+
+            _headerPool.End();
+            _entryPool.End();
         }
 
         /// <summary>解析空状态提示文本：启用本地化且引用完整时取当前语言文本，否则回退 <see cref="emptyText"/>。</summary>
@@ -102,12 +121,11 @@ namespace Ale.Inventory.Runtime.UI
             return emptyText;
         }
 
-        /// <summary>清空所有已生成的条目。</summary>
+        /// <summary>隐藏所有已生成的条目（实例保留在池中，供下次刷新复用）。</summary>
         public void Clear()
         {
-            foreach (var go in _spawned)
-                if (go) Destroy(go);
-            _spawned.Clear();
+            _headerPool.RecycleAll();
+            _entryPool.RecycleAll();
         }
 
         private static string ResolveTagName(string tagId)
