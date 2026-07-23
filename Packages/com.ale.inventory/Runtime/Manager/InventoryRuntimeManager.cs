@@ -293,6 +293,9 @@ namespace Ale.Inventory.Runtime
         /// <summary>按 slotId 精确移除。count 大于当前格数量时视为全部移除该格。返回是否成功。</summary>
         public bool TryRemoveItem(string inventoryId, string slotId, int count = 1)
         {
+            // 与 TryAddItem 一致的入口守卫。缺了它，count 为负时 remove 也为负、
+            // slot.count -= remove 反而会**增加**道具数量。
+            if (count <= 0) return false;
             if (!_inventoryStates.TryGetValue(inventoryId, out var state)) return false;
 
             int capMax = GetCapacity(inventoryId);
@@ -322,6 +325,9 @@ namespace Ale.Inventory.Runtime
         /// </summary>
         public bool TryRemoveItemById(string inventoryId, string itemId, int count = 1)
         {
+            // 与 TryAddItem 一致的入口守卫。缺了它，count <= 0 时循环体一次都不执行，
+            // 却仍会广播 OnInventoryChanged 并返回 true（谎报「移除成功」）。
+            if (count <= 0) return false;
             if (!_inventoryStates.TryGetValue(inventoryId, out var state)) return false;
 
             if (GetTotalCount(inventoryId, itemId) < count)

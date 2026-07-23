@@ -124,7 +124,12 @@ namespace Ale.Inventory.Runtime
             return false;
         }
 
-        /// <summary>属性值等值比较（按类型；枚举需同枚举类型 + 同值）。</summary>
+        /// <summary>
+        /// 属性值等值比较（按类型；枚举需同枚举类型 + 同值）。
+        /// <para>注意：**不可**用 <see cref="AttributeValue.ToComparableNumber"/> 做等值判据——
+        /// 它是为「排序」设计的降维投影：向量 / 颜色取的是**模长**（于是 (1,0) 会等于 (0,1)），
+        /// 对象引用类与 Text 一律返回 0（于是任意两个资源都相等）。此处逐类型比较真实载荷。</para>
+        /// </summary>
         private static bool AttributeValuesEqual(AttributeValue a, AttributeValue b)
         {
             if (a == null || b == null) return false;
@@ -140,8 +145,38 @@ namespace Ale.Inventory.Runtime
                     return Mathf.Approximately(a.AsFloat, b.AsFloat);
                 case EFieldType.String:
                     return a.AsString == b.AsString;
+                case EFieldType.Text:
+                    return a.GetTextValue(0) == b.GetTextValue(0);
+
+                // 向量 / 颜色逐分量比较（Unity 的 Vector*/Color 相等运算符本身带浮点容差）
+                case EFieldType.Vector2:    return a.GetVector2(0)    == b.GetVector2(0);
+                case EFieldType.Vector3:    return a.GetVector3(0)    == b.GetVector3(0);
+                case EFieldType.Vector4:    return a.GetVector4(0)    == b.GetVector4(0);
+                case EFieldType.Color:      return a.GetColor(0)      == b.GetColor(0);
+                case EFieldType.VectorInt2: return a.GetVector2Int(0) == b.GetVector2Int(0);
+                case EFieldType.VectorInt3: return a.GetVector3Int(0) == b.GetVector3Int(0);
+                case EFieldType.VectorInt4: return a.GetVector4Int(0) == b.GetVector4Int(0);
+
+                case EFieldType.StringIntPair:
+                {
+                    var pa = a.GetStringIntPair(0);
+                    var pb = b.GetStringIntPair(0);
+                    return pa.key == pb.key && pa.value == pb.value;
+                }
+                case EFieldType.EnumIntPair:
+                {
+                    var pa = a.GetEnumIntPair(0);
+                    var pb = b.GetEnumIntPair(0);
+                    return a.EnumTypeRef == b.EnumTypeRef
+                           && pa.enumValue == pb.enumValue && pa.value == pb.value;
+                }
+
                 default:
-                    return Math.Abs(a.ToComparableNumber() - b.ToComparableNumber()) < 1e-6;
+                    // 对象引用类（Sprite / Prefab / Material / …）比较引用本身；
+                    // 其余无载荷类型（AnimationCurve 等）保持原有的数值近似判据。
+                    return a.Type.IsObjectBacked()
+                        ? a.GetObject(0) == b.GetObject(0)
+                        : Math.Abs(a.ToComparableNumber() - b.ToComparableNumber()) < 1e-6;
             }
         }
 

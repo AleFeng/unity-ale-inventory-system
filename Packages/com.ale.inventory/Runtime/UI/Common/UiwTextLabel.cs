@@ -35,6 +35,10 @@ namespace Ale.Inventory.Runtime.UI
         /// </summary>
         private void Init()
         {
+            // 必须置位：否则每次 Setup / SetBackgroundSprite 都会重跑本方法，
+            // 把 _defaultSprite 覆盖成「当前」这张图。异步（Addressable）回填一次之后，
+            // 这个池化标签的回退底图就永久丢失了。
+            _isInitialized = true;
             if (backgroundImage) _defaultSprite = backgroundImage.sprite;
         }
 

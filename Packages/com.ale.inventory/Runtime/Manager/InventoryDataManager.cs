@@ -233,16 +233,22 @@ namespace Ale.Inventory.Runtime
         public IEnumerable<Skill> GetAllSkills()
         {
             foreach (var db in _databases)
+            {
+                if (!db) continue;   // 未赋值 / 已销毁的数据库槽位（与 EnsureIndex 的守卫一致）
                 foreach (var s in db.Skills)
                     yield return s;
+            }
         }
 
         /// <summary>枚举所有已注册数据库中的全部技能分组标签（供技能 UI 生成分组页签）。</summary>
         public IEnumerable<SkillGroupTag> GetAllSkillGroupTags()
         {
             foreach (var db in _databases)
+            {
+                if (!db) continue;
                 foreach (var t in db.SkillGroupTags)
                     yield return t;
+            }
         }
 
         /// <summary>判断道具是否在仓库仓库中隐藏（读取 <see cref="Item.hideInInventory"/>）。道具不存在时返回 false。</summary>

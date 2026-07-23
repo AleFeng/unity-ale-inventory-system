@@ -19,7 +19,30 @@ namespace Ale.Inventory.Runtime.UI
         // 缓存「弹窗 RectTransform → 其根 Canvas」，避免每次定位都执行 GetComponentInParent（逐级向上遍历，开销较大）。
         // 只缓存这一步查找；renderMode / worldCamera / Camera.main 仍每次实时读取（开销极小），故相机变化时不会用到过期值。
         // 缓存的 Canvas 被销毁（如弹窗被改挂到别的 Canvas 下）时会自动重新查找。
+        // 缓存的 Canvas 被销毁（如弹窗被改挂到别的 Canvas 下）时会自动重新查找；
+        // 但**键**（RectTransform）不会自己消失——弹窗 / 格子销毁后条目仍留在表里，
+        // 持有已销毁对象的托管包装，条目数只增不减。故在回填前按阈值清理死键。
         private static readonly Dictionary<RectTransform, Canvas> RootCanvasCache = new Dictionary<RectTransform, Canvas>();
+
+        // 达到该条目数才做一次死键清扫（清扫是 O(n)，不必每次回填都做）。
+        private const int CacheSweepThreshold = 64;
+
+        // 清扫复用缓冲：避免每次清扫都分配（主线程同步调用，可安全共用）。
+        private static readonly List<RectTransform> DeadKeys = new List<RectTransform>();
+
+        /// <summary>条目数超阈值时，移除键已被销毁的缓存条目。</summary>
+        private static void PruneCanvasCache()
+        {
+            if (RootCanvasCache.Count < CacheSweepThreshold) return;
+
+            DeadKeys.Clear();
+            foreach (var kv in RootCanvasCache)
+                if (!kv.Key) DeadKeys.Add(kv.Key);
+
+            for (int i = 0; i < DeadKeys.Count; i++)
+                RootCanvasCache.Remove(DeadKeys[i]);
+            DeadKeys.Clear();
+        }
 
         /// <summary>
         /// 将 <paramref name="rt"/> 定位到光标处（<paramref name="screenPos"/> + <paramref name="cursorOffset"/> 像素偏移），
@@ -63,6 +86,7 @@ namespace Ale.Inventory.Runtime.UI
                 var canvas = rt.GetComponentInParent<Canvas>();
                 // 子 Canvas 继承根 Canvas 的渲染模式与相机，以根 Canvas 为准。
                 root = canvas ? (canvas.rootCanvas ? canvas.rootCanvas : canvas) : null;
+                PruneCanvasCache();
                 RootCanvasCache[rt] = root;
             }
             if (!root) return null;

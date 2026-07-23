@@ -395,13 +395,15 @@ namespace Ale.Inventory.Runtime
             list.AddRange(result);
         }
 
-        public int GetInt(int element)       => element < ints.Count   ? ints[element]   : 0;
+        // 读取一律双侧越界保护：负索引与超长索引都回落到默认值，绝不抛异常、也绝不扩容后备列表
+        // （getter 扩容会把序列化列表改脏，见 GetVector*Int 的说明）。
+        public int GetInt(int element)       => element >= 0 && element < ints.Count   ? ints[element]   : 0;
         public void SetInt(int element, int value)   { EnsureIntCapacity(element + 1);    ints[element]   = value; }
 
-        public float GetFloat(int element)   => element < floats.Count  ? floats[element]  : 0f;
+        public float GetFloat(int element)   => element >= 0 && element < floats.Count  ? floats[element]  : 0f;
         public void SetFloat(int element, float value) { EnsureFloatCapacity(element + 1); floats[element]  = value; }
 
-        public string GetString(int element) => element < strings.Count ? strings[element] : string.Empty;
+        public string GetString(int element) => element >= 0 && element < strings.Count ? strings[element] : string.Empty;
         public void SetString(int element, string value) { EnsureStringCapacity(element + 1); strings[element] = value ?? string.Empty; }
 
         /// <summary>
@@ -452,7 +454,7 @@ namespace Ale.Inventory.Runtime
             ints[b + 1] = value;
         }
 
-        public Object GetObject(int element) => element < objRefs.Count ? objRefs[element] : null;
+        public Object GetObject(int element) => element >= 0 && element < objRefs.Count ? objRefs[element] : null;
 
         /// <summary>
         /// 设置指定元素的对象引用。同时扩容 <c>objAddresses</c>，保持两个平行列表等长——
@@ -485,7 +487,7 @@ namespace Ale.Inventory.Runtime
         }
 
         public AnimationCurve GetAnimationCurve(int element)
-            => element < curves.Count ? curves[element] : null;
+            => element >= 0 && element < curves.Count ? curves[element] : null;
         public void SetAnimationCurve(int element, AnimationCurve value)
         {
             EnsureCurveCapacity(element + 1);
@@ -503,11 +505,12 @@ namespace Ale.Inventory.Runtime
 
         // ── 整数向量（VectorInt2 / VectorInt3 / VectorInt4）──────────────────────────
 
+        // 读取用 IntAt 做越界保护而**不扩容**：getter 里调 EnsureIntCapacity 会向 ints 追加元素，
+        // 于是「在 Inspector 里看一眼 VectorInt 属性」就把资产改脏了。语义与 ReadVector 一致：缺失分量读作 0。
         public Vector2Int GetVector2Int(int element)
         {
             int b = element * 2;
-            EnsureIntCapacity(b + 2);
-            return new Vector2Int(ints[b], ints[b + 1]);
+            return new Vector2Int(IntAt(b), IntAt(b + 1));
         }
         public void SetVector2Int(int element, Vector2Int v)
         {
@@ -519,8 +522,7 @@ namespace Ale.Inventory.Runtime
         public Vector3Int GetVector3Int(int element)
         {
             int b = element * 3;
-            EnsureIntCapacity(b + 3);
-            return new Vector3Int(ints[b], ints[b + 1], ints[b + 2]);
+            return new Vector3Int(IntAt(b), IntAt(b + 1), IntAt(b + 2));
         }
         public void SetVector3Int(int element, Vector3Int v)
         {
@@ -533,8 +535,7 @@ namespace Ale.Inventory.Runtime
         public (int x, int y, int z, int w) GetVector4Int(int element)
         {
             int b = element * 4;
-            EnsureIntCapacity(b + 4);
-            return (ints[b], ints[b + 1], ints[b + 2], ints[b + 3]);
+            return (IntAt(b), IntAt(b + 1), IntAt(b + 2), IntAt(b + 3));
         }
         public void SetVector4Int(int element, int x, int y, int z, int w)
         {
