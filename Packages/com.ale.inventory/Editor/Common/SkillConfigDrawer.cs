@@ -84,36 +84,14 @@ namespace Ale.Inventory.Editor
                 return;
             }
 
-            SecondaryGroupDrag.BeginFrame();
-            int removeIndex = -1;
-            for (int i = 0; i < secs.Count; i++)
+            EditorDraggableRowList.Draw(ctx, secs, SecondaryGroupDrag, "副分组标签", (_, tagId) =>
             {
-                var g = db.GetSkillGroupTag(secs[i]);
-                bool exists = g != null;
-                string label = exists ? g.PlainName() : secs[i] + "（已删除）";
-
-                Rect rowRect = EditorGUILayout.BeginHorizontal();
-                SecondaryGroupDrag.RecordRow(i, rowRect);
-                GUILayout.Space(EditorReorderableDrag.HandleWidth);
+                var    g      = db.GetSkillGroupTag(tagId);
+                bool   exists = g != null;
+                string label  = exists ? g.PlainName() : tagId + "（已删除）";
                 EditorGUILayout.LabelField(label,
                     exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
-                if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
-                    removeIndex = i;
-                EditorGUILayout.EndHorizontal();
-
-                var handleRect = new Rect(rowRect.x,
-                    rowRect.y + (rowRect.height - EditorGUIUtility.singleLineHeight) * 0.5f,
-                    EditorReorderableDrag.HandleWidth, EditorGUIUtility.singleLineHeight);
-                SecondaryGroupDrag.DrawHandle(handleRect, i);
-            }
-            SecondaryGroupDrag.EndFrame(ctx, secs, "调整副分组标签顺序");
-
-            if (removeIndex >= 0)
-            {
-                ctx.RecordUndo("移除副分组标签");
-                secs.RemoveAt(removeIndex);
-                ctx.MarkDirty();
-            }
+            });
         }
 
         private static void ShowAddSecondaryGroupMenu(IInventoryEditorContext ctx, ISkillConfig cfg)

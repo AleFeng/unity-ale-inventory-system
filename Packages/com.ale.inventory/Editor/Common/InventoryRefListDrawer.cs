@@ -43,42 +43,13 @@ namespace Ale.Inventory.Editor
                 return;
             }
 
-            drag.BeginFrame();
-
-            int removeIndex = -1;
-            for (int i = 0; i < refs.Count; i++)
+            EditorDraggableRowList.Draw(ctx, refs, drag, noun, (i, invId) =>
             {
-                string invId  = refs[i];
-                bool   exists = db.GetInventory(invId) != null;
-
-                // 整行单行内容：左侧预留句柄列，句柄稍后按整行 Rect 垂直居中绘制，与右侧内容横向对齐。
-                Rect rowRect = EditorGUILayout.BeginHorizontal();
-                drag.RecordRow(i, rowRect);
-
-                GUILayout.Space(EditorReorderableDrag.HandleWidth);
+                bool exists = db.GetInventory(invId) != null;
                 EditorGUILayout.LabelField($"{i + 1}.", GUILayout.Width(20));
                 EditorGUILayout.LabelField(exists ? invId : invId + "（已删除）",
                     exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
-                if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
-                    removeIndex = i;
-
-                EditorGUILayout.EndHorizontal();
-
-                // 句柄按整行 Rect 垂直居中（singleLineHeight），与单行内容对齐。
-                var handleRect = new Rect(rowRect.x,
-                    rowRect.y + (rowRect.height - EditorGUIUtility.singleLineHeight) * 0.5f,
-                    EditorReorderableDrag.HandleWidth, EditorGUIUtility.singleLineHeight);
-                drag.DrawHandle(handleRect, i);
-            }
-
-            drag.EndFrame(ctx, refs, $"调整{noun}顺序");
-
-            if (removeIndex >= 0)
-            {
-                ctx.RecordUndo($"移除{noun}");
-                refs.RemoveAt(removeIndex);
-                ctx.MarkDirty();
-            }
+            });
         }
 
         /// <summary>「+」下拉：列出数据库中尚未加入 <paramref name="refs"/> 的仓库供添加。</summary>

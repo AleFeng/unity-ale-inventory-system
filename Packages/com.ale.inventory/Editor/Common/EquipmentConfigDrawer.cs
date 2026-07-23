@@ -179,40 +179,18 @@ namespace Ale.Inventory.Editor
                 return;
             }
 
-            var drag = GetDrag($"sl{slIndex}/tags");
-            drag.BeginFrame();
-            int removeIndex = -1;
-            for (int j = 0; j < sl.requiredTags.Count; j++)
-            {
-                var ft       = db.GetTag(sl.requiredTags[j]);
-                bool exists  = ft != null;
-                string ftName = exists && ft.displayNameText != null ? ft.displayNameText.GetTextValue(0) : null;
-                string label = exists
-                    ? (string.IsNullOrEmpty(ftName) ? ft.name : ftName)
-                    : sl.requiredTags[j] + "（已删除）";
-
-                Rect rowRect = EditorGUILayout.BeginHorizontal();
-                drag.RecordRow(j, rowRect);
-                GUILayout.Space(EditorReorderableDrag.HandleWidth);
-                EditorGUILayout.LabelField(label,
-                    exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
-                if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
-                    removeIndex = j;
-                EditorGUILayout.EndHorizontal();
-
-                var handleRect = new Rect(rowRect.x,
-                    rowRect.y + (rowRect.height - EditorGUIUtility.singleLineHeight) * 0.5f,
-                    EditorReorderableDrag.HandleWidth, EditorGUIUtility.singleLineHeight);
-                drag.DrawHandle(handleRect, j);
-            }
-            drag.EndFrame(ctx, sl.requiredTags, "调整功能标签顺序");
-
-            if (removeIndex >= 0)
-            {
-                ctx.RecordUndo("移除功能标签");
-                sl.requiredTags.RemoveAt(removeIndex);
-                ctx.MarkDirty();
-            }
+            EditorDraggableRowList.Draw(ctx, sl.requiredTags, GetDrag($"sl{slIndex}/tags"), "功能标签",
+                (_, tagId) =>
+                {
+                    var    ft     = db.GetTag(tagId);
+                    bool   exists = ft != null;
+                    string ftName = exists && ft.displayNameText != null ? ft.displayNameText.GetTextValue(0) : null;
+                    string label  = exists
+                        ? (string.IsNullOrEmpty(ftName) ? ft.name : ftName)
+                        : tagId + "（已删除）";
+                    EditorGUILayout.LabelField(label,
+                        exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
+                });
         }
 
         private static void ShowAddTagMenu(IInventoryEditorContext ctx, EquipmentSlotList sl)
@@ -266,56 +244,31 @@ namespace Ale.Inventory.Editor
             var enumNames = new List<string> { "（无）" };
             foreach (var et in db.EnumTypes) enumNames.Add(et.name);
 
-            var drag = GetDrag($"sl{slIndex}/enums");
-            drag.BeginFrame();
-            int removeIndex = -1;
-            for (int k = 0; k < sl.enumConstraints.Count; k++)
-            {
-                var c = sl.enumConstraints[k];
-
-                Rect rowRect = EditorGUILayout.BeginHorizontal();
-                drag.RecordRow(k, rowRect);
-                GUILayout.Space(EditorReorderableDrag.HandleWidth);
-
-                int curIdx = 0;
-                for (int t = 0; t < db.EnumTypes.Count; t++)
-                    if (db.EnumTypes[t].name == c.enumTypeRef) { curIdx = t + 1; break; }
-
-                EditorGUI.BeginChangeCheck();
-                int picked = EditorGUILayout.Popup(curIdx, enumNames.ToArray(), GUILayout.Width(120));
-                if (EditorGUI.EndChangeCheck())
+            EditorDraggableRowList.Draw(ctx, sl.enumConstraints, GetDrag($"sl{slIndex}/enums"), "枚举约束",
+                (_, c) =>
                 {
-                    ctx.RecordUndo("修改枚举类型");
-                    c.enumTypeRef = picked <= 0 ? string.Empty : db.EnumTypes[picked - 1].name;
-                    c.allowedValues.Clear();
-                    ctx.MarkDirty();
-                }
+                    int curIdx = 0;
+                    for (int t = 0; t < db.EnumTypes.Count; t++)
+                        if (db.EnumTypes[t].name == c.enumTypeRef) { curIdx = t + 1; break; }
 
-                var et2     = db.GetEnumType(c.enumTypeRef);
-                string summary = BuildEnumValueSummary(et2, c.allowedValues);
-                using (new EditorGUI.DisabledScope(et2 == null))
-                {
-                    if (GUILayout.Button(summary, EditorStyles.popup))
-                        ShowEnumValuesMenu(ctx, c, et2);
-                }
+                    EditorGUI.BeginChangeCheck();
+                    int picked = EditorGUILayout.Popup(curIdx, enumNames.ToArray(), GUILayout.Width(120));
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        ctx.RecordUndo("修改枚举类型");
+                        c.enumTypeRef = picked <= 0 ? string.Empty : db.EnumTypes[picked - 1].name;
+                        c.allowedValues.Clear();
+                        ctx.MarkDirty();
+                    }
 
-                if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
-                    removeIndex = k;
-                EditorGUILayout.EndHorizontal();
-
-                var handleRect = new Rect(rowRect.x,
-                    rowRect.y + (rowRect.height - EditorGUIUtility.singleLineHeight) * 0.5f,
-                    EditorReorderableDrag.HandleWidth, EditorGUIUtility.singleLineHeight);
-                drag.DrawHandle(handleRect, k);
-            }
-            drag.EndFrame(ctx, sl.enumConstraints, "调整枚举约束顺序");
-
-            if (removeIndex >= 0)
-            {
-                ctx.RecordUndo("移除枚举约束");
-                sl.enumConstraints.RemoveAt(removeIndex);
-                ctx.MarkDirty();
-            }
+                    var    et2     = db.GetEnumType(c.enumTypeRef);
+                    string summary = BuildEnumValueSummary(et2, c.allowedValues);
+                    using (new EditorGUI.DisabledScope(et2 == null))
+                    {
+                        if (GUILayout.Button(summary, EditorStyles.popup))
+                            ShowEnumValuesMenu(ctx, c, et2);
+                    }
+                });
         }
 
         private static string BuildEnumValueSummary(EnumType et, List<int> values)

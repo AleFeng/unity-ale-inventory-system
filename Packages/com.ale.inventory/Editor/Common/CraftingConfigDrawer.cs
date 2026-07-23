@@ -115,60 +115,33 @@ namespace Ale.Inventory.Editor
 
             var list = cfg.AttributeDisplays;
 
-            AttributeDisplaysDrag.BeginFrame();
-
-            int removeIndex = -1;
-            for (int i = 0; i < list.Count; i++)
-            {
-                var ad = list[i];
-
-                // 整行单行内容：左侧预留句柄列，句柄按整行 Rect 垂直居中绘制，与右侧内容横向对齐。
-                Rect rowRect = EditorGUILayout.BeginHorizontal();
-                AttributeDisplaysDrag.RecordRow(i, rowRect);
-
-                GUILayout.Space(EditorReorderableDrag.HandleWidth);
-
-                EditorGUI.BeginChangeCheck();
-                string newLabel = EditorGUILayout.TextField(ad.label, GUILayout.Width(120));
-                if (EditorGUI.EndChangeCheck())
+            // 本处沿用两点与其它列表不同的既有行为：插入指示线右侧内缩一个「✕」宽度、删除文案用「删除」而非「移除」。
+            EditorDraggableRowList.Draw(ctx, list, AttributeDisplaysDrag, "属性字段显示",
+                (_, ad) =>
                 {
-                    ctx.RecordUndo("修改属性显示标签");
-                    ad.label = newLabel;
-                    ctx.MarkDirty();
-                }
+                    EditorGUI.BeginChangeCheck();
+                    string newLabel = EditorGUILayout.TextField(ad.label, GUILayout.Width(120));
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        ctx.RecordUndo("修改属性显示标签");
+                        ad.label = newLabel;
+                        ctx.MarkDirty();
+                    }
 
-                int curIdx = 0;
-                for (int k = 0; k < attrIds.Count; k++)
-                    if (attrIds[k] == ad.attrId) { curIdx = k + 1; break; }
-                EditorGUI.BeginChangeCheck();
-                int picked = EditorGUILayout.Popup(curIdx, displays);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    ctx.RecordUndo("修改属性显示字段");
-                    ad.attrId = picked <= 0 ? string.Empty : attrIds[picked - 1];
-                    ctx.MarkDirty();
-                }
-
-                if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
-                    removeIndex = i;
-                EditorGUILayout.EndHorizontal();
-
-                // 句柄按整行 Rect 垂直居中（singleLineHeight），与单行内容对齐。
-                var handleRect = new Rect(rowRect.x,
-                    rowRect.y + (rowRect.height - EditorGUIUtility.singleLineHeight) * 0.5f,
-                    EditorReorderableDrag.HandleWidth, EditorGUIUtility.singleLineHeight);
-                AttributeDisplaysDrag.DrawHandle(handleRect, i);
-            }
-
-            AttributeDisplaysDrag.EndFrame(ctx, list, "调整属性字段显示顺序",
-                EditorReorderableDrag.HandleWidth, 22f);
-
-            if (removeIndex >= 0)
-            {
-                ctx.RecordUndo("删除属性字段显示");
-                list.RemoveAt(removeIndex);
-                ctx.MarkDirty();
-            }
+                    int curIdx = 0;
+                    for (int k = 0; k < attrIds.Count; k++)
+                        if (attrIds[k] == ad.attrId) { curIdx = k + 1; break; }
+                    EditorGUI.BeginChangeCheck();
+                    int picked = EditorGUILayout.Popup(curIdx, displays);
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        ctx.RecordUndo("修改属性显示字段");
+                        ad.attrId = picked <= 0 ? string.Empty : attrIds[picked - 1];
+                        ctx.MarkDirty();
+                    }
+                },
+                removeUndoLabel: "删除属性字段显示",
+                lineRightInset:  EditorDraggableRowList.RemoveButtonWidth);
         }
 
         // ── 蓝图实例：制作仓库 + UI 配置 只读展示（模板级配置）────────────────────────

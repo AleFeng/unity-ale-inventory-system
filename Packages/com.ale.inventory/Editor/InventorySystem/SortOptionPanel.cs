@@ -180,14 +180,8 @@ namespace Ale.Inventory.Editor
                 return;
             }
 
-            _ignoreDrag.BeginFrame();
-            int removeIndex = -1;
-            for (int i = 0; i < so.ignoreIds.Count; i++)
+            EditorDraggableRowList.Draw(ctx, so.ignoreIds, _ignoreDrag, "忽略ID", (i, _) =>
             {
-                Rect rowRect = EditorGUILayout.BeginHorizontal();
-                _ignoreDrag.RecordRow(i, rowRect);
-
-                GUILayout.Space(EditorReorderableDrag.HandleWidth);
                 EditorGUILayout.LabelField($"{i + 1}.", GUILayout.Width(20));
 
                 EditorGUI.BeginChangeCheck();
@@ -198,25 +192,7 @@ namespace Ale.Inventory.Editor
                     so.ignoreIds[i] = v;
                     ctx.MarkDirty();
                 }
-
-                if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
-                    removeIndex = i;
-
-                EditorGUILayout.EndHorizontal();
-
-                var handleRect = new Rect(rowRect.x,
-                    rowRect.y + (rowRect.height - EditorGUIUtility.singleLineHeight) * 0.5f,
-                    EditorReorderableDrag.HandleWidth, EditorGUIUtility.singleLineHeight);
-                _ignoreDrag.DrawHandle(handleRect, i);
-            }
-            _ignoreDrag.EndFrame(ctx, so.ignoreIds, "调整忽略ID顺序");
-
-            if (removeIndex >= 0)
-            {
-                ctx.RecordUndo("移除忽略ID");
-                so.ignoreIds.RemoveAt(removeIndex);
-                ctx.MarkDirty();
-            }
+            });
         }
 
         /// <summary>数据库切换或 Undo/Redo 时调用，清空所有缓存列表。</summary>
