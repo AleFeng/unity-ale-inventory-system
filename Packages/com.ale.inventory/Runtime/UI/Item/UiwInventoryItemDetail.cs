@@ -20,7 +20,8 @@ namespace Ale.Inventory.Runtime.UI
     /// </summary>
     public class UiwInventoryItemDetail : UiwInventoryItemSlotBase
     {
-        // ── Detail 专有属性字段 ID ──────────────────────────────────────────────────
+        #region Detail 专有属性字段 ID
+
         [Header("属性字段 ID")]
         [Tooltip("描述属性 ID。")]
         public string descAttrId          = "描述";
@@ -29,7 +30,11 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("已购数量属性 ID（格式 \"已购/上限\"）。")]
         public string purchaseCountAttrId;
 
-        // ── Detail 专有 UI 引用 ───────────────────────────────────────────────────
+
+        #endregion
+
+        #region Detail 专有 UI 引用
+
         [Header("信息")]
         [Tooltip("描述文本。")]
         public InventoryText descText;
@@ -59,7 +64,11 @@ namespace Ale.Inventory.Runtime.UI
             lbl.gameObject.SetActive(false);
         };
 
-        // ── 公开接口 ───────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 公开接口
+
 
         /// <summary>将此格子绑定到指定仓库的指定 slot，刷新所有显示。</summary>
         public void SetSlot(string inventoryId, RuntimeItemSlot slot)
@@ -144,7 +153,11 @@ namespace Ale.Inventory.Runtime.UI
 
         // 右键快速装备（广播「道具右键」事件）已上移至基类 UiwInventoryItemSlotBase.OnPointerClick，本类无需重复实现。
 
-        // ── 功能标签 ─────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 功能标签
+
 
         // 功能标签背景异步加载世代号：每次刷新自增，回调据此丢弃过期结果（标签实例池化复用）。
         private int _tagGen;
@@ -193,5 +206,7 @@ namespace Ale.Inventory.Runtime.UI
 
             itemTagsContainer.gameObject.SetActive(shown > 0);
         }
+        #endregion
+
     }
 }

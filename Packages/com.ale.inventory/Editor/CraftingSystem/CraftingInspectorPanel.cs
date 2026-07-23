@@ -26,6 +26,8 @@ namespace Ale.Inventory.Editor
         private readonly EditorReorderableDrag _inputDrag
             = new EditorReorderableDrag("CraftingInputsDrag");
 
+        #region Inspector
+
         public void DrawInspector(IInventoryEditorContext ctx, CraftingBlueprint bp)
         {
             if (bp == null)
@@ -48,6 +50,10 @@ namespace Ale.Inventory.Editor
         }
 
         // ── 身份 ──────────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 基础信息与分组
 
         private static void DrawBasic(IInventoryEditorContext ctx, CraftingBlueprint bp)
         {
@@ -147,6 +153,10 @@ namespace Ale.Inventory.Editor
         }
 
         // ── 产出 / 消耗道具列表 ──────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 产出/消耗与属性
 
         private void DrawItemAmountList(IInventoryEditorContext ctx, CraftingBlueprint bp,
             List<CraftingItemAmount> list, string header, bool isOutput)
@@ -277,5 +287,7 @@ namespace Ale.Inventory.Editor
             EditorEntityHeader.DrawCustomAttributes(ctx, bp.values, template?.attributes,
                 "（该蓝图暂无自定义属性字段；可在左侧「蓝图模板」中添加）");
         }
+        #endregion
+
     }
 }

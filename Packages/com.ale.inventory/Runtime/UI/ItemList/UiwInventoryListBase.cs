@@ -22,7 +22,8 @@ namespace Ale.Inventory.Runtime.UI
     /// <typeparam name="TCell">格子显示组件类型（如 <c>UiwInventoryItemCell</c> / <c>UiwSkillEntry</c>）。</typeparam>
     public abstract class UiwInventoryListBase<TData, TCell> : MonoBehaviour where TCell : Component
     {
-        // ── Inspector 配置 ────────────────────────────────────────────────────────
+        #region Inspector 配置
+
         [Header("虚拟滚动")]
         [Tooltip("格子 Prefab（TCell 组件）。要求根节点带 RectTransform 且尺寸固定。")]
         public TCell cellPrefab;
@@ -44,11 +45,19 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("排序整理栏（UiwSortToolbar）。绑定后本列表按其选中条件对显示排序，或经视图写运行时。可空。")]
         public UiwSortToolbar sortToolbar;
 
-        // ── 数据 ──────────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 数据
+
         /// <summary>当前显示的数据列表（运行态，不序列化）。子类叶子可直接读取用于绑定 / 拖拽落位。</summary>
         protected List<TData> Items = new List<TData>();
 
-        // ── 对象池 ────────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 对象池
+
         // 全量实例池（含活跃 + 空闲）。
         private List<TCell> _instances;
         // dataIndex → 当前显示该数据的活跃实例。
@@ -62,7 +71,11 @@ namespace Ale.Inventory.Runtime.UI
         // 临时缓冲，收集增量差异刷新中"数据已变、需重绑"的 key，避免遍历字典时修改字典。
         private readonly List<int> _tempRebindIndices = new List<int>();
 
-        // ── 限速生成 / 分配 ───────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 限速生成 / 分配
+
         // 目标实例池大小（= 当前视口所需实例数 InstancesNeeded），同时也是可见窗口跨度；实例按需惰性创建到此上限。
         private int _poolTarget;
         // 当前目标可见窗口（含缓冲）[first,last]，由 UpdateVisibleCells 设置，供限速填充 FillWindow 逐帧消费。
@@ -88,7 +101,11 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>取当前正显示某数据索引的活跃实例（不在可见窗口内则返回 false）。供叶子做拖拽落位等按索引取格子。</summary>
         protected bool TryGetActiveCell(int dataIndex, out TCell cell) => _idxToInstance.TryGetValue(dataIndex, out cell);
 
-        // ── 生命周期 ──────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 生命周期
+
 
         protected virtual void Awake()
         {
@@ -130,7 +147,11 @@ namespace Ale.Inventory.Runtime.UI
             DestroyAllInstances();
         }
 
-        // ── 公共入口 ──────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 公共入口
+
 
         /// <summary>
         /// 设置数据列表并从<b>起点</b>重新显示（切换页签 / 过滤 / 排序等需要回到顶部 / 起始的场景）。
@@ -216,7 +237,11 @@ namespace Ale.Inventory.Runtime.UI
             UpdateVisibleCells();
         }
 
-        // ── 过滤 / 排序（可选，绑定 filterBar / secondaryFilterBar / sortToolbar）──────────
+
+        #endregion
+
+        #region 过滤 / 排序（可选，绑定 filterBar / secondaryFilterBar / sortToolbar）
+
         //
         // 统一封装原先散落在各视图（背包 / 商店 / 制作 / 技能）的「过滤栏 + 排序栏」样板：
         // 本列表持有工具栏引用并订阅其事件，维护一份「源数据全集」，经 过滤 → 排序 后显示。
@@ -376,7 +401,11 @@ namespace Ale.Inventory.Runtime.UI
             else                SetItems(list);
         }
 
-        // ── 虚拟滚动核心 ──────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 虚拟滚动核心
+
 
         /// <summary>滚动回调。</summary>
         private void OnScroll(Vector2 _) => UpdateVisibleCells();
@@ -514,7 +543,11 @@ namespace Ale.Inventory.Runtime.UI
             _lastFirstIndex = -1;
         }
 
-        // ── Viewport 尺寸变化监听 ─────────────────────────────────────────────────
+
+        #endregion
+
+        #region Viewport 尺寸变化监听
+
         // OnRectTransformDimensionsChange 在 Canvas Rebuild 循环内同步触发，其中不能修改任何 UI 元素
         // （否则报 "rebuild list" 错误）。故只在其中置脏，由 LateUpdate 在 Rebuild 结束后安全处理。
         private bool _viewportSizeDirty;
@@ -574,7 +607,11 @@ namespace Ale.Inventory.Runtime.UI
             UpdateVisibleCells();
         }
 
-        // ── 布局策略（子类实现：一维纵向 / 二维网格，纵向 / 横向） ───────────────────
+
+        #endregion
+
+        #region 布局策略（子类实现：一维纵向 / 二维网格，纵向 / 横向）
+
 
         /// <summary>测量格子尺寸（从 <see cref="cellPrefab"/> 的 RectTransform 读取行高 / 列宽）。</summary>
         protected abstract void MeasureCell();
@@ -597,7 +634,11 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>按视口重算布局参数（网格重算跨轴数量，变化则触发全量重建）；一维列表默认空实现。</summary>
         protected virtual void RecomputeLayout(Rect viewport) { }
 
-        // ── 格子绑定（叶子实现：把数据显示到格子 / 清空格子） ───────────────────────
+
+        #endregion
+
+        #region 格子绑定（叶子实现：把数据显示到格子 / 清空格子）
+
 
         /// <summary>把一条数据显示到一个格子（含"窗口内空槽"的可见空态处理，由叶子决定）。</summary>
         protected abstract void BindCell(TCell cell, TData data);
@@ -630,5 +671,7 @@ namespace Ale.Inventory.Runtime.UI
             _lastFirstIndex = -1;
             UpdateVisibleCells();
         }
+        #endregion
+
     }
 }

@@ -22,6 +22,8 @@ namespace Ale.Inventory.Editor
             normal = { textColor = new Color(0.30f, 0.85f, 0.35f) }
         };
 
+        #region 状态与匹配
+
         /// <summary>商品列表的编辑器内存态（按商品组实例缓存；默认折叠）。</summary>
         private class CommodityListState
         {
@@ -72,6 +74,10 @@ namespace Ale.Inventory.Editor
             state.ScrollToIndex = state.MatchPtr >= 0 ? state.Matches[state.MatchPtr] : -1;
         }
 
+        #endregion
+
+        #region 入口
+
         /// <summary>按顺序绘制全部共享配置区块。</summary>
         public static void DrawAll(IInventoryEditorContext ctx, IShopConfig cfg)
         {
@@ -91,6 +97,10 @@ namespace Ale.Inventory.Editor
         }
 
         // ── 商店类型 ────────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 基础配置
 
         private static void DrawShopType(IInventoryEditorContext ctx, IShopConfig cfg)
         {
@@ -210,6 +220,10 @@ namespace Ale.Inventory.Editor
         }
 
         // ── 商品组 ──────────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 商品组与商品
 
         private static void DrawGroups(IInventoryEditorContext ctx, IShopConfig cfg)
         {
@@ -492,5 +506,7 @@ namespace Ale.Inventory.Editor
 
             menu.DropDown(rect);
         }
+        #endregion
+
     }
 }

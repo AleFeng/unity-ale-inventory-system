@@ -34,6 +34,8 @@ namespace Ale.Inventory.Editor
         [SerializeField] private bool overwriteKeys;         // 「覆盖 已存在多语言Key」：勾选后已配 Key 的字段也改用自动生成的 Key
         [SerializeField] private bool fillSourceText = true; // 「填入 Text中的String文本」：勾选后把源纯文本作为初始值填入各语言表的空条目
 
+        #region 打开窗口
+
         [MenuItem("Tools/Inventory System/Localization/本地化工具窗口", priority = 200)]
         public static void Open()
         {
@@ -52,6 +54,10 @@ namespace Ale.Inventory.Editor
 
         protected override string DoneVerb => "已生成"; // 进度条完成时的动词（如「已生成 123 个 Key」）
         
+        #endregion
+
+        #region 绘制
+
         /// <summary>
         /// 绘制 窗口顶部的说明文字
         /// （继承自 <see cref="InventoryToolWindowBase"/>，在数据库选择框上方）。
@@ -168,6 +174,10 @@ namespace Ale.Inventory.Editor
             Selection.activeObject = col;                 // 选中：Inspector 同步显示该表集合
             LocalizationTablesWindow.ShowWindow(col);     // 打开 Table Editor 并聚焦到它
         }
+
+        #endregion
+
+        #region 生成与绑定
 
         /// <summary>
         /// 生成或关联表集合：
@@ -295,6 +305,10 @@ namespace Ale.Inventory.Editor
             return hasKey ? $"{r.KeyPath}  ⟲覆盖  ←  {plain}" : $"{r.KeyPath}  ←  {plain}";
         }
         
+        #endregion
+
+        #region 运行回调
+
         /// <summary>
         /// 逐帧生成 Key 完成后收尾：标记表 / 数据库脏、保存、输出日志。
         /// </summary>
@@ -329,6 +343,10 @@ namespace Ale.Inventory.Editor
             Log($"■ 已取消：已生成 {Changed} 个 Key（进度 {StepIndex}/{StepCount}）。");
         }
         
+        #endregion
+
+        #region 辅助
+
         /// <summary>
         /// 标记数据库 + 关联的表集合为脏（以便保存），避免生成 Key 后未保存导致丢失。
         /// </summary>
@@ -409,6 +427,8 @@ namespace Ale.Inventory.Editor
                 cur = next;
             }
         }
+        #endregion
+
     }
 }
 #endif

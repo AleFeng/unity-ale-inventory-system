@@ -43,6 +43,8 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>分组筛选变化事件。参数为 (主分组ID, 副分组ID)；均为 null = 全部；副为 null = 整个主分组。</summary>
         public event Action<string, string> OnGroupChanged;
 
+        #region 数据结构
+
         // 主分组节点。重建时（仅模板切换）填充其 UI 引用，之后展开 / 折叠与高亮均直接复用，不再重建。
         private class Main
         {
@@ -74,6 +76,10 @@ namespace Ale.Inventory.Runtime.UI
         public string ActivePrimary => _activePrimary;
         /// <summary>当前选中的副分组 ID（null = 整个主分组 / 全部）。</summary>
         public string ActiveSub => _activeSub;
+
+        #endregion
+
+        #region 数据源
 
         /// <summary>用一批蓝图构建分组树，重置选中为「全部」并刷新按钮。</summary>
         /// <param name="blueprintList"></param>
@@ -128,6 +134,10 @@ namespace Ale.Inventory.Runtime.UI
                         if (!string.IsNullOrEmpty(g.id) && !list.Contains(g.id)) list.Add(g.id);
             return list;
         }
+
+        #endregion
+
+        #region 按钮构建与高亮
 
         // 完整重建分组列表：销毁旧按钮，按 _mains 生成「全部」+ 各主分组标题 +（其下「全部」与副分组）。
         // 子项按当前展开状态显示 / 隐藏。仅在切换蓝图模板（SetBlueprints）时调用。
@@ -215,6 +225,10 @@ namespace Ale.Inventory.Runtime.UI
             _rows.Clear();
         }
 
+        #endregion
+
+        #region 选择
+
         private void SelectAll()
         {
             _activePrimary = null;
@@ -259,5 +273,7 @@ namespace Ale.Inventory.Runtime.UI
             var tag = InventoryDataManager.Instance?.GetCraftingGroupTag(tagId);
             return tag != null ? tag.ResolveDisplayName() : tagId;
         }
+        #endregion
+
     }
 }

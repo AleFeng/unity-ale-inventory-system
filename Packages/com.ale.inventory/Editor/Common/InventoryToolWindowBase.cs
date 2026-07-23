@@ -39,6 +39,8 @@ namespace Ale.Inventory.Editor
             richText  = false,
         });
 
+        #region 日志
+
         /// <summary>追加一行日志（超过上限自动丢弃最旧行）。</summary>
         protected void Log(string line)
         {
@@ -70,6 +72,10 @@ namespace Ale.Inventory.Editor
 
         /// <summary>整个过程至少分摊到的帧数：每帧处理量不超过总量的 1/该值，保证进度条逐帧可见刷新。</summary>
         private const int MinFrameCount = 10;
+
+        #endregion
+
+        #region 步骤执行
 
         /// <summary>启动一批逐帧步骤（每步返回一条日志、无变化返回 null）。已在运行则忽略。</summary>
         protected void RunSteps(List<Func<string>> steps, string startLog = null)
@@ -135,6 +141,10 @@ namespace Ale.Inventory.Editor
 
         // ── 子类钩子 ─────────────────────────────────────────────────────────────────
 
+        #endregion
+
+        #region 子类钩子
+
         /// <summary>顶部说明区（默认空）。</summary>
         protected virtual void DrawHeader() { }
 
@@ -154,6 +164,10 @@ namespace Ale.Inventory.Editor
         protected virtual void OnRunCanceled() { }
 
         // ── 绘制 ─────────────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 绘制
 
         /// <summary>数据库选择字段（默认单个 <c>ObjectField</c>；运行中禁用；子类可覆写以追加字段）。</summary>
         protected virtual void DrawDatabaseField()
@@ -238,5 +252,7 @@ namespace Ale.Inventory.Editor
                 EditorApplication.delayCall += OnRunFinished;
             }
         }
+        #endregion
+
     }
 }

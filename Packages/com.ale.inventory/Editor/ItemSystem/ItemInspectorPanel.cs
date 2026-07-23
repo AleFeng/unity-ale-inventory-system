@@ -44,6 +44,8 @@ namespace Ale.Inventory.Editor
             _groupFoldouts[key] = value;
         }
 
+        #region Inspector
+
         public void DrawInspector(IInventoryEditorContext ctx, Item item)
         {
             if (item == null)
@@ -162,6 +164,10 @@ namespace Ale.Inventory.Editor
         }
 
         // ────────────────────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 属性分组绘制
 
         private void DrawAttributeGroups(
             IInventoryEditorContext ctx, InventoryDatabase db, Item item,
@@ -397,5 +403,7 @@ namespace Ale.Inventory.Editor
                 }
             }
         }
+        #endregion
+
     }
 }

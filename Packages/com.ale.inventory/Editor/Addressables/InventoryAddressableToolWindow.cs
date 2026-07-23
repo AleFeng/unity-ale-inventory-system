@@ -43,6 +43,8 @@ namespace Ale.Inventory.Editor
 
         private Op _op;   // 本次操作（用于进度 / 日志 / 完成提醒文案）
 
+        #region 打开窗口
+
         [MenuItem("Tools/Inventory System/Addressable/Addressable工具窗口", priority = 200)]
         public static void Open()
         {
@@ -54,6 +56,10 @@ namespace Ale.Inventory.Editor
         // ── 绘制（基类骨架的钩子）─────────────────────────────────────────────────────
 
         protected override string DoneVerb => IsClearing(_op) ? "已清空" : "已转换";
+
+        #endregion
+
+        #region 绘制与启动
 
         protected override void DrawHeader()
         {
@@ -136,6 +142,10 @@ namespace Ale.Inventory.Editor
                 default:           return "清空 AssetReference(GUID)";
             }
         }
+
+        #endregion
+
+        #region 运行回调
 
         /// <summary>处理完成收尾：保存数据库并打印汇总日志（基类在进度条推到 100% 前调用）。</summary>
         protected override void OnRunComplete()
@@ -286,6 +296,10 @@ namespace Ale.Inventory.Editor
             return $"属性资源：{string.Join("、", names)} {OpArrowText(op)}";
         }
 
+        #endregion
+
+        #region 辅助
+
         /// <summary>各操作在属性资源汇总日志里的箭头 / 结果文案。</summary>
         private static string OpArrowText(Op op)
         {
@@ -405,5 +419,7 @@ namespace Ale.Inventory.Editor
             bool IEqualityComparer<object>.Equals(object a, object b) => ReferenceEquals(a, b);
             int IEqualityComparer<object>.GetHashCode(object o) => RuntimeHelpers.GetHashCode(o);
         }
+        #endregion
+
     }
 }

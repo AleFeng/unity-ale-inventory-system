@@ -55,7 +55,8 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("无限次数显示文本。")]
         public string unlimitedText = "∞";
 
-        // ── 运行时状态 ────────────────────────────────────────────────────────────
+        #region 运行时状态
+
         private UiwShopViewBase _owner;
         private Shop          _shop;
         private ShopCommodity _commodity;
@@ -181,7 +182,11 @@ namespace Ale.Inventory.Runtime.UI
             UpdateSubtotal();
         }
 
-        // ── 内部 ─────────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 内部
+
 
         private void ApplyUnitPrice()
         {
@@ -220,6 +225,8 @@ namespace Ale.Inventory.Runtime.UI
             }
             // +/- 可用性由计数器按可交互状态与边界控制（见 UiwNumberCounter.SetInteractable）
         }
+
+        #endregion
 
     }
 }

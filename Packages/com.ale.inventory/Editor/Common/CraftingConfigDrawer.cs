@@ -20,6 +20,8 @@ namespace Ale.Inventory.Editor
         private static readonly EditorReorderableDrag AttributeDisplaysDrag
             = new EditorReorderableDrag("CraftingAttrDisplaysDrag");
 
+        #region 入口
+
         /// <summary>
         /// 按顺序绘制全部共享配置区块（全部可编辑）。供「蓝图模板」使用——
         /// 制作仓库与 UI 配置为模板级配置，只在模板中编辑。
@@ -46,6 +48,10 @@ namespace Ale.Inventory.Editor
         }
 
         // ── 制作参数 ──────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 制作参数
 
         private static void DrawCraftParams(IInventoryEditorContext ctx, ICraftingConfig cfg)
         {
@@ -146,6 +152,10 @@ namespace Ale.Inventory.Editor
 
         // ── 蓝图实例：制作仓库 + UI 配置 只读展示（模板级配置）────────────────────────
 
+        #endregion
+
+        #region 模板级只读配置
+
         private static void DrawInheritedConfigReadonly(IInventoryEditorContext ctx, CraftingBlueprint bp)
         {
             var db   = ctx.Database;
@@ -220,5 +230,7 @@ namespace Ale.Inventory.Editor
             foreach (var tag in db.FunctionTags)   Collect(tag.attributes);
             return ids;
         }
+        #endregion
+
     }
 }

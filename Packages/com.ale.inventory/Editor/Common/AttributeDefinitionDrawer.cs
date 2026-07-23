@@ -10,6 +10,8 @@ namespace Ale.Inventory.Editor
     /// </summary>
     public static class AttributeDefinitionDrawer
     {
+        #region Layout 绘制
+
         public static void Draw(IInventoryEditorContext ctx, AttributeDefinition def)
         {
             if (def == null) return;
@@ -63,6 +65,10 @@ namespace Ale.Inventory.Editor
         // Rect-based drawing（供 ReorderableList.drawElementCallback 使用）
         // 纯 EditorGUI.* 实现，不调用任何 GUILayout API，不向父 GUILayoutGroup 注册槽位。
         // ─────────────────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region Rect 绘制
 
         /// <summary>
         /// 在指定 <paramref name="rect"/> 内绘制单个 <see cref="AttributeDefinition"/>。
@@ -247,5 +253,7 @@ namespace Ale.Inventory.Editor
                 ctx.MarkDirty();
             }
         }
+        #endregion
+
     }
 }

@@ -30,6 +30,8 @@ namespace Ale.Inventory.Editor
         /// <summary>是否已注入 AssetReference 授权绘制器（IS_ADDRESSABLE 启用且包可用）。</summary>
         public static bool HasAddressableDrawer => AddressableFieldDrawer != null;
 
+        #region 对象类型与行高
+
         /// <summary>
         /// 对象引用字段在 rect 模式下的行高：授权模式据原生 AssetReference 绘制器求得（可能多行），
         /// 否则单行。供列表 / 数组高度回调与 <see cref="AttributeDefinitionListDrawer"/> 保持一致。
@@ -118,6 +120,10 @@ namespace Ale.Inventory.Editor
             }
             return AssetDatabase.LoadAssetAtPath(path, type);
         }
+
+        #endregion
+
+        #region 入口与分发
 
         /// <summary>
         /// 绘制一个属性值。<paramref name="enumType"/> 仅在类型为 Enum 时使用（可为 null）。
@@ -291,6 +297,10 @@ namespace Ale.Inventory.Editor
         // Rect-based drawing（供 ReorderableList.drawElementCallback 使用）
         // 不调用任何 GUILayout API。
         // ─────────────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region Rect 绘制
 
         /// <summary>
         /// 在 <paramref name="rect"/> 内绘制属性值（非数组=单行；数组=内嵌 helpBox）。
@@ -649,6 +659,10 @@ namespace Ale.Inventory.Editor
         // 原有 GUILayout-based 私有辅助（供 Draw 使用，保持不变）
         // ─────────────────────────────────────────────────────────────────────
 
+        #endregion
+
+        #region Layout 绘制
+
         /// <summary>绘制指定元素索引的字段（无标签）。</summary>
         /// <summary>
         /// Layout 路径的单元素绘制：取一个 <see cref="EditorGUILayout.GetControlRect(bool,float)"/> 矩形后
@@ -664,6 +678,10 @@ namespace Ale.Inventory.Editor
         }
 
         // ─── Text：纯文本 fallback + 本地化选择器 ─────────────────────────────────
+
+        #endregion
+
+        #region Text 与本地化
 
         /// <summary>GUILayout：绘制一个 Text 元素（纯文本框 + 原生可搜索本地化选择器）。</summary>
         private static void DrawTextFieldLayout(IInventoryEditorContext ctx, AttributeValue value, int index)
@@ -983,5 +1001,7 @@ namespace Ale.Inventory.Editor
                 && clip.EnumTypeRef != target.EnumTypeRef) return null;
             return clip;
         }
+        #endregion
+
     }
 }

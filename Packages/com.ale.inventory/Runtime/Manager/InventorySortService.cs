@@ -18,6 +18,8 @@ namespace Ale.Inventory.Runtime
     /// </summary>
     public static class InventorySortService
     {
+        #region 原地排序入口
+
         /// <summary>
         /// 对任意 slot 列表按指定优先级排序（不触发事件，不写运行时状态）。
         /// 供 UI 层 autoSort 显示排序使用。空槽排末尾。
@@ -38,6 +40,10 @@ namespace Ale.Inventory.Runtime
                 return CompareSlots(a, b, priorities, lookup);
             });
         }
+
+        #endregion
+
+        #region 字段查表
 
         /// <summary>
         /// 一次排序过程内复用的字段查表。把原先在<b>每次两两比较</b>里重复做的线性扫描
@@ -119,6 +125,10 @@ namespace Ale.Inventory.Runtime
                     ? idx : int.MaxValue;
             }
         }
+
+        #endregion
+
+        #region 比较
 
         /// <summary>
         /// 按道具 ID 对任意列表做<b>显示排序</b>（原地排序，不触发事件、不写运行时状态）。
@@ -252,6 +262,10 @@ namespace Ale.Inventory.Runtime
             return ka.CompareTo(kb) * sign;
         }
         
+        #endregion
+
+        #region 忽略列表与标签序号
+
         /// <summary>
         /// 判断属性值是否在整理选项的忽略列表中。
         /// 对于枚举类型会将数值转换为名称进行匹配。
@@ -370,5 +384,7 @@ namespace Ale.Inventory.Runtime
 
             return int.MaxValue;
         }
+        #endregion
+
     }
 }

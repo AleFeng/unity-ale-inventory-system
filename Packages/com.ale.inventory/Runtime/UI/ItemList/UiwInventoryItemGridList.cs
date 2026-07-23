@@ -40,7 +40,8 @@ namespace Ale.Inventory.Runtime.UI
         // 拖拽期间钉住源格子：边缘自动滚动会把源格滚出窗口，若被回收停用则收不到 OnDrag/OnEndDrag。
         protected override int PinnedDataIndex => _dragSourceIndex;
 
-        // ── 设置数据 ──────────────────────────────────────────────────────────────
+        #region 设置数据
+
 
         /// <summary>
         /// 设置道具槽位数据列表，并从仓库定义读取容量 / 拖拽整理配置后刷新网格。
@@ -97,7 +98,11 @@ namespace Ale.Inventory.Runtime.UI
                 if (inst) inst.numberFormat = locale;
         }
 
-        // ── 格子绑定 ──────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 格子绑定
+
         
         /// <summary>
         /// 绑定 格子与道具槽位数据。由基类在格子实例化 / 滚动复用时调用。
@@ -151,7 +156,11 @@ namespace Ale.Inventory.Runtime.UI
         protected override bool NeedsRebind(UiwInventoryItemCell cell, RuntimeItemSlot slot)
             => !cell.MatchesSlot(slot);
 
-        // ── 拖拽整理（适配虚拟滚动；由 GridCellDragHandler 转发） ─────────────────────
+
+        #endregion
+
+        #region 拖拽整理（适配虚拟滚动；由 GridCellDragHandler 转发）
+
 
         /// <summary>事件：格子 开始拖拽。创建拖拽幽灵并记录拖拽源数据索引。</summary>
         internal void OnCellBeginDrag(int dataIndex, PointerEventData eventData)
@@ -255,7 +264,11 @@ namespace Ale.Inventory.Runtime.UI
             ForceRefreshVisible();
         }
 
-        // ── 边缘自动滚动（拖拽中） ────────────────────────────────────────────────
+
+        #endregion
+
+        #region 边缘自动滚动（拖拽中）
+
 
         private void Update()
         {
@@ -311,7 +324,11 @@ namespace Ale.Inventory.Runtime.UI
             UpdateVisibleCells();
         }
 
-        // ── 生命周期 ──────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 生命周期
+
 
         protected override void OnDisable()
         {
@@ -321,5 +338,7 @@ namespace Ale.Inventory.Runtime.UI
             _dragGhostGameObj = null;
             _dragSourceIndex  = -1;
         }
+        #endregion
+
     }
 }

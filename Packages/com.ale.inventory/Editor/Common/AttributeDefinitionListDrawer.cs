@@ -38,6 +38,8 @@ namespace Ale.Inventory.Editor
 
         // ── 公开接口 ──────────────────────────────────────────────────────────────
 
+        #region 绘制
+
         /// <summary>数据库切换或面板重置时调用，清空列表缓存。</summary>
         public void Invalidate()
         {
@@ -92,6 +94,10 @@ namespace Ale.Inventory.Editor
 
         // ── 构建 ReorderableList（直接绑定 defs）─────────────────────────────────
 
+        #endregion
+
+        #region 列表构建
+
         private void BuildList(List<AttributeDefinition> defs)
         {
             _bound = defs;
@@ -144,6 +150,10 @@ namespace Ale.Inventory.Editor
         }
 
         // ── 元素高度计算（需与 DrawRect / DrawFieldDrawer.DrawRect 的绘制行数严格匹配）────
+
+        #endregion
+
+        #region 辅助
 
         /// <summary>
         /// 计算单个属性字段定义在列表中的显示高度。<br/>
@@ -210,5 +220,7 @@ namespace Ale.Inventory.Editor
                 if (d.id == attrId) return true;
             return false;
         }
+        #endregion
+
     }
 }

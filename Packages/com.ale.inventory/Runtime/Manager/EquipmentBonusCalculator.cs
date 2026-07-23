@@ -23,6 +23,8 @@ namespace Ale.Inventory.Runtime
     /// </summary>
     public static class EquipmentBonusCalculator
     {
+        #region 计算入口
+
         /// <summary>
         /// 计算装备组的总属性加成。顺序与 <see cref="EquipmentGroup.attributeDisplays"/> 一致；
         /// UI 可按 <see cref="EquipmentBonus.GroupTag"/> 分组显示。
@@ -59,6 +61,10 @@ namespace Ale.Inventory.Runtime
             }
             return result;
         }
+        #endregion
+
+        #region 各类型加成
+
         /// <summary>收集某属性字段在装备组全部已装备道具上的属性值（跳过空槽 / 缺失道具 / 缺失字段）。</summary>
         private static List<AttributeValue> CollectEquippedValues(
             IReadOnlyDictionary<string, string> slots, InventoryDataManager dm, string attrId)
@@ -198,5 +204,7 @@ namespace Ale.Inventory.Runtime
                     Total    = totals[i],
                 });
         }
+        #endregion
+
     }
 }

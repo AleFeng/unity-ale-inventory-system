@@ -37,6 +37,8 @@ namespace Ale.Inventory.Editor
             return d;
         }
 
+        #region 入口
+
         /// <summary>绘制装备组的全部共享可配置项：装备仓库 + 槽位列表 + 装备属性字段列表。</summary>
         public void Draw(IInventoryEditorContext ctx, IEquipmentConfig cfg)
         {
@@ -55,6 +57,10 @@ namespace Ale.Inventory.Editor
         // ── 整理排序 ──────────────────────────────────────────────────────────────
         // 应用于可装备道具候选列表（UiwEquipmentCandidateList）的显示排序，组与模板共享此绘制。
 
+        #endregion
+
+        #region 整理排序
+
         private void DrawSortSettings(IInventoryEditorContext ctx, IEquipmentConfig cfg)
         {
             EditorGUILayout.LabelField("整理排序", InventoryEditorStyles.Header);
@@ -65,6 +71,10 @@ namespace Ale.Inventory.Editor
         }
 
         // ── 槽位列表 ──────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 槽位列表
 
         private void DrawSlotLists(IInventoryEditorContext ctx, IEquipmentConfig cfg)
         {
@@ -427,6 +437,10 @@ namespace Ale.Inventory.Editor
 
         // ── 装备属性字段列表 ──────────────────────────────────────────────────────────
 
+        #endregion
+
+        #region 装备属性字段
+
         private void DrawAttributeDisplays(IInventoryEditorContext ctx, IEquipmentConfig cfg)
         {
             var db   = ctx.Database;
@@ -561,6 +575,10 @@ namespace Ale.Inventory.Editor
             menu.DropDown(rect);
         }
 
+        #endregion
+
+        #region 辅助
+
         private static void Apply(IInventoryEditorContext ctx, Action mutate)
         {
             ctx.RecordUndo("修改属性字段ID");
@@ -641,5 +659,7 @@ namespace Ale.Inventory.Editor
             do { id = "slot_" + total; total++; } while (Exists(id));
             return id;
         }
+        #endregion
+
     }
 }

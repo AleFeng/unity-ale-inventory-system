@@ -79,6 +79,8 @@ namespace Ale.Inventory.Runtime
     /// </summary>
     public static class FieldTypeUtility
     {
+        #region 后备列表分类与步长
+
         /// <summary>
         /// 返回该类型在浮点后备列表中每个元素占用的步长；非浮点承载类型返回 0。
         /// </summary>
@@ -176,5 +178,7 @@ namespace Ale.Inventory.Runtime
             if (type == EFieldType.StringIntPair) return 1;
             return 0;
         }
+        #endregion
+
     }
 }

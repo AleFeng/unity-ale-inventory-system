@@ -53,7 +53,8 @@ namespace Ale.Inventory.Runtime.UI
         private Material      _materialCache;
         private string        _localeCodeMark;
 
-        // ── 生命周期 ────────────────────────────────────────────────────────────
+        #region 生命周期
+
 
         protected override void OnEnable()
         {
@@ -80,7 +81,11 @@ namespace Ale.Inventory.Runtime.UI
         private void Reset()    => RefreshComponents();
         private void OnValidate() => RefreshComponents();
 
-        // ── 公开接口 ─────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 公开接口
+
 
         /// <summary>
         /// 刷新组件引用：重新扫描子节点，更新 texts / textEvents 列表并绑定/解绑关联。
@@ -97,7 +102,11 @@ namespace Ale.Inventory.Runtime.UI
             }
         }
 
-        // ── 字体更新 ─────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 字体更新
+
 
         protected override void UpdateAsset(TMP_FontAsset asset)
         {
@@ -146,7 +155,11 @@ namespace Ale.Inventory.Runtime.UI
             RefreshMaterial();
         }
 
-        // ── 辅助 ─────────────────────────────────────────────────────────────────
+
+        #endregion
+
+        #region 辅助
+
 
         /// <summary>
         /// 对受控文本应用当前字体缓存。
@@ -230,6 +243,8 @@ namespace Ale.Inventory.Runtime.UI
                 if (!EqualityComparer<T>.Default.Equals(a[i], b[i])) return false;
             return true;
         }
+        #endregion
+
     }
 }
 

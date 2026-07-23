@@ -31,6 +31,8 @@ namespace Ale.Inventory.Editor
     {
         private const string Root = "道具系统";
 
+        #region 采集入口
+
         public static List<TextFieldRef> Collect(InventoryDatabase db)
         {
             var list = new List<TextFieldRef>();
@@ -152,6 +154,10 @@ namespace Ale.Inventory.Editor
             return list;
         }
 
+        #endregion
+
+        #region 收集辅助
+
         private static void AddGroupTags(List<TextFieldRef> list, HashSet<string> seen,
             IEnumerable<GroupTag> tags, string category)
         {
@@ -209,6 +215,8 @@ namespace Ale.Inventory.Editor
         }
 
         private static string Id(string s) => string.IsNullOrEmpty(s) ? "(空)" : s;
+        #endregion
+
     }
 }
 #endif
