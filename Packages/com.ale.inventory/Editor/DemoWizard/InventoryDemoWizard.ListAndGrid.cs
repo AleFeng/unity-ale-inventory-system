@@ -115,66 +115,8 @@ namespace Ale.Inventory.Editor
             listComp.bufferCount = 1;
             listComp.cellPrefab  = detailPrefab;
 
-            // ScrollRect 节点
-            var srGo = ChildGameObject("ScrollRect", root.transform);
-            Stretch(srGo.AddComponent<RectTransform>());
-            srGo.AddComponent<Image>().color = new Color(0.08f, 0.08f, 0.12f, 0.5f);
-            var sr = srGo.AddComponent<ScrollRect>();
-            sr.horizontal = false; sr.vertical = true;
-            sr.movementType = ScrollRect.MovementType.Elastic; sr.elasticity = 0.06f;
-            sr.inertia = true; sr.decelerationRate = 0.01f; sr.scrollSensitivity = 40f;
-
-            // Viewport（右留 20px 给滚动条）
-            var vpGo = ChildGameObject("Viewport", srGo.transform);
-            var vpRt = vpGo.AddComponent<RectTransform>();
-            vpRt.anchorMin = Vector2.zero; vpRt.anchorMax = Vector2.one;
-            vpRt.pivot = new Vector2(0.5f, 0.5f);
-            vpRt.anchoredPosition = new Vector2(-10f, 0f);
-            vpRt.sizeDelta = new Vector2(-20f, 0f);
-            vpGo.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.01f);
-            vpGo.AddComponent<Mask>().showMaskGraphic = false;
-
-            // Content（顶部对齐）
-            var contentGo = ChildGameObject("Content", vpGo.transform);
-            var contentRt = contentGo.AddComponent<RectTransform>();
-            contentRt.anchorMin = new Vector2(0f, 1f); contentRt.anchorMax = new Vector2(1f, 1f);
-            contentRt.pivot = new Vector2(0.5f, 1f);
-            contentRt.sizeDelta = Vector2.zero; contentRt.anchoredPosition = Vector2.zero;
-
-            // Scrollbar Vertical
-            var sbGo = ChildGameObject("Scrollbar Vertical", srGo.transform);
-            var sbRt = sbGo.AddComponent<RectTransform>();
-            sbRt.anchorMin = new Vector2(1f, 0f); sbRt.anchorMax = new Vector2(1f, 1f);
-            sbRt.pivot = new Vector2(1f, 1f); sbRt.sizeDelta = new Vector2(16f, 0f);
-            var sbImg = sbGo.AddComponent<Image>();
-            sbImg.color  = new Color(0.38180846f, 0.38180846f, 0.49056602f, 1f);
-            sbImg.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
-            sbImg.type   = Image.Type.Sliced;
-            var scrollbar = sbGo.AddComponent<Scrollbar>();
-            scrollbar.direction = Scrollbar.Direction.BottomToTop;
-
-            // Sliding Area（无图） + Handle
-            var saGo = ChildGameObject("Sliding Area", sbGo.transform);
-            var saRt = saGo.AddComponent<RectTransform>();
-            saRt.anchorMin = Vector2.zero; saRt.anchorMax = Vector2.one;
-            saRt.sizeDelta = new Vector2(-2f, -2f);
-            var handleGo = ChildGameObject("Handle", saGo.transform);
-            var handleRt = handleGo.AddComponent<RectTransform>();
-            handleRt.anchorMin = Vector2.zero; handleRt.anchorMax = Vector2.zero;
-            handleRt.sizeDelta = new Vector2(-4f, -4f);
-            var handleImg = handleGo.AddComponent<Image>();
-            handleImg.color  = new Color(0.101960786f, 0.101960786f, 0.16078432f, 1f);
-            handleImg.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-            handleImg.type   = Image.Type.Sliced;
-
-            scrollbar.targetGraphic = handleImg;
-            scrollbar.handleRect    = handleRt;
-
-            sr.content  = contentRt;
-            sr.viewport = vpRt;
-            sr.verticalScrollbar = scrollbar;
-            sr.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
-
+            // ScrollRect + Viewport + Content + 竖直滚动条骨架（见 MakeVerticalScrollView）
+            var sr = MakeVerticalScrollView(root, out var contentRt);
             listComp.scrollRect = sr;
             listComp.content    = contentRt;
 
@@ -203,66 +145,8 @@ namespace Ale.Inventory.Editor
             comp.spacing         = new Vector2(6f, 6f);
             comp.padding         = new Vector2(6f, 6f);
 
-            // ScrollRect 节点（网格虚拟滚动：纵向滚动）
-            var srGo = ChildGameObject("ScrollRect", root.transform);
-            Stretch(srGo.AddComponent<RectTransform>());
-            srGo.AddComponent<Image>().color = new Color(0.08f, 0.08f, 0.12f, 0.5f);
-            var sr = srGo.AddComponent<ScrollRect>();
-            sr.horizontal = false; sr.vertical = true;
-            sr.movementType = ScrollRect.MovementType.Elastic; sr.elasticity = 0.06f;
-            sr.inertia = true; sr.decelerationRate = 0.01f; sr.scrollSensitivity = 40f;
-
-            // Viewport（右留 20px 给滚动条）
-            var vpGo = ChildGameObject("Viewport", srGo.transform);
-            var vpRt = vpGo.AddComponent<RectTransform>();
-            vpRt.anchorMin = Vector2.zero; vpRt.anchorMax = Vector2.one;
-            vpRt.pivot = new Vector2(0.5f, 0.5f);
-            vpRt.anchoredPosition = new Vector2(-10f, 0f);
-            vpRt.sizeDelta = new Vector2(-20f, 0f);
-            vpGo.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.01f);
-            vpGo.AddComponent<Mask>().showMaskGraphic = false;
-
-            // Content（顶部对齐；格子由虚拟滚动手动定位，不挂 GridLayoutGroup）
-            var contentGo = ChildGameObject("Content", vpGo.transform);
-            var contentRt = contentGo.AddComponent<RectTransform>();
-            contentRt.anchorMin = new Vector2(0f, 1f); contentRt.anchorMax = new Vector2(1f, 1f);
-            contentRt.pivot = new Vector2(0.5f, 1f);
-            contentRt.sizeDelta = Vector2.zero; contentRt.anchoredPosition = Vector2.zero;
-
-            // Scrollbar Vertical
-            var sbGo = ChildGameObject("Scrollbar Vertical", srGo.transform);
-            var sbRt = sbGo.AddComponent<RectTransform>();
-            sbRt.anchorMin = new Vector2(1f, 0f); sbRt.anchorMax = new Vector2(1f, 1f);
-            sbRt.pivot = new Vector2(1f, 1f); sbRt.sizeDelta = new Vector2(16f, 0f);
-            var sbImg = sbGo.AddComponent<Image>();
-            sbImg.color  = new Color(0.38180846f, 0.38180846f, 0.49056602f, 1f);
-            sbImg.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
-            sbImg.type   = Image.Type.Sliced;
-            var scrollbar = sbGo.AddComponent<Scrollbar>();
-            scrollbar.direction = Scrollbar.Direction.BottomToTop;
-
-            // Sliding Area（无图） + Handle
-            var saGo = ChildGameObject("Sliding Area", sbGo.transform);
-            var saRt = saGo.AddComponent<RectTransform>();
-            saRt.anchorMin = Vector2.zero; saRt.anchorMax = Vector2.one;
-            saRt.sizeDelta = new Vector2(-2f, -2f);
-            var handleGo = ChildGameObject("Handle", saGo.transform);
-            var handleRt = handleGo.AddComponent<RectTransform>();
-            handleRt.anchorMin = Vector2.zero; handleRt.anchorMax = Vector2.zero;
-            handleRt.sizeDelta = new Vector2(-4f, -4f);
-            var handleImg = handleGo.AddComponent<Image>();
-            handleImg.color  = new Color(0.101960786f, 0.101960786f, 0.16078432f, 1f);
-            handleImg.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-            handleImg.type   = Image.Type.Sliced;
-
-            scrollbar.targetGraphic = handleImg;
-            scrollbar.handleRect    = handleRt;
-
-            sr.content  = contentRt;
-            sr.viewport = vpRt;
-            sr.verticalScrollbar = scrollbar;
-            sr.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
-
+            // ScrollRect + Viewport + Content + 竖直滚动条骨架（见 MakeVerticalScrollView）
+            var sr = MakeVerticalScrollView(root, out var contentRt);
             comp.scrollRect = sr;
             comp.content    = contentRt;
 

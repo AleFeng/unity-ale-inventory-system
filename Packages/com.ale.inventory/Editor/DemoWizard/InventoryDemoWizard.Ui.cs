@@ -49,6 +49,83 @@ namespace Ale.Inventory.Editor
             rt.offsetMin = rt.offsetMax = Vector2.zero;
         }
 
+        /// <summary>
+        /// 在 <paramref name="host"/> 下构建一套纵向虚拟滚动骨架并接线：
+        /// <c>ScrollRect</c>（半透背景 Image）→ <c>Viewport</c>（遮罩，右留 20px 给滚动条）→ <c>Content</c>（顶部对齐），
+        /// 外加常显的竖直 <c>Scrollbar Vertical</c>（Sliding Area + Handle）。返回 <see cref="ScrollRect"/>，
+        /// Content 经 <paramref name="content"/> 传出；调用方随后把两者接到自己的虚拟滚动组件上即可。
+        /// <para>五处纵向列表（道具顺序 / 网格、蓝图、技能网格 / 顺序）此前各写了一遍同一骨架。
+        /// 滚动条与滑块颜色统一取全精度值（此前各处 0.38f / 0.38180846f 精度不一，现对齐为后者）。</para>
+        /// </summary>
+        /// <param name="host">滚动骨架的父节点（列表根）。</param>
+        /// <param name="content">传出 Content 的 <see cref="RectTransform"/>（虚拟滚动组件的内容容器）。</param>
+        /// <param name="decelerationRate">
+        /// 惯性衰减率。道具 / 蓝图列表用 0.01（更「跟手」的低惯性）；技能列表沿用 Unity 默认 0.135f。
+        /// </param>
+        static ScrollRect MakeVerticalScrollView(GameObject host, out RectTransform content,
+            float decelerationRate = 0.01f)
+        {
+            var srGo = ChildGameObject("ScrollRect", host.transform);
+            Stretch(srGo.AddComponent<RectTransform>());
+            srGo.AddComponent<Image>().color = new Color(0.08f, 0.08f, 0.12f, 0.5f);
+            var sr = srGo.AddComponent<ScrollRect>();
+            sr.horizontal = false; sr.vertical = true;
+            sr.movementType = ScrollRect.MovementType.Elastic; sr.elasticity = 0.06f;
+            sr.inertia = true; sr.decelerationRate = decelerationRate; sr.scrollSensitivity = 40f;
+
+            // Viewport（右留 20px 给滚动条）
+            var vpGo = ChildGameObject("Viewport", srGo.transform);
+            var vpRt = vpGo.AddComponent<RectTransform>();
+            vpRt.anchorMin = Vector2.zero; vpRt.anchorMax = Vector2.one;
+            vpRt.pivot = new Vector2(0.5f, 0.5f);
+            vpRt.anchoredPosition = new Vector2(-10f, 0f);
+            vpRt.sizeDelta = new Vector2(-20f, 0f);
+            vpGo.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.01f);
+            vpGo.AddComponent<Mask>().showMaskGraphic = false;
+
+            // Content（顶部对齐；条目由虚拟滚动手动定位，不挂 LayoutGroup / SizeFitter）
+            var contentGo = ChildGameObject("Content", vpGo.transform);
+            content = contentGo.AddComponent<RectTransform>();
+            content.anchorMin = new Vector2(0f, 1f); content.anchorMax = new Vector2(1f, 1f);
+            content.pivot = new Vector2(0.5f, 1f);
+            content.sizeDelta = Vector2.zero; content.anchoredPosition = Vector2.zero;
+
+            // Scrollbar Vertical
+            var sbGo = ChildGameObject("Scrollbar Vertical", srGo.transform);
+            var sbRt = sbGo.AddComponent<RectTransform>();
+            sbRt.anchorMin = new Vector2(1f, 0f); sbRt.anchorMax = new Vector2(1f, 1f);
+            sbRt.pivot = new Vector2(1f, 1f); sbRt.sizeDelta = new Vector2(16f, 0f);
+            var sbImg = sbGo.AddComponent<Image>();
+            sbImg.color  = new Color(0.38180846f, 0.38180846f, 0.49056602f, 1f);
+            sbImg.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
+            sbImg.type   = Image.Type.Sliced;
+            var scrollbar = sbGo.AddComponent<Scrollbar>();
+            scrollbar.direction = Scrollbar.Direction.BottomToTop;
+
+            // Sliding Area（无图） + Handle
+            var saGo = ChildGameObject("Sliding Area", sbGo.transform);
+            var saRt = saGo.AddComponent<RectTransform>();
+            saRt.anchorMin = Vector2.zero; saRt.anchorMax = Vector2.one;
+            saRt.sizeDelta = new Vector2(-2f, -2f);
+            var handleGo = ChildGameObject("Handle", saGo.transform);
+            var handleRt = handleGo.AddComponent<RectTransform>();
+            handleRt.anchorMin = Vector2.zero; handleRt.anchorMax = Vector2.zero;
+            handleRt.sizeDelta = new Vector2(-4f, -4f);
+            var handleImg = handleGo.AddComponent<Image>();
+            handleImg.color  = new Color(0.101960786f, 0.101960786f, 0.16078432f, 1f);
+            handleImg.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            handleImg.type   = Image.Type.Sliced;
+
+            scrollbar.targetGraphic = handleImg;
+            scrollbar.handleRect    = handleRt;
+
+            sr.content  = content;
+            sr.viewport = vpRt;
+            sr.verticalScrollbar = scrollbar;
+            sr.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
+            return sr;
+        }
+
         // 创建固定高度的行节点（带 LayoutElement）
         static GameObject MakeRow(string name, Transform parent, float height, Color bgColor)
         {
