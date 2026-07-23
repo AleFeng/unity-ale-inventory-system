@@ -22,7 +22,8 @@ namespace Ale.Inventory.Runtime
     /// <c>.TestSeed.cs</c>（测试道具填充，仅编辑器 / 开发版构建）。
     /// 与实例状态无关的排序实现已独立为 <see cref="InventorySortService"/>。</para>
     /// </summary>
-    public partial class InventoryRuntimeManager : InventorySystemMonoBehaviourSingleton<InventoryRuntimeManager>
+    public partial class InventoryRuntimeManager
+        : InventorySystemMonoBehaviourSingleton<InventoryRuntimeManager>, IInventorySaveable<RuntimeInventoryState>
     {
         [Header("数据库（可挂载多个，运行时合并查询）")]
         [SerializeField] private InventoryDatabase[] databases;
@@ -536,7 +537,7 @@ namespace Ale.Inventory.Runtime
         
         #region 存档
 
-        /// <summary>获取全部仓库运行时状态的深拷贝（由游戏层 SaveManager 序列化）。</summary>
+        /// <inheritdoc cref="IInventorySaveable{TState}.GetSaveData"/>
         public List<RuntimeInventoryState> GetSaveData()
         {
             var result = new List<RuntimeInventoryState>(_inventoryStates.Count);
@@ -551,10 +552,9 @@ namespace Ale.Inventory.Runtime
         }
 
         /// <summary>
-        /// 从存档数据恢复运行时状态（在 Init() 之后调用）。<b>覆盖语义</b>：先清空并重建所有仓库的空骨架
-        /// （固定容量仓库恢复预分配空槽），再叠加存档中的槽位——未在存档中的仓库因此回到初始空态。
-        /// 与 <see cref="EquipmentRuntimeManager.LoadSaveData"/> / <see cref="ShopRuntimeManager.LoadSaveData"/> 一致；
-        /// 差别仅在仓库有「按容量预分配空槽」的概念，故清空后需重建空骨架而非直接留空。
+        /// 从存档数据恢复运行时状态（在 Init() 之后调用）。契约见 <see cref="IInventorySaveable{TState}"/>。
+        /// <para>本实现的覆盖分三步：清空 → 重建所有仓库的空骨架（固定容量仓库恢复预分配空槽）→ 叠加存档中的槽位。
+        /// 未在存档中的仓库因此回到初始空态，而非残留上一局的内容。</para>
         /// </summary>
         public void LoadSaveData(List<RuntimeInventoryState> data)
         {
@@ -583,11 +583,9 @@ namespace Ale.Inventory.Runtime
         }
 
         /// <summary>
-        /// 清空全部仓库运行时状态并重建为初始空状态（固定容量仓库恢复预分配空槽），如开始新游戏。
-        /// 与 <see cref="EquipmentRuntimeManager.ResetAll"/> / <see cref="ShopRuntimeManager.ResetAll"/> 对齐；
-        /// 区别在于仓库有「按容量预分配空槽」的概念，故不能只 <c>Clear()</c>，需重建空状态。
-        /// <para>与 <see cref="LoadSaveData"/> 一致，本方法<b>不触发</b> <see cref="OnInventoryChanged"/>——
-        /// 批量替换状态后由调用方（游戏层）自行刷新 / 重开界面。</para>
+        /// 清空全部仓库运行时状态并重建为初始空状态，如开始新游戏。契约见 <see cref="IInventorySaveable"/>。
+        /// <para>区别于其余三个管理器的裸 <c>Clear()</c>：仓库有「按容量预分配空槽」的概念，
+        /// 清空后须重建空骨架，否则固定容量仓库会变成 0 格。</para>
         /// </summary>
         public void ResetAll()
         {

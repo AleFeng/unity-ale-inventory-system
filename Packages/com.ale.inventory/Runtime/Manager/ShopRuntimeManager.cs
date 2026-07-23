@@ -20,7 +20,8 @@ namespace Ale.Inventory.Runtime
     /// <see cref="InventoryRuntimeManager"/>。等价交换类型本期为占位，交易接口返回
     /// <see cref="ShopTradeFailReason.NotSupported"/>。</para>
     /// </summary>
-    public class ShopRuntimeManager : InventorySystemSingleton<ShopRuntimeManager>
+    public class ShopRuntimeManager
+        : InventorySystemSingleton<ShopRuntimeManager>, IInventorySaveable<ShopRuntimeState>
     {
         /// <summary>shopId → 每玩家运行时状态（交易进度）。按需创建。</summary>
         private readonly Dictionary<string, ShopRuntimeState> _shopStates
@@ -433,7 +434,7 @@ namespace Ale.Inventory.Runtime
 
         #region 存档
 
-        /// <summary>获取全部商店运行时进度的深拷贝（由游戏层 SaveManager 序列化）。</summary>
+        /// <inheritdoc cref="IInventorySaveable{TState}.GetSaveData"/>
         public List<ShopRuntimeState> GetSaveData()
         {
             var result = new List<ShopRuntimeState>(_shopStates.Count);
@@ -442,7 +443,7 @@ namespace Ale.Inventory.Runtime
             return result;
         }
 
-        /// <summary>从存档数据恢复商店运行时进度（覆盖当前内存状态）。</summary>
+        /// <inheritdoc cref="IInventorySaveable{TState}.LoadSaveData"/>
         public void LoadSaveData(List<ShopRuntimeState> data)
         {
             _shopStates.Clear();
@@ -454,7 +455,7 @@ namespace Ale.Inventory.Runtime
             }
         }
 
-        /// <summary>清空全部商店进度（如开始新游戏）。</summary>
+        /// <inheritdoc cref="IInventorySaveable.ResetAll"/>
         public void ResetAll() => _shopStates.Clear();
 
         #endregion

@@ -20,7 +20,8 @@ namespace Ale.Inventory.Runtime
     /// <see cref="InventoryRuntimeManager"/>（装备 / 卸下会触发其 OnInventoryChanged，背包 UI 据此刷新）。
     /// 本管理器自身的 <see cref="OnEquipmentChanged"/> 供装备 UI 刷新。</para>
     /// </summary>
-    public class EquipmentRuntimeManager : InventorySystemSingleton<EquipmentRuntimeManager>
+    public class EquipmentRuntimeManager
+        : InventorySystemSingleton<EquipmentRuntimeManager>, IInventorySaveable<RuntimeEquipmentState>
     {
         /// <summary>装备组 ID → (槽位 ID → 已装备道具 ID)。按需创建；空槽不入字典。</summary>
         private readonly Dictionary<string, Dictionary<string, string>> _equipped
@@ -529,7 +530,7 @@ namespace Ale.Inventory.Runtime
 
         #region 存档
 
-        /// <summary>获取全部装备组已装备状态的深拷贝（由游戏层 SaveManager 序列化）。</summary>
+        /// <inheritdoc cref="IInventorySaveable{TState}.GetSaveData"/>
         public List<RuntimeEquipmentState> GetSaveData()
         {
             var result = new List<RuntimeEquipmentState>(_equipped.Count);
@@ -544,7 +545,7 @@ namespace Ale.Inventory.Runtime
             return result;
         }
 
-        /// <summary>从存档数据恢复已装备状态（覆盖当前内存状态）。</summary>
+        /// <inheritdoc cref="IInventorySaveable{TState}.LoadSaveData"/>
         public void LoadSaveData(List<RuntimeEquipmentState> data)
         {
             _equipped.Clear();
@@ -560,7 +561,7 @@ namespace Ale.Inventory.Runtime
             }
         }
 
-        /// <summary>清空全部已装备状态（如开始新游戏）。</summary>
+        /// <inheritdoc cref="IInventorySaveable.ResetAll"/>
         public void ResetAll() => _equipped.Clear();
 
         #endregion

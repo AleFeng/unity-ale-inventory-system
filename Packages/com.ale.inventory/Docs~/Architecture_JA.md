@@ -205,6 +205,8 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 
 ショップ更新に必要な 3 種の時計（ゲーム / ローカル / サーバー時間）は `InventoryRuntimeManager.RegisterTimeGetter` で登録し、未登録のときはシステムのローカル時間にフォールバックします。
 
+**セーブ契約（`IInventorySaveable<TState>`）**：セーブ対象の状態を持つ 4 つのマネージャ（倉庫 / 装備 / ショップ / スキル）がこのインターフェースを実装し、ゲーム層の SaveManager がこれを呼びます。契約は 3 点を固定します：`GetSaveData` は**ディープコピー**を返す。`LoadSaveData` は**マージではなく上書き**（セーブに無くメモリに在るエントリを残してはいけない）。3 つのメソッドはいずれも変更イベントを**発火しない** —— 一括差し替えの後は呼び出し側が UI を更新します。非ジェネリックの `IInventorySaveable` は `ResetAll` のみを持ち、「ニューゲーム」で全システムを一括リセットできます。各システムのセーブ型は異なる（`RuntimeInventoryState` / `RuntimeEquipmentState` / `ShopRuntimeState` / `RuntimeLearnedSkillState`）ため、統一するのは契約のみで、ストレージ実装は統一しません。
+
 ### アセンブリ分割
 
 | asmdef | 内容 |

@@ -206,6 +206,8 @@ The runtime logic of the shop and crafting systems is handled by two **lightweig
 
 The three clocks needed for shop refresh (game / local / server time) are registered via `InventoryRuntimeManager.RegisterTimeGetter`, falling back to system local time when unregistered.
 
+**Save contract (`IInventorySaveable<TState>`)**: the four managers that hold saveable state (inventory / equipment / shop / skill) all implement this interface, which the game layer's SaveManager calls into. It pins down three things: `GetSaveData` returns a **deep copy**; `LoadSaveData` is **replace, not merge** (entries present in memory but absent from the save must not survive); none of the three methods fires a change event — after a bulk state swap the caller refreshes the UI itself. The non-generic `IInventorySaveable` carries only `ResetAll`, so "new game" can reset every system in one loop. Each system's save type differs (`RuntimeInventoryState` / `RuntimeEquipmentState` / `ShopRuntimeState` / `RuntimeLearnedSkillState`), so only the contract is unified — not the storage implementation.
+
 ### Assembly Division
 
 | asmdef | Content |

@@ -193,6 +193,8 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 
 商店刷新所需的三种时钟（游戏 / 本地 / 服务器时间）由 `InventoryRuntimeManager.RegisterTimeGetter` 注册，未注册回退系统本地时间。
 
+**存档契约（`IInventorySaveable<TState>`）**：持有可存档状态的四个管理器（仓库 / 装备 / 商店 / 技能）都实现此接口，游戏层的 SaveManager 据此调用。契约钉死三点：`GetSaveData` 返回**深拷贝**；`LoadSaveData` 为**覆盖语义**而非合并（存档里没有、内存里有的条目不得残留）；三个方法都**不触发**变更事件，批量替换后由调用方自行刷新界面。非泛型的 `IInventorySaveable` 只含 `ResetAll`，供「开新游戏」统一遍历重置。各系统的存档数据类型不同（`RuntimeInventoryState` / `RuntimeEquipmentState` / `ShopRuntimeState` / `RuntimeLearnedSkillState`），故仅统一契约、不统一存储实现。
+
 > **静态状态的跨播放重置（1.5.0）**：上述轻量单例与 MonoBehaviour 单例的实例、以及 `IsQuitting` 标记都是静态字段。
 > 关闭 Domain Reload（Project Settings → Editor → Enter Play Mode Options）时静态字段会跨播放会话残留，
 > 上一次 Play 的装备 / 商店进度会被带进下一次。`[RuntimeInitializeOnLoadMethod]` 无法标注在泛型类型的方法上，

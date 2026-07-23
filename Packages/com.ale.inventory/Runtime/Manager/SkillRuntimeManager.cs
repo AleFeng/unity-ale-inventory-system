@@ -13,7 +13,8 @@ namespace Ale.Inventory.Runtime
     /// 「角色已学技能」来源（<see cref="ESkillSource.Character"/>）则读取本管理器。
     /// 已学技能变化时触发 <see cref="OnLearnedChanged"/> 供技能 UI 刷新。</para>
     /// </summary>
-    public class SkillRuntimeManager : InventorySystemSingleton<SkillRuntimeManager>
+    public class SkillRuntimeManager
+        : InventorySystemSingleton<SkillRuntimeManager>, IInventorySaveable<RuntimeLearnedSkillState>
     {
         /// <summary>角色 ID → 已学技能 ID 列表（保持学习顺序、去重）。按需创建；无已学技能的角色不入字典。</summary>
         private readonly Dictionary<string, List<string>> _learned
@@ -101,7 +102,7 @@ namespace Ale.Inventory.Runtime
 
         #region 存档
 
-        /// <summary>获取全部角色已学技能状态的深拷贝（由游戏层 SaveManager 序列化）。</summary>
+        /// <inheritdoc cref="IInventorySaveable{TState}.GetSaveData"/>
         public List<RuntimeLearnedSkillState> GetSaveData()
         {
             var result = new List<RuntimeLearnedSkillState>(_learned.Count);
@@ -114,7 +115,7 @@ namespace Ale.Inventory.Runtime
             return result;
         }
 
-        /// <summary>从存档数据恢复已学技能状态（覆盖当前内存状态）。</summary>
+        /// <inheritdoc cref="IInventorySaveable{TState}.LoadSaveData"/>
         public void LoadSaveData(List<RuntimeLearnedSkillState> data)
         {
             _learned.Clear();
@@ -130,7 +131,7 @@ namespace Ale.Inventory.Runtime
             }
         }
 
-        /// <summary>清空全部角色的已学技能（如开始新游戏）。</summary>
+        /// <inheritdoc cref="IInventorySaveable.ResetAll"/>
         public void ResetAll() => _learned.Clear();
 
         #endregion
