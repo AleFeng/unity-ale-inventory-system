@@ -551,11 +551,17 @@ namespace Ale.Inventory.Runtime
         }
 
         /// <summary>
-        /// 从存档数据恢复运行时状态（在 Init() 之后调用）。
-        /// 存档中存在的仓库 ID 覆盖当前状态；数据库中有但存档中没有的仓库保持空状态。
+        /// 从存档数据恢复运行时状态（在 Init() 之后调用）。<b>覆盖语义</b>：先清空并重建所有仓库的空骨架
+        /// （固定容量仓库恢复预分配空槽），再叠加存档中的槽位——未在存档中的仓库因此回到初始空态。
+        /// 与 <see cref="EquipmentRuntimeManager.LoadSaveData"/> / <see cref="ShopRuntimeManager.LoadSaveData"/> 一致；
+        /// 差别仅在仓库有「按容量预分配空槽」的概念，故清空后需重建空骨架而非直接留空。
         /// </summary>
         public void LoadSaveData(List<RuntimeInventoryState> data)
         {
+            // 覆盖当前内存状态：清空 → 重建所有仓库空骨架 → 叠加存档。
+            _inventoryStates.Clear();
+            BuildEmptyStates(skipExisting: false);
+
             if (data == null) return;
 
             foreach (var saved in data)
