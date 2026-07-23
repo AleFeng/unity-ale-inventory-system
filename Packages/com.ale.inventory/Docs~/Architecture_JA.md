@@ -98,7 +98,7 @@ InventoryDatabase (SO)  ──編集──▶  依然として SO
 DTO 層はデータモデルと 1 対 1 でミラーする平坦な構造で、唯一の違いはオブジェクト参照を GUID 文字列で保持する点です。
 `InventoryDtoModels.cs` には DTO 定義のみを置き、双方向マッピングは `InventoryDtoMapper*.cs` にシステム別の partial として、バイナリブロックの読み書きも同様に `InventoryBinarySerializer*.cs` に分割されています。
 
-**フォーマットバージョン**（`InventoryDtoMapper.Version`）：v5 から属性値が `curveData`（AnimationCurve）を持ち、**v6 からエクスポートが 倉庫 / 整理オプション / 数値フォーマット / ショップ をカバー**し、アイテムシステムでこれまで黙って捨てられていたフィールド（テンプレートのカラードット、`weight` / `stackLimit` / `hideInInventory`、機能タグの UI 表示設定）も補完されました。バイナリ読み込みはヘッダのバージョンに応じて新規ブロックをスキップするため、v5 でエクスポートした `.bytes` も引き続きインポートできます。
+**フォーマットバージョン**（`InventoryDtoMapper.Version`）：v5 から属性値が `curveData`（AnimationCurve）を持ち、**v6 からエクスポートがデータベースの全 20 リストをカバー**（倉庫 / 整理オプション / 数値フォーマット / ショップ / クラフト / 装備 / スキルを追加）し、アイテムシステムでこれまで黙って捨てられていたフィールド（テンプレートのカラードット、`weight` / `stackLimit` / `hideInInventory`、機能タグの UI 表示設定）も補完されました。バイナリ読み込みはヘッダのバージョンに応じて新規ブロックをスキップするため、v5 でエクスポートした `.bytes` も引き続きインポートできます。
 
 ---
 
@@ -225,6 +225,6 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 2. `Editor/` 以下にサブディレクトリを新規作成し、3 カラムパネルを実装（`AttributeDefinitionListDrawer` と `AttributeFieldDrawer` を再利用）；
 3. `InventoryEditorWindow` に新しいタブを登録（+ ID 重複スキャン / `RebuildAllAttributes`）；
 4. `InventoryDataManager` に対応するクエリメソッドを追加。ランタイムロジックは軽量シングルトン（`InventorySystemSingleton<T>`）が担う；
-5. `InventoryDtoModels.cs` に DTO ミラーを追加し、あわせて `InventoryDtoMapper.<システム>.cs` / `InventoryBinarySerializer.<システム>.cs` の partial を 1 組作成します（倉庫 / ショップの組をそのまま真似ればよい）—— さもないとそのシステムのデータはエクスポート時に黙って捨てられます。DTO エクスポートは現在 アイテム / 倉庫 / 整理オプション / 数値フォーマット / ショップ をカバーし、クラフト / 装備 / スキルは未対応です。
+5. `InventoryDtoModels.cs` に DTO ミラーを追加し、あわせて `InventoryDtoMapper.<システム>.cs` / `InventoryBinarySerializer.<システム>.cs` の partial を 1 組作成（既存 5 組のいずれかを真似ればよい）し、`ToDto` / `FromDto` とバイナリの Export / Import に新ブロックを繋ぎます —— **これを忘れるとそのシステムのデータはエクスポート時に黙って捨てられます**。グループタグを持つシステムは `GroupTagDto` とジェネリックの `FromDto<T>` をそのまま再利用できます。
 
 属性システム（`AttributeValue / AttributeDefinition / EFieldType`）、列挙型、機能タグ、DTO シリアライズフレームワークはいずれも直接再利用できます。

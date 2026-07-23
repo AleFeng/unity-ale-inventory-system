@@ -98,7 +98,7 @@ InventoryDatabase (SO)  ──edit──▶  still an SO
 The DTO layer is a flat structure that mirrors the data model one-to-one, the only difference being that object references are carried as GUID strings.
 `InventoryDtoModels.cs` holds only the DTO definitions; the two-way mapping lives in `InventoryDtoMapper*.cs`, split into per-system partials, and the binary block read/write is split the same way across `InventoryBinarySerializer*.cs`.
 
-**Format version** (`InventoryDtoMapper.Version`): since v5 attribute values carry `curveData` (AnimationCurve); **since v6 the export covers inventories / sort options / number formats / shops**, and fills in the Item System fields that used to be dropped silently (template colour, `weight` / `stackLimit` / `hideInInventory`, function-tag UI settings). The binary reader skips the new blocks based on the version in the header, so `.bytes` exported by v5 still imports.
+**Format version** (`InventoryDtoMapper.Version`): since v5 attribute values carry `curveData` (AnimationCurve); **since v6 the export covers all 20 database lists** (adding inventories / sort options / number formats / shops / crafting / equipment / skills), and fills in the Item System fields that used to be dropped silently (template colour, `weight` / `stackLimit` / `hideInInventory`, function-tag UI settings). The binary reader skips the new blocks based on the version in the header, so `.bytes` exported by v5 still imports.
 
 ---
 
@@ -226,6 +226,6 @@ When adding a new subsystem (skill, etc.) (the shop / crafting / equipment syste
 2. Create a subfolder under `Editor/`, implementing the three-column panels (reusing `AttributeDefinitionListDrawer` and `AttributeFieldDrawer`);
 3. Register the new tab in `InventoryEditorWindow` (+ duplicate-ID scanning / `RebuildAllAttributes`);
 4. Add the corresponding query method in `InventoryDataManager`; runtime logic is handled by a lightweight singleton (`InventorySystemSingleton<T>`);
-5. Add a DTO mirror in `InventoryDtoModels.cs` plus a matching pair of partials `InventoryDtoMapper.<System>.cs` / `InventoryBinarySerializer.<System>.cs` (copy the inventory / shop pair) — otherwise that system's data is silently dropped on export. DTO export currently covers items / inventories / sort options / number formats / shops; crafting / equipment / skills are not included yet.
+5. Add a DTO mirror in `InventoryDtoModels.cs` plus a matching pair of partials `InventoryDtoMapper.<System>.cs` / `InventoryBinarySerializer.<System>.cs` (copy any of the five existing pairs), then hook the new block into `ToDto` / `FromDto` and the binary Export / Import — **skip this and that system's data is silently dropped on export**. Systems with group tags can reuse `GroupTagDto` and the generic `FromDto<T>`.
 
 The attribute system (`AttributeValue / AttributeDefinition / EFieldType`), enum types, function tags, and the DTO serialization framework can all be reused directly.

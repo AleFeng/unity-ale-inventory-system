@@ -8,12 +8,14 @@ namespace Ale.Inventory.Runtime.Serialization
     /// 仓库系统二进制序列化器。导出：DB -> 紧凑 byte[]（带魔数与版本头）；导入：byte[] -> 新的 InventoryDatabase 实例。
     /// 与 JSON 一样为单向导出格式，适合正式发布时使用。
     ///
-    /// <para><b>向后兼容：</b>v6 起在道具系统数据块之后追加了仓库 / 商店数据块，并给道具系统的三类条目
-    /// 补了若干字段。读取时按文件头里的版本号跳过这些新增部分，因此 v5 及更早导出的 <c>.bytes</c> 仍可正常导入
-    /// （新增字段取运行时默认值）。反之新版导出的文件旧版读不了——单向导出格式，按需重新导出即可。</para>
+    /// <para><b>向后兼容：</b>v6 起在道具系统数据块之后追加了 仓库 / 商店 / 制作 / 装备 / 技能 五个数据块，
+    /// 并给道具系统的三类条目补了若干字段。读取时按文件头里的版本号跳过这些新增部分，因此 v5 及更早导出的
+    /// <c>.bytes</c> 仍可正常导入（新增字段取运行时默认值）。反之新版导出的文件旧版读不了——单向导出格式，
+    /// 按需重新导出即可。</para>
     ///
     /// <para>本分部承载：顶层 Export / Import、道具系统的块读写、以及各分部共用的基础读写辅助。
-    /// 其余系统见 <c>InventoryBinarySerializer.Inventory.cs</c> / <c>InventoryBinarySerializer.Shop.cs</c>。</para>
+    /// 其余系统各有一个分部文件：<c>InventoryBinarySerializer.Inventory.cs</c> / <c>.Shop.cs</c> /
+    /// <c>.Crafting.cs</c> / <c>.Equipment.cs</c> / <c>.Skill.cs</c>。</para>
     /// </summary>
     public static partial class InventoryBinarySerializer
     {
@@ -39,9 +41,12 @@ namespace Ale.Inventory.Runtime.Serialization
                 WriteArray(w, dto.itemTemplates, WriteItemTemplate);
                 WriteArray(w, dto.items, WriteItem);
 
-                // v6 追加：仓库 / 商店 数据块 + 本地化表集合 GUID
+                // v6 追加：其余五个系统的数据块 + 本地化表集合 GUID
                 WriteInventoryBlock(w, dto);
                 WriteShopBlock(w, dto);
+                WriteCraftingBlock(w, dto);
+                WriteEquipmentBlock(w, dto);
+                WriteSkillBlock(w, dto);
                 WriteStr(w, dto.localizationTableCollectionGuid);
             }
             return stream.ToArray();
@@ -168,6 +173,9 @@ namespace Ale.Inventory.Runtime.Serialization
             {
                 ReadInventoryBlock(r, dto);
                 ReadShopBlock(r, dto);
+                ReadCraftingBlock(r, dto);
+                ReadEquipmentBlock(r, dto);
+                ReadSkillBlock(r, dto);
                 dto.localizationTableCollectionGuid = ReadStr(r);
             }
 
@@ -280,7 +288,27 @@ namespace Ale.Inventory.Runtime.Serialization
         private static AttributeEntryDto[] ReadEntries(BinaryReader r)
             => ReadArray(r, br => new AttributeEntryDto { id = ReadStr(br), value = ReadValue(br) });
 
-        /// <summary>整理条件数组（field + ascending）——仓库 / 商店共用。</summary>
+        /// <summary>分组标签（id + 显示名 + 描述 + 色点）——制作 / 装备 / 技能三系统共用。</summary>
+        private static void WriteGroupTag(BinaryWriter w, GroupTagDto t)
+        {
+            WriteStr(w, t.id);
+            WriteValue(w, t.displayName);
+            WriteValue(w, t.description);
+            WriteFloatArray(w, t.color);
+        }
+
+        private static GroupTagDto ReadGroupTag(BinaryReader r)
+        {
+            return new GroupTagDto
+            {
+                id          = ReadStr(r),
+                displayName = ReadValue(r),
+                description = ReadValue(r),
+                color       = ReadFloatArray(r)
+            };
+        }
+
+        /// <summary>整理条件数组（field + ascending）——仓库 / 商店 / 制作 / 装备共用。</summary>
         private static void WriteSortPriorities(BinaryWriter w, SortPriorityDto[] a)
             => WriteArray(w, a, (bw, sp) => { WriteStr(bw, sp.field); bw.Write(sp.ascending); });
 

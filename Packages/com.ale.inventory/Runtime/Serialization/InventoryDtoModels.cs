@@ -32,6 +32,21 @@ namespace Ale.Inventory.Runtime.Serialization
         public ShopTemplateDto[] shopTemplates;
         public ShopDto[]         shops;
 
+        // ── 制作系统（v6 新增）────────────────────────────────────────────────────
+        public GroupTagDto[]                  craftingGroupTags;
+        public CraftingBlueprintTemplateDto[] craftingBlueprintTemplates;
+        public CraftingBlueprintDto[]         craftingBlueprints;
+
+        // ── 装备系统（v6 新增）────────────────────────────────────────────────────
+        public GroupTagDto[]               equipmentGroupTags;
+        public EquipmentGroupTemplateDto[] equipmentGroupTemplates;
+        public EquipmentGroupDto[]         equipmentGroups;
+
+        // ── 技能系统（v6 新增）────────────────────────────────────────────────────
+        public GroupTagDto[]     skillGroupTags;
+        public SkillTemplateDto[] skillTemplates;
+        public SkillDto[]        skills;
+
         /// <summary>关联的 Localization String Table 集合的 SharedTableData GUID（v6 新增；空 = 未关联）。</summary>
         public string localizationTableCollectionGuid;
     }
@@ -83,6 +98,22 @@ namespace Ale.Inventory.Runtime.Serialization
         /// <summary>模板色点，RGBA 四个 0-1 浮点（v6 新增）。缺省（v5 及更早的数据）按 <c>Color.gray</c> 处理。</summary>
         public float[] color;
         public AttributeDefinitionDto[] attributes;
+    }
+
+    /// <summary>
+    /// 三大系统分组标签共有的四项（对应运行时的 <see cref="GroupTag"/>）：ID、显示名、描述、列表色点。
+    /// 制作 / 装备 / 技能的分组标签在数据上完全同形，故三者共用本 DTO（各自一个数组，互不混淆）。
+    /// </summary>
+    [Serializable]
+    public class GroupTagDto
+    {
+        public string id;
+        /// <summary>显示名（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto displayName;
+        /// <summary>描述（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto description;
+        /// <summary>列表色点，RGBA 四个 0-1 浮点。缺省按 <c>Color.gray</c> 处理。</summary>
+        public float[] color;
     }
 
     #endregion
@@ -319,6 +350,167 @@ namespace Ale.Inventory.Runtime.Serialization
         public SortPriorityDto[] sortPriorities;
         public SortPriorityDto[] sortTiebreakers;
         public ShopCommodityGroupDto[] groups;
+        /// <summary>来自模板的自定义属性值。</summary>
+        public AttributeEntryDto[] values;
+    }
+
+    #endregion
+
+    #region 制作系统
+
+    [Serializable]
+    public class CraftingItemAmountDto
+    {
+        public string itemId;
+        public int    count;
+    }
+
+    [Serializable]
+    public class CraftingAttributeDisplayDto
+    {
+        public string label;
+        public string attrId;
+    }
+
+    [Serializable]
+    public class CraftingBlueprintTemplateDto : ConfigTemplateDto
+    {
+        public float  craftTime;
+        public int    maxCraftCount;
+        public string[] craftInventoryRefs;
+        public string numberFormatRef;
+        public SortPriorityDto[] sortPriorities;
+        public SortPriorityDto[] sortTiebreakers;
+        public CraftingAttributeDisplayDto[] attributeDisplays;
+    }
+
+    [Serializable]
+    public class CraftingBlueprintDto
+    {
+        public string id;
+        public string templateRef;
+        /// <summary>显示名（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto displayText;
+        /// <summary>描述（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto descriptionText;
+        public string primaryGroupTag;
+        public string[] secondaryGroupTags;
+        public CraftingItemAmountDto[] outputs;
+        public CraftingItemAmountDto[] inputs;
+        public float  craftTime;
+        public int    maxCraftCount;
+        public string[] craftInventoryRefs;
+        public string numberFormatRef;
+        public CraftingAttributeDisplayDto[] attributeDisplays;
+        /// <summary>来自模板的自定义属性值。</summary>
+        public AttributeEntryDto[] values;
+    }
+
+    #endregion
+
+    #region 装备系统
+
+    [Serializable]
+    public class EquipmentSlotFilterDto
+    {
+        public string attrId;
+        public AttributeValueDto value;
+    }
+
+    [Serializable]
+    public class EquipmentSlotDto
+    {
+        public string id;
+        public string displayName;
+        public EquipmentSlotFilterDto[] filters;
+    }
+
+    [Serializable]
+    public class EquipmentEnumConstraintDto
+    {
+        public string enumTypeRef;
+        public int[]  allowedValues;
+    }
+
+    [Serializable]
+    public class EquipmentSlotListDto
+    {
+        public string id;
+        public string displayName;
+        public string description;
+        public string[] requiredTags;
+        public EquipmentEnumConstraintDto[] enumConstraints;
+        public EquipmentSlotDto[] slots;
+    }
+
+    [Serializable]
+    public class EquipmentAttributeDisplayDto
+    {
+        public string attrId;
+        public string groupTag;
+        /// <summary>显示名覆盖（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto label;
+        public string enumLabelAttrId;
+    }
+
+    [Serializable]
+    public class EquipmentGroupTemplateDto : ConfigTemplateDto
+    {
+        public string[] equipmentInventoryRefs;
+        public EquipmentSlotListDto[] slotLists;
+        public EquipmentAttributeDisplayDto[] attributeDisplays;
+        public SortPriorityDto[] sortPriorities;
+        public SortPriorityDto[] sortTiebreakers;
+    }
+
+    [Serializable]
+    public class EquipmentGroupDto
+    {
+        public string id;
+        public string templateRef;
+        /// <summary>显示名（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto displayNameText;
+        /// <summary>描述（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto descriptionText;
+        public string[] equipmentInventoryRefs;
+        public EquipmentSlotListDto[] slotLists;
+        public EquipmentAttributeDisplayDto[] attributeDisplays;
+        public SortPriorityDto[] sortPriorities;
+        public SortPriorityDto[] sortTiebreakers;
+        /// <summary>来自模板的自定义属性值。</summary>
+        public AttributeEntryDto[] values;
+    }
+
+    #endregion
+
+    #region 技能系统
+
+    [Serializable]
+    public class SkillTemplateDto : ConfigTemplateDto
+    {
+        /// <summary>默认显示名（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto displayText;
+        /// <summary>默认描述（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto descriptionText;
+        /// <summary>默认图标的 GUID / Addressable 地址（约定同 <see cref="AttributeValueDto.objGuids"/>）。</summary>
+        public string iconGuid;
+        public string primaryGroupTag;
+        public string[] secondaryGroupTags;
+    }
+
+    [Serializable]
+    public class SkillDto
+    {
+        public string id;
+        public string templateRef;
+        /// <summary>显示名（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto displayText;
+        /// <summary>描述（Text：纯文本 fallback + 本地化引用）。</summary>
+        public AttributeValueDto descriptionText;
+        /// <summary>图标的 GUID / Addressable 地址（约定同 <see cref="AttributeValueDto.objGuids"/>）。</summary>
+        public string iconGuid;
+        public string primaryGroupTag;
+        public string[] secondaryGroupTags;
         /// <summary>来自模板的自定义属性值。</summary>
         public AttributeEntryDto[] values;
     }
