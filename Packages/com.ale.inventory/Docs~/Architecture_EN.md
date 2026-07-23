@@ -185,7 +185,11 @@ InventoryRuntimeManager (MonoBehaviour singleton)
 > sorting each build one `SortLookup` up front (sort-option ignore lists, attribute definitions, item
 > templates, enum types, function-tag order), reducing in-comparator lookups to O(1). The lookup lives
 > only for the duration of that one sort and is then discarded, so it can never go stale.
-> The public signatures of `CompareSlots` / `CompareByField` etc. are unchanged and now delegate to it.
+> All sorting lives in `InventorySortService` (static, no instance state). **As of 1.6.0** the `public static`
+> forwards kept on `InventoryRuntimeManager` for project-layer compatibility (`SortSlots` / `SortByItemId` /
+> `CompareSlots` / `CompareByField` / `IsIgnoredByField` / `FindAttrDef` / `ContainsStr` / `GetTagOrder`)
+> have been removed — call `InventorySortService.Xxx` directly. The instance method
+> `InventoryRuntimeManager.SortInventory`, which writes runtime state, is unaffected.
 
 ### Subsystem Runtime Managers
 

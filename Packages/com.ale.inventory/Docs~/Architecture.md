@@ -181,7 +181,10 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 > **排序查表（1.5.0）**：`SortInventory` / `SortSlots` / `SortByItemId` 与 UI 列表的显示排序，
 > 在排序前构建一份 `SortLookup`（整理选项忽略列表、属性字段定义、道具模板、枚举类型、功能标签序号），
 > 使比较器内的查找降到 O(1)。该查表只在单次排序期间存活、用完即弃，因此不存在缓存过期问题。
-> `CompareSlots` / `CompareByField` 等公开签名不变，内部为薄封装。
+> 排序实现全部位于 `InventorySortService`（静态、无实例状态）。**1.6.0 起**，`InventoryRuntimeManager` 上
+> 为兼容项目层保留的 `public static` 排序转发（`SortSlots` / `SortByItemId` / `CompareSlots` /
+> `CompareByField` / `IsIgnoredByField` / `FindAttrDef` / `ContainsStr` / `GetTagOrder`）已移除，
+> 请直接调用 `InventorySortService.Xxx`。写运行时状态的 `InventoryRuntimeManager.SortInventory`（实例方法）不受影响。
 
 ### 子系统运行时管理器
 

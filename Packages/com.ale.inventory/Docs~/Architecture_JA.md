@@ -183,8 +183,11 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 > **ソート用ルックアップ（1.5.0）**：`SortInventory` / `SortSlots` / `SortByItemId` と UI リストの表示ソートは、
 > ソート前に `SortLookup` を 1 つ構築し（整理オプションの無視リスト、属性フィールド定義、アイテムテンプレート、
 > 列挙型、機能タグの序数）、比較器内の検索を O(1) に落とします。このルックアップは 1 回のソートの間だけ存在して
-> 破棄されるため、キャッシュが古くなる問題は起きません。`CompareSlots` / `CompareByField` などの公開シグネチャは
-> 変更されておらず、内部で薄いラッパーとして委譲します。
+> 破棄されるため、キャッシュが古くなる問題は起きません。ソート実装はすべて `InventorySortService`（静的・インスタンス状態なし）にあります。
+> **1.6.0 より**、プロジェクト層互換のために `InventoryRuntimeManager` に残していた `public static` フォワード
+> （`SortSlots` / `SortByItemId` / `CompareSlots` / `CompareByField` / `IsIgnoredByField` / `FindAttrDef` /
+> `ContainsStr` / `GetTagOrder`）は削除されました —— `InventorySortService.Xxx` を直接呼んでください。
+> ランタイム状態を書き換えるインスタンスメソッド `InventoryRuntimeManager.SortInventory` は影響を受けません。
 
 ### サブシステムのランタイムマネージャー
 

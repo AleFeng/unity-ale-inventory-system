@@ -108,7 +108,8 @@ Available sort fields:
 - StringIntPair → compare only its Int value;
 - String → special handling: by length first, then lexicographically.
 
-Underlying implementation: `InventoryRuntimeManager.CompareSlots` → `CompareByField` → `GetAttrNumeric` (→ `AttributeValue.ToComparableNumber()`).
+Underlying implementation: `InventorySortService.CompareSlots` → `CompareByField` → `GetAttrNumeric` (→ `AttributeValue.ToComparableNumber()`).
+(As of 1.6.0 the same-named `public static` compatibility forwards on `InventoryRuntimeManager` have been removed — call `InventorySortService` directly.)
 
 > Each "sort option" carries two built-in fields: **name** (`displayName`, Text: plain-text fallback + optional localization reference, read as the display name in the sort dropdown) and **ignore IDs** (`ignoreIds`, a list of entry IDs skipped during sorting, 0 by default, drag-add/removable; the semantics depend on the field — sort by item ID = item IDs, function tab = tag names, sort by attribute = attribute values). Edit them in the "Warehouse System → Sort Options" sub-tab; at runtime they're read via `SortOption.ResolveDisplayName` / `SortOption.EffectiveIgnoreIds`. Older versions stored these two as generic "attribute field definition" values; they are auto-migrated to the built-in fields the first time you open that panel.
 

@@ -108,7 +108,8 @@
 - StringIntPair → 仅比较其中的 Int 值；
 - String → 特殊处理：先按长度、再按字典序。
 
-底层实现：`InventoryRuntimeManager.CompareSlots` → `CompareByField` → `GetAttrNumeric`（→ `AttributeValue.ToComparableNumber()`）。
+底层实现：`InventorySortService.CompareSlots` → `CompareByField` → `GetAttrNumeric`（→ `AttributeValue.ToComparableNumber()`）。
+（1.6.0 起 `InventoryRuntimeManager` 上的同名 `public static` 兼容转发已移除，请直接调用 `InventorySortService`。）
 
 > 每个「整理选项」带两个内置字段：**名称**（`displayName`，Text：纯文本 fallback + 可选本地化引用，供排序下拉读取显示名）与**忽略ID**（`ignoreIds`，排序时跳过的条目 ID 列表，默认 0 条，可拖拽增删；语义随字段而定——按道具ID排序=道具ID、功能页签=标签名、按属性排序=属性值）。在「仓库系统 → 整理选项」子页签中编辑，运行时经 `SortOption.ResolveDisplayName` / `SortOption.EffectiveIgnoreIds` 读取。旧版把这两项存为通用「属性字段定义」值的数据，首次打开该面板时会自动迁移到内置字段。
 

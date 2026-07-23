@@ -6,6 +6,50 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [未发布] 1.6.0
+
+> **本节随开发逐步补充**，发布前需通读补全（结构重构一轮的其余条目尚未录入）。
+> 已确定影响使用者的两项——**破坏性 API 移除**与**导出格式升版**——先记录在此。
+
+### ⚠️ 破坏性
+
+- **移除 `InventoryRuntimeManager` 上的 `public static` 排序兼容转发**：`SortSlots` / `SortByItemId` /
+  `CompareSlots` / `CompareByField` / `IsIgnoredByField` / `FindAttrDef` / `ContainsStr` / `GetTagOrder`。
+  这批成员是 1.5.0 把排序实现迁到 `InventorySortService` 时刻意保留的薄封装，现已无包内调用。
+  **迁移**：把调用处的 `InventoryRuntimeManager.Xxx(...)` 改为 `InventorySortService.Xxx(...)`，参数与语义完全一致。
+  写运行时状态并触发事件的**实例**方法 `InventoryRuntimeManager.SortInventory` 不受影响，无需改动。
+
+### 变更
+
+- **导出格式版本 v5 → v6，覆盖数据库全部 20 个列表**：此前 JSON / 二进制导出只含
+  枚举类型 / 功能标签 / 道具模板 / 道具四项，其余 16 个列表（仓库、整理选项、数字格式、商店、制作、装备、技能）
+  **被静默丢弃**；道具系统自身也漏了模板色点、`weight` / `stackLimit` / `hideInInventory`、功能标签的 UI 显示配置。
+  现已全部纳入，并新增 `localizationTableCollectionGuid`。
+  - **向后兼容**：二进制读取按文件头版本号跳过新增数据块，v5 导出的 `.bytes` 仍可正常导入（新增字段取默认值）；
+    反之 v6 导出的文件旧版本读不了——单向导出格式，升级后重新导出即可。
+  - **`IS_ADDRESSABLE` 下的行为变化**：功能标签的背景 Sprite 与技能 / 技能模板的图标现在也会经解析器登记进
+    Addressable 分组，未登记的资源会在导出时新增「未登记」告警。
+
+### 修复
+
+- **DemoWizard 生成功能栈溢出**：`BeginPrefab` 误写成调用自身，导致「生成」的任一入口都会
+  `StackOverflowException`（不可捕获，直接终止编辑器进程）。
+- **DemoWizard 重新生成会打断资产引用**：预制体与数据库此前都是「先删除、再创建」，删除连带删掉 `.meta`，
+  资产 GUID 因此改变——单独重生成某个被依赖的预制体（如 `PF_UiwInventoryItemCell`）或数据库，会**静默打断**
+  依赖它的预制体的引用，而生成窗口的依赖对话框只向下遍历依赖、不会提示。现改为就地覆盖，GUID 保持不变。
+- **无整理栏时 `autoSort` 忽略各条件的升降序**：`UiwInventoryView` 在未接 `sortToolbar`（合法配置）时
+  把升降序一律当作降序，与基类 `UiwInventoryListBase` 的语义不一致。现改为保留各排序条件自身配置的 `ascending`。
+
+### 新增
+
+- **`InventoryRuntimeManager.ResetAll()`**：清空全部仓库运行时状态并重建为初始空态（固定容量仓库恢复预分配空槽），
+  补齐与 `EquipmentRuntimeManager` / `ShopRuntimeManager` 的对称缺口——此前开新游戏后仓库仍是上一局的内容。
+- **`IInventorySaveable<TState>` / `IInventorySaveable`**：持有存档状态的四个运行时管理器
+  （仓库 / 装备 / 商店 / 技能）统一实现，把「深拷贝、覆盖而非合并、不触发变更事件」的契约钉在一处；
+  非泛型部分只含 `ResetAll`，供游戏层「开新游戏」一次遍历重置全部系统。
+
+---
+
 ## [1.5.0] - 2026-07-23
 
 一轮以「修 Bug + 去性能热点 + 对齐文档」为主的维护版本。**含两项破坏性变更**（枚举标识符改名、商店交易进度存档键改造），升级前请先读本节末尾的「破坏性」与「升级指引」。

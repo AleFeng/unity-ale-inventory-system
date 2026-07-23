@@ -491,50 +491,6 @@ namespace Ale.Inventory.Runtime
 
         #endregion
 
-        #region 整理排序 兼容转发
-
-        // 排序实现已迁至 InventorySortService（见该类说明）。以下 public static 成员保留为薄转发，
-        // 使项目层既有的 InventoryRuntimeManager.Xxx 调用继续可用；包内请直接调用 InventorySortService。
-
-        /// <inheritdoc cref="InventorySortService.SortSlots"/>
-        public static void SortSlots(List<RuntimeItemSlot> slots, List<SortPriority> priorities, InventoryDatabase db)
-            => InventorySortService.SortSlots(slots, priorities, db);
-
-        /// <inheritdoc cref="InventorySortService.SortByItemId{T}"/>
-        public static void SortByItemId<T>(List<T> list, Func<T, string> itemIdSelector,
-            List<SortPriority> priorities, InventoryDatabase db)
-            => InventorySortService.SortByItemId(list, itemIdSelector, priorities, db);
-
-        /// <inheritdoc cref="InventorySortService.CompareSlots(RuntimeItemSlot,RuntimeItemSlot,List{SortPriority},InventoryDatabase)"/>
-        public static int CompareSlots(RuntimeItemSlot a, RuntimeItemSlot b,
-            List<SortPriority> priorities, InventoryDatabase db)
-            => InventorySortService.CompareSlots(a, b, priorities, db);
-
-        /// <inheritdoc cref="InventorySortService.CompareByField(RuntimeItemSlot,RuntimeItemSlot,string,bool,InventoryDatabase)"/>
-        public static int CompareByField(RuntimeItemSlot slotA, RuntimeItemSlot slotB,
-            string field, bool ascending, InventoryDatabase db)
-            => InventorySortService.CompareByField(slotA, slotB, field, ascending, db);
-
-        /// <inheritdoc cref="InventorySortService.IsIgnoredByField(AttributeEntry,string,IReadOnlyList{string},InventoryDatabase)"/>
-        public static bool IsIgnoredByField(AttributeEntry entry, string field,
-            IReadOnlyList<string> ignoreIds, InventoryDatabase db)
-            => InventorySortService.IsIgnoredByField(entry, field, ignoreIds, db);
-
-        /// <inheritdoc cref="InventorySortService.FindAttrDef"/>
-        public static AttributeDefinition FindAttrDef(string attrId, InventoryDatabase db)
-            => InventorySortService.FindAttrDef(attrId, db);
-
-        /// <inheritdoc cref="InventorySortService.ContainsStr"/>
-        public static bool ContainsStr(IReadOnlyList<string> list, string value)
-            => InventorySortService.ContainsStr(list, value);
-
-        /// <inheritdoc cref="InventorySortService.GetTagOrder(string,InventoryDatabase,IReadOnlyList{string})"/>
-        public static int GetTagOrder(string itemId, InventoryDatabase db, IReadOnlyList<string> ignoreIds)
-            => InventorySortService.GetTagOrder(itemId, db, ignoreIds);
-
-        #endregion
-
-        
         #region 存档
 
         /// <inheritdoc cref="IInventorySaveable{TState}.GetSaveData"/>
