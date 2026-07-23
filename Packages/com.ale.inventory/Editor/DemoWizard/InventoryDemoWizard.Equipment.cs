@@ -69,13 +69,8 @@ namespace Ale.Inventory.Editor
             var qTxt = AddText(qGo, string.Empty, 10, new Color(1f, 1f, 1f, 0.9f), TextAnchor.LowerRight);
             SetSerializedRef(comp, "countText", qTxt);
 
-            // HoverBorder（全覆盖，alpha=0）
-            var hoverGo = ChildGameObject("HoverBorder", root.transform);
-            Stretch(hoverGo.AddComponent<RectTransform>());
-            var hoverImg = hoverGo.AddComponent<Image>();
-            hoverImg.color = new Color(1f, 1f, 1f, 0f);
-            hoverImg.raycastTarget = false;
-            comp.hoverBorder = hoverImg;
+            // HoverBorder（全覆盖，alpha=0，不接收射线）
+            comp.hoverBorder = MakeHoverBorder(root.transform, new Color(1f, 1f, 1f, 0f), raycastTarget: false);
 
             // SelectedIndicator（选中边框，默认隐藏）
             var selGo = ChildGameObject("SelectedIndicator", root.transform);
@@ -149,13 +144,8 @@ namespace Ale.Inventory.Editor
             var qTxt = AddText(qGo, "9", 10, new Color(1f, 1f, 1f, 0.9f), TextAnchor.LowerRight);
             SetSerializedRef(comp, "countText", qTxt);
 
-            // HoverBorder
-            var hoverGo = ChildGameObject("HoverBorder", root.transform);
-            Stretch(hoverGo.AddComponent<RectTransform>());
-            var hoverImg = hoverGo.AddComponent<Image>();
-            hoverImg.color = new Color(1f, 1f, 1f, 0f);
-            hoverImg.raycastTarget = false;
-            comp.hoverBorder = hoverImg;
+            // HoverBorder（全覆盖，alpha=0，不接收射线）
+            comp.hoverBorder = MakeHoverBorder(root.transform, new Color(1f, 1f, 1f, 0f), raycastTarget: false);
 
             SavePrefab(root, path);
         }
@@ -337,23 +327,6 @@ namespace Ale.Inventory.Editor
             comp.groupHeaderPrefab = entryPrefab;   // 复用同一预制体作分组标题行（数值留空）
 
             SavePrefab(root, path);
-        }
-
-        /// <summary>装备 UI 用的简易文本按钮（Image + Button + 居中文本）。</summary>
-        static Button MakeEquipButton(string name, Transform parent, string label, Color bg)
-        {
-            var go = ChildGameObject(name, parent);
-            go.AddComponent<RectTransform>();
-            var img = go.AddComponent<Image>();
-            img.color = bg;
-            var btn = go.AddComponent<Button>();
-            btn.targetGraphic = img;
-            SetButtonColors(btn, bg, bg * 1.2f, bg * 0.8f);
-
-            var lblGo = ChildGameObject("Text", go.transform);
-            Stretch(lblGo.AddComponent<RectTransform>());
-            AddText(lblGo, label, 13, Color.white);
-            return btn;
         }
 
         /// <summary>

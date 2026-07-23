@@ -111,24 +111,9 @@ namespace Ale.Inventory.Editor
             cell.interactableGroup   = cg;
 
             // 图标 + 品质背景框（IconFrame 占据 HLG 槽位，内含品质底图 + 图标）
-            var frameGo = ChildGameObject("IconFrame", root.transform);
-            frameGo.AddComponent<RectTransform>();
-            SetLayoutElement(frameGo, minW: 44, prefW: 44, minH: 44, prefH: 44);
-
-            var qualityGo = ChildGameObject("QualityBackground", frameGo.transform);
-            Stretch(qualityGo.AddComponent<RectTransform>());
-            var qualityImg = qualityGo.AddComponent<Image>();
-            qualityImg.color = Color.white; qualityImg.preserveAspect = true;
-            qualityImg.sprite = LoadSprite(SpriteQualityPoor);
+            MakeIconFrame(root.transform, 44f, out var qualityImg, out var iconImg);
             cell.qualityBackground = qualityImg;
-
-            var iconGo = ChildGameObject("Icon", frameGo.transform);
-            var iconRt = iconGo.AddComponent<RectTransform>();
-            iconRt.anchorMin = Vector2.zero; iconRt.anchorMax = Vector2.one;
-            iconRt.offsetMin = new Vector2(4f, 4f); iconRt.offsetMax = new Vector2(-4f, -4f);
-            var iconImg = iconGo.AddComponent<Image>();
-            iconImg.color = Color.white; iconImg.preserveAspect = true;
-            cell.iconImage = iconImg;
+            cell.iconImage         = iconImg;
 
             // 信息列（名称 + 单价）
             var infoGo = ChildGameObject("Info", root.transform);
@@ -302,34 +287,6 @@ namespace Ale.Inventory.Editor
             vso.ApplyModifiedPropertiesWithoutUndo();
 
             SavePrefab(panelGo, path);
-        }
-
-        /// <summary>添加并设置 VerticalLayoutGroup（参数对齐 <see cref="SetHlg"/>）。</summary>
-        static void SetVlg(GameObject go, RectOffset padding, float spacing,
-            TextAnchor align, bool controlW, bool controlH, bool expandW, bool expandH)
-        {
-            var g = go.AddComponent<VerticalLayoutGroup>();
-            g.padding = padding; g.spacing = spacing; g.childAlignment = align;
-            g.childControlWidth = controlW; g.childControlHeight = controlH;
-            g.childForceExpandWidth = expandW; g.childForceExpandHeight = expandH;
-            g.childScaleWidth = false; g.childScaleHeight = false;
-        }
-
-        /// <summary>创建一个带居中文本的小按钮，返回 Button。</summary>
-        static Button MakeMiniButton(string name, Transform parent, string label,
-            Color normal, Color highlight, Color pressed)
-        {
-            var go = ChildGameObject(name, parent);
-            go.AddComponent<RectTransform>();
-            var img = go.AddComponent<Image>();
-            img.color = normal;
-            var btn = go.AddComponent<Button>();
-            btn.targetGraphic = img;
-            SetButtonColors(btn, normal, highlight, pressed);
-            var lblGo = ChildGameObject("Label", go.transform);
-            Stretch(lblGo.AddComponent<RectTransform>());
-            AddText(lblGo, label, 16, Color.white, TextAnchor.MiddleCenter, FontStyle.Bold);
-            return btn;
         }
 
         #endregion

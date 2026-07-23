@@ -227,48 +227,6 @@ namespace Ale.Inventory.Editor
             SavePrefab(root, path);
         }
 
-        /// <summary>
-        /// 构建一个横向可滚动的过滤页签栏：<see cref="UiwFilterTabBar"/> 的按钮排入横向 ScrollView 的 Content；
-        /// 标签总宽未超出时不滚动（Clamped），超出时可横向拖动 / 滚动，避免溢出界面。
-        /// </summary>
-        static void BuildFilterTabScroll(string name, Transform parent, Button filterButtonPrefab,
-            float height, out UiwFilterTabBar bar)
-        {
-            var rowGo = ChildGameObject(name, parent);
-            rowGo.AddComponent<RectTransform>();
-            SetLayoutElement(rowGo, minH: height, prefH: height);
-            var sr = rowGo.AddComponent<ScrollRect>();
-            sr.horizontal = true; sr.vertical = false;
-            sr.movementType = ScrollRect.MovementType.Clamped;   // 内容未超出时不滚动
-            sr.scrollSensitivity = 20f;
-
-            // Viewport（裁剪 + 拖拽射线目标）
-            var vpGo = ChildGameObject("Viewport", rowGo.transform);
-            Stretch(vpGo.AddComponent<RectTransform>());
-            vpGo.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.01f);
-            vpGo.AddComponent<Mask>().showMaskGraphic = false;
-            sr.viewport = vpGo.GetComponent<RectTransform>();
-
-            // Content（左对齐、高度铺满；横向布局 + 宽度自适应，撑开后可横向滚动）
-            var contentGo = ChildGameObject("Content", vpGo.transform);
-            var contentRt = contentGo.AddComponent<RectTransform>();
-            contentRt.anchorMin = new Vector2(0f, 0f); contentRt.anchorMax = new Vector2(0f, 1f);
-            contentRt.pivot = new Vector2(0f, 0.5f);
-            contentRt.sizeDelta = Vector2.zero; contentRt.anchoredPosition = Vector2.zero;
-            var hlg = contentGo.AddComponent<HorizontalLayoutGroup>();
-            hlg.childControlWidth = false; hlg.childForceExpandWidth = false;
-            hlg.childControlHeight = true; hlg.childForceExpandHeight = true;
-            hlg.childScaleWidth = false; hlg.childScaleHeight = false;
-            hlg.spacing = 3f; hlg.padding = new RectOffset(2, 2, 2, 2);
-            SetContentSizeFitter(contentGo, ContentSizeFitter.FitMode.PreferredSize, ContentSizeFitter.FitMode.Unconstrained);
-            sr.content = contentRt;
-
-            // 过滤页签栏（按钮实例化到 Content）
-            bar = rowGo.AddComponent<UiwFilterTabBar>();
-            bar.filterContainer    = contentGo.transform;
-            bar.filterButtonPrefab = filterButtonPrefab;
-        }
-
         /// <summary>构建 PF_UiwSkillView（技能主界面：标题 + 视图切换 + 搜索 + 主/副分组页签 + 网格/顺序列表）。</summary>
         static void BuildSkillViewPrefab(GameObject gridListPrefab, GameObject orderListPrefab, Button filterButtonPrefab)
         {

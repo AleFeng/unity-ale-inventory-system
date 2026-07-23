@@ -40,12 +40,8 @@ namespace Ale.Inventory.Editor
             var comp = root.AddComponent<UiwInventoryItemDetail>();
             comp.numberFormat = numFmt?.locales?.Count > 0 ? numFmt.locales[0] : null;
 
-            // HoverBorder
-            var hoverGo = ChildGameObject("HoverBorder", root.transform);
-            Stretch(hoverGo.AddComponent<RectTransform>());
-            var hoverImg = hoverGo.AddComponent<Image>();
-            hoverImg.color = new Color(0.2f, 0.2f, 0.3f, 0f);
-            comp.hoverBorder = hoverImg;
+            // HoverBorder（偏蓝底色，接收射线）
+            comp.hoverBorder = MakeHoverBorder(root.transform, new Color(0.2f, 0.2f, 0.3f, 0f));
             comp.hoverFadeDuration = 0.12f;
 
             // StackFullIcon（右上角）
@@ -206,12 +202,8 @@ namespace Ale.Inventory.Editor
             var qTxt = AddText(qGo, "9999", 10, new Color(1f, 1f, 1f, 0.9019608f), TextAnchor.LowerRight);
             SetSerializedRef(comp, "countText", qTxt);
 
-            // HoverBorder（全覆盖，alpha=0）
-            var hoverGo = ChildGameObject("HoverBorder", root.transform);
-            Stretch(hoverGo.AddComponent<RectTransform>());
-            var hoverImg = hoverGo.AddComponent<Image>();
-            hoverImg.color = new Color(1f, 1f, 1f, 0f);
-            comp.hoverBorder = hoverImg;
+            // HoverBorder（全覆盖，alpha=0，接收射线）
+            comp.hoverBorder = MakeHoverBorder(root.transform, new Color(1f, 1f, 1f, 0f));
 
             // StackFullIcon（右上角红点）
             var sfGo = ChildGameObject("StackFullIcon", root.transform);

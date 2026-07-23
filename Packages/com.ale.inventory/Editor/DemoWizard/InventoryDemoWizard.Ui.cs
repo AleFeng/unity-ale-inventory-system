@@ -142,6 +142,82 @@ namespace Ale.Inventory.Editor
             return go;
         }
 
+        /// <summary>
+        /// 在 <paramref name="parent"/> 下建一个方形「IconFrame」（占据布局槽位）内含
+        /// 「QualityBackground」（全覆盖品质底图）+「Icon」（四边内缩 4px 的图标）。
+        /// 两个 Image 均为白色、保持宽高比、不接收射线（装饰用，不挡点击）。经出参传出两个 Image。
+        /// <para>制作蓝图条目（56px）与商店商品条目（44px）共用此结构；此前商店的两张图未显式关闭
+        /// raycastTarget（默认接收射线），现随制作侧统一为不接收（不影响外观，仅不再无谓拦截射线）。</para>
+        /// </summary>
+        static void MakeIconFrame(Transform parent, float size, out Image quality, out Image icon)
+        {
+            var frameGo = ChildGameObject("IconFrame", parent);
+            frameGo.AddComponent<RectTransform>();
+            SetLayoutElement(frameGo, minW: size, prefW: size, minH: size, prefH: size);
+
+            var qualityGo = ChildGameObject("QualityBackground", frameGo.transform);
+            Stretch(qualityGo.AddComponent<RectTransform>());
+            quality = qualityGo.AddComponent<Image>();
+            quality.color = Color.white; quality.preserveAspect = true; quality.raycastTarget = false;
+            quality.sprite = LoadSprite(SpriteQualityPoor);
+
+            var iconGo = ChildGameObject("Icon", frameGo.transform);
+            var iconRt = iconGo.AddComponent<RectTransform>();
+            iconRt.anchorMin = Vector2.zero; iconRt.anchorMax = Vector2.one;
+            iconRt.offsetMin = new Vector2(4f, 4f); iconRt.offsetMax = new Vector2(-4f, -4f);
+            icon = iconGo.AddComponent<Image>();
+            icon.color = Color.white; icon.preserveAspect = true; icon.raycastTarget = false;
+        }
+
+        /// <summary>
+        /// 在 <paramref name="parent"/> 下建一个全覆盖（四边拉伸）的「HoverBorder」Image 并返回。
+        /// 常态 alpha=0（不可见），悬停时由 Uiw 组件淡入。颜色与是否接收射线因用途而异，故为参数
+        /// （道具格用偏蓝底色且接收射线，装备槽用白色且不接收射线）。
+        /// </summary>
+        static Image MakeHoverBorder(Transform parent, Color color, bool raycastTarget = true)
+        {
+            var go = ChildGameObject("HoverBorder", parent);
+            Stretch(go.AddComponent<RectTransform>());
+            var img = go.AddComponent<Image>();
+            img.color = color;
+            img.raycastTarget = raycastTarget;
+            return img;
+        }
+
+        /// <summary>
+        /// 在 <paramref name="parent"/> 下建一个「背景 Image + Button + 居中文本子节点」的带标签按钮并返回 Button。
+        /// 合并原先的 MakeMiniButton（文本子节点名 "Label"）与 MakeEquipButton（名 "Text"）：
+        /// 子节点名、字号、字形、对齐、高亮/按下色均为参数，两处调用各自保持原样。
+        /// </summary>
+        static Button MakeLabeledButton(string name, Transform parent, string label,
+            Color normal, Color highlight, Color pressed,
+            string textChildName, int fontSize, FontStyle fontStyle, TextAnchor align)
+        {
+            var go = ChildGameObject(name, parent);
+            go.AddComponent<RectTransform>();
+            var img = go.AddComponent<Image>();
+            img.color = normal;
+            var btn = go.AddComponent<Button>();
+            btn.targetGraphic = img;
+            SetButtonColors(btn, normal, highlight, pressed);
+
+            var lblGo = ChildGameObject(textChildName, go.transform);
+            Stretch(lblGo.AddComponent<RectTransform>());
+            AddText(lblGo, label, fontSize, Color.white, align, fontStyle);
+            return btn;
+        }
+
+        /// <summary>小按钮（文本子节点名 "Label"，16 号加粗居中）。三色高亮由调用方指定。</summary>
+        static Button MakeMiniButton(string name, Transform parent, string label,
+            Color normal, Color highlight, Color pressed)
+            => MakeLabeledButton(name, parent, label, normal, highlight, pressed,
+                "Label", 16, FontStyle.Bold, TextAnchor.MiddleCenter);
+
+        /// <summary>装备按钮（文本子节点名 "Text"，13 号常规居中）。高亮/按下色由底色派生。</summary>
+        static Button MakeEquipButton(string name, Transform parent, string label, Color bg)
+            => MakeLabeledButton(name, parent, label, bg, bg * 1.2f, bg * 0.8f,
+                "Text", 13, FontStyle.Normal, TextAnchor.MiddleCenter);
+
         // Button 颜色状态
         static void SetButtonColors(Button btn, Color normal, Color highlight, Color pressed)
         {
@@ -368,6 +444,93 @@ namespace Ale.Inventory.Editor
             g.childForceExpandWidth = expandW; g.childForceExpandHeight = expandH;
             g.childScaleWidth = false; g.childScaleHeight = false;
         }
+
+        // ── 迁自各系统文件的通用 helper（声明处与调用处曾跨区，归位于此）──────────
+
+        /// <summary>添加并设置 VerticalLayoutGroup（参数对齐 <see cref="SetHlg"/>）。</summary>
+        static void SetVlg(GameObject go, RectOffset padding, float spacing,
+            TextAnchor align, bool controlW, bool controlH, bool expandW, bool expandH)
+        {
+            var g = go.AddComponent<VerticalLayoutGroup>();
+            g.padding = padding; g.spacing = spacing; g.childAlignment = align;
+            g.childControlWidth = controlW; g.childControlHeight = controlH;
+            g.childForceExpandWidth = expandW; g.childForceExpandHeight = expandH;
+            g.childScaleWidth = false; g.childScaleHeight = false;
+        }
+
+        /// <summary>创建一个标准 UI InputField（文本组件为 UnityEngine.UI.Text，与 UiwCraftingView.searchInput 类型一致）。</summary>
+        static InputField MakeInputField(string name, Transform parent, string placeholder)
+        {
+            var go = ChildGameObject(name, parent);
+            go.AddComponent<RectTransform>();
+            var img = go.AddComponent<Image>();
+            img.color = Hex("1C2533");
+            var input = go.AddComponent<InputField>();
+            input.targetGraphic = img;
+
+            var txtGo = ChildGameObject("Text", go.transform);
+            var txtRt = txtGo.AddComponent<RectTransform>();
+            txtRt.anchorMin = Vector2.zero; txtRt.anchorMax = Vector2.one;
+            txtRt.offsetMin = new Vector2(6f, 2f); txtRt.offsetMax = new Vector2(-6f, -2f);
+            var txt = txtGo.AddComponent<Text>();
+            txt.fontSize = 11; txt.color = new Color(0.9f, 0.9f, 0.95f);
+            txt.alignment = TextAnchor.MiddleLeft; txt.supportRichText = false;
+
+            var phGo = ChildGameObject("Placeholder", go.transform);
+            var phRt = phGo.AddComponent<RectTransform>();
+            phRt.anchorMin = Vector2.zero; phRt.anchorMax = Vector2.one;
+            phRt.offsetMin = new Vector2(6f, 2f); phRt.offsetMax = new Vector2(-6f, -2f);
+            var ph = phGo.AddComponent<Text>();
+            ph.fontSize = 11; ph.color = new Color(0.6f, 0.6f, 0.65f);
+            ph.alignment = TextAnchor.MiddleLeft; ph.fontStyle = FontStyle.Italic; ph.text = placeholder;
+
+            input.textComponent = txt;
+            input.placeholder   = ph;
+            return input;
+        }
+
+        /// <summary>
+        /// 构建一个横向可滚动的过滤页签栏：<see cref="UiwFilterTabBar"/> 的按钮排入横向 ScrollView 的 Content；
+        /// 标签总宽未超出时不滚动（Clamped），超出时可横向拖动 / 滚动，避免溢出界面。
+        /// </summary>
+        static void BuildFilterTabScroll(string name, Transform parent, Button filterButtonPrefab,
+            float height, out UiwFilterTabBar bar)
+        {
+            var rowGo = ChildGameObject(name, parent);
+            rowGo.AddComponent<RectTransform>();
+            SetLayoutElement(rowGo, minH: height, prefH: height);
+            var sr = rowGo.AddComponent<ScrollRect>();
+            sr.horizontal = true; sr.vertical = false;
+            sr.movementType = ScrollRect.MovementType.Clamped;   // 内容未超出时不滚动
+            sr.scrollSensitivity = 20f;
+
+            // Viewport（裁剪 + 拖拽射线目标）
+            var vpGo = ChildGameObject("Viewport", rowGo.transform);
+            Stretch(vpGo.AddComponent<RectTransform>());
+            vpGo.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.01f);
+            vpGo.AddComponent<Mask>().showMaskGraphic = false;
+            sr.viewport = vpGo.GetComponent<RectTransform>();
+
+            // Content（左对齐、高度铺满；横向布局 + 宽度自适应，撑开后可横向滚动）
+            var contentGo = ChildGameObject("Content", vpGo.transform);
+            var contentRt = contentGo.AddComponent<RectTransform>();
+            contentRt.anchorMin = new Vector2(0f, 0f); contentRt.anchorMax = new Vector2(0f, 1f);
+            contentRt.pivot = new Vector2(0f, 0.5f);
+            contentRt.sizeDelta = Vector2.zero; contentRt.anchoredPosition = Vector2.zero;
+            var hlg = contentGo.AddComponent<HorizontalLayoutGroup>();
+            hlg.childControlWidth = false; hlg.childForceExpandWidth = false;
+            hlg.childControlHeight = true; hlg.childForceExpandHeight = true;
+            hlg.childScaleWidth = false; hlg.childScaleHeight = false;
+            hlg.spacing = 3f; hlg.padding = new RectOffset(2, 2, 2, 2);
+            SetContentSizeFitter(contentGo, ContentSizeFitter.FitMode.PreferredSize, ContentSizeFitter.FitMode.Unconstrained);
+            sr.content = contentRt;
+
+            // 过滤页签栏（按钮实例化到 Content）
+            bar = rowGo.AddComponent<UiwFilterTabBar>();
+            bar.filterContainer    = contentGo.transform;
+            bar.filterButtonPrefab = filterButtonPrefab;
+        }
+
         #endregion
     }
 }

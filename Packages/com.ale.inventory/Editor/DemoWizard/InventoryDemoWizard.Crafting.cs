@@ -114,24 +114,9 @@ namespace Ale.Inventory.Editor
             cell.selectedIndicator = selGo;
 
             // 主产出图标 + 品质背景框（IconFrame 占据 HLG 槽位，内含品质底图 + 图标）
-            var frameGo = ChildGameObject("IconFrame", root.transform);
-            frameGo.AddComponent<RectTransform>();
-            SetLayoutElement(frameGo, minW: 56, prefW: 56, minH: 56, prefH: 56);
-
-            var qualityGo = ChildGameObject("QualityBackground", frameGo.transform);
-            Stretch(qualityGo.AddComponent<RectTransform>());
-            var qualityImg = qualityGo.AddComponent<Image>();
-            qualityImg.color = Color.white; qualityImg.preserveAspect = true; qualityImg.raycastTarget = false;
-            qualityImg.sprite = LoadSprite(SpriteQualityPoor);
+            MakeIconFrame(root.transform, 56f, out var qualityImg, out var iconImg);
             cell.qualityBackground = qualityImg;
-
-            var iconGo = ChildGameObject("Icon", frameGo.transform);
-            var iconRt = iconGo.AddComponent<RectTransform>();
-            iconRt.anchorMin = Vector2.zero; iconRt.anchorMax = Vector2.one;
-            iconRt.offsetMin = new Vector2(4f, 4f); iconRt.offsetMax = new Vector2(-4f, -4f);
-            var iconImg = iconGo.AddComponent<Image>();
-            iconImg.color = Color.white; iconImg.preserveAspect = true; iconImg.raycastTarget = false;
-            cell.iconImage = iconImg;
+            cell.iconImage         = iconImg;
 
             // 信息列（名称 + 属性行）
             var infoGo = ChildGameObject("Info", root.transform);
@@ -362,37 +347,6 @@ namespace Ale.Inventory.Editor
             vso.ApplyModifiedPropertiesWithoutUndo();
 
             SavePrefab(panelGo, path);
-        }
-
-        /// <summary>创建一个标准 UI InputField（文本组件为 UnityEngine.UI.Text，与 UiwCraftingView.searchInput 类型一致）。</summary>
-        static InputField MakeInputField(string name, Transform parent, string placeholder)
-        {
-            var go = ChildGameObject(name, parent);
-            go.AddComponent<RectTransform>();
-            var img = go.AddComponent<Image>();
-            img.color = Hex("1C2533");
-            var input = go.AddComponent<InputField>();
-            input.targetGraphic = img;
-
-            var txtGo = ChildGameObject("Text", go.transform);
-            var txtRt = txtGo.AddComponent<RectTransform>();
-            txtRt.anchorMin = Vector2.zero; txtRt.anchorMax = Vector2.one;
-            txtRt.offsetMin = new Vector2(6f, 2f); txtRt.offsetMax = new Vector2(-6f, -2f);
-            var txt = txtGo.AddComponent<Text>();
-            txt.fontSize = 11; txt.color = new Color(0.9f, 0.9f, 0.95f);
-            txt.alignment = TextAnchor.MiddleLeft; txt.supportRichText = false;
-
-            var phGo = ChildGameObject("Placeholder", go.transform);
-            var phRt = phGo.AddComponent<RectTransform>();
-            phRt.anchorMin = Vector2.zero; phRt.anchorMax = Vector2.one;
-            phRt.offsetMin = new Vector2(6f, 2f); phRt.offsetMax = new Vector2(-6f, -2f);
-            var ph = phGo.AddComponent<Text>();
-            ph.fontSize = 11; ph.color = new Color(0.6f, 0.6f, 0.65f);
-            ph.alignment = TextAnchor.MiddleLeft; ph.fontStyle = FontStyle.Italic; ph.text = placeholder;
-
-            input.textComponent = txt;
-            input.placeholder   = ph;
-            return input;
         }
 
         #endregion
