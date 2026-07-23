@@ -69,7 +69,7 @@
   - **Character**：某角色当前已学会的技能（配角色 ID，读 `SkillRuntimeManager`）。
 
 ### 运行时与序列化
-- **`InventoryDataManager`**（数据查询单例）：注册数据库、按 ID 查询道具 / 仓库 / 商店 / 蓝图 / 枚举类型等；支持从 `.asset`、JSON、二进制三种来源加载。
+- **`InventoryDataManager`**（数据查询单例）：注册数据库、按 ID 查询道具 / 仓库 / 商店 / 蓝图 / 枚举类型等；支持从 `.asset`、JSON、二进制三种来源加载。查询走惰性构建的字典索引（O(1)），注册 / 注销数据库后自动失效重建。
 - **`InventoryRuntimeManager`**（MonoBehaviour 单例）：仓库格子状态、整理排序、存档、时间注入入口、覆盖式 UI 根节点 / Layer 配置（弹窗 / 悬停弹窗 / 拖拽幽灵图标等实例化后重新套用指定 Layer），并把数据库注册到 `InventoryDataManager`；含编辑器测试道具填充（`autoPopulateOnStart` / `testInventoryId` / `testItems`，`Init` 时机填入、仅数据不开 UI）与一键「添加所有配置表道具」（`addAllConfiguredItems` + `addAllItemCount`）。
 - **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager` / `SkillRuntimeManager`**（轻量单例）：交易 / 制作 / 装备 / 技能逻辑（装备已装备状态、技能已学状态均可存档，商店有交易进度存档）；技能展示集合另由 `SkillCollector` 按四种来源采集。
 - **导出**：`InventoryDtoMapper` → JSON / 二进制；对象引用以 AssetGUID 承载；可选 Addressable 异步加载。

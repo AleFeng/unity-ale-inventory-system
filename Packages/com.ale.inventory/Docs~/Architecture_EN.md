@@ -170,6 +170,20 @@ InventoryRuntimeManager (MonoBehaviour singleton)
 - Queries `Item / Inventory / EnumType / FunctionTag / ItemTemplate / InventoryTemplate` by ID;
 - Supports registering from three sources: `.asset`, JSON text, binary bytes.
 
+> **Query index (1.5.0)**: every `GetXxx(id/name)` goes through a lazily built dictionary (O(1))
+> rather than scanning database after database — these calls happen on **every UI cell bind** and on
+> **every pairwise comparison during a sort**, so a linear lookup scales badly with the total item
+> count. The index is invalidated when databases are registered / unregistered / cleared and rebuilt
+> on the next query; it is filled **first-come-first-served** in registration order, matching the old
+> "first database that contains it wins" semantics. Call `InvalidateIndex()` if you mutate a
+> registered database's contents at runtime.
+
+> **Sort lookup (1.5.0)**: `SortInventory` / `SortSlots` / `SortByItemId` and the UI lists' display
+> sorting each build one `SortLookup` up front (sort-option ignore lists, attribute definitions, item
+> templates, enum types, function-tag order), reducing in-comparator lookups to O(1). The lookup lives
+> only for the duration of that one sort and is then discarded, so it can never go stale.
+> The public signatures of `CompareSlots` / `CompareByField` etc. are unchanged and now delegate to it.
+
 ### Subsystem Runtime Managers
 
 The runtime logic of the shop and crafting systems is handled by two **lightweight singletons** (`InventorySystemSingleton<T>`, auto-created on first access, non-MonoBehaviour); neither holds catalog data itself (the catalog comes from registered databases), and warehouse reads/writes always go through `InventoryRuntimeManager`:
@@ -177,6 +191,15 @@ The runtime logic of the shop and crafting systems is handled by two **lightweig
 - `ShopRuntimeManager`: price resolution (multi-currency), currency / holdings tally across trade warehouses, resetting the tradeable count per the refresh schedule, purchase / recycle (auto-reducing the trade count by count / currency / capacity), **per-player trade progress save**; event `OnShopChanged`.
 - `CraftingRuntimeManager`: craftable-count computation, deducting materials / placing output across crafting warehouses (executing one craft); **no state of its own, no save**, continuous crafting driven in a loop by the UI layer.
 - `EquipmentRuntimeManager`: maintains equipped state as `equipment-group ID → (slot ID → equipped item ID)`; equip / unequip / swap cooperates with `InventoryRuntimeManager` to move items (rolling back when the old item can't be returned), limit matching is **all-AND**, auto slot-finding, summing across equipped items per the "equipment attribute field list" for total bonuses; **has an equipped-state save** (`GetSaveData` / `LoadSaveData`); event `OnEquipmentChanged`.
+
+> **Resetting static state between play sessions (1.5.0)**: the singleton instances above (both the
+> lightweight and the MonoBehaviour ones) and the `IsQuitting` flag are static fields. With Domain
+> Reload disabled (Project Settings → Editor → Enter Play Mode Options), static fields survive across
+> play sessions, carrying the previous run's equipment / shop progress into the next one.
+> `[RuntimeInitializeOnLoadMethod]` cannot be placed on a method of a generic type, so each closed
+> generic registers a reset action with the non-generic `InventorySingletonRegistry` when it first
+> creates its instance, and that class runs them all at the start of every play session
+> (`SubsystemRegistration`). With Domain Reload enabled (the default) the mechanism is a harmless no-op.
 
 The three clocks needed for shop refresh (game / local / server time) are registered via `InventoryRuntimeManager.RegisterTimeGetter`, falling back to system local time when unregistered.
 

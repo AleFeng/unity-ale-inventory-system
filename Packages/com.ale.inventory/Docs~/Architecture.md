@@ -170,6 +170,16 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 - 按 ID 查询 `Item / Inventory / EnumType / FunctionTag / ItemTemplate / InventoryTemplate`；
 - 支持从 `.asset`、JSON 文本、二进制字节三种来源注册。
 
+> **查询索引（1.5.0）**：所有 `GetXxx(id/name)` 走惰性构建的字典（O(1)），而非逐库线性遍历——
+> 该接口在**每个 UI 格子绑定**与**排序的每次两两比较**中都会被调用，线性查找会随道具总量放大成显著开销。
+> 索引在注册 / 注销 / 清空数据库后置脏，下次查询时重建；按注册顺序**先到先得**填充，
+> 与「第一个命中的数据库优先」语义一致。运行期直接改动了已注册数据库内容时，调用 `InvalidateIndex()`。
+
+> **排序查表（1.5.0）**：`SortInventory` / `SortSlots` / `SortByItemId` 与 UI 列表的显示排序，
+> 在排序前构建一份 `SortLookup`（整理选项忽略列表、属性字段定义、道具模板、枚举类型、功能标签序号），
+> 使比较器内的查找降到 O(1)。该查表只在单次排序期间存活、用完即弃，因此不存在缓存过期问题。
+> `CompareSlots` / `CompareByField` 等公开签名不变，内部为薄封装。
+
 ### 子系统运行时管理器
 
 商店与制作的运行时逻辑由两个**轻量单例**（`InventorySystemSingleton<T>`，首次访问自动创建，非 MonoBehaviour）承担，二者本身不持有目录数据（目录来自已注册数据库），仓库读写一律经 `InventoryRuntimeManager`：
@@ -179,6 +189,12 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 - `EquipmentRuntimeManager`：按 `装备组 ID → (槽位 ID → 已装备道具 ID)` 维护已装备状态；装备 / 卸下 / 交换与 `InventoryRuntimeManager` 协作搬运道具（放不回旧道具时回滚），限制匹配 **全部 AND**，自动找槽，按「装备属性字段列表」跨已装备道具求和得总加成；**有已装备状态存档**（`GetSaveData` / `LoadSaveData`）；事件 `OnEquipmentChanged`。
 
 商店刷新所需的三种时钟（游戏 / 本地 / 服务器时间）由 `InventoryRuntimeManager.RegisterTimeGetter` 注册，未注册回退系统本地时间。
+
+> **静态状态的跨播放重置（1.5.0）**：上述轻量单例与 MonoBehaviour 单例的实例、以及 `IsQuitting` 标记都是静态字段。
+> 关闭 Domain Reload（Project Settings → Editor → Enter Play Mode Options）时静态字段会跨播放会话残留，
+> 上一次 Play 的装备 / 商店进度会被带进下一次。`[RuntimeInitializeOnLoadMethod]` 无法标注在泛型类型的方法上，
+> 故由各闭合泛型在首次创建实例时把重置动作登记到非泛型的 `InventorySingletonRegistry`，
+> 由它在每次播放开始（`SubsystemRegistration`）统一执行。Domain Reload 开启（默认）时该机制为无害空转。
 
 ### 程序集划分
 

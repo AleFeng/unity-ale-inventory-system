@@ -170,6 +170,19 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 - ID で `Item / Inventory / EnumType / FunctionTag / ItemTemplate / InventoryTemplate` をクエリ；
 - `.asset`、JSON テキスト、バイナリバイトの 3 ソースからの登録に対応。
 
+> **クエリインデックス（1.5.0）**：すべての `GetXxx(id/name)` は、データベースを順に線形走査するのではなく
+> 遅延構築される辞書（O(1)）を経由します。これらの呼び出しは **UI セルのバインドごと**、
+> および**ソート中の 2 要素比較ごと**に発生するため、線形探索はアイテム総数に応じて顕著なコストになります。
+> インデックスはデータベースの登録 / 登録解除 / クリア時に無効化され、次回クエリ時に再構築されます。
+> 登録順に**先着優先**で構築されるため、「最初にヒットしたデータベースを優先」という従来の意味と一致します。
+> ランタイムで登録済みデータベースの内容を直接変更した場合は `InvalidateIndex()` を呼んでください。
+
+> **ソート用ルックアップ（1.5.0）**：`SortInventory` / `SortSlots` / `SortByItemId` と UI リストの表示ソートは、
+> ソート前に `SortLookup` を 1 つ構築し（整理オプションの無視リスト、属性フィールド定義、アイテムテンプレート、
+> 列挙型、機能タグの序数）、比較器内の検索を O(1) に落とします。このルックアップは 1 回のソートの間だけ存在して
+> 破棄されるため、キャッシュが古くなる問題は起きません。`CompareSlots` / `CompareByField` などの公開シグネチャは
+> 変更されておらず、内部で薄いラッパーとして委譲します。
+
 ### サブシステムのランタイムマネージャー
 
 ショップとクラフトのランタイムロジックは、2 つの**軽量シングルトン**（`InventorySystemSingleton<T>`、初回アクセスで自動作成、非 MonoBehaviour）が担います。どちらも自身はカタログデータを持たず（カタログは登録済みデータベース由来）、倉庫の読み書きは一律 `InventoryRuntimeManager` を通します：
@@ -177,6 +190,15 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 - `ShopRuntimeManager`：価格解決（複数通貨）、取引倉庫をまたいだ通貨 / 保有量の集計、更新スケジュールに従う取引可能回数のリセット、購入 / 買い取り（回数 / 通貨 / 容量 に応じて成立を自動で下方調整）、**プレイヤーごとの取引進捗のセーブ**。イベント `OnShopChanged`。
 - `CraftingRuntimeManager`：作成可能回数の計算、クラフト倉庫をまたいだ材料の差し引き / 産出の配置（1 回の作成を実行）。**自身の状態を持たず、セーブしない**。連続作成は UI 層がループで駆動。
 - `EquipmentRuntimeManager`：`装備グループ ID → (スロット ID → 装備中アイテム ID)` として装備中状態を管理。装備 / 解除 / 交換は `InventoryRuntimeManager` と連携してアイテムを搬送（旧アイテムを戻せないときはロールバック）、制限マッチングは**すべて AND**、スロットの自動検索、「装備属性フィールドリスト」に従い装備中アイテムをまたいで合算し合計ボーナスを算出。**装備中状態のセーブあり**（`GetSaveData` / `LoadSaveData`）。イベント `OnEquipmentChanged`。
+
+> **プレイセッションをまたぐ静的状態のリセット（1.5.0）**：上記の軽量シングルトンと MonoBehaviour
+> シングルトンのインスタンス、および `IsQuitting` フラグはいずれも静的フィールドです。Domain Reload を
+> 無効化している場合（Project Settings → Editor → Enter Play Mode Options）、静的フィールドはプレイ
+> セッションをまたいで残り、前回の装備 / ショップ進捗が次回に持ち越されます。
+> `[RuntimeInitializeOnLoadMethod]` はジェネリック型のメソッドには付けられないため、各クローズド
+> ジェネリックが初回インスタンス生成時に、非ジェネリックの `InventorySingletonRegistry` へリセット処理を
+> 登録し、同クラスが毎回のプレイ開始時（`SubsystemRegistration`）にまとめて実行します。
+> Domain Reload が有効（既定）なら本機構は無害な空処理です。
 
 ショップ更新に必要な 3 種の時計（ゲーム / ローカル / サーバー時間）は `InventoryRuntimeManager.RegisterTimeGetter` で登録し、未登録のときはシステムのローカル時間にフォールバックします。
 

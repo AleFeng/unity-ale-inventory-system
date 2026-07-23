@@ -6,6 +6,62 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.5.0] - 2026-07-23
+
+一轮以「修 Bug + 去性能热点 + 对齐文档」为主的维护版本。**含两项破坏性变更**（枚举标识符改名、商店交易进度存档键改造），升级前请先读本节末尾的「破坏性」与「升级指引」。
+
+### 修复
+- **整理排序「忽略ID」对枚举字段匹配错误**：`InventoryRuntimeManager.IsIgnoredByField` 此前用 `enumType.items[枚举值]`——把**枚举值当成了列表下标**。而 `EnumItem.value` 是自增、永不回收的不可变值，只要删过枚举项，二者就会错位，导致忽略规则匹配到错误的枚举项名或静默失效。现改用 `EnumType.GetItemByValue`（与 `AttributeValue.ToDisplayString` 的解析链一致）；枚举类型引用在属性定义缺失时回退属性值自身持久化的 `EnumTypeRef`。
+- **`AttributeValue` 切换类型 / 数组形态后残留 Addressable 地址**（仅 `IS_ADDRESSABLE` 可见）：`ChangeType` 未清空、`SetIsArray` 未裁剪与 `objRefs` 平行的 `objAddresses`，导致「Sprite → Int → Sprite」后旧资源 GUID 仍在，取用门面会回退加载到**上一个资源**；`SetObject` 也未同步扩容，使两列表长度不一致时 `ReorderElements` 会把地址与对象引用的对应关系错开。现三处均已同步，并对 `objAddresses` 为 null 的旧数据加了容错。
+- **非 MonoBehaviour 单例的 `IsQuitting` 恒为 `false`**：该属性从未被赋值（只有 MonoBehaviour 版在 `OnApplicationQuit` 中赋值），是一个会误导调用方的死 API。现接入 `Application.quitting`。
+
+### 新增
+- **`InventorySingletonRegistry`（内部）**：单例静态状态的重置中枢。`[RuntimeInitializeOnLoadMethod]` 无法标注在泛型类型的方法上，故由各闭合泛型在首次创建实例时登记重置动作，由本类在每次播放开始（`SubsystemRegistration`）统一执行。**关闭 Domain Reload**（Enter Play Mode Options）时，上一次 Play 注册的数据库、装备 / 商店状态与 `IsQuitting` 不再跨播放会话残留。
+- **`InventoryRuntimeManager.SortByItemId<T>(list, itemIdSelector, priorities, db)`**：按道具 ID 对任意列表做显示排序的公开入口。整次排序只建一份字段查表、只用两个复用的临时槽位；此前 UI 层的写法是在比较器里每次比较 `new` 两个 `RuntimeItemSlot`。
+- **`InventoryDataManager.InvalidateIndex()`**：手动使跨库查询索引失效（运行期直接改动了已注册数据库内容时使用；注册 / 注销 / 清空会自动失效）。
+- **`InventoryDatabase.EnsureShopEntryGuids()` / `NewShopEntryGuid()`**：为商品组 / 商品补发缺失的稳定 `guid`，由配置编辑器自动调用。
+- **`package.json` 补全 `documentationUrl` / `changelogUrl` / `licensesUrl`**，Package Manager 面板中可直接跳转文档 / 更新日志 / 许可证。
+
+### 性能
+- **`InventoryDataManager` 建立跨库查询索引**：15 个 `GetXxx(id/name)` 由「逐库 + 库内双重线性遍历」改为字典查找（O(1)），另加 3 个「条目 → 所属数据库」映射供 `FindDatabaseForXxx`。索引惰性构建、注册 / 注销 / 清空后置脏。构建按数据库注册顺序**先到先得**，与旧的「第一个命中的数据库优先」语义完全一致。该接口在**每个 UI 格子绑定**与**排序的每次两两比较**中都会被调用，是随道具总量放大的主要热点。
+- **排序比较预计算查表（`SortLookup`）**：把原先在每次两两比较里重复做的线性扫描——整理选项忽略列表、属性字段定义、道具模板、枚举类型、功能标签序号——预先算成字典，比较器内查找降到 O(1)。`SortInventory` / `SortSlots` / `SortByItemId` 与 UI 列表的显示排序整次只建一份，用完即弃（不跨帧缓存，无缓存过期问题）。`CompareSlots` / `CompareByField` / `IsIgnoredByField` / `GetTagOrder` 的公开签名保持不变，内部改为薄封装。
+- **`InventoryDatabase.RebuildSortOptions` 消除两处二次复杂度**：末尾排序的比较器内原用 `List.IndexOf` 查序号（O(n² log n)）、追加新字段时原逐个 `GetSortOption` 线性查找（O(n²)）；现统一用一个字段序号字典完成去重、可用性判定与排序取序号。
+- **整理选项面板改为按需重建**：`SortOptionPanel.DrawMasterList` 此前**每次 OnGUI**（含每次鼠标移动）都无条件调用 `RebuildSortOptions`。现改为对「道具模板属性 + 功能标签属性 + 整理选项 schema」算一个无分配的整数签名，签名不变即跳过——该签名覆盖了重建产出的全部输入，因此不会漏同步（含字段改名这种数量不变的改动）；换库 / Undo-Redo 经已有的 `Invalidate()` 强制重同步。
+- **`InventoryRuntimeManager.TryAddItem` 空槽查找改用递进游标**：原先每轮都 `List.Find` 从头扫并分配一个闭包委托（O(n²)）；循环内只填槽从不清空，故游标只进不退，整个循环合计只扫一遍列表。「添加所有配置表道具」测试功能受益最明显。
+- **`GetSlots` 未命中返回共享空列表**，不再每次分配。
+
+### 变更
+- **`InventoryRuntimeManager.GetSlots` 的返回值契约明确为「仅供读取」**：命中时返回的是运行时状态的**实时引用**（此前即如此，只是未写进文档），未命中时返回**全局共享**的空列表——两种情况下写入都会造成意外后果。修改内容请走 `TryAddItem` / `TryRemoveItem` / `SetSlotContent`；需要自行排序 / 过滤请先拷贝一份。
+- **工程配置**：清理两处迁移遗留的悬空 asmdef GUID 引用（`Ale.Inventory.Runtime` / `Ale.Inventory.Editor`，在本工程中均无法解析、本就被 Unity 丢弃）；`package.json` 的 `author.url` 由旧仓库 `Able-Games/unity-fs-game-framework` 改指本仓库。
+- **最低 Unity 版本口径统一为 `2022.3`**（`package.json` 声明值），包内 README 此前写作 `6000.3+` 与之矛盾；三语 README 统一表述为「最低 2022.3，基于 Unity 6000.3 开发与维护」。
+- **编辑器**：`InventoryEditorWindow` 移除已不可达的 `DrawStub` 与 `DrawBody` 的 `else` 分支（六个系统页签均已实现），页签分发改为 `switch`。
+
+### 文档
+- **中文文档同步 1.4.0 的迁移结果**：`README.md` 与 `Docs~` 下 10 份中文文档中的 `InventorySystem.Runtime` / `InventorySystem.UI` / `Assets/Plugins/InventorySystem/` 等陈旧标识符全部更新为 `Ale.Inventory.*` 与 `Packages/com.ale.inventory/`（此前 `_EN` / `_JA` 版本反而是正确的，中文源文档落后于译文；共 30 处）。`UIComponentGuide` 中「asmdef `rootNamespace` 与实际声明不符」的注意事项已随迁移失效，一并删除。CHANGELOG 中的历史记述保留旧名不动。
+- **`Architecture` 三语版补全技能系统页签**：编辑器结构树此前完全没有 `SkillSystemTab`，只有一句「技能系统页签当前为占位（DrawStub），后续阶段实现」——技能系统早已实现。现按实际面板补入 `SkillGroupTagPanel` / `SkillTemplatePanel` / `SkillListPanel`。
+
+### ⚠️ 破坏性
+- **三个公开枚举的成员标识符由中文改为英文**（Inspector 中 `EListScrollDirection` 仍显示中文）：
+
+  | 枚举 | 旧成员 | 新成员 |
+  | --- | --- | --- |
+  | `ShopTimeType` | 游戏时间 / 本地时间 / 服务器时间 | `GameTime` / `LocalTime` / `ServerTime` |
+  | `ShopRefreshType` | 不刷新 / 每日 / 每周 / 每月 | `Never` / `Daily` / `Weekly` / `Monthly` |
+  | `EListScrollDirection` | 纵向 / 横向 | `Vertical` / `Horizontal` |
+
+  **数据无需迁移**：三者原本都用隐式值 `0,1,2…` 且顺序不变，本次把值**显式写死**为相同数字（防止日后重排成员时悄悄改掉序列化值），因此既有 `.asset` / `.prefab` 中已配置的刷新周期、时间类型、滚动方向都会原样保留。**仅项目层代码需要改名**（如 `RegisterTimeGetter(ShopTimeType.服务器时间, …)` → `ShopTimeType.ServerTime`）。
+  三者均加了 `[InspectorName("中文")]`。注意该特性**只在经 `SerializedProperty` 绘制时生效**：`EListScrollDirection` 走默认 Inspector，仍显示「纵向 / 横向」；商店刷新面板用 `EditorGUILayout.EnumPopup` 绘制，下拉显示的是英文标识符。
+- **商店交易进度的存档键改为稳定 `guid`**：`ShopCommodityGroup` / `ShopCommodity` 新增序列化字段 `guid`。此前的键是 `组名（空名回退 #组索引）` + `组内索引:道具ID`——策划在编辑器里**拖拽重排商品或商品组**，老存档的「已交易次数」就会挂到别的商品上（限购商品凭空恢复或直接买不了）。
+  - **旧存档自动迁移**：迁移在**查询进度时惰性完成**——稳定键下无条目、旧键下有，则把该条目的键就地改写为稳定键后复用，保住玩家已积累的次数。不依赖存档加载顺序，幂等，不丢弃任何条目。
+  - **guid 补发**：1.4.0 及更早的数据没有该字段，打开配置编辑器时由 `EnsureShopEntryGuids()` 自动补发并标脏（**需保存数据库资产**）。
+  - **未补发时行为不变**：`guid` 为空的条目（含运行期合成的回收商品）一律回退旧键，与 1.4.0 逐位一致——因此即使某个项目升级后未打开过编辑器就直接出包，也不会出现「所有商品共用空键」的串档。
+
+### 升级指引
+1. 全局搜索并替换项目层对三个枚举中文成员的引用（见上表）。
+2. 用配置编辑器打开每个 `InventoryDatabase` 并**保存**，让商品组 / 商品的 `guid` 落盘。
+3. 若项目层写过 `GetSlots(...)` 返回值，确认没有对其做增删改。
+4. 建议在 `IS_TMP` / `IS_LOCALIZATION` / `IS_ADDRESSABLE` 宏开 / 关的各种组合下重新编译验证一次。
+
 ## [1.4.0] - 2026-07-06
 ### 新增
 - **本地化工具窗口 `InventoryLocalizationToolWindow`**（`IS_LOCALIZATION`；菜单 `Tools > Inventory System > Localization > 本地化工具窗口`，欢迎窗口亦有入口按钮）：为指定 `InventoryDatabase` 一站式接入 Unity Localization——

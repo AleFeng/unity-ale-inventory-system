@@ -158,7 +158,8 @@ int  free  = rm.GetFreeSpaceFor("backpack", "potion_hp"); // 还能再放多少
 float w    = rm.GetTotalWeight("backpack");
 float wMax = rm.GetWeightLimit("backpack");
 
-// 取格子列表（顺序即 UI 显示顺序）
+// 取格子列表（顺序即 UI 显示顺序）。注意：返回值仅供读取——命中时是运行时状态的实时引用，
+// 未命中（仓库 ID 不存在）时是全局共享的空列表；需要排序 / 过滤请先自行拷贝一份。
 List<RuntimeItemSlot> slots = rm.GetSlots("backpack");
 
 // 移除：按格子 ID（精确） / 按道具 ID（跨格累减）

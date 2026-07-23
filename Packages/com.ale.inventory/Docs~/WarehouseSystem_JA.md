@@ -159,6 +159,8 @@ float w    = rm.GetTotalWeight("backpack");
 float wMax = rm.GetWeightLimit("backpack");
 
 // スロットリストを取得（順序 = UI 表示順）
+// 注意：戻り値は読み取り専用です — ヒット時はランタイム状態への実参照、
+// ミス時（存在しない倉庫 ID）はグローバル共有の空リストです。ソート / フィルタする場合は先にコピーしてください。
 List<RuntimeItemSlot> slots = rm.GetSlots("backpack");
 
 // 削除：スロット ID で（正確） / アイテム ID で（スロットをまたいで累減）

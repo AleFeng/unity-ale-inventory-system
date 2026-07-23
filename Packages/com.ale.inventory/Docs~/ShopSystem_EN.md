@@ -188,6 +188,15 @@ ShopRuntimeManager.Instance.LoadSaveData(save);
 ShopRuntimeManager.Instance.ResetAll();
 ```
 
+> **Progress is keyed by stable `guid` (1.5.0)**: each trade-progress entry is recorded under
+> "commodity-group `guid` + commodity `guid`". Both are assigned at creation and never change, so
+> **renaming a group, or drag-reordering commodities or groups, no longer misaligns existing saves**.
+> Data from 1.4.0 and earlier has no such field; opening the database in the configuration editor
+> backfills it automatically (remember to **save the asset**). Entries without a `guid` fall back to
+> the legacy key (`group name` + `index-in-group:itemId`), behaving exactly as in 1.4.0.
+> Saves written with legacy keys are **migrated in place** the first time that commodity's progress is
+> queried, so accumulated trade counts are not lost.
+
 # Shop UI
 
 The shop UI is split by type, sharing the base class `UiwShopViewBase` (`Runtime/UI/View/Shop/`):

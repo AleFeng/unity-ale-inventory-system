@@ -187,6 +187,12 @@ ShopRuntimeManager.Instance.LoadSaveData(save);
 ShopRuntimeManager.Instance.ResetAll();
 ```
 
+> **进度以稳定 `guid` 定位（1.5.0）**：每条交易进度按「商品组 `guid` + 商品 `guid`」记录，
+> 这两个 `guid` 在条目创建时分配、此后不变——因此**组改名、商品或商品组被拖拽重排都不会让老存档错位**。
+> 1.4.0 及更早的数据没有该字段，用配置编辑器打开数据库时会自动补发（记得**保存资产**）；
+> 补发前的条目一律回退旧键（`组名` + `组内索引:道具ID`），行为与 1.4.0 完全一致。
+> 用旧键存下的存档会在首次查询该商品进度时**就地迁移**为新键，已积累的交易次数不会丢失。
+
 # 商店 UI
 
 商店 UI 按类型拆分，共享基类 `UiwShopViewBase`（`Runtime/UI/View/Shop/`）：

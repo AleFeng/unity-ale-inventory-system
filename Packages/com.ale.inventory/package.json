@@ -1,6 +1,6 @@
 {
   "name": "com.ale.inventory",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "displayName": "Ale Inventory System",
   "description": "道具/仓库/商店/制作/装备/技能 一体化的库存系统插件。",
   "unity": "2022.3",

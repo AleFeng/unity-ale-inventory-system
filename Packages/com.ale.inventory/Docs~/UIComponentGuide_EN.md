@@ -338,7 +338,7 @@ Steps:
 | `content` | Base | — | The Content node's `RectTransform` |
 | `bufferCount` | Base | `1` | The number of extra buffer cells kept at each end along the scroll direction (prevents blank flashes during fast scrolling) |
 | `spawnPerSecond` | Base | `30` | The max number of cells to **spawn / assign** per second (rate limit); amortizes instantiation and binding (including async icon loading) across frames to avoid single-frame spikes. `≤ 0` = no limit (fill in one frame) |
-| `scrollDirection` | Grid | `Vertical` | `Vertical` (cross-axis = columns, columns by viewport width) / `Horizontal` (cross-axis = rows, rows by viewport height) |
+| `scrollDirection` | Grid | `Vertical` | `Vertical` (cross-axis = columns, columns by viewport width) / `Horizontal` (cross-axis = rows, rows by viewport height). The Inspector shows the Chinese labels 纵向 / 横向 via `[InspectorName]`; in code the members are `EListScrollDirection.Vertical` / `.Horizontal` (renamed from Chinese identifiers in 1.5.0; serialized values unchanged) |
 | `spacing` / `padding` | Grid | `(6,6)` | Cell spacing / content start padding (pixels) |
 
 ### Public Methods (Base)

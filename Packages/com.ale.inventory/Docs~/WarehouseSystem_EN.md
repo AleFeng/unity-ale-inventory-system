@@ -159,6 +159,9 @@ float w    = rm.GetTotalWeight("backpack");
 float wMax = rm.GetWeightLimit("backpack");
 
 // Get the slot list (order = UI display order)
+// Note: the return value is read-only by contract — on a hit it is a live reference to the runtime
+// state; on a miss (unknown inventory ID) it is a globally shared empty list. Copy it before
+// sorting / filtering.
 List<RuntimeItemSlot> slots = rm.GetSlots("backpack");
 
 // Remove: by slot ID (exact) / by item ID (accumulated deduction across slots)

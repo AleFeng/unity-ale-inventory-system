@@ -338,7 +338,7 @@ Prefab_List  [叶子组件，如 UiwInventoryItemGridList]
 | `content` | 基类 | — | Content 节点的 `RectTransform` |
 | `bufferCount` | 基类 | `1` | 视口沿滚动方向两端各额外保留的缓冲格数（防快速滚动露白） |
 | `spawnPerSecond` | 基类 | `30` | 每秒最多**生成 / 分配**的格子数（限速）；把实例化与绑定（含图标异步加载）分摊到多帧，避免单帧峰值卡顿。`≤ 0` = 不限速（一帧填满） |
-| `scrollDirection` | 网格 | `纵向` | `纵向`（跨轴=列，按视口宽算列数）/ `横向`（跨轴=行，按视口高算行数） |
+| `scrollDirection` | 网格 | `纵向` | `纵向`（跨轴=列，按视口宽算列数）/ `横向`（跨轴=行，按视口高算行数）。Inspector 显示中文，代码中的枚举成员为 `EListScrollDirection.Vertical` / `.Horizontal`（1.5.0 起由中文标识符改名，序列化值不变） |
 | `spacing` / `padding` | 网格 | `(6,6)` | 格子间距 / 内容起始内边距（像素） |
 
 ### 公开方法（基类）

@@ -69,7 +69,7 @@
   - **Character**：あるキャラクターが現在習得しているスキル（キャラクター ID を設定、`SkillRuntimeManager` を参照）。
 
 ### ランタイムとシリアライズ
-- **`InventoryDataManager`**（データクエリのシングルトン）：データベースを登録し、ID でアイテム / 倉庫 / ショップ / ブループリント / 列挙型などをクエリします。`.asset`、JSON、バイナリの 3 種類のソースからの読み込みに対応します。
+- **`InventoryDataManager`**（データクエリのシングルトン）：データベースを登録し、ID でアイテム / 倉庫 / ショップ / ブループリント / 列挙型などをクエリします。`.asset`、JSON、バイナリの 3 種類のソースからの読み込みに対応します。クエリは遅延構築される辞書インデックス（O(1)）を経由し、データベースの登録 / 登録解除時に無効化・再構築されます。
 - **`InventoryRuntimeManager`**（MonoBehaviour シングルトン）：倉庫のスロット状態、整理ソート、セーブデータ、時間注入の入口、カバー UI のルートノード / Layer 設定（ポップアップ / ホバーポップアップ / ドラッグのゴーストアイコンなどはインスタンス化後に指定 Layer を再適用）を担い、データベースを `InventoryDataManager` に登録します。エディタのテストアイテム投入（`autoPopulateOnStart` / `testInventoryId` / `testItems`、`Init` のタイミングで投入、データのみで UI は開かない）と、ワンクリックの「すべての設定表アイテムを追加」（`addAllConfiguredItems` + `addAllItemCount`）を含みます。
 - **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager` / `SkillRuntimeManager`**（軽量シングルトン）：取引 / クラフト / 装備 / スキルのロジック（装備中状態と習得状態はいずれもセーブ可能、ショップは取引進捗のセーブあり）。スキルの表示集合は別途 `SkillCollector` が 4 種のソースから収集します。
 - **エクスポート**：`InventoryDtoMapper` → JSON / バイナリ。オブジェクト参照は AssetGUID として保持され、Addressables による非同期読み込みも任意で可能です。
