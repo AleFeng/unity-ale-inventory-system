@@ -147,7 +147,7 @@ Tools > Inventory System > Welcome Window
 
 ## 依存関係
 
-- Unity 6000.3+
+- Unity 2022.3+（`package.json` が宣言する最低バージョン。本プラグインは `Unity 6000.3` で開発・保守しています）
 - TextMeshPro（任意、`IS_TMP` マクロ）
 - Unity Localization（任意、`IS_LOCALIZATION` マクロ）
 - Unity Addressables（任意、`IS_ADDRESSABLE` マクロ）

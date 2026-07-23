@@ -147,7 +147,7 @@ Tools > Inventory System > Welcome Window
 
 ## 依赖
 
-- Unity 6000.3+
+- Unity 2022.3+（`package.json` 声明的最低版本；本插件基于 `Unity 6000.3` 开发与维护）
 - TextMeshPro（可选，`IS_TMP` 宏）
 - Unity Localization（可选，`IS_LOCALIZATION` 宏）
 - Unity Addressables（可选，`IS_ADDRESSABLE` 宏）

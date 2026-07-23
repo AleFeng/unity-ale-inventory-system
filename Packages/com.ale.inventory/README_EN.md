@@ -147,7 +147,7 @@ The "Show on Startup" toggle at the bottom of the window controls whether this w
 
 ## Dependencies
 
-- Unity 6000.3+
+- Unity 2022.3+ (the minimum declared in `package.json`; this plugin is developed and maintained on `Unity 6000.3`)
 - TextMeshPro (optional, `IS_TMP` macro)
 - Unity Localization (optional, `IS_LOCALIZATION` macro)
 - Unity Addressables (optional, `IS_ADDRESSABLE` macro)
