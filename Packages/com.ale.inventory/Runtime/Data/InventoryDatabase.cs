@@ -560,12 +560,6 @@ namespace Ale.Inventory.Runtime
             if (GetTag(tagName) != null) return;
             functionTags.Add(new FunctionTag(tagName, description));
         }
-
-        /// <summary>对外暴露的默认数据填充入口（供编辑器在新建资产后显式调用）。</summary>
-        public void SeedDefaults()
-        {
-            
-        }
         #endregion
     }
 }

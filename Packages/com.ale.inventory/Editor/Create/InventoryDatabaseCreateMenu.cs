@@ -7,7 +7,7 @@ namespace Ale.Inventory.Editor
     /// <summary>
     /// 仓库系统数据文件创建菜单。替代 [CreateAssetMenu]，在创建时支持从配置的模板深拷贝数据。
     /// 模板路径存储于 EditorPrefs（键 <see cref="InventoryEditorPrefs.TemplateDatabasePath"/>），
-    /// 可在欢迎窗口中设置。若未设置模板，则使用默认数据（SeedDefaults）。
+    /// 可在欢迎窗口中设置。未设置模板时创建空数据库（可导入 Demo 样本或手动配置）。
     /// </summary>
     public static class InventoryDatabaseCreateMenu
     {
@@ -23,11 +23,10 @@ namespace Ale.Inventory.Editor
 
             var newDb = ScriptableObject.CreateInstance<InventoryDatabase>();
 
+            // 配置了模板则深拷贝；否则保持空数据库（用户可导入 Demo 样本或手动配置）。
             var templateDb = InventoryEditorPrefs.LoadTemplateDatabase();
             if (templateDb)
                 newDb.CloneFrom(templateDb);
-            else
-                newDb.SeedDefaults();
 
             AssetDatabase.CreateAsset(newDb, savePath);
             AssetDatabase.SaveAssets();

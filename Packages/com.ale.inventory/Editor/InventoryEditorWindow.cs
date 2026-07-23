@@ -349,12 +349,10 @@ namespace Ale.Inventory.Editor
 
             var db = ScriptableObject.CreateInstance<InventoryDatabase>();
 
-            // 优先使用配置的模板，无模板时填充默认数据。
+            // 配置了模板则深拷贝；否则保持空数据库（用户可导入 Demo 样本或手动配置）。
             var templateDb = InventoryEditorPrefs.LoadTemplateDatabase();
             if (templateDb)
                 db.CloneFrom(templateDb);
-            else
-                db.SeedDefaults();
 
             AssetDatabase.CreateAsset(db, path);
             AssetDatabase.SaveAssets();
