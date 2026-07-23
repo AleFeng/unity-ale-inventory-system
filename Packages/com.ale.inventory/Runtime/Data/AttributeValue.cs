@@ -112,6 +112,9 @@ namespace Ale.Inventory.Runtime
             strings.Clear();
             objRefs.Clear();
             curves.Clear();
+            // 与 objRefs 平行，必须一并清空：否则改成别的类型再改回对象类时，
+            // 旧资源的授权 GUID 仍残留，取用门面会在 objRefs 为空时按它加载到上一个资源。
+            objAddresses?.Clear();
         }
 
         /// <summary>设置是否为数组形态。从数组切回标量时仅保留首个元素。</summary>
@@ -148,12 +151,14 @@ namespace Ale.Inventory.Runtime
                 }
                 TrimToFirst(objRefs);
                 TrimToFirst(curves);
+                TrimToFirst(objAddresses);   // 与 objRefs 平行，步长 1，同步裁剪
             }
         }
 
         private static void TrimToFirst<T>(List<T> list)
         {
-            if (list.Count > 1) list.RemoveRange(1, list.Count - 1);
+            // 旧数据反序列化后 objAddresses 可能为 null（该字段晚于其余后备列表加入），故容 null。
+            if (list != null && list.Count > 1) list.RemoveRange(1, list.Count - 1);
         }
 
         private void TrimToFirstFloats()
@@ -224,7 +229,8 @@ namespace Ale.Inventory.Runtime
         public Object AsObject
         {
             get => objRefs.Count > 0 ? objRefs[0] : null;
-            set => SetSingle(objRefs, value);
+            // 走 SetObject 而非 SetSingle，使 objAddresses 一并保持等长（见 SetObject 说明）。
+            set => SetObject(0, value);
         }
 
         public Sprite AsSprite
@@ -326,7 +332,7 @@ namespace Ale.Inventory.Runtime
             else if (type == EFieldType.StringIntPair)   { strings.Add(string.Empty); ints.Add(0); }
             else if (type == EFieldType.EnumIntPair)     { ints.Add(0); ints.Add(0); }
             else if (type == EFieldType.String)      strings.Add(string.Empty);
-            else if (type.IsObjectBacked())           { objRefs.Add(null); objAddresses.Add(string.Empty); }
+            else if (type.IsObjectBacked())           { objRefs.Add(null); EnsureAddressCapacity(objRefs.Count); }
             else if (type.IsAnimationCurveBacked())   curves.Add(AnimationCurve.Linear(0f, 0f, 1f, 1f));
         }
 
@@ -341,7 +347,7 @@ namespace Ale.Inventory.Runtime
             else if (type == EFieldType.StringIntPair)   { strings.RemoveAt(element); ints.RemoveAt(element); }
             else if (type == EFieldType.EnumIntPair)     ints.RemoveRange(element * 2, 2);
             else if (type == EFieldType.String)      strings.RemoveAt(element);
-            else if (type.IsObjectBacked())           { objRefs.RemoveAt(element); if (element < objAddresses.Count) objAddresses.RemoveAt(element); }
+            else if (type.IsObjectBacked())           { objRefs.RemoveAt(element); if (objAddresses != null && element < objAddresses.Count) objAddresses.RemoveAt(element); }
             else if (type.IsAnimationCurveBacked())   curves.RemoveAt(element);
         }
 
@@ -447,7 +453,17 @@ namespace Ale.Inventory.Runtime
         }
 
         public Object GetObject(int element) => element < objRefs.Count ? objRefs[element] : null;
-        public void SetObject(int element, Object value) { EnsureObjectCapacity(element + 1); objRefs[element] = value; }
+
+        /// <summary>
+        /// 设置指定元素的对象引用。同时扩容 <c>objAddresses</c>，保持两个平行列表等长——
+        /// 长度不一致会让 <see cref="ReorderElements"/> 按错误的元素数重排地址列表。
+        /// </summary>
+        public void SetObject(int element, Object value)
+        {
+            EnsureObjectCapacity(element + 1);
+            EnsureAddressCapacity(element + 1);
+            objRefs[element] = value;
+        }
 
         /// <summary>读取指定元素的 Addressable 地址（运行时导入后填充；编辑期为空）。无则返回空串。</summary>
         public string GetObjAddress(int element)
@@ -530,7 +546,11 @@ namespace Ale.Inventory.Runtime
         private void EnsureIntCapacity(int count)    { while (ints.Count    < count) ints.Add(0); }
         private void EnsureStringCapacity(int count)  { while (strings.Count < count) strings.Add(string.Empty); }
         private void EnsureObjectCapacity(int count)  { while (objRefs.Count < count) objRefs.Add(null); }
-        private void EnsureAddressCapacity(int count) { while (objAddresses.Count < count) objAddresses.Add(string.Empty); }
+        private void EnsureAddressCapacity(int count)
+        {
+            objAddresses ??= new List<string>();   // 旧数据反序列化后可能为 null
+            while (objAddresses.Count < count) objAddresses.Add(string.Empty);
+        }
         // AnimationCurve 默认值：(0,0)→(1,1) 直线，保证新建曲线有明确形状
         private void EnsureCurveCapacity(int count)   { while (curves.Count  < count) curves.Add(AnimationCurve.Linear(0f, 0f, 1f, 1f)); }
 
