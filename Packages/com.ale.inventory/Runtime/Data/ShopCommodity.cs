@@ -9,6 +9,16 @@ namespace Ale.Inventory.Runtime
     [Serializable]
     public class ShopCommodity
     {
+        /// <summary>
+        /// 稳定唯一键，作为每玩家交易进度的存档 Key（见 <see cref="ShopCommodityProgress.commodityKey"/>）。
+        /// 创建时分配、此后不变——商品在组内被拖拽重排不会让老存档的交易次数错位。
+        /// <para>1.4.0 及更早的数据没有此字段，打开配置编辑器时由
+        /// <see cref="InventoryDatabase.EnsureShopEntryGuids"/> 自动补发一次；
+        /// 补发之前运行时回退到旧的「组内索引:道具ID」键，行为与旧版完全一致。
+        /// 运行时合成的商品（回收店未配商品组时）不分配 guid，恒走回退路径。</para>
+        /// </summary>
+        public string guid;
+
         /// <summary>关联的道具 ID（道具系统）。</summary>
         public string itemId;
 
@@ -29,6 +39,7 @@ namespace Ale.Inventory.Runtime
 
         public ShopCommodity Clone() => new ShopCommodity
         {
+            guid            = guid,   // 随拷贝保留（理由同 ShopCommodityGroup.Clone）
             itemId          = itemId,
             count           = count,
             priceMultiplier = priceMultiplier,

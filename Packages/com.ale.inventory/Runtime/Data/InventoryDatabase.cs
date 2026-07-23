@@ -465,6 +465,41 @@ namespace Ale.Inventory.Runtime
                 && (d.id == SortOption.LegacyNameAttrId || d.id == SortOption.LegacyIgnoreAttrId));
         }
 
+        /// <summary>
+        /// 为所有商店 / 商店模板的商品组与商品补发缺失的稳定 <c>guid</c>
+        /// （见 <see cref="ShopCommodityGroup.guid"/> / <see cref="ShopCommodity.guid"/>，用作交易进度的存档键）。
+        /// 1.4.0 及更早的数据没有该字段，由配置编辑器在打开 / 编辑数据库时调用补齐。
+        /// <para>幂等——已有 guid 的条目不动；返回是否发生改动，供调用方决定是否 <c>SetDirty</c>。</para>
+        /// </summary>
+        public bool EnsureShopEntryGuids()
+        {
+            bool changed = false;
+            foreach (var s in shops)         changed |= EnsureGroupGuids(s?.groups);
+            foreach (var t in shopTemplates) changed |= EnsureGroupGuids(t?.groups);
+            return changed;
+        }
+
+        private static bool EnsureGroupGuids(List<ShopCommodityGroup> groups)
+        {
+            if (groups == null) return false;
+            bool changed = false;
+            foreach (var g in groups)
+            {
+                if (g == null) continue;
+                if (string.IsNullOrEmpty(g.guid)) { g.guid = NewShopEntryGuid(); changed = true; }
+                if (g.commodities == null) continue;
+                foreach (var c in g.commodities)
+                {
+                    if (c == null) continue;
+                    if (string.IsNullOrEmpty(c.guid)) { c.guid = NewShopEntryGuid(); changed = true; }
+                }
+            }
+            return changed;
+        }
+
+        /// <summary>生成一个商品组 / 商品的稳定 guid。编辑器新建条目时也用它，保证格式统一。</summary>
+        public static string NewShopEntryGuid() => System.Guid.NewGuid().ToString("N");
+
         #endregion
 
         #region 校验

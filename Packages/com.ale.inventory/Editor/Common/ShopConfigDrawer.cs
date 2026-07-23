@@ -256,7 +256,11 @@ namespace Ale.Inventory.Editor
             if (GUILayout.Button("+ 添加商品组", EditorStyles.miniButton, GUILayout.Width(96)))
             {
                 ctx.RecordUndo("添加商品组");
-                groups.Add(new ShopCommodityGroup { name = "新商品组" });
+                groups.Add(new ShopCommodityGroup
+                {
+                    guid = InventoryDatabase.NewShopEntryGuid(),   // 交易进度存档键，创建即分配
+                    name = "新商品组",
+                });
                 ctx.MarkDirty();
             }
             EditorGUILayout.EndHorizontal();
@@ -328,7 +332,7 @@ namespace Ale.Inventory.Editor
             if (GUILayout.Button("+ 添加商品", EditorStyles.miniButton, GUILayout.Width(80)))
             {
                 ctx.RecordUndo("添加商品");
-                group.commodities.Add(new ShopCommodity());
+                group.commodities.Add(new ShopCommodity { guid = InventoryDatabase.NewShopEntryGuid() });
                 ctx.MarkDirty();
                 state.Expanded      = true;                        // 添加后自动展开
                 state.ScrollToIndex = group.commodities.Count - 1; // 定位到新条目（末尾）

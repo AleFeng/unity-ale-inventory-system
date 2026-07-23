@@ -178,6 +178,12 @@ namespace Ale.Inventory.Editor
                 {
                     _rebuildPending = false;
                     RebuildAllAttributes(_db);
+
+                    // 为商品组 / 商品补发缺失的稳定 guid（交易进度存档键）。
+                    // 幂等；仅在确有补发时 SetDirty——首次打开旧数据走的是这条路径（无编辑动作、
+                    // MarkDirty 未触发），不显式标脏补发结果就不会被保存。
+                    if (_db && _db.EnsureShopEntryGuids())
+                        EditorUtility.SetDirty(_db);
                 }
 
                 // 2. 刷新重复 ID 缓存。

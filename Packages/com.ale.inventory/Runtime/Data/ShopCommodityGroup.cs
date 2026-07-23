@@ -10,6 +10,15 @@ namespace Ale.Inventory.Runtime
     [Serializable]
     public class ShopCommodityGroup
     {
+        /// <summary>
+        /// 稳定唯一键，作为每玩家交易进度的存档 Key（见 <see cref="ShopCommodityProgress.groupKey"/>）。
+        /// 创建时分配、此后不变——组改名或被拖拽重排都不会让老存档的交易次数错位。
+        /// <para>1.4.0 及更早的数据没有此字段，打开配置编辑器时由
+        /// <see cref="InventoryDatabase.EnsureShopEntryGuids"/> 自动补发一次；
+        /// 补发之前运行时回退到旧的「组名 / #组索引」键，行为与旧版完全一致。</para>
+        /// </summary>
+        public string guid;
+
         /// <summary>商品组名称（UI 页签显示）。</summary>
         public string name;
 
@@ -26,6 +35,8 @@ namespace Ale.Inventory.Runtime
         {
             var clone = new ShopCommodityGroup
             {
+                // guid 随拷贝保留：模板派生出的商店各有独立 shopId，交易进度按 shopId 分桶，不会互相串。
+                guid        = guid,
                 name        = name,
                 description = description,
                 refresh     = refresh?.Clone() ?? new ShopRefreshSchedule(),

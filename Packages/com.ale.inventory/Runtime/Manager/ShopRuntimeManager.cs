@@ -321,7 +321,7 @@ namespace Ale.Inventory.Runtime
         {
             if (commodity.tradeLimit < 0) return int.MaxValue;   // 无限次数
 
-            var prog     = GetState(shop.id).GetOrAdd(GroupKey(group, gi), CommodityKey(commodity, ci));
+            var prog     = ResolveProgress(shop, group, gi, commodity, ci);
             var schedule = EffectiveSchedule(group, commodity);
             ApplyRefresh(schedule, prog);
 
@@ -334,7 +334,7 @@ namespace Ale.Inventory.Runtime
             ShopCommodity commodity, int ci, int times)
         {
             if (commodity.tradeLimit < 0) return;
-            var prog = GetState(shop.id).GetOrAdd(GroupKey(group, gi), CommodityKey(commodity, ci));
+            var prog = ResolveProgress(shop, group, gi, commodity, ci);
             prog.tradedCount += times;
         }
 
@@ -530,15 +530,73 @@ namespace Ale.Inventory.Runtime
         private static Shop ResolveShop(string shopId)
             => string.IsNullOrEmpty(shopId) ? null : InventoryDataManager.Instance.GetShop(shopId);
 
-        /// <summary>组的稳定键：组名优先，空名回退为 <c>#组索引</c>，无组（默认回收）为 <c>__default__</c>。</summary>
+        // ── 交易进度的存档键 ──────────────────────────────────────────────────────
+        // 进度以 (组键, 商品键) 定位。首选条目自身的稳定 guid：这样组改名、商品在组内被
+        // 拖拽重排都不会让老存档错位（旧键含组名与组内索引，一重排就会挂到别的商品上）。
+        // guid 为空时（1.4.0 及更早的数据尚未在配置编辑器中补发、或运行时合成的商品）
+        // 回退旧键，使未升级的数据行为与旧版完全一致。
+
+        private const string DefaultGroupKey = "__default__";
+
+        /// <summary>组键：guid 优先，缺失时回退旧键；无组（默认回收）恒为 <c>__default__</c>。</summary>
         private static string GroupKey(ShopCommodityGroup group, int gi)
         {
-            if (group == null) return "__default__";
+            if (group == null) return DefaultGroupKey;
+            return !string.IsNullOrEmpty(group.guid) ? group.guid : LegacyGroupKey(group, gi);
+        }
+
+        /// <summary>商品键：guid 优先，缺失时回退旧键。</summary>
+        private static string CommodityKey(ShopCommodity commodity, int ci)
+        {
+            if (commodity != null && !string.IsNullOrEmpty(commodity.guid)) return commodity.guid;
+            return LegacyCommodityKey(commodity, ci);
+        }
+
+        /// <summary>1.4.0 及更早的组键：组名优先，空名回退为 <c>#组索引</c>。</summary>
+        private static string LegacyGroupKey(ShopCommodityGroup group, int gi)
+        {
+            if (group == null) return DefaultGroupKey;
             return string.IsNullOrEmpty(group.name) ? $"#{gi}" : group.name;
         }
 
-        /// <summary>商品的稳定键：<c>组内索引:道具ID</c>。</summary>
-        private static string CommodityKey(ShopCommodity commodity, int ci) => $"{ci}:{commodity?.itemId}";
+        /// <summary>1.4.0 及更早的商品键：<c>组内索引:道具ID</c>。</summary>
+        private static string LegacyCommodityKey(ShopCommodity commodity, int ci) => $"{ci}:{commodity?.itemId}";
+
+        /// <summary>
+        /// 取（或创建）某商品的交易进度条目，并顺带完成一次性存档迁移：
+        /// 若稳定键下无条目、而旧键下有，则把该条目的键<b>就地改写</b>为稳定键后复用，
+        /// 从而保住玩家已积累的交易次数。
+        ///
+        /// <para>迁移刻意做成<b>惰性、按需</b>而非在 <see cref="LoadSaveData"/> 里一次性完成：
+        /// 那样要求存档加载时商店配置已注册（顺序依赖），且定位失败就只能丢弃条目、直接损失玩家进度。
+        /// 本写法不依赖加载顺序，且幂等——迁移过的条目下次直接命中稳定键。</para>
+        /// </summary>
+        private ShopCommodityProgress ResolveProgress(Shop shop, ShopCommodityGroup group, int gi,
+            ShopCommodity commodity, int ci)
+        {
+            var    state = GetState(shop.id);
+            string gKey  = GroupKey(group, gi);
+            string cKey  = CommodityKey(commodity, ci);
+
+            var prog = state.Find(gKey, cKey);
+            if (prog != null) return prog;
+
+            // 键已升级为 guid（与旧键不同）时，认领旧键下的存档进度。
+            string legacyG = LegacyGroupKey(group, gi);
+            string legacyC = LegacyCommodityKey(commodity, ci);
+            if (legacyG != gKey || legacyC != cKey)
+            {
+                var legacy = state.Find(legacyG, legacyC);
+                if (legacy != null)
+                {
+                    legacy.groupKey     = gKey;
+                    legacy.commodityKey = cKey;
+                    return legacy;
+                }
+            }
+
+            return state.GetOrAdd(gKey, cKey);
+        }
 
         /// <summary>价格倍率换算（四舍五入，下限 0）。倍率为 1 时原样返回。</summary>
         private static int ApplyMultiplier(int basePrice, float multiplier)
