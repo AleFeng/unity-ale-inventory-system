@@ -123,9 +123,13 @@ namespace Ale.Inventory.Editor
                 Debug.LogWarning("[InventoryDemoWizard] 缺少 PF_UiwSkillTooltip，请先生成「技能悬停弹窗」项。");
 
             // ── 保存主 Prefab ─────────────────────────────────────────────────
-            PrefabUtility.SaveAsPrefabAsset(root, path);
+            // 不走 SavePrefab：根节点上没有 Uiw 组件（无需上移），且子节点全是嵌套预制体实例
+            // （字体事件由各自的源预制体承担，不应在此重复挂）。就地覆盖保 GUID 的语义与 SavePrefab 相同。
+            PrefabUtility.SaveAsPrefabAsset(root, path, out bool saved);
             Object.DestroyImmediate(root);
-            Debug.Log("[InventoryDemoWizard] 主 Prefab 已保存：" + path);
+
+            if (saved) Debug.Log("[InventoryDemoWizard] 主 Prefab 已保存：" + path);
+            else       Debug.LogError("[InventoryDemoWizard] 主 Prefab 保存失败：" + path);
         }
         
         /// <summary>

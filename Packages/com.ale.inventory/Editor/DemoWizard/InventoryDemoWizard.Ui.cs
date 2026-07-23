@@ -336,7 +336,13 @@ namespace Ale.Inventory.Editor
             }
         }
 
-        // 保存 Prefab 到指定路径并销毁临时 GameObject
+        /// <summary>
+        /// 保存 Prefab 到指定路径并销毁临时 GameObject。
+        /// <para><b>就地覆盖</b>：路径上已有预制体时 <see cref="PrefabUtility.SaveAsPrefabAsset(GameObject, string, out bool)"/>
+        /// 只替换其内容，<c>.meta</c>（即资产 GUID）随路径保留。<b>切勿在此之前删除旧资产</b>——
+        /// 先删再建会换掉 GUID，使「单独重生成某个被依赖的预制体」静默打断依赖它的预制体的引用
+        /// （生成窗口的依赖对话框只向下遍历依赖、不向上遍历被依赖者，故不会提示）。</para>
+        /// </summary>
         static void SavePrefab(GameObject root, string path)
         {
 #if IS_TMP && IS_LOCALIZATION
@@ -345,9 +351,11 @@ namespace Ale.Inventory.Editor
             AttachFontEvent(root);
 #endif
             MovePrimaryUiwToTop(root);
-            PrefabUtility.SaveAsPrefabAsset(root, path);
+            PrefabUtility.SaveAsPrefabAsset(root, path, out bool saved);
             Object.DestroyImmediate(root);
-            Debug.Log("[InventoryDemoWizard] 预制体已保存：" + path);
+
+            if (saved) Debug.Log("[InventoryDemoWizard] 预制体已保存：" + path);
+            else       Debug.LogError("[InventoryDemoWizard] 预制体保存失败：" + path);
         }
 
         /// <summary>
@@ -383,20 +391,17 @@ namespace Ale.Inventory.Editor
             AssetDatabase.CreateFolder(parent, path.Substring(sep + 1));
         }
 
-        // 若资产已存在则删除，保证后续用最新版本重新生成
-        static void DeleteIfExists(string path)
-        {
-            if (AssetDatabase.LoadAssetAtPath<Object>(path))
-                AssetDatabase.DeleteAsset(path);
-        }
-
         /// <summary>
-        /// 每个 builder 开头的固定两步：由预制体名解析出目标资产路径（<see cref="Pfb"/>），
-        /// 并删除同名旧资产（<see cref="DeleteIfExists"/>，保证用最新版本重生成），返回该路径。
+        /// 每个 builder 开头的固定一步：由预制体名解析出目标资产路径（<see cref="Pfb"/>），
+        /// 顺带确保其所在文件夹存在，返回该路径。
+        /// <para><b>刻意不删除同名旧资产</b>——保住资产 GUID，理由见 <see cref="SavePrefab"/>。
+        /// 内容由 <see cref="SavePrefab"/> 整体替换，不会有旧节点残留。</para>
         /// </summary>
         static string BeginPrefab(string prefabName)
         {
-            string path = BeginPrefab(prefabName);
+            string path = Pfb(prefabName);
+            int sep = path.LastIndexOf('/');
+            if (sep > 0) EnsureFolder(path.Substring(0, sep));
             return path;
         }
 

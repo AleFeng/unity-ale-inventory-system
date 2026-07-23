@@ -26,8 +26,6 @@ namespace Ale.Inventory.Editor
         static void GetOrCreateDatabase()
         {
             string path = DatabasePath;
-            DeleteIfExists(path);
-
             var db = ScriptableObject.CreateInstance<InventoryDatabase>();
 
             // ── 枚举类型 ─────────────────────────────────────────────────────────
@@ -316,7 +314,28 @@ namespace Ale.Inventory.Editor
             equipGroup.RebuildAttributes(db);
             db.EquipmentGroups.Add(equipGroup);
 
-            AssetDatabase.CreateAsset(db, path);
+            SaveDatabaseAsset(db, path);
+        }
+
+        /// <summary>
+        /// 把新建好的数据库写入资产路径。
+        /// <para>已存在时<b>就地覆盖</b>（把内容 <see cref="EditorUtility.CopySerialized"/> 进原资产实例）而非删除重建：
+        /// <see cref="AssetDatabase.CreateAsset"/> 会先删掉同名资产，连带换掉 GUID，从而静默打断
+        /// <c>InventoryManager.prefab</c> 与各 UI 预制体对数据库的引用。理由同 <see cref="SavePrefab"/>。</para>
+        /// </summary>
+        static void SaveDatabaseAsset(InventoryDatabase db, string path)
+        {
+            var existing = AssetDatabase.LoadAssetAtPath<InventoryDatabase>(path);
+            if (existing)
+            {
+                EditorUtility.CopySerialized(db, existing);
+                EditorUtility.SetDirty(existing);
+                Object.DestroyImmediate(db);   // 临时实例，内容已拷进原资产
+            }
+            else
+            {
+                AssetDatabase.CreateAsset(db, path);
+            }
         }
 
         /// <summary>添加 制作蓝图（产出/消耗为 (道具ID, 数量) 元组数组；制作仓库固定为「背包」）。</summary>
