@@ -7,19 +7,11 @@ namespace Ale.Inventory.Runtime
     /// <summary>
     /// 商店模板。定义自定义属性字段 + 一整套商店可配置项的默认值，作为创建新商店的蓝本。
     /// 与 <see cref="Shop"/> 共享 <see cref="IShopConfig"/>，使两者的配置项一致且编辑器复用同一套绘制。
+    /// <para>名称 / 色点 / 属性字段来自 <see cref="ConfigTemplateBase"/>。</para>
     /// </summary>
     [Serializable]
-    public class ShopTemplate : IShopConfig
+    public class ShopTemplate : ConfigTemplateBase, IShopConfig
     {
-        /// <summary>模板名称。</summary>
-        public string name;
-
-        /// <summary>模板标识颜色（用于列表中的圆形色点，便于快速区分来源）。</summary>
-        public Color color = Color.gray;
-
-        /// <summary>模板所定义的自定义属性字段。</summary>
-        public List<AttributeDefinition> attributes = new List<AttributeDefinition>();
-
         // ── 商店可配置项（默认值，创建商店时复制）────────────────────────────────
         /// <summary>商店类型（售卖 / 回收 / 等价交换）。</summary>
         public ShopType shopType = ShopType.Sell;
@@ -67,16 +59,14 @@ namespace Ale.Inventory.Runtime
         {
         }
 
-        public ShopTemplate(string nameArg)
+        public ShopTemplate(string nameArg) : base(nameArg)
         {
-            name = nameArg;
         }
 
         public ShopTemplate Clone()
         {
-            var clone = new ShopTemplate(name)
+            var clone = new ShopTemplate
             {
-                color           = color,
                 shopType        = shopType,
                 showAllFilterTab = showAllFilterTab,
                 numberFormatRef = numberFormatRef,
@@ -85,8 +75,7 @@ namespace Ale.Inventory.Runtime
                 tradeTagRefs       = new List<string>(tradeTagRefs),
                 filterTagRefs      = new List<string>(filterTagRefs),
             };
-            foreach (var attr in attributes)
-                clone.attributes.Add(attr.Clone());
+            CopyTo(clone);   // 名称 / 色点 / 属性字段
             foreach (var sp in sortPriorities)
                 clone.sortPriorities.Add(sp.Clone());
             foreach (var sp in sortTiebreakers)

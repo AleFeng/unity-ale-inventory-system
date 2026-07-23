@@ -9,19 +9,11 @@ namespace Ale.Inventory.Runtime
     /// （槽位列表 / 装备槽 / 道具限制 / 装备属性字段）以及自定义属性字段定义（schema），同时用于分类筛选。
     /// 与 <see cref="EquipmentGroup"/> 共享 <see cref="IEquipmentConfig"/>，使两者配置项一致、编辑器复用同一套绘制。
     /// 从模板创建装备组时会深拷贝这些配置项（见 EquipmentListPanel.AddFromTemplate）。
+    /// <para>名称 / 色点 / 属性字段来自 <see cref="ConfigTemplateBase"/>。</para>
     /// </summary>
     [Serializable]
-    public class EquipmentGroupTemplate : IEquipmentConfig
+    public class EquipmentGroupTemplate : ConfigTemplateBase, IEquipmentConfig
     {
-        /// <summary>模板名称。</summary>
-        public string name;
-
-        /// <summary>模板标识颜色（用于列表中的圆形色点，便于快速区分来源）。</summary>
-        public Color color = Color.gray;
-
-        /// <summary>模板所定义的自定义属性字段（装备组据此协调其属性值集合）。</summary>
-        public List<AttributeDefinition> attributes = new List<AttributeDefinition>();
-
         // ── 装备组可配置项（默认值，创建装备组时复制）────────────────────────────────
         /// <summary>装备仓库（装备系统 / 装备 UI 可直接交互的玩家仓库 ID 列表；卸下时从 Index0 起找第一个放得下的仓库）。</summary>
         public List<string> equipmentInventoryRefs = new List<string>();
@@ -50,17 +42,16 @@ namespace Ale.Inventory.Runtime
         {
         }
 
-        public EquipmentGroupTemplate(string nameArg)
+        public EquipmentGroupTemplate(string nameArg) : base(nameArg)
         {
-            name = nameArg;
         }
 
         /// <summary>深拷贝。</summary>
         public EquipmentGroupTemplate Clone()
         {
-            var clone = new EquipmentGroupTemplate(name) { color = color };
+            var clone = new EquipmentGroupTemplate();
+            CopyTo(clone);   // 名称 / 色点 / 属性字段
             clone.equipmentInventoryRefs = new List<string>(equipmentInventoryRefs);
-            foreach (var attr in attributes)        clone.attributes.Add(attr.Clone());
             foreach (var sl in slotLists)           clone.slotLists.Add(sl.Clone());
             foreach (var ad in attributeDisplays)   clone.attributeDisplays.Add(ad.Clone());
             foreach (var sp in sortPriorities)      clone.sortPriorities.Add(sp.Clone());

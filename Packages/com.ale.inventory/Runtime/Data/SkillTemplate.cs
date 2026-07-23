@@ -10,16 +10,11 @@ namespace Ale.Inventory.Runtime
     /// 从模板创建技能时会复制这些默认信息，并据此由 <see cref="Skill.RebuildAttributes"/> 初始化技能的属性值
     /// （自定义属性的默认值取自各 <see cref="AttributeDefinition"/> 的 defaultValue）。
     /// 与 <see cref="Skill"/> 共享 <see cref="ISkillConfig"/>，使两者默认信息一致、编辑器复用同一套绘制。
+    /// <para>名称 / 色点 / 属性字段来自 <see cref="ConfigTemplateBase"/>。</para>
     /// </summary>
     [Serializable]
-    public class SkillTemplate : ISkillConfig
+    public class SkillTemplate : ConfigTemplateBase, ISkillConfig
     {
-        /// <summary>模板名称（同时作为技能的 templateRef 引用键）。</summary>
-        public string name;
-
-        /// <summary>模板标识颜色（用于列表中的圆形色点，便于快速区分来源）。</summary>
-        public Color color = Color.gray;
-
         // ── 技能默认信息（创建技能时复制）────────────────────────────────────────────
         /// <summary>默认显示名称（<see cref="EFieldType.Text"/>：纯文本 fallback + 可选本地化引用）。</summary>
         public AttributeValue displayText = new AttributeValue(EFieldType.Text);
@@ -39,9 +34,6 @@ namespace Ale.Inventory.Runtime
         /// <summary>默认副分组标签 ID 列表。</summary>
         public List<string> secondaryGroupTags = new List<string>();
 
-        /// <summary>模板所定义的自定义属性字段（技能据此协调其属性值集合）。</summary>
-        public List<AttributeDefinition> attributes = new List<AttributeDefinition>();
-
         // ── ISkillConfig（映射到上述序列化字段，供编辑器共享绘制与「从模板复制」）────────────
         AttributeValue ISkillConfig.DisplayName => displayText;
         AttributeValue ISkillConfig.Description => descriptionText;
@@ -54,17 +46,15 @@ namespace Ale.Inventory.Runtime
         {
         }
 
-        public SkillTemplate(string nameArg)
+        public SkillTemplate(string nameArg) : base(nameArg)
         {
-            name = nameArg;
         }
 
         /// <summary>深拷贝。</summary>
         public SkillTemplate Clone()
         {
-            var clone = new SkillTemplate(name)
+            var clone = new SkillTemplate
             {
-                color              = color,
                 displayText        = displayText     != null ? displayText.Clone()     : new AttributeValue(EFieldType.Text),
                 descriptionText    = descriptionText != null ? descriptionText.Clone() : new AttributeValue(EFieldType.Text),
                 icon               = icon,
@@ -72,8 +62,7 @@ namespace Ale.Inventory.Runtime
                 primaryGroupTag    = primaryGroupTag,
                 secondaryGroupTags = new List<string>(secondaryGroupTags),
             };
-            foreach (var attr in attributes)
-                clone.attributes.Add(attr.Clone());
+            CopyTo(clone);   // 名称 / 色点 / 属性字段
             return clone;
         }
     }

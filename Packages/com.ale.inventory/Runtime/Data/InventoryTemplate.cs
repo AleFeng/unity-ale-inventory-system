@@ -7,19 +7,11 @@ namespace Ale.Inventory.Runtime
     /// <summary>
     /// 仓库模板。定义一组自定义属性字段（如备注、分区等），作为创建新仓库的蓝本。
     /// 从模板创建仓库时会按字段定义初始化默认值。
+    /// <para>名称 / 色点 / 属性字段来自 <see cref="ConfigTemplateBase"/>。</para>
     /// </summary>
     [Serializable]
-    public class InventoryTemplate
+    public class InventoryTemplate : ConfigTemplateBase
     {
-        /// <summary>模板名称。</summary>
-        public string name;
-
-        /// <summary>模板标识颜色（用于列表中的圆形色点，便于快速区分来源）。</summary>
-        public Color color = Color.gray;
-
-        /// <summary>模板所定义的自定义属性字段。</summary>
-        public List<AttributeDefinition> attributes = new List<AttributeDefinition>();
-
         /// <summary>容量上限。0 表示无限制。</summary>
         public int capacity;
 
@@ -63,16 +55,14 @@ namespace Ale.Inventory.Runtime
         {
         }
 
-        public InventoryTemplate(string nameArg)
+        public InventoryTemplate(string nameArg) : base(nameArg)
         {
-            name = nameArg;
         }
 
         public InventoryTemplate Clone()
         {
-            var clone = new InventoryTemplate(name) { color = color };
-            foreach (var attr in attributes)
-                clone.attributes.Add(attr.Clone());
+            var clone = new InventoryTemplate();
+            CopyTo(clone);   // 名称 / 色点 / 属性字段
             clone.capacity            = capacity;
             clone.weightLimit         = weightLimit;
             clone.allowPutTagRefs     = new List<string>(allowPutTagRefs);

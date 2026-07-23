@@ -104,45 +104,9 @@ namespace Ale.Inventory.Runtime
                     CollectDefinitions(tag.attributes, desired, desiredIds);
             }
 
-            // 移除不再期望的条目。
-            values.RemoveAll(e => !desiredIds.Contains(e.id));
-
-            // 追加缺失的条目；同时修正已有条目的类型/数组形态/枚举引用不匹配问题。
-            foreach (var def in desired)
-            {
-                var existing = GetEntry(def.id);
-                if (existing == null)
-                {
-                    values.Add(new AttributeEntry(def.id, def.CreateValue()));
-                }
-                else
-                {
-                    // 字段类型、数组形态或枚举类型引用发生变化时，重置为新类型的默认值（保留 id）
-                    bool typeMismatch  = existing.value.Type    != def.type;
-                    bool arrayMismatch = existing.value.IsArray != def.isArray;
-                    bool enumMismatch  = (def.type == EFieldType.Enum || def.type == EFieldType.EnumIntPair)
-                                     && existing.value.EnumTypeRef != def.enumTypeRef;
-                    if (typeMismatch || arrayMismatch || enumMismatch)
-                        existing.value = def.CreateValue();
-                }
-            }
-
-            // 按模板定义顺序重排 values，确保显示/存储顺序与定义顺序一致。
-            for (int i = 0; i < desired.Count; i++)
-            {
-                string targetId = desired[i].id;
-                int cur = -1;
-                for (int j = i; j < values.Count; j++)
-                {
-                    if (values[j].id == targetId) { cur = j; break; }
-                }
-                if (cur > i)
-                {
-                    var tmp = values[cur];
-                    values.RemoveAt(cur);
-                    values.Insert(i, tmp);
-                }
-            }
+            // 移除不再期望的条目、追加缺失的条目、修正类型/数组形态/枚举引用不匹配的条目，
+            // 并按 desired 的顺序重排 values（reorder: true），使显示/存储顺序与定义顺序一致。
+            AttributeSync.Sync(values, desired, reorder: true);
 
             // values 已完整重建，使缓存失效；下次 GetEntry 调用时将从最终状态重建字典。
             InvalidateEntryCache();
@@ -190,7 +154,7 @@ namespace Ale.Inventory.Runtime
 
         #endregion
 
-        #region Item数据拷贝
+        #region 克隆
 
         /// <summary>
         /// 拷贝 道具数据

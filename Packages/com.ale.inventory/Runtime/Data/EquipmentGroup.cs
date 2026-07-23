@@ -9,9 +9,12 @@ namespace Ale.Inventory.Runtime
     /// 装备属性字段列表（指定哪些道具属性作为装备组总属性加成），以及来自模板的自定义属性值。
     ///
     /// <para>装备组是配置目录；运行时的装备/卸下行为与属性加成汇总由后续阶段的 EquipmentRuntimeManager 执行。</para>
+    ///
+    /// <para>继承 <see cref="AttributeOwner"/> 以复用带缓存的 O(1) <see cref="AttributeOwner.GetEntry"/>
+    /// 与 <see cref="AttributeOwner.GetAttributeValue{T}"/> / <see cref="AttributeOwner.SetAttributeValue{T}"/>。</para>
     /// </summary>
     [Serializable]
-    public class EquipmentGroup : IEquipmentConfig
+    public class EquipmentGroup : AttributeOwner, IEquipmentConfig
     {
         /// <summary>唯一标识。</summary>
         public string id;
@@ -43,6 +46,9 @@ namespace Ale.Inventory.Runtime
         /// <summary>来自模板的自定义属性值。</summary>
         public List<AttributeEntry> values = new List<AttributeEntry>();
 
+        // 实现基类 AttributeOwner 的抽象属性，将 values 列表暴露给基类的懒加载字典缓存。
+        protected override List<AttributeEntry> AttributeEntries => values;
+
         // ── IEquipmentConfig（映射到上述序列化字段，供编辑器共享绘制）────────────────
         List<string> IEquipmentConfig.EquipmentInventoryRefs => equipmentInventoryRefs;
         List<EquipmentSlotList> IEquipmentConfig.SlotLists => slotLists;
@@ -60,43 +66,20 @@ namespace Ale.Inventory.Runtime
             templateRef = newTemplateRef;
         }
 
-        /// <summary>按属性 ID 查找属性值，未找到返回 null。</summary>
-        public AttributeEntry GetEntry(string attrId)
-        {
-            foreach (var e in values)
-                if (e.id == attrId) return e;
-            return null;
-        }
-
         /// <summary>
         /// 根据当前模板协调自定义属性值集合：
-        /// 为模板新增字段追加默认值条目；移除模板已不存在的字段条目；已存在字段保留现有值。
-        /// 与 <see cref="CraftingBlueprint.RebuildAttributes"/> 的 values 同步段一致。
+        /// 为模板新增字段追加默认值条目；移除模板已不存在的字段条目；已存在字段保留现有值
+        /// （类型 / 数组形态 / 枚举类型引用变化时重置为新类型默认值）。
         /// </summary>
         public void RebuildAttributes(InventoryDatabase db)
         {
             if (!db) return;
 
             var template = db.GetEquipmentGroupTemplate(templateRef);
-            var defs     = template != null ? template.attributes : new List<AttributeDefinition>();
+            AttributeSync.Sync(values, template != null ? template.attributes : null);
 
-            var desiredIds = new HashSet<string>();
-            foreach (var def in defs)
-                if (!string.IsNullOrEmpty(def.id)) desiredIds.Add(def.id);
-
-            values.RemoveAll(e => !desiredIds.Contains(e.id));
-
-            foreach (var def in defs)
-            {
-                if (string.IsNullOrEmpty(def.id)) continue;
-                var existing = GetEntry(def.id);
-                if (existing == null)
-                    values.Add(new AttributeEntry(def.id, def.CreateValue()));
-                else if (existing.value == null
-                         || existing.value.Type    != def.type
-                         || existing.value.IsArray != def.isArray)
-                    existing.value = def.CreateValue();
-            }
+            // values 已完整重建，使缓存失效；下次 GetEntry 调用时将从最终状态重建字典。
+            InvalidateEntryCache();
         }
 
         /// <summary>深拷贝。</summary>

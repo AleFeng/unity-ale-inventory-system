@@ -75,40 +75,15 @@ namespace Ale.Inventory.Runtime
 
         /// <summary>
         /// 同步所有枚举项的 <see cref="EnumItem.attributeValues"/> 与 <see cref="attributes"/> 定义：
-        /// 为缺失 key 添加默认值条目；移除已删除 key 的孤立条目。
+        /// 为缺失 key 添加默认值条目；移除已删除 key 的孤立条目；类型 / 数组形态 / 枚举类型引用
+        /// 变化的条目重置为新默认值（保留 key，旧值不再兼容）。
         /// 此操作幂等，可在编辑器每帧调用。
         /// </summary>
         public void RebuildItemAttributes()
         {
             foreach (var item in items)
             {
-                // 补充缺失条目；若类型或数组标志与定义不匹配则重建（修复切换类型后仍显示旧类型的问题）
-                foreach (var def in attributes)
-                {
-                    AttributeEntry existing = null;
-                    foreach (var entry in item.attributeValues)
-                        if (entry.id == def.id) { existing = entry; break; }
-
-                    if (existing == null)
-                    {
-                        // 条目缺失 → 追加默认值
-                        item.attributeValues.Add(new AttributeEntry(def.id, def.CreateValue()));
-                    }
-                    else if (existing.value == null
-                             || existing.value.Type    != def.type
-                             || existing.value.IsArray != def.isArray)
-                    {
-                        // 类型或数组标志变化 → 重置为新默认值（保留 key，旧值不再兼容）
-                        existing.value = def.CreateValue();
-                    }
-                }
-                // 移除孤立条目（定义已删除）
-                item.attributeValues.RemoveAll(entry =>
-                {
-                    foreach (var def in attributes)
-                        if (def.id == entry.id) return false;
-                    return true;
-                });
+                AttributeSync.Sync(item.attributeValues, attributes);
 
                 // attributeValues 已完整重建，使枚举项的属性缓存失效。
                 item.InvalidateEntryCache();

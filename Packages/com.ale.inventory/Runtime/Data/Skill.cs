@@ -67,38 +67,13 @@ namespace Ale.Inventory.Runtime
         /// 根据当前模板协调自定义属性值集合：
         /// 为模板新增字段追加默认值条目；移除模板已不存在的字段条目；已存在字段保留现有值
         /// （类型 / 数组形态 / 枚举类型引用变化时重置为新类型默认值）。
-        /// 与 <see cref="CraftingBlueprint.RebuildAttributes"/> 的 values 同步段一致。
         /// </summary>
         public void RebuildAttributes(InventoryDatabase db)
         {
             if (!db) return;
 
             var template = db.GetSkillTemplate(templateRef);
-            var defs     = template != null ? template.attributes : new List<AttributeDefinition>();
-
-            var desiredIds = new HashSet<string>();
-            foreach (var def in defs)
-                if (!string.IsNullOrEmpty(def.id)) desiredIds.Add(def.id);
-
-            values.RemoveAll(e => !desiredIds.Contains(e.id));
-
-            foreach (var def in defs)
-            {
-                if (string.IsNullOrEmpty(def.id)) continue;
-                var existing = GetEntry(def.id);
-                if (existing == null)
-                {
-                    values.Add(new AttributeEntry(def.id, def.CreateValue()));
-                }
-                else if (existing.value == null
-                         || existing.value.Type    != def.type
-                         || existing.value.IsArray != def.isArray
-                         || ((def.type == EFieldType.Enum || def.type == EFieldType.EnumIntPair)
-                             && existing.value.EnumTypeRef != def.enumTypeRef))
-                {
-                    existing.value = def.CreateValue();
-                }
-            }
+            AttributeSync.Sync(values, template != null ? template.attributes : null);
 
             // values 已完整重建，使缓存失效；下次 GetEntry 调用时将从最终状态重建字典。
             InvalidateEntryCache();

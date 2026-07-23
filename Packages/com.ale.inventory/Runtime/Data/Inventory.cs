@@ -6,9 +6,12 @@ namespace Ale.Inventory.Runtime
     /// <summary>
     /// 仓库实例。容纳道具的容器（背包、商店库存、装备栏等）。
     /// 携带唯一 <see cref="id"/>、来源模板引用、三类功能标签限制、整理配置，以及来自模板的自定义属性值。
+    ///
+    /// <para>继承 <see cref="AttributeOwner"/> 以复用带缓存的 O(1) <see cref="AttributeOwner.GetEntry"/>
+    /// 与 <see cref="AttributeOwner.GetAttributeValue{T}"/> / <see cref="AttributeOwner.SetAttributeValue{T}"/>。</para>
     /// </summary>
     [Serializable]
-    public class Inventory
+    public class Inventory : AttributeOwner
     {
         /// <summary>唯一标识。</summary>
         public string id;
@@ -70,6 +73,9 @@ namespace Ale.Inventory.Runtime
         /// <summary>来自模板的自定义属性值。</summary>
         public List<AttributeEntry> values = new List<AttributeEntry>();
 
+        // 实现基类 AttributeOwner 的抽象属性，将 values 列表暴露给基类的懒加载字典缓存。
+        protected override List<AttributeEntry> AttributeEntries => values;
+
         public Inventory()
         {
         }
@@ -80,43 +86,20 @@ namespace Ale.Inventory.Runtime
             templateRef = newTemplateRef;
         }
 
-        /// <summary>按属性 ID 查找属性值，未找到返回 null。</summary>
-        public AttributeEntry GetEntry(string attrId)
-        {
-            foreach (var e in values)
-                if (e.id == attrId) return e;
-            return null;
-        }
-
         /// <summary>
         /// 根据当前模板协调自定义属性值集合：
         /// 为模板中新增的字段追加默认值条目；移除模板中已不存在的字段条目；
-        /// 已存在的字段保留现有值。
+        /// 已存在的字段保留现有值（类型 / 数组形态 / 枚举类型引用变化时重置为新类型默认值）。
         /// </summary>
         public void RebuildAttributes(InventoryDatabase db)
         {
             if (!db) return;
 
             var template = db.GetInventoryTemplate(templateRef);
-            var defs     = template != null ? template.attributes : new List<AttributeDefinition>();
+            AttributeSync.Sync(values, template != null ? template.attributes : null);
 
-            var desiredIds = new HashSet<string>();
-            foreach (var def in defs)
-                if (!string.IsNullOrEmpty(def.id)) desiredIds.Add(def.id);
-
-            values.RemoveAll(e => !desiredIds.Contains(e.id));
-
-            foreach (var def in defs)
-            {
-                if (string.IsNullOrEmpty(def.id)) continue;
-                var existing = GetEntry(def.id);
-                if (existing == null)
-                    values.Add(new AttributeEntry(def.id, def.CreateValue()));
-                else if (existing.value == null
-                         || existing.value.Type    != def.type
-                         || existing.value.IsArray != def.isArray)
-                    existing.value = def.CreateValue();
-            }
+            // values 已完整重建，使缓存失效；下次 GetEntry 调用时将从最终状态重建字典。
+            InvalidateEntryCache();
         }
 
         /// <summary>深拷贝。</summary>
