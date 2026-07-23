@@ -37,7 +37,7 @@ namespace Ale.Inventory.Editor
 
         // ── Inspector ─────────────────────────────────────────────────────────────
 
-        public void DrawInspector(IInventoryEditorContext ctx, NumberFormatConfig config)
+        public override void DrawInspector(IInventoryEditorContext ctx, NumberFormatConfig config)
         {
             if (config == null)
             {

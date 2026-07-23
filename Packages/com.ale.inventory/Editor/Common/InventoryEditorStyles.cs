@@ -17,6 +17,7 @@ namespace Ale.Inventory.Editor
         private static GUIStyle _statusError;
         private static GUIStyle _placeholder;
         private static GUIStyle _colorDot;
+        private static GUIStyle _dangerMiniButton;
 
         /// <summary>重复/错误高亮使用的红色。</summary>
         public static readonly Color ErrorColor = new Color(0.9f, 0.3f, 0.3f);
@@ -53,6 +54,11 @@ namespace Ale.Inventory.Editor
                 alignment = TextAnchor.MiddleCenter,
                 padding   = new RectOffset(0, 0, 0, 0),
             };
+
+            _dangerMiniButton = new GUIStyle(EditorStyles.miniButton)
+            {
+                normal = { textColor = new Color(0.9f, 0.45f, 0.45f) },
+            };
         }
 
         public static GUIStyle Header { get { EnsureInit(); return _header; } }
@@ -61,6 +67,9 @@ namespace Ale.Inventory.Editor
         public static GUIStyle ListRowSelected { get { EnsureInit(); return _listRowSelected; } }
         public static GUIStyle StatusError { get { EnsureInit(); return _statusError; } }
         public static GUIStyle Placeholder { get { EnsureInit(); return _placeholder; } }
+
+        /// <summary>危险操作的小按钮（红字），如各系统页签的「删除X」。此前六处各自每帧 new 一个 GUIStyle。</summary>
+        public static GUIStyle DangerMiniButton { get { EnsureInit(); return _dangerMiniButton; } }
 
         /// <summary>在指定矩形绘制一层半透明背景色（用于选中/高亮行）。</summary>
         public static void DrawRowBackground(Rect rect, Color color)

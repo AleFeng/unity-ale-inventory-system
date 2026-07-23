@@ -7,6 +7,23 @@ using UnityEngine;
 namespace Ale.Inventory.Editor
 {
     /// <summary>
+    /// <see cref="EditorMasterListPanel{T}"/> 的非泛型驱动面。
+    /// 供 <see cref="EditorThreeColumnTab{TEntity}"/> 用一个数组统一驱动左栏那几个**元素类型各不相同**的主列表面板
+    /// （泛型基类本身无法放进同一个数组）。
+    /// </summary>
+    public interface IEditorMasterListPanel
+    {
+        /// <summary>绘制主列表，返回当前选中索引。</summary>
+        int DrawMasterList(IInventoryEditorContext ctx, int selectedIndex);
+
+        /// <summary>绘制第 <paramref name="index"/> 项的 Inspector（越界 / -1 时按「未选中」绘制）。</summary>
+        void DrawInspectorAt(IInventoryEditorContext ctx, int index);
+
+        /// <summary>清空缓存（切库 / Undo-Redo）。</summary>
+        void Invalidate();
+    }
+
+    /// <summary>
     /// 编辑器「左栏主列表」泛型基类：标题栏（+「+」添加）→ 可拖拽重排的 <see cref="ReorderableList"/>
     /// （每行：可选色点 + 标签 +「✕」）→ 延迟删除，并与调用方（各 SystemTab）双向同步选中索引。
     ///
@@ -18,7 +35,7 @@ namespace Ale.Inventory.Editor
     /// 与 13 处原有字面量逐字一致；标题同样取 <see cref="Noun"/>。</para>
     /// </summary>
     /// <typeparam name="T">列表元素类型。</typeparam>
-    public abstract class EditorMasterListPanel<T> where T : class
+    public abstract class EditorMasterListPanel<T> : IEditorMasterListPanel where T : class
     {
         private ReorderableList         _masterList;
         private List<T>                 _boundList;
@@ -73,6 +90,20 @@ namespace Ale.Inventory.Editor
 
         /// <summary><see cref="Invalidate"/> 时的附加清理（如内嵌绘制器的缓存）。默认空。</summary>
         protected virtual void OnInvalidate() { }
+
+        /// <summary>绘制选中项的 Inspector（右栏）。<paramref name="item"/> 为 null 表示未选中。</summary>
+        public abstract void DrawInspector(IInventoryEditorContext ctx, T item);
+
+        #endregion
+
+        #region 非泛型驱动面
+
+        /// <summary>按索引绘制 Inspector（越界 / -1 → 按未选中绘制）。供页签基类统一驱动。</summary>
+        public void DrawInspectorAt(IInventoryEditorContext ctx, int index)
+        {
+            var list = GetList(ctx.Database);
+            DrawInspector(ctx, index >= 0 && index < list.Count ? list[index] : null);
+        }
 
         #endregion
 

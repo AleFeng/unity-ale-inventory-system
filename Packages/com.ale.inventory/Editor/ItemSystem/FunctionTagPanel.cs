@@ -28,7 +28,7 @@ namespace Ale.Inventory.Editor
 
         // ── Inspector ────────────────────────────────────────────────────────────
 
-        public void DrawInspector(IInventoryEditorContext ctx, FunctionTag tag)
+        public override void DrawInspector(IInventoryEditorContext ctx, FunctionTag tag)
         {
             if (tag == null)
             {

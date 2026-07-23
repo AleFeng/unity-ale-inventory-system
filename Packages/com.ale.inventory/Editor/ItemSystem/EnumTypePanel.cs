@@ -57,7 +57,7 @@ namespace Ale.Inventory.Editor
 
         // ── Inspector ─────────────────────────────────────────────────────────────
 
-        public void DrawInspector(IInventoryEditorContext ctx, EnumType e)
+        public override void DrawInspector(IInventoryEditorContext ctx, EnumType e)
         {
             if (e == null)
             {

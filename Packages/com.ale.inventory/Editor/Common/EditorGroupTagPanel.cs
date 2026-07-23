@@ -57,7 +57,7 @@ namespace Ale.Inventory.Editor
 
         #region Inspector
 
-        public void DrawInspector(IInventoryEditorContext ctx, T tag)
+        public override void DrawInspector(IInventoryEditorContext ctx, T tag)
         {
             if (tag == null)
             {

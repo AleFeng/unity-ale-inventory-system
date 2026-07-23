@@ -77,7 +77,7 @@ namespace Ale.Inventory.Editor
         // ── Inspector ─────────────────────────────────────────────────────────────
 
         /// <summary>绘制右侧 Inspector（选中整理选项的内置字段：名称 + 忽略ID）。</summary>
-        public void DrawInspector(IInventoryEditorContext ctx, SortOption selected)
+        public override void DrawInspector(IInventoryEditorContext ctx, SortOption selected)
         {
             if (selected == null)
             {

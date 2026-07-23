@@ -29,7 +29,7 @@ namespace Ale.Inventory.Editor
 
         // ── Inspector ────────────────────────────────────────────────────────────
 
-        public void DrawInspector(IInventoryEditorContext ctx, ItemTemplate template)
+        public override void DrawInspector(IInventoryEditorContext ctx, ItemTemplate template)
         {
             if (template == null)
             {
