@@ -369,7 +369,7 @@ namespace Ale.Inventory.Runtime.UI
             {
                 var priorities = CurrentSortPriorities();
                 if (priorities.Count > 0)
-                    InventoryRuntimeManager.SortByItemId(list, _sortKeySelector, priorities, _sortDatabase);
+                    InventorySortService.SortByItemId(list, _sortKeySelector, priorities, _sortDatabase);
             }
 
             if (preserveScroll) RefreshItemsData(list);

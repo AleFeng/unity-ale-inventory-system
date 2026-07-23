@@ -154,7 +154,7 @@ namespace Ale.Inventory.Runtime.UI
             {
                 var autoSortPriorities = BuildCurrentSortPriorities();
                 if (autoSortPriorities.Count > 0)
-                    InventoryRuntimeManager.SortSlots(itemSlotsDisplay, autoSortPriorities, db);
+                    InventorySortService.SortSlots(itemSlotsDisplay, autoSortPriorities, db);
             }
 
             // 按当前视图模式 分发到对应组件

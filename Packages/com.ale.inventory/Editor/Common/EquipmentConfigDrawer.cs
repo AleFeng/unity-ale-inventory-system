@@ -395,7 +395,7 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.EndHorizontal();
 
                 // 期望值：按属性定义解析类型；类型不匹配时重置为该定义的默认值
-                var def = InventoryRuntimeManager.FindAttrDef(filter.attrId, db);
+                var def = InventorySortService.FindAttrDef(filter.attrId, db);
                 if (def == null)
                 {
                     if (!string.IsNullOrEmpty(filter.attrId))
@@ -577,7 +577,7 @@ namespace Ale.Inventory.Editor
         private static void DrawEnumLabelAttrIdField(IInventoryEditorContext ctx, InventoryDatabase db,
             EquipmentAttributeDisplay ad)
         {
-            var def = InventoryRuntimeManager.FindAttrDef(ad.attrId, db);
+            var def = InventorySortService.FindAttrDef(ad.attrId, db);
             if (def == null || def.type != EFieldType.EnumIntPair) return;
 
             // 候选：该枚举类型下 String / Text 类型的字段 ID（首项为回退占位）。
