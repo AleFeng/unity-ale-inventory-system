@@ -35,13 +35,5 @@ namespace Ale.Inventory.Runtime
                 if (itemSlots[i].slotId == slotId) return itemSlots[i];
             return null;
         }
-
-        /// <summary>查找第一个 <see cref="RuntimeItemSlot.itemId"/> 匹配的格子，未找到返回 null。</summary>
-        public RuntimeItemSlot FindByItemId(string itemId)
-        {
-            for (int i = 0; i < itemSlots.Count; i++)
-                if (itemSlots[i].itemId == itemId) return itemSlots[i];
-            return null;
-        }
     }
 }

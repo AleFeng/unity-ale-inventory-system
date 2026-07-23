@@ -82,31 +82,5 @@ namespace Ale.Inventory.Runtime
             (Loader ?? DirectAssetLoader.Instance).ReleaseAddress(value.GetObjAddress(index));
         }
 
-        // ── 道具条目级 预载 / 释放 ──────────────────────────────────────────────────
-
-        /// <summary>
-        /// 预载某道具所有对象类字段（Sprite/Prefab/Texture/Material/AudioClip/AnimationClip/PhysicsMaterial*）到宿主。
-        /// 仅做加载与句柄登记，不赋值；宿主销毁或调用 <see cref="ReleaseItem"/> 时统一释放。
-        /// 即“用到的道具资源自动加载”。
-        /// </summary>
-        public static void PreloadItem(Item item, GameObject owner)
-        {
-            if (item == null) return;
-            var loader = Loader ?? DirectAssetLoader.Instance;
-            foreach (var entry in item.values)
-            {
-                var v = entry?.value;
-                if (v == null || !v.Type.IsObjectBacked()) continue;
-                int count = Mathf.Max(1, v.Count);
-                for (int i = 0; i < count; i++)
-                    loader.Load<Object>(v, i, owner, null);
-            }
-        }
-
-        /// <summary>释放某道具在宿主名下预载的资源（等价于释放该宿主的全部句柄）。即“不用的道具资源自动卸载”。</summary>
-        public static void ReleaseItem(Item item, GameObject owner)
-        {
-            Release(owner);
-        }
     }
 }

@@ -12,8 +12,6 @@ namespace Ale.Inventory.Editor
 
         private static GUIStyle _header;
         private static GUIStyle _redField;
-        private static GUIStyle _listRow;
-        private static GUIStyle _listRowSelected;
         private static GUIStyle _statusError;
         private static GUIStyle _placeholder;
         private static GUIStyle _colorDot;
@@ -35,9 +33,6 @@ namespace Ale.Inventory.Editor
             _redField = new GUIStyle(EditorStyles.textField);
             _redField.normal.textColor = ErrorColor;
             _redField.focused.textColor = ErrorColor;
-
-            _listRow = new GUIStyle(EditorStyles.label) { padding = new RectOffset(6, 6, 4, 4) };
-            _listRowSelected = new GUIStyle(_listRow);
 
             _statusError = new GUIStyle(EditorStyles.label);
             _statusError.normal.textColor = ErrorColor;
@@ -63,8 +58,6 @@ namespace Ale.Inventory.Editor
 
         public static GUIStyle Header { get { EnsureInit(); return _header; } }
         public static GUIStyle RedField { get { EnsureInit(); return _redField; } }
-        public static GUIStyle ListRow { get { EnsureInit(); return _listRow; } }
-        public static GUIStyle ListRowSelected { get { EnsureInit(); return _listRowSelected; } }
         public static GUIStyle StatusError { get { EnsureInit(); return _statusError; } }
         public static GUIStyle Placeholder { get { EnsureInit(); return _placeholder; } }
 
