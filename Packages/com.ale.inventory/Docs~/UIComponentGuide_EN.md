@@ -686,6 +686,55 @@ Open the **Welcome Window** (`Tools > Inventory System > Welcome Window`) → ex
 
 ---
 
+## 10.6 Reusable Building Blocks (prefer these when extending the UI)
+
+These are **plain C# helpers / base classes**, not components you attach to a GameObject. When building your own
+UI or extending the plugin's screens, reuse them instead of rewriting the same scaffolding.
+
+| Building block | Location | Responsibility |
+|------|------|------|
+| `UiwTabStrip<TTab,TValue>` | `UI/Tab/` | Tab strip: a row of tab instances + parallel values / labels + single-selection highlight. Shared by the inventory tabs, shop product-group tabs, blueprint template tabs and the filter tab bar |
+| `UiwWidgetPool<T>` | `UI/Common/` | Child-item pool: instantiate on demand → reuse per frame → deactivate the surplus. Shared by price cells / label rows / attribute rows / equipment slots / currency cells / bonus entries |
+| `UiwTooltipBase<TPayload>` | `UI/Tool/` | Hover-tooltip base: cursor positioning + fade state machine + pending-show queue during fade-out. Common parent of the item and skill tooltips |
+| `UiwHoverTooltipSource` | `UI/Common/` | "Hover shows details" capability base: enter / exit / **disable** paths |
+| `SpriteSlot` | `UI/Utility/` | Icon slot: consolidates sprite load / release, avoiding repeated allocation on hot paths |
+| `UIFormat` | `UI/Utility/` | Static formatting: format numbers per `NumberFormatLocale`, build multi-currency price strings |
+
+**`UiwTabStrip` — diff-based reuse**: `SetTabs` no longer destroys and rebuilds unconditionally. When the count is
+unchanged it reuses the existing instances in place and only rebinds values / labels; it destroys the tail when there
+are too many and appends when there are too few. A tab instance's index always equals the index of the entry it
+represents, so the `onClick` closure attached at creation stays valid through every later reuse — no repeated
+add/remove of listeners. Binding and clicking are both passed in as delegates, so there is no interface requirement
+on the tab component (`UiwInventoryTab` / `UiwShopGroupTab`'s `SetData`, or even a bare `Button`'s "set text + set
+normalColor", all work).
+
+**`UiwWidgetPool` — usage**:
+
+```csharp
+_pool.Configure(prefab, container);
+_pool.Begin();
+foreach (var d in data)
+{
+    var w = _pool.Next();
+    if (!w) break;              // prefab / container not configured
+    w.SetData(d);
+}
+_pool.End();                    // surplus instances get SetActive(false)
+```
+
+One-time initialization at creation (e.g. subscribing to events) goes through `Next(out bool created)` — reused
+instances don't subscribe again, so you don't need the "remove then add" guard. Recycling defaults to
+`SetActive(false)`; pass a delegate to `End(Action<T>)` when you need something else (e.g. releasing an Addressable
+handle).
+
+**`UiwHoverTooltipSource` — why the `OnDisable` path exists**: when the object is deactivated (list recycling, panel
+closing, the cell being hidden after a quick equip) Unity does **not** dispatch `OnPointerExit`, so the tooltip would
+stay on screen. On disable the cell therefore closes the tooltip itself — and only the one it opened, never another
+cell's. **Always call `base` when overriding `OnPointerEnter` / `OnPointerExit` / `OnDisable`**, or you will lose the
+tooltip capability or leave tooltips stranded.
+
+---
+
 ## 11. FAQ
 
 **Q: The list is empty after opening the backpack?**  

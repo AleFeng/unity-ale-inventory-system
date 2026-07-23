@@ -78,6 +78,14 @@ InventoryDatabase (ScriptableObject)
 
 The `RebuildAttributes(db)` of `Inventory` / `Shop` / `CraftingBlueprint` / `EquipmentGroup` is similar to items, each collecting attribute fields only from its respective template (warehouse template / shop template / blueprint template / equipment-group template). `SortOption` is auto-synced by `InventoryDatabase.RebuildSortOptions` from the sort fields of all warehouse templates.
 
+Three pieces of shared infrastructure (consolidated in 1.6.0; each entity used to carry its own copy):
+
+| Infrastructure | Purpose |
+|------|------|
+| `AttributeOwner` | Base class for objects carrying an attribute-value set: lazily built O(1) dictionary cache + `GetEntry` / `GetAttributeValue<T>` / `SetAttributeValue<T>`. Inherited by `Item` / `EnumItem` / `Inventory` / `Shop` / `SortOption` / `CraftingBlueprint` / `EquipmentGroup` / `Skill`. **Call `InvalidateEntryCache()` after mutating the entry list** |
+| `AttributeSync.Sync` | The shared "add missing / remove orphaned / reset on type drift, per schema" implementation used inside every `RebuildAttributes` |
+| `ConfigTemplateBase` | The name / colour dot / attribute-field definitions shared by all six template types (`ItemTemplate` / `InventoryTemplate` / `ShopTemplate` / `CraftingBlueprintTemplate` / `EquipmentGroupTemplate` / `SkillTemplate`). Group tags share `GroupTag` the same way |
+
 > An equipment group and an equipment-group template share `IEquipmentConfig` (equipment warehouses + slot lists + equipment attribute fields), with the template carrying all configurable options; creating an equipment group from a template deep-copies these configs, after which the equipment group is independently editable (the opposite of the Crafting System's "template-level read-only"). The equipment warehouses list specifies the warehouses the equipment system / UI can interact with; on unequip it finds the first warehouse with room from Index0.
 
 ---
@@ -142,6 +150,8 @@ InventoryEditorWindow          Main window + IInventoryEditorContext implementat
 | `AttributeFieldDrawer` | Draws a single `AttributeValue` by `EFieldType`. The GUILayout and Rect paths **share one type-dispatch implementation** (before 1.6.0 these were two large switches maintained in parallel) |
 | `AttributeDefinitionDrawer` | Draws the full edit panel of an `AttributeDefinition` (Rect-based, for ReorderableList) |
 | `AttributeDefinitionListDrawer` | An attribute field definition list with drag-reordering (uses `ReorderableList` internally, drawElementCallback fully Rect-based) |
+| `EditorEntityListPanel<TEntity,TTemplate>` | **Generic base for the middle-column entity lists**: template filter tabs + search bar + "add from template" / "quick add" + two-row entry rows (drag handle / template colour dot / columns / delete button) + drag-reordering + deferred deletion + up/down navigation. All six systems' middle columns derive from it, each implementing only `DrawRowColumns` (column layout) plus its add / search rules |
+| `EquipmentConfigDrawer` | Shared drawing of the equipment "slot lists + equipment attribute fields" (reused by both the equipment-group Inspector and the equipment-group-template Inspector) |
 
 **Rect-based principle**: within `ReorderableList.drawElementCallback`, calling `GUILayout.BeginArea / GUI.BeginGroup` is strictly forbidden, otherwise a mismatch in GUILayout slot counts between Layout and Repaint throws a "Getting control X's position..." exception. All `DrawRect` methods use only `EditorGUI.*`.
 
@@ -160,6 +170,11 @@ InventoryRuntimeManager (MonoBehaviour singleton)
 ├── InventoryDatabase[]    ─register→  InventoryDataManager (static definition queries)
 └── Dictionary<inventoryId, RuntimeInventoryState>  ─maintain→  each warehouse's runtime slot list
 ```
+
+`InventoryRuntimeManager` is split into partial files by responsibility: core (fields / init / data access / item
+management / sort entry points / save), `.Time` (time getters), `.UiHost` (cover-UI and hover-tooltip host) and
+`.TestSeed` (test-item population, editor / development builds only). Sorting, which needs no instance state, has
+been extracted into `InventorySortService`.
 
 `InventoryRuntimeManager` responsibilities:
 - Registers the databases into `InventoryDataManager` on initialization;
@@ -197,7 +212,7 @@ The runtime logic of the shop and crafting systems is handled by two **lightweig
 
 - `ShopRuntimeManager`: price resolution (multi-currency), currency / holdings tally across trade warehouses, resetting the tradeable count per the refresh schedule, purchase / recycle (auto-reducing the trade count by count / currency / capacity), **per-player trade progress save**; event `OnShopChanged`.
 - `CraftingRuntimeManager`: craftable-count computation, deducting materials / placing output across crafting warehouses (executing one craft); **no state of its own, no save**, continuous crafting driven in a loop by the UI layer.
-- `EquipmentRuntimeManager`: maintains equipped state as `equipment-group ID → (slot ID → equipped item ID)`; equip / unequip / swap cooperates with `InventoryRuntimeManager` to move items (rolling back when the old item can't be returned), limit matching is **all-AND**, auto slot-finding, summing across equipped items per the "equipment attribute field list" for total bonuses; **has an equipped-state save** (`GetSaveData` / `LoadSaveData`); event `OnEquipmentChanged`.
+- `EquipmentRuntimeManager`: maintains equipped state as `equipment-group ID → (slot ID → equipped item ID)`; equip / unequip / swap cooperates with `InventoryRuntimeManager` to move items (rolling back when the old item can't be returned), limit matching is **all-AND**, auto slot-finding, summing across equipped items per the "equipment attribute field list" for total bonuses (the aggregation itself lives in `EquipmentBonusCalculator`, decoupled from instance state and callable on its own); **has an equipped-state save** (`GetSaveData` / `LoadSaveData` / `ResetAll`); event `OnEquipmentChanged`.
 
 > **Resetting static state between play sessions (1.5.0)**: the singleton instances above (both the
 > lightweight and the MonoBehaviour ones) and the `IsQuitting` flag are static fields. With Domain

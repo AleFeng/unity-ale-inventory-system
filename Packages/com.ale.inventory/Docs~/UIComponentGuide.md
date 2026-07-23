@@ -683,6 +683,50 @@ public class InventoryUIController : MonoBehaviour
 
 ---
 
+## 10.6 可复用构件（扩展 UI 时优先复用）
+
+以下都是**纯 C# 辅助类 / 基类**，不是能挂到 GameObject 上的组件；自建 UI 或扩展本插件的界面时，
+优先复用它们，而不是重写一遍同样的骨架。
+
+| 构件 | 位置 | 职责 |
+|------|------|------|
+| `UiwTabStrip<TTab,TValue>` | `UI/Tab/` | 页签条：一排页签实例 + 与之平行的取值 / 显示名 + 单选高亮。仓库页签、商店商品组页签、蓝图模板页签、过滤页签栏共用 |
+| `UiwWidgetPool<T>` | `UI/Common/` | 子项实例池：按需实例化 → 逐帧复用 → 多余的回收隐藏。价格格 / 标签行 / 属性行 / 装备槽 / 货币格 / 加成条目共用 |
+| `UiwTooltipBase<TPayload>` | `UI/Tool/` | 悬停弹窗基类：光标定位 + 淡入淡出状态机 + 淡出期间的待显示队列。道具与技能弹窗的共同父类 |
+| `UiwHoverTooltipSource` | `UI/Common/` | 「悬停弹出详情」能力基类：进入 / 移出 / **停用** 三条路径 |
+| `SpriteSlot` | `UI/Utility/` | 图标槽位：Sprite 的加载 / 释放收口，避免热路径重复分配 |
+| `UIFormat` | `UI/Utility/` | 静态格式化：按 `NumberFormatLocale` 格式化数值、拼接多货币价格串 |
+
+**`UiwTabStrip` —— 差异复用**：`SetTabs` 不再无条件销毁重建，数量不变时原地复用已有实例、只重绑取值与显示名，
+多则销毁尾部、少则补建。页签实例的下标始终等于它代表的条目下标，因此补建时挂的 `onClick` 闭包在后续复用中
+一直有效，无需反复增删监听。绑定与点击都以委托传入，对页签组件没有接口要求（`UiwInventoryTab` / `UiwShopGroupTab`
+的 `SetData`、乃至裸 `Button` 的「改文本 + 改 normalColor」都能接）。
+
+**`UiwWidgetPool` —— 用法**：
+
+```csharp
+_pool.Configure(prefab, container);
+_pool.Begin();
+foreach (var d in data)
+{
+    var w = _pool.Next();
+    if (!w) break;              // 未配置预制体 / 容器
+    w.SetData(d);
+}
+_pool.End();                    // 多余实例 SetActive(false)
+```
+
+创建时的一次性初始化（如订阅事件）走 `Next(out bool created)`——复用的实例不会重复订阅，
+无需「先减后加」的防重复写法。回收行为默认 `SetActive(false)`，需要别的（如释放 Addressable 句柄）
+可给 `End(Action<T>)` 传委托。
+
+**`UiwHoverTooltipSource` —— 为什么需要 `OnDisable` 这条路径**：本物体被停用时（列表回收 / 面板关闭 /
+快速装备后本格被隐藏），Unity **不会**派发 `OnPointerExit`，弹窗会残留在屏幕上。因此停用时若本格正显示弹窗
+则主动关闭——且只关本格触发的那次，不误伤其它格。**覆写 `OnPointerEnter` / `OnPointerExit` / `OnDisable`
+时务必调用 `base`**，否则会丢掉弹窗能力或造成弹窗残留。
+
+---
+
 ## 11. 常见问题
 
 **Q：打开背包后列表为空？**  

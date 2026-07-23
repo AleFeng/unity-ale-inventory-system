@@ -83,6 +83,10 @@ Located under `Runtime/UI/`, assembly `Ale.Inventory.UI`, namespace `Ale.Invento
   - **Incremental diff refresh** — on content change, only the visible cells whose data changed are rebound (drag-swap / stacking is usually just 2 cells); icons don't flicker and scroll position is preserved.
   - **Spawn / assignment rate limiting** (`spawnPerSecond`, default 30/sec) — amortizes instantiation and binding across multiple frames to avoid single-frame spikes or asset-loading congestion (with a budget cap to prevent an "opening-frame" burst).
   - **Per-cell fade-in following scroll direction** — cells appear in the order they enter the viewport (top-down when scrolling down, bottom-up when scrolling up).
+- **Reusable building blocks**: the tab strip `UiwTabStrip`, child-item pool `UiwWidgetPool`, hover-tooltip bases
+  `UiwTooltipBase` / `UiwHoverTooltipSource`, icon slot `SpriteSlot` and number / price formatter `UIFormat` — prefer
+  reusing these when extending the UI; see
+  [UI Component Guide – Reusable Building Blocks](Docs~/UIComponentGuide_EN.md#106-reusable-building-blocks-prefer-these-when-extending-the-ui).
 - See the [UI Component Guide](Docs~/UIComponentGuide_EN.md) for details.
 
 ---

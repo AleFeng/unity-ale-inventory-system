@@ -24,6 +24,11 @@
   资产 GUID 因此改变。单独重生成某个被依赖的预制体（如 `PF_UiwInventoryItemCell`）或数据库，会**静默打断**
   依赖它的预制体 / 管理器对它的引用，而生成窗口的依赖对话框只**向下**遍历依赖、从不向上遍历被依赖者，因此不会提示。
   现改为就地覆盖，GUID 保持不变。
+- **制作系统模板页签切换后显示名异常**：四处页签条（仓库 / 商店商品组 / 蓝图模板 / 过滤页签栏）此前各写一遍
+  「销毁旧的 → 逐个 Instantiate → 挂 onClick → 整排重刷高亮」，切换模板页签后显示名会被重新构建。
+  现统一走 `UiwTabStrip` 的**差异复用**（数量不变时原地复用实例、只重绑取值与显示名），问题随之修正。
+- **同时打开两个配置编辑器窗口时列表选中串台**：中栏实体列表的 `_pendingSelect` 原为 `static`，
+  两个窗口共享同一份待选中状态。接入 `EditorEntityListPanel` 时改为实例字段。
 - **文档修正**：`Docs~/WarehouseSystem` 原称「存档中多余的仓库 ID 被忽略」，与实现不符（这类仓库实际会被载入内存）。
 
 ### 新增
@@ -35,6 +40,17 @@
   （仓库 / 装备 / 商店 / 技能）统一实现，把此前散落在四处注释里的存档契约钉在一处——
   `GetSaveData` 返回**深拷贝**、`LoadSaveData` 为**覆盖而非合并**、三个方法都**不触发**变更事件。
   非泛型部分只含 `ResetAll`，供游戏层「开新游戏」一次遍历重置全部系统。
+
+### 性能
+
+- **UI 子项实例改为复用而非销毁重建**：新增 `UiwWidgetPool`（纯 C# 实例池），包内十余处
+  「价格格 / 标签行 / 属性行 / 装备槽 / 货币格 / 加成条目」共用；技能条目、技能弹窗、装备加成面板
+  由「每次刷新销毁重建」改为按需实例化 + 逐帧复用 + 多余的回收隐藏。
+- **消除运行时 UI 热路径的重复分配**：抽出 `SpriteSlot`（图标槽位的加载 / 释放收口）与 `UIFormat`
+  （数值 / 多货币价格串格式化），替换掉道具格、商店视图、商店商品详情里各写一遍的实现；
+  根 Canvas 解析也收口为一处。
+- **仓库运行时管理器改走 `InventoryDataManager` 的 O(1) 索引**：数据库查找收口为一个泛型实现；
+  拖放路径上的闭包分配一并消除。
 
 ### 变更
 
@@ -61,15 +77,28 @@
 
 > 本轮结构重构逐步进行、每步单独验证，公开行为保持不变；下列为对二次开发者有意义的结构变化。
 
-- **共享基类与服务抽取**：
-  - `AttributeOwner`——承载属性值集合的对象基类，封装懒加载 O(1) 字典缓存与属性值泛型 Get / Set，
-    由 `Item` / `EnumItem` / `Inventory` / `Shop` / `SortOption` / `CraftingBlueprint` / `EquipmentGroup` / `Skill` 共用。
+- **数据层共享基类**：
+  - `AttributeOwner`——承载属性值集合的对象基类，封装懒加载 O(1) 字典缓存与属性值泛型 Get / Set。
+    本版起 `Inventory` / `Shop` / `CraftingBlueprint` / `EquipmentGroup` 也接入（此前只有 `Item` / `EnumItem`）。
   - `AttributeSync.Sync`——各实体 `RebuildAttributes` 中「按 schema 增补 / 移除 / 类型漂移重置」的共用实现。
   - `ConfigTemplateBase`——六大系统模板共有的名称 / 色点 / 属性字段定义。
+- **运行时服务抽取**：
   - `InventorySortService`——排序实现从 `InventoryRuntimeManager` 独立为静态服务（无实例状态）。
-  - `EquipmentBonusCalculator`——装备总加成汇总独立成类。
-- **巨型文件按职责拆为分部**：`AttributeValue`（核心 / `.Elements` / `.Text`）、
-  `InventoryRuntimeManager`（核心 / `.Time` / `.UiHost` / `.TestSeed`）、`InventoryDemoWizard`（按子系统拆为 13 个文件）。
+  - `EquipmentBonusCalculator`——装备总加成汇总从 `EquipmentRuntimeManager` 拆出，与实例状态解耦。
+  - `InventoryRuntimeManager` 另拆出 UI 宿主、时间服务与测试功能三个分部。
+- **UI 层可复用构件**（详见 [UI 组件指南](Docs~/UIComponentGuide.md)）：
+  - `UiwTabStrip<TTab,TValue>`——页签条，统一四处「一排页签 + 取值 / 显示名 + 单选高亮」。
+  - `UiwWidgetPool<T>`——子项实例池，统一十余处子项管理。
+  - `UiwTooltipBase<TPayload>`——悬停弹窗基类（光标定位 + 淡入淡出状态机 + 淡出期待显示队列），
+    道具与技能弹窗此前是同一套状态机的两份逐字拷贝。
+  - `UiwHoverTooltipSource`——「悬停弹出详情」能力基类，含 `OnDisable` 兜底（列表回收 / 面板关闭时
+    Unity 不派发 `OnPointerExit`，弹窗会残留）。
+  - `SpriteSlot` / `UIFormat`——图标槽位与数值 / 价格格式化。
+- **编辑器中栏列表收口**：六个系统的实体列表接入泛型基类 `EditorEntityListPanel<TEntity,TTemplate>`，
+  各面板只需实现列布局与新增 / 搜索规则；顺带统一了三处样式与行为漂移。
+- **巨型文件按职责拆为分部**：`AttributeValue`（核心 / `.Elements` / `.Text`，类型步长映射收口为 `GetStrides`）、
+  `InventoryRuntimeManager`（核心 / `.Time` / `.UiHost` / `.TestSeed`）、`InventoryDemoWizard`（按子系统拆为 13 个文件，
+  另提取 `MakeVerticalScrollView` 消除五处纵向滚动骨架）。
 - **序列化层重组**：`InventoryDtoModels.cs` 只放 DTO 定义；双向映射拆为 `InventoryDtoMapper*.cs`、
   二进制块读写拆为 `InventoryBinarySerializer*.cs`，均按系统分部（核心 + 仓库 / 商店 / 制作 / 装备 / 技能）。
 - **属性字段绘制的 Layout / Rect 两条路径合并**为一套实现，此前是两个并行维护的大 switch。

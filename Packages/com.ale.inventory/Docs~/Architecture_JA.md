@@ -78,6 +78,14 @@ InventoryDatabase (ScriptableObject)
 
 `Inventory` / `Shop` / `CraftingBlueprint` / `EquipmentGroup` の `RebuildAttributes(db)` はアイテムと同様で、それぞれ各自のテンプレート（倉庫テンプレート / ショップテンプレート / ブループリントテンプレート / 装備グループテンプレート）からのみ属性フィールドを収集します。`SortOption` は `InventoryDatabase.RebuildSortOptions` がすべての倉庫テンプレートのソートフィールドから自動同期します。
 
+共有基盤 3 点（1.6.0 で集約。以前は各エンティティが個別に持っていました）：
+
+| 基盤 | 役割 |
+|------|------|
+| `AttributeOwner` | 属性値の集合を持つオブジェクトの基底クラス：遅延構築の O(1) 辞書キャッシュ + `GetEntry` / `GetAttributeValue<T>` / `SetAttributeValue<T>`。`Item` / `EnumItem` / `Inventory` / `Shop` / `SortOption` / `CraftingBlueprint` / `EquipmentGroup` / `Skill` が継承。**エントリリストを変更したら `InvalidateEntryCache()` を呼ぶこと** |
+| `AttributeSync.Sync` | 各 `RebuildAttributes` 内の「スキーマに従って不足を追加 / 孤立を削除 / 型ドリフト時にリセット」の共通実装 |
+| `ConfigTemplateBase` | 6 種のテンプレートが共有する 名称 / カラードット / 属性フィールド定義（`ItemTemplate` / `InventoryTemplate` / `ShopTemplate` / `CraftingBlueprintTemplate` / `EquipmentGroupTemplate` / `SkillTemplate`）。グループタグも同様に `GroupTag` を共有 |
+
 > 装備グループと装備グループテンプレートは `IEquipmentConfig`（装備倉庫 + スロットリスト + 装備属性フィールド）を共有し、テンプレートがすべての設定可能項目を保持します。テンプレートから装備グループを作成するときこれらの設定をディープコピーし、以降は装備グループが独立して編集可能です（クラフトシステムの「テンプレートレベル読み取り専用」の逆）。装備倉庫リストは装備システム / UI が対話できる倉庫を指定し、解除時は Index0 から最初に入れられる倉庫を探します。
 
 ---
@@ -142,6 +150,8 @@ InventoryEditorWindow          メインウィンドウ + IInventoryEditorContex
 | `AttributeFieldDrawer` | `EFieldType` に応じて単一の `AttributeValue` を描画。GUILayout パスと Rect パスは**型ディスパッチの実装を共有**します（1.6.0 以前は並行して保守される 2 つの大きな switch でした） |
 | `AttributeDefinitionDrawer` | `AttributeDefinition` の完全な編集パネルを描画（Rect ベース、ReorderableList 用） |
 | `AttributeDefinitionListDrawer` | ドラッグ並べ替え付きの属性フィールド定義リスト（内部で `ReorderableList` を使用、drawElementCallback は全 Rect ベース） |
+| `EditorEntityListPanel<TEntity,TTemplate>` | **中央カラムのエンティティ一覧のジェネリック基底**：テンプレートフィルタタブ + 検索バー +「テンプレートから追加」/「クイック追加」+ 2 行構成の項目行（ドラッグハンドル / テンプレートのカラードット / 各列 / 削除ボタン）+ ドラッグ並べ替え + 遅延削除 + 上下キーナビゲーション。6 システムの中央カラムはすべてこれを継承し、各自は `DrawRowColumns`（列レイアウト）と追加 / 検索ルールのみを実装します |
+| `EquipmentConfigDrawer` | 装備の「スロットリスト + 装備属性フィールド」の共有描画（装備グループ Inspector と装備グループテンプレート Inspector で再利用） |
 
 **Rect ベースの原則**：`ReorderableList.drawElementCallback` 内で `GUILayout.BeginArea / GUI.BeginGroup` を呼ぶことは厳禁です。さもないと Layout と Repaint の GUILayout スロット数が一致しないとき「Getting control X's position...」例外が投げられます。すべての `DrawRect` メソッドは `EditorGUI.*` のみを使います。
 
@@ -160,6 +170,11 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 ├── InventoryDatabase[]    ─登録→  InventoryDataManager（静的定義クエリ）
 └── Dictionary<inventoryId, RuntimeInventoryState>  ─管理→  各倉庫のランタイムスロットリスト
 ```
+
+`InventoryRuntimeManager` は責務ごとに partial ファイルへ分割されています：コア（フィールド / 初期化 / データ取得 /
+アイテム管理 / 整理の入口 / セーブ）、`.Time`（時間ゲッター）、`.UiHost`（カバー UI とホバーポップアップのホスト）、
+`.TestSeed`（テストアイテム投入。エディタ / 開発ビルドのみ）。インスタンス状態に依存しないソート実装は
+`InventorySortService` として独立しています。
 
 `InventoryRuntimeManager` の責務：
 - 初期化時にデータベースを `InventoryDataManager` に登録；
@@ -195,7 +210,7 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 
 - `ShopRuntimeManager`：価格解決（複数通貨）、取引倉庫をまたいだ通貨 / 保有量の集計、更新スケジュールに従う取引可能回数のリセット、購入 / 買い取り（回数 / 通貨 / 容量 に応じて成立を自動で下方調整）、**プレイヤーごとの取引進捗のセーブ**。イベント `OnShopChanged`。
 - `CraftingRuntimeManager`：作成可能回数の計算、クラフト倉庫をまたいだ材料の差し引き / 産出の配置（1 回の作成を実行）。**自身の状態を持たず、セーブしない**。連続作成は UI 層がループで駆動。
-- `EquipmentRuntimeManager`：`装備グループ ID → (スロット ID → 装備中アイテム ID)` として装備中状態を管理。装備 / 解除 / 交換は `InventoryRuntimeManager` と連携してアイテムを搬送（旧アイテムを戻せないときはロールバック）、制限マッチングは**すべて AND**、スロットの自動検索、「装備属性フィールドリスト」に従い装備中アイテムをまたいで合算し合計ボーナスを算出。**装備中状態のセーブあり**（`GetSaveData` / `LoadSaveData`）。イベント `OnEquipmentChanged`。
+- `EquipmentRuntimeManager`：`装備グループ ID → (スロット ID → 装備中アイテム ID)` として装備中状態を管理。装備 / 解除 / 交換は `InventoryRuntimeManager` と連携してアイテムを搬送（旧アイテムを戻せないときはロールバック）、制限マッチングは**すべて AND**、スロットの自動検索、「装備属性フィールドリスト」に従い装備中アイテムをまたいで合算し合計ボーナスを算出（集計アルゴリズムは `EquipmentBonusCalculator` にあり、インスタンス状態と分離され単独で呼び出せます）。**装備中状態のセーブあり**（`GetSaveData` / `LoadSaveData` / `ResetAll`）。イベント `OnEquipmentChanged`。
 
 > **プレイセッションをまたぐ静的状態のリセット（1.5.0）**：上記の軽量シングルトンと MonoBehaviour
 > シングルトンのインスタンス、および `IsQuitting` フラグはいずれも静的フィールドです。Domain Reload を

@@ -83,6 +83,9 @@
   - **增量差异刷新**——内容变化时只重绑数据变化的可见格（拖拽换位 / 堆叠通常仅 2 格），图标不闪烁、滚动位置保留。
   - **生成 / 分配限速**（`spawnPerSecond`，默认 30 个/秒）——把实例化与绑定分摊到多帧，避免单帧峰值卡顿或资源加载堵塞（含预算封顶防"打开界面那一帧"爆发）。
   - **逐格浮现跟随滚动方向**——格子按进入视口的先后出现（下滚从上往下、上滚从下往上）。
+- **可复用构件**：页签条 `UiwTabStrip`、子项实例池 `UiwWidgetPool`、悬停弹窗基类 `UiwTooltipBase` /
+  `UiwHoverTooltipSource`、图标槽位 `SpriteSlot`、数值 / 价格格式化 `UIFormat`——扩展 UI 时优先复用，
+  见 [UI 组件指南 - 可复用构件](Docs~/UIComponentGuide.md#106-可复用构件扩展-ui-时优先复用)。
 - 详见 [UI 组件指南](Docs~/UIComponentGuide.md)。
 
 ---
