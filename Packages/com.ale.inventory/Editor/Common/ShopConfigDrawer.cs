@@ -121,26 +121,8 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.LabelField("交易功能标签", InventoryEditorStyles.Header);
             EditorGUILayout.LabelField("仅「回收」生效：只回收含勾选标签的道具；不勾选 = 不限制。", EditorStyles.miniLabel);
 
-            var db = ctx.Database;
-            if (db.FunctionTags.Count == 0)
-            {
-                EditorGUILayout.LabelField("（暂无可用功能标签）", EditorStyles.miniLabel);
-                return;
-            }
-
-            var tradeTags = cfg.TradeTagRefs;
-            foreach (var tag in db.FunctionTags)
-            {
-                bool has = tradeTags.Contains(tag.name);
-                bool now = EditorGUILayout.ToggleLeft(tag.name, has);
-                if (now != has)
-                {
-                    ctx.RecordUndo(now ? "添加交易功能标签" : "移除交易功能标签");
-                    if (now) tradeTags.Add(tag.name);
-                    else     tradeTags.Remove(tag.name);
-                    ctx.MarkDirty();
-                }
-            }
+            EditorTagToggleList.Draw(ctx, cfg.TradeTagRefs,
+                "添加交易功能标签", "移除交易功能标签");
         }
 
         // ── 过滤设置 ────────────────────────────────────────────────────────────────
@@ -162,26 +144,8 @@ namespace Ale.Inventory.Editor
                 ctx.MarkDirty();
             }
 
-            var db = ctx.Database;
-            if (db.FunctionTags.Count == 0)
-            {
-                EditorGUILayout.LabelField("（暂无可用功能标签）", EditorStyles.miniLabel);
-                return;
-            }
-
-            var filters = cfg.FilterTagRefs;
-            foreach (var tag in db.FunctionTags)
-            {
-                bool has = filters.Contains(tag.name);
-                bool now = EditorGUILayout.ToggleLeft(tag.name, has);
-                if (now != has)
-                {
-                    ctx.RecordUndo(now ? "添加过滤标签" : "移除过滤标签");
-                    if (now) filters.Add(tag.name);
-                    else     filters.Remove(tag.name);
-                    ctx.MarkDirty();
-                }
-            }
+            EditorTagToggleList.Draw(ctx, cfg.FilterTagRefs,
+                "添加过滤标签", "移除过滤标签");
         }
 
         // ── 整理排序 ────────────────────────────────────────────────────────────────

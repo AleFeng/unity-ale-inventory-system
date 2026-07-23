@@ -55,26 +55,9 @@ namespace Ale.Inventory.Editor
 
             // ── 默认功能标签 ─────────────────────────────────────────────────
             EditorGUILayout.LabelField("默认功能标签", InventoryEditorStyles.Header);
-            if (db.FunctionTags.Count == 0)
-            {
-                EditorGUILayout.LabelField("（暂无功能标签，请先在左侧「功能标签」中创建）",
-                    EditorStyles.miniLabel);
-            }
-            else
-            {
-                foreach (var tag in db.FunctionTags)
-                {
-                    bool has = template.tagRefs.Contains(tag.name);
-                    bool now = EditorGUILayout.ToggleLeft(tag.name, has);
-                    if (now != has)
-                    {
-                        ctx.RecordUndo(now ? "模板添加功能标签" : "模板移除功能标签");
-                        if (now) template.tagRefs.Add(tag.name);
-                        else     template.tagRefs.Remove(tag.name);
-                        ctx.MarkDirty();
-                    }
-                }
-            }
+            EditorTagToggleList.Draw(ctx, template.tagRefs,
+                "模板添加功能标签", "模板移除功能标签",
+                emptyHint: "（暂无功能标签，请先在左侧「功能标签」中创建）");
 
             EditorGUILayout.Space(6);
 

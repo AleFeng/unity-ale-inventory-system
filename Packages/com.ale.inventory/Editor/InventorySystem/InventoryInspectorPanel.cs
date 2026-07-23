@@ -138,51 +138,13 @@ namespace Ale.Inventory.Editor
         }
 
         private static void DrawFilterTagList(IInventoryEditorContext ctx, List<string> filterTagRefs)
-        {
-            var db = ctx.Database;
-            if (db.FunctionTags.Count == 0)
-            {
-                EditorGUILayout.LabelField("（暂无可用功能标签）", EditorStyles.miniLabel);
-                return;
-            }
-            foreach (var tag in db.FunctionTags)
-            {
-                bool has = filterTagRefs.Contains(tag.name);
-                bool now = EditorGUILayout.ToggleLeft(tag.name, has);
-                if (now != has)
-                {
-                    ctx.RecordUndo(now ? "添加过滤标签" : "移除过滤标签");
-                    if (now) filterTagRefs.Add(tag.name);
-                    else     filterTagRefs.Remove(tag.name);
-                    ctx.MarkDirty();
-                }
-            }
-        }
+            => EditorTagToggleList.Draw(ctx, filterTagRefs, "添加过滤标签", "移除过滤标签");
 
         private static void DrawTagRefList(IInventoryEditorContext ctx,
             List<string> tagRefs, string labelText)
         {
             EditorGUILayout.LabelField(labelText, InventoryEditorStyles.Header);
-
-            var db = ctx.Database;
-            if (db.FunctionTags.Count == 0)
-            {
-                EditorGUILayout.LabelField("（暂无可用功能标签）", EditorStyles.miniLabel);
-                return;
-            }
-
-            foreach (var tag in db.FunctionTags)
-            {
-                bool has = tagRefs.Contains(tag.name);
-                bool now = EditorGUILayout.ToggleLeft(tag.name, has);
-                if (now != has)
-                {
-                    ctx.RecordUndo(now ? $"添加{labelText}" : $"移除{labelText}");
-                    if (now) tagRefs.Add(tag.name);
-                    else     tagRefs.Remove(tag.name);
-                    ctx.MarkDirty();
-                }
-            }
+            EditorTagToggleList.Draw(ctx, tagRefs, $"添加{labelText}", $"移除{labelText}");
         }
 
     }

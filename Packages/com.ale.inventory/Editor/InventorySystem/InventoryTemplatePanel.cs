@@ -80,11 +80,11 @@ namespace Ale.Inventory.Editor
 
             EditorGUILayout.Space(6);
 
-            DrawTagRefList(ctx, template, template.allowPutTagRefs,     "放入功能标签");
+            DrawTagRefList(ctx, template.allowPutTagRefs,     "放入功能标签");
             EditorGUILayout.Space(4);
-            DrawTagRefList(ctx, template, template.allowTakeTagRefs,    "取出功能标签");
+            DrawTagRefList(ctx, template.allowTakeTagRefs,    "取出功能标签");
             EditorGUILayout.Space(4);
-            DrawTagRefList(ctx, template, template.allowOperateTagRefs, "操作功能标签");
+            DrawTagRefList(ctx, template.allowOperateTagRefs, "操作功能标签");
 
             EditorGUILayout.Space(6);
 
@@ -105,7 +105,7 @@ namespace Ale.Inventory.Editor
                 ctx.MarkDirty();
             }
 
-            DrawFilterTagList(ctx, template, template.filterTagRefs);
+            DrawFilterTagList(ctx, template.filterTagRefs);
 
             EditorGUILayout.Space(6);
 
@@ -146,55 +146,16 @@ namespace Ale.Inventory.Editor
 
         // ── 过滤标签勾选 ──────────────────────────────────────────────────────────
 
-        private static void DrawFilterTagList(IInventoryEditorContext ctx,
-            InventoryTemplate template, List<string> filterTagRefs)
-        {
-            var db = ctx.Database;
-            if (db.FunctionTags.Count == 0)
-            {
-                EditorGUILayout.LabelField("（暂无可用功能标签）", EditorStyles.miniLabel);
-                return;
-            }
-            foreach (var tag in db.FunctionTags)
-            {
-                bool has = filterTagRefs.Contains(tag.name);
-                bool now = EditorGUILayout.ToggleLeft(tag.name, has);
-                if (now != has)
-                {
-                    ctx.RecordUndo(now ? "模板添加过滤标签" : "模板移除过滤标签");
-                    if (now) filterTagRefs.Add(tag.name);
-                    else     filterTagRefs.Remove(tag.name);
-                    ctx.MarkDirty();
-                }
-            }
-        }
+        private static void DrawFilterTagList(IInventoryEditorContext ctx, List<string> filterTagRefs)
+            => EditorTagToggleList.Draw(ctx, filterTagRefs, "模板添加过滤标签", "模板移除过滤标签");
 
         // ── 功能标签勾选 ──────────────────────────────────────────────────────────
 
         private static void DrawTagRefList(IInventoryEditorContext ctx,
-            InventoryTemplate template, List<string> tagRefs, string labelText)
+            List<string> tagRefs, string labelText)
         {
             EditorGUILayout.LabelField(labelText, InventoryEditorStyles.Header);
-
-            var db = ctx.Database;
-            if (db.FunctionTags.Count == 0)
-            {
-                EditorGUILayout.LabelField("（暂无可用功能标签）", EditorStyles.miniLabel);
-                return;
-            }
-
-            foreach (var tag in db.FunctionTags)
-            {
-                bool has = tagRefs.Contains(tag.name);
-                bool now = EditorGUILayout.ToggleLeft(tag.name, has);
-                if (now != has)
-                {
-                    ctx.RecordUndo(now ? $"模板添加{labelText}" : $"模板移除{labelText}");
-                    if (now) tagRefs.Add(tag.name);
-                    else     tagRefs.Remove(tag.name);
-                    ctx.MarkDirty();
-                }
-            }
+            EditorTagToggleList.Draw(ctx, tagRefs, $"模板添加{labelText}", $"模板移除{labelText}");
         }
     }
 }
