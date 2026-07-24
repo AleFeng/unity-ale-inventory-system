@@ -109,7 +109,19 @@ The plugin's unified entry panel, gathering common actions such as "create data 
 Tools > Inventory System > Welcome Window
 ```
 
-Top to bottom, the window is divided into four areas:
+Top to bottom, the window consists of a **header** (title / version / language buttons) plus five areas.
+
+### Language (editor UI)
+
+Centered beneath the header subtitle are three buttons — **中文 / English / 日本語** — with the current language highlighted. Clicking one switches the UI language of **this Welcome Window and the `Inventory Editor` configuration window** (including every panel and config drawer across all six subsystem tabs). The choice is persisted via `EditorPrefs` and kept across Unity sessions; if both windows are open, both refresh at once.
+
+> This affects **editor UI text only**, and is unrelated to runtime content localization (`IS_LOCALIZATION` / Unity Localization).
+
+### Language Settings
+
+| Option | Default | Description |
+|------|------|------|
+| Enum Values | Unchecked | When checked, the display names of **enum dropdowns** — attribute field type (`EFieldType`), shop type, refresh cycle, refresh time type — also switch language. When unchecked, they always show the original English enum identifiers from code. |
 
 ### Quick Actions
 

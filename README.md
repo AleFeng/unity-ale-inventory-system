@@ -77,6 +77,7 @@ Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件
 | 三个可选宏 | TextMeshPro（`IS_TMP`）/ Unity Localization（`IS_LOCALIZATION`）/ Unity Addressables（`IS_ADDRESSABLE`），欢迎窗口一键开关并检测对应包是否安装，插件包本身零硬依赖。 |
 | 本地化工具 | 一键为 `InventoryDatabase` 生成 / 关联多语言表，遍历全库 `Text` 字段自动生成中文 Key 并回填条目（进度条 + 日志 + 取消）。 |
 | 欢迎窗口向导 | 统一入口：创建数据、打开编辑器 / 工具窗口、宏开关、以及「一键生成完整可运行示例」（数据库 + 全部 UI 预制体 + 管理器）。 |
+| 编辑器界面三语 | 欢迎窗口一键切换 **中文 / English / 日本語**，欢迎窗口与 `Inventory Editor` 配置编辑器（六大系统全部面板）整体切换；选择持久化保存，与运行时内容本地化互不相关。 |
 
 ### 六大子系统
 | 子系统 | 配置内容 | 运行时管理器 |
@@ -106,7 +107,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 这样装的是 `main` 的最新提交。**要固定版本，把 `#<tag>` 加在整条 URL 的最末尾**（必须在 `?path=` 之后）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.6.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.7.0
 ```
 
 可用的 tag 见 [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases)。
@@ -170,7 +171,9 @@ Tools > Inventory System > Welcome Window
 
 ![alt text](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
 
-窗口自上而下分为四个区域：**快捷操作**（创建数据 / 打开各编辑器与工具窗口 / 一键生成示例预制体）、**数据模板**（指定一个 `InventoryDatabase` 作为新建蓝本）、**插件支持**（三个可选宏一键开关，见下）、**启动时自动显示**（是否每次会话自动弹窗）。
+窗口页眉的副标题下方居中排列「**中文 / English / 日本語**」三个按钮，可切换**欢迎窗口与 `Inventory Editor` 配置编辑器**的界面语言（选择经 `EditorPrefs` 持久化，跨会话保留；仅影响编辑器界面文案，与运行时内容本地化无关）。
+
+页眉之下自上而下分为五个区域：**多语言设定**（「枚举值」勾选项：是否让枚举下拉的显示名也随语言切换，默认不勾）、**快捷操作**（创建数据 / 打开各编辑器与工具窗口 / 一键生成示例预制体）、**数据模板**（指定一个 `InventoryDatabase` 作为新建蓝本）、**插件支持**（三个可选宏一键开关，见下）、**启动时自动显示**（是否每次会话自动弹窗）。
 
 ## 🧩 可选宏开关
 三个宏均可在**欢迎窗口**的「插件支持」区一键开关，并实时检测对应 Package 是否已安装（未安装时勾选会弹确认对话框）：

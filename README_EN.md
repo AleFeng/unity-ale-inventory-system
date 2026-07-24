@@ -79,6 +79,7 @@ Almost every game needs an "items + inventory + shop + crafting + equipment + sk
 | Three optional macros | TextMeshPro (`IS_TMP`) / Unity Localization (`IS_LOCALIZATION`) / Unity Addressables (`IS_ADDRESSABLE`), each toggled from the Welcome Window (which also detects whether the corresponding package is installed); the package itself has zero hard dependencies. |
 | Localization tooling | One click to generate / link localization tables for an `InventoryDatabase`, then walk every `Text` field in the database to auto-generate keys and write them back to entries (progress bar + log + cancel). |
 | Welcome Window wizard | A single entry point: create data, open the editor / tool windows, toggle macros, and "generate a complete runnable sample in one click" (database + all UI prefabs + managers). |
+| Trilingual editor UI | Switch between **中文 / English / 日本語** from the Welcome Window; both the Welcome Window and the `Inventory Editor` configuration window (every panel across all six subsystems) switch together. The choice is persisted, and it is unrelated to runtime content localization. |
 
 ### The Six Subsystems
 | Subsystem | What you configure | Runtime manager |
@@ -108,7 +109,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 This installs the latest commit on `main`. **To pin a version, append `#<tag>` to the very end of the URL** (it must come after `?path=`):
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.6.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.7.0
 ```
 
 See [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) for available tags.
@@ -172,7 +173,9 @@ Tools > Inventory System > Welcome Window
 
 ![screenshot](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
 
-Top to bottom, the window is divided into four areas: **Quick Actions** (create data / open the various editor and tool windows / generate sample prefabs in one click), **Data Template** (pick an `InventoryDatabase` as the blueprint for new files), **Plugin Support** (one-click toggles for the three optional macros, below), and **Show on Startup** (whether to auto-open the window each session).
+Centered beneath the header subtitle are three buttons — **中文 / English / 日本語** — which switch the UI language of **the Welcome Window and the `Inventory Editor` configuration window** (persisted via `EditorPrefs` and kept across sessions; it affects editor UI text only and is unrelated to runtime content localization).
+
+Below the header, top to bottom, the window is divided into five areas: **Language Settings** (an "Enum Values" checkbox — whether enum dropdown display names also switch language; unchecked by default), **Quick Actions** (create data / open the various editor and tool windows / generate sample prefabs in one click), **Data Template** (pick an `InventoryDatabase` as the blueprint for new files), **Plugin Support** (one-click toggles for the three optional macros, below), and **Show on Startup** (whether to auto-open the window each session).
 
 ## 🧩 Optional Feature Macros
 All three macros can be toggled from the "Plugin Support" area of the **Welcome Window**, which also detects in real time whether the corresponding package is installed (checking a macro whose package is missing pops up a confirmation dialog):

@@ -6,6 +6,27 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.7.0] - 2026-07-24
+
+编辑器 UI 支持**中文 / English / 日本語**三语切换。纯编辑器界面改动，**不涉及运行时、不改变任何数据结构与序列化格式**，旧数据与旧存档完全兼容。
+
+### 新增
+
+- **编辑器界面三语切换**：欢迎窗口顶部副标题下新增居中的「中文 / English / 日本語」三个按钮，当前语言高亮。切换后 **`InventoryWelcomeWindow` 与 `InventoryEditorWindow`（含六大系统页签、左/中/右三列全部面板与配置绘制器）** 的界面文本整体切换；语言选择经 `EditorPrefs` 持久化，跨会话保留。
+- **「多语言设定」区**（欢迎窗口）：含「枚举值」勾选项（**默认不勾**）。勾选后，属性字段类型（`EFieldType`）、商店类型、刷新周期、刷新时间类型等**枚举下拉的显示名**也随语言切换；不勾选则一律显示代码中的英文枚举原名（与 1.6.0 行为一致）。
+- 新增独立的编辑器 UI 本地化服务 `InventoryEditorL10n`（`Editor/Common/`），译表按区域拆为多个分部文件，与运行时内容本地化（`IS_LOCALIZATION` / Unity Localization）完全无关、互不影响。
+
+### 变更
+
+- 勾选「枚举值」后，商店**刷新周期 / 刷新时间类型**下拉可正确显示中文（或英/日）。此前这两个枚举虽标注了 `[InspectorName("不刷新")]` 等中文名，但配置编辑器用 `EditorGUILayout.EnumPopup` 绘制，该特性仅在 `SerializedProperty` 路径生效，故下拉一直显示英文标识符（见 1.5.0 条目）。现改由 `TrEnumPopup` 绘制，绕开了该限制。
+- 欢迎窗口「预制体生成」区的**分类名与生成项显示名**随语言切换（预制体资产名恒为英文，不参与翻译）。
+
+### 不在本次范围
+
+- **撤销 / 重做操作名**（Unity `Edit ▸ Undo/Redo` 菜单中的文案）保持中文，不随界面语言切换。
+- 运行时组件的自定义 Inspector（`UiwEquipmentGroupPanelEditor` / `UiwEquipmentSlotListEditor` / `UiwSkillViewEditor`）、DemoWizard 独立窗口、本地化 / Addressable 工具窗口，均不属本次两个目标窗口的范围，保持中文。
+- **生成到数据库的 Demo 内容**（道具名等）保持中文——生成的资产内容不随编辑器界面语言变化。
+
 ## [1.6.0] - 2026-07-23
 
 一轮以「**修 Bug + 补齐导出 + 结构重构**」为主的版本。**含破坏性变更**（移除已零调用的兼容 API、导出格式升版），升级前请先读本节末尾的「⚠️ 破坏性」与「升级指引」。
