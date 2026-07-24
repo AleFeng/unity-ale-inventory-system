@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -47,7 +48,7 @@ namespace Ale.Inventory.Editor
             {
                 bool exists = db.GetInventory(invId) != null;
                 EditorGUILayout.LabelField($"{i + 1}.", GUILayout.Width(20));
-                EditorGUILayout.LabelField(exists ? invId : invId + "（已删除）",
+                EditorGUILayout.LabelField(exists ? invId : invId + Tr("（已删除）"),
                     exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
             });
         }
@@ -72,7 +73,7 @@ namespace Ale.Inventory.Editor
                 });
             }
             if (!any)
-                menu.AddDisabledItem(new GUIContent("（无可添加的仓库）"));
+                menu.AddDisabledItem(new GUIContent(Tr("（无可添加的仓库）")));
             menu.ShowAsContext();
         }
     }

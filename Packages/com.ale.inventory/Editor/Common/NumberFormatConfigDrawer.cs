@@ -1,6 +1,7 @@
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -10,12 +11,8 @@ namespace Ale.Inventory.Editor
     /// </summary>
     public static class NumberFormatConfigDrawer
     {
-        private static readonly GUIContent[] RuleHeaders =
-        {
-            new GUIContent("阈值"),
-            new GUIContent("除数"),
-            new GUIContent("小数位"),
-        };
+        // 中文键；显示时逐帧经 Tr 翻译（语言切换即时生效）。
+        private static readonly string[] RuleHeaderKeys = { "阈值", "除数", "小数位" };
 
         /// <summary>
         /// 绘制「数字格式」引用下拉框：选项为 None + 数据库中所有数字格式配置名称。
@@ -28,11 +25,11 @@ namespace Ale.Inventory.Editor
 
             // 选项 0 = None，其后为各配置名称
             var displays = new string[configs.Count + 1];
-            displays[0]  = "None";
+            displays[0]  = Tr("None");
             int curIdx   = 0;
             for (int i = 0; i < configs.Count; i++)
             {
-                string name  = string.IsNullOrEmpty(configs[i].name) ? $"（未命名 {i}）" : configs[i].name;
+                string name  = string.IsNullOrEmpty(configs[i].name) ? Fmt("（未命名 {0}）", i) : configs[i].name;
                 displays[i + 1] = name;
                 if (!string.IsNullOrEmpty(current) && configs[i].name == current)
                     curIdx = i + 1;
@@ -65,7 +62,7 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
                 string langLabel = string.IsNullOrEmpty(locale.languageCode)
-                    ? $"语言 {li}（默认回退）" : $"语言 {li}";
+                    ? Fmt("语言 {0}（默认回退）", li) : Fmt("语言 {0}", li);
                 string newLang = EditorGUILayout.TextField(langLabel,
                     locale.languageCode ?? string.Empty);
                 if (EditorGUI.EndChangeCheck())
@@ -92,7 +89,7 @@ namespace Ale.Inventory.Editor
                 ctx.MarkDirty();
             }
 
-            if (GUILayout.Button("+ 添加语言", EditorStyles.miniButton))
+            if (GUILayout.Button(Tr("+ 添加语言"), EditorStyles.miniButton))
             {
                 ctx.RecordUndo("添加语言");
                 config.locales.Add(new NumberFormatLocale());
@@ -105,8 +102,8 @@ namespace Ale.Inventory.Editor
             // ── 列标题 ───────────────────────────────────────────────────
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(EditorGUI.indentLevel * 15f + 4f);
-            foreach (var h in RuleHeaders)
-                EditorGUILayout.LabelField(h, EditorStyles.miniLabel, GUILayout.Width(70));
+            foreach (var h in RuleHeaderKeys)
+                EditorGUILayout.LabelField(Tr(h), EditorStyles.miniLabel, GUILayout.Width(70));
             GUILayout.Space(26f);
             EditorGUILayout.EndHorizontal();
 
@@ -138,7 +135,7 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.EndHorizontal();
 
                 // 后缀：Text（纯文本 fallback + 原生可搜索本地化选择器），独立整行绘制
-                AttributeFieldDrawer.Draw(ctx, "后缀", rule.suffixText, null);
+                AttributeFieldDrawer.Draw(ctx, Tr("后缀"), rule.suffixText, null);
             }
 
             if (pendingDeleteRule >= 0)
@@ -150,7 +147,7 @@ namespace Ale.Inventory.Editor
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.Space(EditorGUI.indentLevel * 15f + 4f);
-            if (GUILayout.Button("+ 添加规则", EditorStyles.miniButton))
+            if (GUILayout.Button(Tr("+ 添加规则"), EditorStyles.miniButton))
             {
                 ctx.RecordUndo("添加格式规则");
                 locale.rules.Add(new NumberFormatRule());

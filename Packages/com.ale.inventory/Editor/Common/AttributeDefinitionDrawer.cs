@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -31,8 +32,8 @@ namespace Ale.Inventory.Editor
             // 类型 + 是否数组（LocalizedString 仅在 IS_LOCALIZATION 启用时可选）
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
-            var type = DrawFieldTypePopup("类型", def.type);
-            bool isArray = GUILayout.Toggle(def.isArray, "数组", GUILayout.Width(50));
+            var type = DrawFieldTypePopup(Tr("类型"), def.type);
+            bool isArray = GUILayout.Toggle(def.isArray, Tr("数组"), GUILayout.Width(50));
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改属性类型");
@@ -53,10 +54,10 @@ namespace Ale.Inventory.Editor
                 DrawEnumTypeRef(ctx, def, db);
 
             // 默认值
-            EditorGUILayout.LabelField("默认值", EditorStyles.miniBoldLabel);
+            EditorGUILayout.LabelField(Tr("默认值"), EditorStyles.miniBoldLabel);
             var enumType = (def.type == EFieldType.Enum || def.type == EFieldType.EnumIntPair)
                 ? db?.GetEnumType(def.enumTypeRef) : null;
-            AttributeFieldDrawer.Draw(ctx, "默认", def.defaultValue, enumType);
+            AttributeFieldDrawer.Draw(ctx, Tr("默认"), def.defaultValue, enumType);
 
             EditorGUILayout.EndVertical();
         }
@@ -109,9 +110,9 @@ namespace Ale.Inventory.Editor
             // ── 类型 + 数组 Toggle ────────────────────────────────────────────
             float typeW = w - 60f;
             EditorGUI.BeginChangeCheck();
-            EFieldType newType  = DrawFieldTypePopupRect(new Rect(x, y, typeW, lh), "类型", def.type);
+            EFieldType newType  = DrawFieldTypePopupRect(new Rect(x, y, typeW, lh), Tr("类型"), def.type);
             bool       newArray = EditorGUI.ToggleLeft(
-                new Rect(x + typeW + 2f, y, 58f, lh), "数组", def.isArray);
+                new Rect(x + typeW + 2f, y, 58f, lh), Tr("数组"), def.isArray);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改属性类型");
@@ -133,7 +134,7 @@ namespace Ale.Inventory.Editor
             }
 
             // ── "默认值" 标签 ─────────────────────────────────────────────────
-            EditorGUI.LabelField(new Rect(x, y, w, lh), "默认值", EditorStyles.miniBoldLabel);
+            EditorGUI.LabelField(new Rect(x, y, w, lh), Tr("默认值"), EditorStyles.miniBoldLabel);
             y += row;
 
             // ── 默认值字段 ────────────────────────────────────────────────────
@@ -142,7 +143,7 @@ namespace Ale.Inventory.Editor
             {
                 var enumType = (def.type == EFieldType.Enum || def.type == EFieldType.EnumIntPair)
                     ? db?.GetEnumType(def.enumTypeRef) : null;
-                AttributeFieldDrawer.DrawRect(ctx, "默认", def.defaultValue, enumType,
+                AttributeFieldDrawer.DrawRect(ctx, Tr("默认"), def.defaultValue, enumType,
                     new Rect(x, y, w, dvH));
             }
 
@@ -167,12 +168,12 @@ namespace Ale.Inventory.Editor
                 EFieldType.PhysicsMaterial, EFieldType.PhysicsMaterial2D,
             };
             var names = new string[types.Count];
-            for (int i = 0; i < types.Count; i++) names[i] = types[i].ToString();
+            for (int i = 0; i < types.Count; i++) names[i] = TrEnum(types[i]);
 
             int idx = types.IndexOf(current);
             if (idx < 0)
             {
-                EditorGUI.LabelField(rect, label, $"{current}（未知类型）");
+                EditorGUI.LabelField(rect, label, Fmt("{0}（未知类型）", TrEnum(current)));
                 return current;
             }
             int picked = EditorGUI.Popup(rect, label, idx, names);
@@ -191,7 +192,7 @@ namespace Ale.Inventory.Editor
 
             int current = names.IndexOf(def.enumTypeRef);
             EditorGUI.BeginChangeCheck();
-            int picked = EditorGUI.Popup(rect, "枚举类型", current, names.ToArray());
+            int picked = EditorGUI.Popup(rect, Tr("枚举类型"), current, names.ToArray());
             if (EditorGUI.EndChangeCheck() && picked >= 0 && picked < names.Count)
             {
                 ctx.RecordUndo("修改枚举类型引用");
@@ -220,13 +221,13 @@ namespace Ale.Inventory.Editor
                 EFieldType.PhysicsMaterial, EFieldType.PhysicsMaterial2D,
             };
             var names = new string[types.Count];
-            for (int i = 0; i < types.Count; i++) names[i] = types[i].ToString();
+            for (int i = 0; i < types.Count; i++) names[i] = TrEnum(types[i]);
 
             int idx = types.IndexOf(current);
             if (idx < 0)
             {
                 // 当前值为 LocalizedString 但宏未启用：灰色只读显示
-                EditorGUILayout.LabelField(label, $"{current}（未知类型）");
+                EditorGUILayout.LabelField(label, Fmt("{0}（未知类型）", TrEnum(current)));
                 return current;
             }
 
@@ -244,7 +245,7 @@ namespace Ale.Inventory.Editor
 
             int current = names.IndexOf(def.enumTypeRef);
             EditorGUI.BeginChangeCheck();
-            int picked = EditorGUILayout.Popup("枚举类型", current, names.ToArray());
+            int picked = EditorGUILayout.Popup(Tr("枚举类型"), current, names.ToArray());
             if (EditorGUI.EndChangeCheck() && picked >= 0 && picked < names.Count)
             {
                 ctx.RecordUndo("修改枚举类型引用");

@@ -3,6 +3,7 @@ using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -226,7 +227,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.LabelField($"{label}  [{value.Count}]", EditorStyles.boldLabel);
-            if (GUILayout.Button("添加", GUILayout.Width(48)))
+            if (GUILayout.Button(Tr("添加"), GUILayout.Width(48)))
             {
                 ctx.RecordUndo("添加数组元素");
                 value.AddElement();
@@ -341,7 +342,7 @@ namespace Ale.Inventory.Editor
                 new Rect(x, y, w - 54f, lh),
                 $"{label}  [{value.Count}]",
                 EditorStyles.boldLabel);
-            if (GUI.Button(new Rect(x + w - 52f, y, 50f, lh), "添加", EditorStyles.miniButton))
+            if (GUI.Button(new Rect(x + w - 52f, y, 50f, lh), Tr("添加"), EditorStyles.miniButton))
             {
                 ctx.RecordUndo("添加数组元素");
                 value.AddElement();
@@ -571,7 +572,7 @@ namespace Ale.Inventory.Editor
         {
             if (enumType == null || enumType.items.Count == 0)
             {
-                string msg = $"<未找到枚举类型 \"{value.EnumTypeRef}\">";
+                string msg = Fmt("<未找到枚举类型 \"{0}\">", value.EnumTypeRef);
                 if (string.IsNullOrEmpty(label))
                     EditorGUI.LabelField(rect, msg, InventoryEditorStyles.StatusError);
                 else
@@ -605,7 +606,7 @@ namespace Ale.Inventory.Editor
         {
             if (enumType == null || enumType.items.Count == 0)
             {
-                EditorGUI.LabelField(rect, $"<未找到枚举类型 \"{value.EnumTypeRef}\">", InventoryEditorStyles.StatusError);
+                EditorGUI.LabelField(rect, Fmt("<未找到枚举类型 \"{0}\">", value.EnumTypeRef), InventoryEditorStyles.StatusError);
                 return;
             }
 
@@ -687,7 +688,7 @@ namespace Ale.Inventory.Editor
         private static void DrawTextFieldLayout(IInventoryEditorContext ctx, AttributeValue value, int index)
         {
             EditorGUI.BeginChangeCheck();
-            string plain = EditorGUILayout.TextField("文本", value.GetTextValue(index));
+            string plain = EditorGUILayout.TextField(Tr("文本"), value.GetTextValue(index));
             if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetTextValue(index, plain));
 #if IS_LOCALIZATION
             DrawLocalizedStringField(ctx, value, index);
@@ -813,7 +814,7 @@ namespace Ale.Inventory.Editor
                 return;
             }
             EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(valueProp, new GUIContent("本地化"), true);
+            EditorGUILayout.PropertyField(valueProp, new GUIContent(Tr("本地化")), true);
             bool soChanged = so.ApplyModifiedProperties();
             if (EditorGUI.EndChangeCheck() || soChanged)
                 ApplyLsReadback(ctx, value, index, tableProp, keyProp);
@@ -825,11 +826,11 @@ namespace Ale.Inventory.Editor
             var valueProp = SyncLsHolder(value, index, out var so, out var tableProp, out var keyProp);
             if (valueProp == null || tableProp == null || keyProp == null)
             {
-                DrawLocalizedStringFallbackRect(ctx, value, index, "本地化", rect);
+                DrawLocalizedStringFallbackRect(ctx, value, index, Tr("本地化"), rect);
                 return;
             }
             EditorGUI.BeginChangeCheck();
-            EditorGUI.PropertyField(rect, valueProp, new GUIContent("本地化"), true);
+            EditorGUI.PropertyField(rect, valueProp, new GUIContent(Tr("本地化")), true);
             bool soChanged = so.ApplyModifiedProperties();
             if (EditorGUI.EndChangeCheck() || soChanged)
                 ApplyLsReadback(ctx, value, index, tableProp, keyProp);
@@ -952,11 +953,11 @@ namespace Ale.Inventory.Editor
             if (e.type == EventType.ContextClick)
             {
                 var menu = new GenericMenu();
-                menu.AddItem(new GUIContent("复制属性值  Ctrl+C"), false, () => CopyValue(value));
+                menu.AddItem(new GUIContent(Tr("复制属性值  Ctrl+C")), false, () => CopyValue(value));
                 if (ReadClipboardCompatible(value) != null)
-                    menu.AddItem(new GUIContent("粘贴属性值  Ctrl+V"), false, () => TryPasteValue(ctx, value));
+                    menu.AddItem(new GUIContent(Tr("粘贴属性值  Ctrl+V")), false, () => TryPasteValue(ctx, value));
                 else
-                    menu.AddDisabledItem(new GUIContent("粘贴属性值  Ctrl+V"));
+                    menu.AddDisabledItem(new GUIContent(Tr("粘贴属性值  Ctrl+V")));
                 menu.ShowAsContext();
                 e.Use();
             }

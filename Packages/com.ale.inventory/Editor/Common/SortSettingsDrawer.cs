@@ -3,6 +3,7 @@ using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -66,7 +67,8 @@ namespace Ale.Inventory.Editor
                 draggable: true, displayHeader: true,
                 displayAddButton: true, displayRemoveButton: true);
 
-            rl.drawHeaderCallback = rect => EditorGUI.LabelField(rect, header);
+            // header 为中文键；在回调内翻译，保证语言切换后缓存的 ReorderableList 也即时更新。
+            rl.drawHeaderCallback = rect => EditorGUI.LabelField(rect, Tr(header));
 
             rl.drawElementCallback = (rect, index, active, focused) =>
             {
@@ -80,14 +82,14 @@ namespace Ale.Inventory.Editor
                 var ascRect   = new Rect(rect.xMax - ascW, rect.y, ascW,
                     EditorGUIUtility.singleLineHeight);
 
-                var displays = st.Displays ?? new[] { "道具 ID" };
+                var displays = st.Displays ?? new[] { Tr("道具 ID") };
                 var values   = st.Values   ?? new[] { "__id__" };
                 int curIdx   = FindOptionIndex(values, sp.field);
 
                 EditorGUI.BeginChangeCheck();
                 int  picked = EditorGUI.Popup(fieldRect, curIdx, displays);
                 bool newAsc = EditorGUI.Toggle(ascRect,
-                    new GUIContent(sp.ascending ? "升序" : "降序"), sp.ascending);
+                    new GUIContent(sp.ascending ? Tr("升序") : Tr("降序")), sp.ascending);
                 if (EditorGUI.EndChangeCheck())
                 {
                     st.Ctx.RecordUndo("修改" + undoLabel);
@@ -127,22 +129,22 @@ namespace Ale.Inventory.Editor
         public static void BuildFieldOptions(InventoryDatabase db,
             out string[] displays, out string[] values)
         {
-            var dList = new List<string> { "道具 ID" };
+            var dList = new List<string> { Tr("道具 ID") };
             var vList = new List<string> { "__id__" };
             var seen  = new HashSet<string>();
 
             foreach (var tmpl in db.ItemTemplates)
                 foreach (var def in tmpl.attributes)
                     if (!string.IsNullOrEmpty(def.id) && seen.Add(def.id))
-                    { dList.Add("属性/" + def.id); vList.Add(def.id); }
+                    { dList.Add(Tr("属性") + "/" + def.id); vList.Add(def.id); }
 
             foreach (var tag in db.FunctionTags)
                 foreach (var def in tag.attributes)
                     if (!string.IsNullOrEmpty(def.id) && seen.Add(def.id))
-                    { dList.Add("属性/" + def.id); vList.Add(def.id); }
+                    { dList.Add(Tr("属性") + "/" + def.id); vList.Add(def.id); }
 
             if (db.FunctionTags.Count > 0)
-            { dList.Add("功能标签"); vList.Add("__tagOrder__"); }
+            { dList.Add(Tr("功能标签")); vList.Add("__tagOrder__"); }
 
             displays = dList.ToArray();
             values   = vList.ToArray();
