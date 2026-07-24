@@ -1,6 +1,7 @@
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -15,7 +16,7 @@ namespace Ale.Inventory.Editor
         {
             if (skill == null)
             {
-                EditorGUILayout.LabelField("请在中间列表选中一个技能。");
+                EditorGUILayout.LabelField(Tr("请在中间列表选中一个技能。"));
                 return;
             }
 
@@ -30,7 +31,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawBasic(IInventoryEditorContext ctx, Skill skill)
         {
-            EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础属性"), InventoryEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "技能", skill.id,
                 ctx.DuplicateIdsOf(EInventoryEntityKind.Skill), v => skill.id = v);

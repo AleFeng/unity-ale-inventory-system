@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -21,11 +22,11 @@ namespace Ale.Inventory.Editor
         public static void DrawDisplayFields(IInventoryEditorContext ctx, ISkillConfig cfg)
         {
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器），由 AttributeFieldDrawer 统一绘制。
-            AttributeFieldDrawer.Draw(ctx, "名称", cfg.DisplayName, null);
-            AttributeFieldDrawer.Draw(ctx, "描述", cfg.Description, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("名称"), cfg.DisplayName, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("描述"), cfg.Description, null);
 
             // 图标：直接模式 ObjectField / 授权模式原生 AssetReference 选择器
-            if (InventoryAssetRefField.DrawSprite("图标", cfg, "skillIcon", cfg.Icon, cfg.IconAddress,
+            if (InventoryAssetRefField.DrawSprite(Tr("图标"), cfg, "skillIcon", cfg.Icon, cfg.IconAddress,
                     out var newIcon, out var newIconAddr))
             {
                 ctx.RecordUndo("修改技能图标");
@@ -40,17 +41,17 @@ namespace Ale.Inventory.Editor
         public static void DrawGroupTags(IInventoryEditorContext ctx, ISkillConfig cfg)
         {
             var db = ctx.Database;
-            EditorGUILayout.LabelField("分组标签", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("分组标签"), InventoryEditorStyles.Header);
 
             if (db.SkillGroupTags.Count == 0)
             {
-                EditorGUILayout.LabelField("（暂无分组标签；请在左侧「分组标签」中添加）", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr("（暂无分组标签；请在左侧「分组标签」中添加）"), EditorStyles.miniLabel);
                 return;
             }
 
             // 主分组（单选 Popup；index 0 = 无）
             var ids      = new List<string>();
-            var displays = new List<string> { "（无）" };
+            var displays = new List<string> { Tr("（无）") };
             foreach (var g in db.SkillGroupTags)
             {
                 ids.Add(g.id);
@@ -61,7 +62,7 @@ namespace Ale.Inventory.Editor
                 if (ids[i] == cfg.PrimaryGroupTag) { curIdx = i + 1; break; }
 
             EditorGUI.BeginChangeCheck();
-            int picked = EditorGUILayout.Popup("主分组标签", curIdx, displays.ToArray());
+            int picked = EditorGUILayout.Popup(Tr("主分组标签"), curIdx, displays.ToArray());
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改主分组标签");
@@ -72,7 +73,7 @@ namespace Ale.Inventory.Editor
             // 副分组（列表 + 「+」下拉添加，已添加的不在下拉中显示）
             EditorGUILayout.Space(2);
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("副分组标签", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Tr("副分组标签"), EditorStyles.boldLabel);
             if (GUILayout.Button("+", GUILayout.Width(24)))
                 ShowAddSecondaryGroupMenu(ctx, cfg);
             EditorGUILayout.EndHorizontal();
@@ -80,7 +81,7 @@ namespace Ale.Inventory.Editor
             var secs = cfg.SecondaryGroupTags;
             if (secs.Count == 0)
             {
-                EditorGUILayout.LabelField("（未添加）", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr("（未添加）"), EditorStyles.miniLabel);
                 return;
             }
 
@@ -88,7 +89,7 @@ namespace Ale.Inventory.Editor
             {
                 var    g      = db.GetSkillGroupTag(tagId);
                 bool   exists = g != null;
-                string label  = exists ? g.PlainName() : tagId + "（已删除）";
+                string label  = exists ? g.PlainName() : tagId + Tr("（已删除）");
                 EditorGUILayout.LabelField(label,
                     exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
             });
@@ -114,7 +115,7 @@ namespace Ale.Inventory.Editor
                 });
             }
             if (!any)
-                menu.AddDisabledItem(new GUIContent("（无可添加的分组标签）"));
+                menu.AddDisabledItem(new GUIContent(Tr("（无可添加的分组标签）")));
             menu.ShowAsContext();
         }
     }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -22,7 +23,7 @@ namespace Ale.Inventory.Editor
         protected override string RowLabel(SkillTemplate t) => t.name;
 
         protected override SkillTemplate CreateNew(InventoryDatabase db, List<SkillTemplate> list)
-            => new SkillTemplate("新技能模板");
+            => new SkillTemplate(Tr("新技能模板"));
 
         protected override void OnInvalidate() => _attrDefsDrawer.Invalidate();
 
@@ -34,13 +35,13 @@ namespace Ale.Inventory.Editor
         {
             if (template == null)
             {
-                EditorGUILayout.LabelField("请选择或新建一个技能模板。");
+                EditorGUILayout.LabelField(Tr("请选择或新建一个技能模板。"));
                 return;
             }
 
             EditorGUI.BeginChangeCheck();
-            string newName  = EditorGUILayout.TextField("模板名称", template.name);
-            Color  newColor = EditorGUILayout.ColorField("标识颜色", template.color);
+            string newName  = EditorGUILayout.TextField(Tr("模板名称"), template.name);
+            Color  newColor = EditorGUILayout.ColorField(Tr("标识颜色"), template.color);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改技能模板基本信息");
@@ -52,14 +53,14 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // 技能默认信息（从模板创建技能时复制到新技能，之后可在技能条目上独立修改）
-            EditorGUILayout.LabelField("技能默认信息（从模板创建时复制）", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("技能默认信息（从模板创建时复制）"), InventoryEditorStyles.Header);
             SkillConfigDrawer.DrawDisplayFields(ctx, template);
 
             EditorGUILayout.Space(6);
             SkillConfigDrawer.DrawGroupTags(ctx, template);
 
             EditorGUILayout.Space(6);
-            _attrDefsDrawer.Draw(ctx, template.attributes, "自定义属性字段");
+            _attrDefsDrawer.Draw(ctx, template.attributes, Tr("自定义属性字段"));
         }
     }
 }
