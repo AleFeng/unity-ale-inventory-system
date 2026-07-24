@@ -1,6 +1,7 @@
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -17,7 +18,7 @@ namespace Ale.Inventory.Editor
         {
             if (group == null)
             {
-                EditorGUILayout.LabelField("请在中间列表选中一个装备组。");
+                EditorGUILayout.LabelField(Tr("请在中间列表选中一个装备组。"));
                 return;
             }
 
@@ -32,14 +33,14 @@ namespace Ale.Inventory.Editor
 
         private static void DrawBasic(IInventoryEditorContext ctx, EquipmentGroup group)
         {
-            EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础属性"), InventoryEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "装备组", group.id,
                 ctx.DuplicateIdsOf(EInventoryEntityKind.Equipment), v => group.id = v);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器；名称为空时 UI 退回使用 ID）
-            AttributeFieldDrawer.Draw(ctx, "名称", group.displayNameText, null);
-            AttributeFieldDrawer.Draw(ctx, "描述", group.descriptionText, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("名称"), group.displayNameText, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("描述"), group.descriptionText, null);
 
             EditorEntityHeader.DrawTemplateRefReadonly(group.templateRef);
         }

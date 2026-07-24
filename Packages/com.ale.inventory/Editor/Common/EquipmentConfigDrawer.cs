@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -43,9 +44,9 @@ namespace Ale.Inventory.Editor
         public void Draw(IInventoryEditorContext ctx, IEquipmentConfig cfg)
         {
             InventoryRefListDrawer.Draw(ctx, cfg.EquipmentInventoryRefs, _equipInventoriesDrag,
-                "装备仓库", "装备仓库",
-                hint: "装备系统 / 装备 UI 可直接交互的仓库；卸下装备时从上到下（Index0 起）找第一个放得下的仓库。",
-                emptyHint: "（未配置）");
+                Tr("装备仓库"), "装备仓库",
+                hint: Tr("装备系统 / 装备 UI 可直接交互的仓库；卸下装备时从上到下（Index0 起）找第一个放得下的仓库。"),
+                emptyHint: Tr("（未配置）"));
             EditorGUILayout.Space(6);
             DrawSlotLists(ctx, cfg);
             EditorGUILayout.Space(6);
@@ -63,9 +64,9 @@ namespace Ale.Inventory.Editor
 
         private void DrawSortSettings(IInventoryEditorContext ctx, IEquipmentConfig cfg)
         {
-            EditorGUILayout.LabelField("整理排序", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("整理排序"), InventoryEditorStyles.Header);
             EditorGUILayout.LabelField(
-                "可装备道具候选列表按此排序（候选列表有排序栏时玩家可选并升降序，否则以首条为默认排序）：",
+                Tr("可装备道具候选列表按此排序（候选列表有排序栏时玩家可选并升降序，否则以首条为默认排序）："),
                 EditorStyles.miniLabel);
             SortSettingsDrawer.Draw(ctx, cfg.SortPriorities, cfg.SortTiebreakers);
         }
@@ -81,11 +82,11 @@ namespace Ale.Inventory.Editor
             var slotLists = cfg.SlotLists;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("槽位列表", InventoryEditorStyles.Header);
-            if (GUILayout.Button("+ 添加槽位列表", EditorStyles.miniButton, GUILayout.Width(96)))
+            EditorGUILayout.LabelField(Tr("槽位列表"), InventoryEditorStyles.Header);
+            if (GUILayout.Button(Tr("+ 添加槽位列表"), EditorStyles.miniButton, GUILayout.Width(96)))
             {
                 ctx.RecordUndo("添加槽位列表");
-                slotLists.Add(new EquipmentSlotList(GenerateSlotListId(cfg), "新槽位列表"));
+                slotLists.Add(new EquipmentSlotList(GenerateSlotListId(cfg), Tr("新槽位列表")));
                 ctx.MarkDirty();
             }
             EditorGUILayout.EndHorizontal();
@@ -104,7 +105,7 @@ namespace Ale.Inventory.Editor
 
                 // 标题行（拖拽句柄与本行对齐）：标题 + 删除
                 Rect firstRowRect = EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField($"槽位列表 {i + 1}", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField(Fmt("槽位列表 {0}", i + 1), EditorStyles.boldLabel);
                 if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
                     removeSlotList = i;
                 EditorGUILayout.EndHorizontal();
@@ -121,7 +122,7 @@ namespace Ale.Inventory.Editor
 
                 // 详细配置（默认折叠）：名称 / 描述 / 道具限制 / 装备槽
                 bool expanded = _slotListFoldouts.TryGetValue(sl, out var e) && e;
-                bool toggled  = EditorGUILayout.Foldout(expanded, "详细配置", true);
+                bool toggled  = EditorGUILayout.Foldout(expanded, Tr("详细配置"), true);
                 if (toggled != expanded)
                 {
                     _slotListFoldouts[sl] = toggled;
@@ -131,8 +132,8 @@ namespace Ale.Inventory.Editor
                 if (expanded)
                 {
                     EditorGUI.BeginChangeCheck();
-                    string slName = EditorGUILayout.TextField("名称", sl.displayName);
-                    string slDesc = EditorGUILayout.TextField("描述", sl.description);
+                    string slName = EditorGUILayout.TextField(Tr("名称"), sl.displayName);
+                    string slDesc = EditorGUILayout.TextField(Tr("描述"), sl.description);
                     if (EditorGUI.EndChangeCheck())
                     {
                         ctx.RecordUndo("修改槽位列表");
@@ -142,7 +143,7 @@ namespace Ale.Inventory.Editor
                     }
 
                     EditorGUILayout.Space(2);
-                    EditorGUILayout.LabelField("道具限制（功能标签与枚举约束需全部满足）", EditorStyles.miniLabel);
+                    EditorGUILayout.LabelField(Tr("道具限制（功能标签与枚举约束需全部满足）"), EditorStyles.miniLabel);
                     DrawRequiredTags(ctx, sl, i);
                     DrawEnumConstraints(ctx, sl, i);
 
@@ -178,14 +179,14 @@ namespace Ale.Inventory.Editor
             var db = ctx.Database;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("功能标签", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Tr("功能标签"), EditorStyles.boldLabel);
             if (GUILayout.Button("+", GUILayout.Width(24)))
                 ShowAddTagMenu(ctx, sl);
             EditorGUILayout.EndHorizontal();
 
             if (sl.requiredTags.Count == 0)
             {
-                EditorGUILayout.LabelField("（未限制）", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr("（未限制）"), EditorStyles.miniLabel);
                 return;
             }
 
@@ -197,7 +198,7 @@ namespace Ale.Inventory.Editor
                     string ftName = exists && ft.displayNameText != null ? ft.displayNameText.GetTextValue(0) : null;
                     string label  = exists
                         ? (string.IsNullOrEmpty(ftName) ? ft.name : ftName)
-                        : tagId + "（已删除）";
+                        : tagId + Tr("（已删除）");
                     EditorGUILayout.LabelField(label,
                         exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
                 });
@@ -224,7 +225,7 @@ namespace Ale.Inventory.Editor
                 });
             }
             if (!any)
-                menu.AddDisabledItem(new GUIContent("（无可添加的功能标签）"));
+                menu.AddDisabledItem(new GUIContent(Tr("（无可添加的功能标签）")));
             menu.ShowAsContext();
         }
 
@@ -235,7 +236,7 @@ namespace Ale.Inventory.Editor
             var db = ctx.Database;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("枚举约束", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Tr("枚举约束"), EditorStyles.boldLabel);
             if (GUILayout.Button("+", GUILayout.Width(24)))
             {
                 ctx.RecordUndo("添加枚举约束");
@@ -246,12 +247,12 @@ namespace Ale.Inventory.Editor
 
             if (sl.enumConstraints.Count == 0)
             {
-                EditorGUILayout.LabelField("（未限制）", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr("（未限制）"), EditorStyles.miniLabel);
                 return;
             }
 
             // 枚举类型名称列表（含「（无）」占位）
-            var enumNames = new List<string> { "（无）" };
+            var enumNames = new List<string> { Tr("（无）") };
             foreach (var et in db.EnumTypes) enumNames.Add(et.name);
 
             EditorDraggableRowList.Draw(ctx, sl.enumConstraints, GetDrag($"sl{slIndex}/enums"), "枚举约束",
@@ -283,15 +284,15 @@ namespace Ale.Inventory.Editor
 
         private static string BuildEnumValueSummary(EnumType et, List<int> values)
         {
-            if (et == null) return "（先选枚举类型）";
-            if (values == null || values.Count == 0) return "（任意值）";
+            if (et == null) return Tr("（先选枚举类型）");
+            if (values == null || values.Count == 0) return Tr("（任意值）");
             var names = new List<string>();
             foreach (var v in values)
             {
                 var item = et.GetItemByValue(v);
                 if (item != null) names.Add(item.name);
             }
-            return names.Count == 0 ? "（任意值）" : string.Join(", ", names);
+            return names.Count == 0 ? Tr("（任意值）") : string.Join(", ", names);
         }
 
         private static void ShowEnumValuesMenu(IInventoryEditorContext ctx, EquipmentEnumConstraint c, EnumType et)
@@ -319,11 +320,11 @@ namespace Ale.Inventory.Editor
         private static void DrawSlots(IInventoryEditorContext ctx, IEquipmentConfig cfg, EquipmentSlotList sl)
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("装备槽", EditorStyles.boldLabel);
-            if (GUILayout.Button("+ 添加装备槽", EditorStyles.miniButton, GUILayout.Width(88)))
+            EditorGUILayout.LabelField(Tr("装备槽"), EditorStyles.boldLabel);
+            if (GUILayout.Button(Tr("+ 添加装备槽"), EditorStyles.miniButton, GUILayout.Width(88)))
             {
                 ctx.RecordUndo("添加装备槽");
-                sl.slots.Add(new EquipmentSlot(GenerateSlotId(cfg), "新槽位"));
+                sl.slots.Add(new EquipmentSlot(GenerateSlotId(cfg), Tr("新槽位")));
                 ctx.MarkDirty();
             }
             EditorGUILayout.EndHorizontal();
@@ -336,14 +337,14 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField($"装备槽 {s + 1}", EditorStyles.miniBoldLabel);
+                EditorGUILayout.LabelField(Fmt("装备槽 {0}", s + 1), EditorStyles.miniBoldLabel);
                 if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
                     removeSlot = s;
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUI.BeginChangeCheck();
                 string sId   = EditorGUILayout.TextField("ID", slot.id);
-                string sName = EditorGUILayout.TextField("名称", slot.displayName);
+                string sName = EditorGUILayout.TextField(Tr("名称"), slot.displayName);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改装备槽");
@@ -370,7 +371,7 @@ namespace Ale.Inventory.Editor
             var db = ctx.Database;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("槽位过滤条件（需全部满足）", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField(Tr("槽位过滤条件（需全部满足）"), EditorStyles.miniLabel);
             if (GUILayout.Button("+", GUILayout.Width(24)))
             {
                 ctx.RecordUndo("添加过滤条件");
@@ -387,15 +388,15 @@ namespace Ale.Inventory.Editor
                 // 属性ID 行：输入框 + 「选择」下拉 + 删除
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
-                string newAttrId = EditorGUILayout.TextField("属性ID", filter.attrId ?? string.Empty);
+                string newAttrId = EditorGUILayout.TextField(Tr("属性ID"), filter.attrId ?? string.Empty);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改过滤属性ID");
                     filter.attrId = newAttrId;
                     ctx.MarkDirty();
                 }
-                Rect dropRect = GUILayoutUtility.GetRect(new GUIContent("选择"), EditorStyles.popup, GUILayout.Width(56));
-                if (EditorGUI.DropdownButton(dropRect, new GUIContent("选择"), FocusType.Keyboard, EditorStyles.popup))
+                Rect dropRect = GUILayoutUtility.GetRect(new GUIContent(Tr("选择")), EditorStyles.popup, GUILayout.Width(56));
+                if (EditorGUI.DropdownButton(dropRect, new GUIContent(Tr("选择")), FocusType.Keyboard, EditorStyles.popup))
                 {
                     var capture = filter;
                     ShowAttrIdMenu(ctx, capture.attrId, id => capture.attrId = id, dropRect);
@@ -409,7 +410,7 @@ namespace Ale.Inventory.Editor
                 if (def == null)
                 {
                     if (!string.IsNullOrEmpty(filter.attrId))
-                        EditorGUILayout.LabelField("⚠ 未找到属性定义（无法编辑期望值）", InventoryEditorStyles.StatusError);
+                        EditorGUILayout.LabelField(Tr("⚠ 未找到属性定义（无法编辑期望值）"), InventoryEditorStyles.StatusError);
                     continue;
                 }
 
@@ -424,7 +425,7 @@ namespace Ale.Inventory.Editor
                 }
 
                 var enumType = def.type == EFieldType.Enum ? db.GetEnumType(def.enumTypeRef) : null;
-                AttributeFieldDrawer.Draw(ctx, "期望值", filter.value, enumType);
+                AttributeFieldDrawer.Draw(ctx, Tr("期望值"), filter.value, enumType);
             }
 
             if (removeIndex >= 0)
@@ -447,19 +448,19 @@ namespace Ale.Inventory.Editor
             var list = cfg.AttributeDisplays;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("装备属性字段", InventoryEditorStyles.Header);
-            if (GUILayout.Button("+ 添加", EditorStyles.miniButton, GUILayout.Width(64)))
+            EditorGUILayout.LabelField(Tr("装备属性字段"), InventoryEditorStyles.Header);
+            if (GUILayout.Button(Tr("+ 添加"), EditorStyles.miniButton, GUILayout.Width(64)))
             {
                 ctx.RecordUndo("添加装备属性字段");
                 list.Add(new EquipmentAttributeDisplay());
                 ctx.MarkDirty();
             }
             EditorGUILayout.EndHorizontal();
-            EditorGUILayout.LabelField("指定道具属性作为装备组总属性加成；拖拽左侧句柄调整顺序。", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField(Tr("指定道具属性作为装备组总属性加成；拖拽左侧句柄调整顺序。"), EditorStyles.miniLabel);
 
             // 分组标签下拉数据
             var groupIds      = new List<string>();
-            var groupDisplays = new List<string> { "（无）" };
+            var groupDisplays = new List<string> { Tr("（无）") };
             foreach (var gt in db.EquipmentGroupTags)
             {
                 groupIds.Add(gt.id);
@@ -481,15 +482,15 @@ namespace Ale.Inventory.Editor
                 // 属性ID 行（拖拽句柄与本行对齐）：输入框 + 「选择」下拉 + 删除
                 Rect firstRowRect = EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
-                string newAttrId = EditorGUILayout.TextField("属性ID", ad.attrId ?? string.Empty);
+                string newAttrId = EditorGUILayout.TextField(Tr("属性ID"), ad.attrId ?? string.Empty);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改属性ID");
                     ad.attrId = newAttrId;
                     ctx.MarkDirty();
                 }
-                Rect dropRect = GUILayoutUtility.GetRect(new GUIContent("选择"), EditorStyles.popup, GUILayout.Width(56));
-                if (EditorGUI.DropdownButton(dropRect, new GUIContent("选择"), FocusType.Keyboard, EditorStyles.popup))
+                Rect dropRect = GUILayoutUtility.GetRect(new GUIContent(Tr("选择")), EditorStyles.popup, GUILayout.Width(56));
+                if (EditorGUI.DropdownButton(dropRect, new GUIContent(Tr("选择")), FocusType.Keyboard, EditorStyles.popup))
                 {
                     var capture = ad;
                     ShowAttrIdMenu(ctx, capture.attrId, id => capture.attrId = id, dropRect);
@@ -503,7 +504,7 @@ namespace Ale.Inventory.Editor
                 for (int g = 0; g < groupIds.Count; g++)
                     if (groupIds[g] == ad.groupTag) { curIdx = g + 1; break; }
                 EditorGUI.BeginChangeCheck();
-                int picked = EditorGUILayout.Popup("分组标签", curIdx, groupDisplays.ToArray());
+                int picked = EditorGUILayout.Popup(Tr("分组标签"), curIdx, groupDisplays.ToArray());
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改属性字段分组标签");
@@ -513,7 +514,7 @@ namespace Ale.Inventory.Editor
 
                 // 显示名覆盖（可选）：Text 类型（纯文本 fallback + 可选本地化引用），复用统一属性绘制器。
                 ad.NormalizeLabel();
-                AttributeFieldDrawer.Draw(ctx, "显示名（可选）", ad.label, null);
+                AttributeFieldDrawer.Draw(ctx, Tr("显示名（可选）"), ad.label, null);
 
                 // EnumIntPair 专属：指定枚举项上用作“各枚举 Key 显示名”的属性字段（String / LocalizedString）。
                 DrawEnumLabelAttrIdField(ctx, db, ad);
@@ -548,7 +549,7 @@ namespace Ale.Inventory.Editor
             var db   = ctx.Database;
             var menu = new GenericMenu();
 
-            menu.AddItem(new GUIContent("（清空）"), string.IsNullOrEmpty(current),
+            menu.AddItem(new GUIContent(Tr("（清空）")), string.IsNullOrEmpty(current),
                 () => Apply(ctx, () => setter(string.Empty)));
             menu.AddSeparator(string.Empty);
 
@@ -557,7 +558,7 @@ namespace Ale.Inventory.Editor
                 foreach (var d in tmpl.attributes)
                 {
                     if (string.IsNullOrEmpty(d.id)) continue;
-                    string path = (string.IsNullOrEmpty(tmpl.name) ? "(模板)" : tmpl.name) + "/" + d.id;
+                    string path = (string.IsNullOrEmpty(tmpl.name) ? Tr("(模板)") : tmpl.name) + "/" + d.id;
                     if (!seen.Add(path)) continue;
                     string id = d.id;
                     menu.AddItem(new GUIContent(path), current == id, () => Apply(ctx, () => setter(id)));
@@ -566,7 +567,7 @@ namespace Ale.Inventory.Editor
                 foreach (var d in tag.attributes)
                 {
                     if (string.IsNullOrEmpty(d.id)) continue;
-                    string path = "功能标签/" + (string.IsNullOrEmpty(tag.name) ? "(标签)" : tag.name) + "/" + d.id;
+                    string path = Tr("功能标签") + "/" + (string.IsNullOrEmpty(tag.name) ? Tr("(标签)") : tag.name) + "/" + d.id;
                     if (!seen.Add(path)) continue;
                     string id = d.id;
                     menu.AddItem(new GUIContent(path), current == id, () => Apply(ctx, () => setter(id)));
@@ -599,7 +600,7 @@ namespace Ale.Inventory.Editor
             if (def == null || def.type != EFieldType.EnumIntPair) return;
 
             // 候选：该枚举类型下 String / Text 类型的字段 ID（首项为回退占位）。
-            var labels = new List<string> { "（枚举项名称）" };
+            var labels = new List<string> { Tr("（枚举项名称）") };
             var ids    = new List<string> { string.Empty };
             var et     = db.GetEnumType(def.enumTypeRef);
             if (et != null)
@@ -607,7 +608,7 @@ namespace Ale.Inventory.Editor
                 {
                     if (string.IsNullOrEmpty(d.id)) continue;
                     if (d.type != EFieldType.String && d.type != EFieldType.Text) continue;
-                    labels.Add($"{d.id}（{(d.type == EFieldType.String ? "字符串" : "文本")}）");
+                    labels.Add(Fmt("{0}（{1}）", d.id, d.type == EFieldType.String ? Tr("字符串") : Tr("文本")));
                     ids.Add(d.id);
                 }
 
@@ -615,13 +616,13 @@ namespace Ale.Inventory.Editor
             if (cur < 0)
             {
                 // 已配置的字段在当前枚举类型中不存在（枚举类型变更 / 字段被删）：追加一个提示项保留原值显示。
-                labels.Add($"{ad.enumLabelAttrId}（已失效）");
+                labels.Add(Fmt("{0}（已失效）", ad.enumLabelAttrId));
                 ids.Add(ad.enumLabelAttrId);
                 cur = ids.Count - 1;
             }
 
             EditorGUI.BeginChangeCheck();
-            int picked = EditorGUILayout.Popup("显示名来源（枚举字段）", cur, labels.ToArray());
+            int picked = EditorGUILayout.Popup(Tr("显示名来源（枚举字段）"), cur, labels.ToArray());
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改枚举显示名字段");
