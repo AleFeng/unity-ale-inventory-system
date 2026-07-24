@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -17,8 +18,8 @@ namespace Ale.Inventory.Editor
         // ── 字段名 → 显示名 ──────────────────────────────────────────────────────────
         private static string GetFieldDisplayName(string field)
         {
-            if (field == "__id__")       return "道具ID";
-            if (field == "__tagOrder__") return "功能页签";
+            if (field == "__id__")       return Tr("道具ID");
+            if (field == "__tagOrder__") return Tr("功能页签");
             return field;
         }
 
@@ -81,7 +82,7 @@ namespace Ale.Inventory.Editor
         {
             if (selected == null)
             {
-                EditorGUILayout.LabelField("（请在左侧选择一个整理选项）", InventoryEditorStyles.Placeholder);
+                EditorGUILayout.LabelField(Tr("（请在左侧选择一个整理选项）"), InventoryEditorStyles.Placeholder);
                 return;
             }
 
@@ -90,8 +91,8 @@ namespace Ale.Inventory.Editor
 
             // 1. 名称（Text：纯文本 fallback + 可选本地化引用），复用统一属性绘制器。
             selected.NormalizeDisplayName();
-            EditorGUILayout.LabelField("名称（排序下拉显示名；为空时用字段名）", EditorStyles.miniLabel);
-            AttributeFieldDrawer.Draw(ctx, "名称", selected.displayName, null);
+            EditorGUILayout.LabelField(Tr("名称（排序下拉显示名；为空时用字段名）"), EditorStyles.miniLabel);
+            AttributeFieldDrawer.Draw(ctx, Tr("名称"), selected.displayName, null);
 
             EditorGUILayout.Space(6);
 
@@ -106,7 +107,7 @@ namespace Ale.Inventory.Editor
             if (so.ignoreIds == null) so.ignoreIds = new List<string>();
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("忽略ID", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("忽略ID"), InventoryEditorStyles.Header);
             if (GUILayout.Button("+", GUILayout.Width(24)))
             {
                 ctx.RecordUndo("添加忽略ID");
@@ -115,12 +116,12 @@ namespace Ale.Inventory.Editor
             }
             EditorGUILayout.EndHorizontal();
             EditorGUILayout.LabelField(
-                "排序时跳过这些条目（按道具ID排序 = 道具ID；功能页签 = 标签名；按属性排序 = 属性值）。",
+                Tr("排序时跳过这些条目（按道具ID排序 = 道具ID；功能页签 = 标签名；按属性排序 = 属性值）。"),
                 EditorStyles.miniLabel);
 
             if (so.ignoreIds.Count == 0)
             {
-                EditorGUILayout.LabelField("（未配置）", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr("（未配置）"), EditorStyles.miniLabel);
                 return;
             }
 

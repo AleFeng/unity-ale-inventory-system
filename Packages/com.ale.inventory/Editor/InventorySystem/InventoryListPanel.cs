@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -81,18 +82,18 @@ namespace Ale.Inventory.Editor
 
             // ── 上行：列名表头 ──────────────────────────────────────────────────
             float kx = cx;
-            GUI.Label(new Rect(kx, keyRow.y + 1, IdColW,   KeyRowH - 2), "ID",     KeyStyle); kx += IdColW   + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, NameColW, KeyRowH - 2), "名称",   KeyStyle); kx += NameColW + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, DescColW, KeyRowH - 2), "描述",   KeyStyle); kx += DescColW + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, CapColW,  KeyRowH - 2), "容量上限", KeyStyle); kx += CapColW + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, WtColW,   KeyRowH - 2), "重量上限", KeyStyle); kx += WtColW  + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, TagColW,  KeyRowH - 2), "放入",   KeyStyle); kx += TagColW + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, TagColW,  KeyRowH - 2), "取出",   KeyStyle); kx += TagColW + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, TagColW,  KeyRowH - 2), "操作",   KeyStyle);
+            GUI.Label(new Rect(kx, keyRow.y + 1, IdColW,   KeyRowH - 2), "ID",          KeyStyle); kx += IdColW   + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, NameColW, KeyRowH - 2), Tr("名称"),   KeyStyle); kx += NameColW + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, DescColW, KeyRowH - 2), Tr("描述"),   KeyStyle); kx += DescColW + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, CapColW,  KeyRowH - 2), Tr("容量上限"), KeyStyle); kx += CapColW + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, WtColW,   KeyRowH - 2), Tr("重量上限"), KeyStyle); kx += WtColW  + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, TagColW,  KeyRowH - 2), Tr("放入"),   KeyStyle); kx += TagColW + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, TagColW,  KeyRowH - 2), Tr("取出"),   KeyStyle); kx += TagColW + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, TagColW,  KeyRowH - 2), Tr("操作"),   KeyStyle);
 
             // ── 下行：值 ────────────────────────────────────────────────────────
             GUI.Label(new Rect(cx, vy, IdColW, vh),
-                string.IsNullOrWhiteSpace(inv.id) ? "(空 ID)" : inv.id, IdStyle);
+                string.IsNullOrWhiteSpace(inv.id) ? Tr("(空 ID)") : inv.id, IdStyle);
             cx += IdColW + Pad;
 
             string invName = inv.displayNameText != null ? inv.displayNameText.GetTextValue(0) : null;

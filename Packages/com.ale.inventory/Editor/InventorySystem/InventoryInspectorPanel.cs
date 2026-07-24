@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -21,21 +22,21 @@ namespace Ale.Inventory.Editor
         {
             if (inventory == null)
             {
-                EditorGUILayout.LabelField("请在中间列表选中一个仓库。");
+                EditorGUILayout.LabelField(Tr("请在中间列表选中一个仓库。"));
                 return;
             }
 
             var db = ctx.Database;
 
             // ── 1. 基础属性 ───────────────────────────────────────────────────────────
-            EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础属性"), InventoryEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "仓库", inventory.id,
                 ctx.DuplicateIdsOf(EInventoryEntityKind.Inventory), v => inventory.id = v);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器；名称为空时 UI 退回使用 ID）
-            AttributeFieldDrawer.Draw(ctx, "名称", inventory.displayNameText, null);
-            AttributeFieldDrawer.Draw(ctx, "描述", inventory.descriptionText, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("名称"), inventory.displayNameText, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("描述"), inventory.descriptionText, null);
 
             // 来源模板（只读，创建后不可更改）
             EditorEntityHeader.DrawTemplateRefReadonly(inventory.templateRef);
@@ -43,27 +44,27 @@ namespace Ale.Inventory.Editor
             // 容量
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
-            int newCap = EditorGUILayout.IntField("容量上限", inventory.capacity);
+            int newCap = EditorGUILayout.IntField(Tr("容量上限"), inventory.capacity);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改仓库容量");
                 inventory.capacity = Mathf.Max(0, newCap);
                 ctx.MarkDirty();
             }
-            EditorGUILayout.LabelField("（0 = 无上限）", EditorStyles.miniLabel, GUILayout.Width(90));
+            EditorGUILayout.LabelField(Tr("（0 = 无上限）"), EditorStyles.miniLabel, GUILayout.Width(90));
             EditorGUILayout.EndHorizontal();
 
             // 重量上限
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
-            float newWeightLimit = EditorGUILayout.FloatField("重量上限", inventory.weightLimit);
+            float newWeightLimit = EditorGUILayout.FloatField(Tr("重量上限"), inventory.weightLimit);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改仓库重量上限");
                 inventory.weightLimit = Mathf.Max(0f, newWeightLimit);
                 ctx.MarkDirty();
             }
-            EditorGUILayout.LabelField("（0 = 无上限）", EditorStyles.miniLabel, GUILayout.Width(90));
+            EditorGUILayout.LabelField(Tr("（0 = 无上限）"), EditorStyles.miniLabel, GUILayout.Width(90));
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space(6);
@@ -78,14 +79,14 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 3. 过滤设置 ───────────────────────────────────────────────────────────
-            EditorGUILayout.LabelField("过滤设置", InventoryEditorStyles.Header);
-            EditorGUILayout.LabelField("过滤列表（UI 中以标签按钮形式显示）：",
+            EditorGUILayout.LabelField(Tr("过滤设置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("过滤列表（UI 中以标签按钮形式显示）："),
                 EditorStyles.miniLabel);
 
             EditorGUI.BeginChangeCheck();
             bool newShowAll = EditorGUILayout.ToggleLeft(
-                new GUIContent("全部", "勾选后 UI 过滤页签栏会显示「全部」页签（默认选中、不过滤）；" +
-                                       "取消后不显示「全部」，默认选中第一个过滤标签。"),
+                new GUIContent(Tr("全部"), Tr("勾选后 UI 过滤页签栏会显示「全部」页签（默认选中、不过滤）；" +
+                                       "取消后不显示「全部」，默认选中第一个过滤标签。")),
                 inventory.showAllFilterTab);
             if (EditorGUI.EndChangeCheck())
             {
@@ -99,10 +100,10 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 4. 整理设置 ───────────────────────────────────────────────────────────
-            EditorGUILayout.LabelField("整理设置", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("整理设置"), InventoryEditorStyles.Header);
 
             EditorGUI.BeginChangeCheck();
-            bool newDragSort = EditorGUILayout.Toggle("允许拖拽整理", inventory.dragSort);
+            bool newDragSort = EditorGUILayout.Toggle(Tr("允许拖拽整理"), inventory.dragSort);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改拖拽整理");
@@ -111,7 +112,7 @@ namespace Ale.Inventory.Editor
             }
             
             EditorGUI.BeginChangeCheck();
-            bool newAutoSort = EditorGUILayout.Toggle("自动整理", inventory.autoSort);
+            bool newAutoSort = EditorGUILayout.Toggle(Tr("自动整理"), inventory.autoSort);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改自动整理");
@@ -124,8 +125,8 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 5. UI 配置 ────────────────────────────────────────────────────────────
-            EditorGUILayout.LabelField("UI 配置", InventoryEditorStyles.Header);
-            NumberFormatConfigDrawer.DrawRefPopup(ctx, "数字格式",
+            EditorGUILayout.LabelField(Tr("UI 配置"), InventoryEditorStyles.Header);
+            NumberFormatConfigDrawer.DrawRefPopup(ctx, Tr("数字格式"),
                 inventory.numberFormatRef, v => inventory.numberFormatRef = v);
 
             EditorGUILayout.Space(6);
@@ -143,7 +144,7 @@ namespace Ale.Inventory.Editor
         private static void DrawTagRefList(IInventoryEditorContext ctx,
             List<string> tagRefs, string labelText)
         {
-            EditorGUILayout.LabelField(labelText, InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr(labelText), InventoryEditorStyles.Header);
             EditorTagToggleList.Draw(ctx, tagRefs, $"添加{labelText}", $"移除{labelText}");
         }
 
