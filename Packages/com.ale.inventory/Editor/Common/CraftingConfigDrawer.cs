@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -55,11 +56,11 @@ namespace Ale.Inventory.Editor
 
         private static void DrawCraftParams(IInventoryEditorContext ctx, ICraftingConfig cfg)
         {
-            EditorGUILayout.LabelField("制作参数", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("制作参数"), InventoryEditorStyles.Header);
 
             EditorGUI.BeginChangeCheck();
             float newTime = EditorGUILayout.FloatField(
-                new GUIContent("制作时间(秒)", "制作一次需要的时间，进度条按此推进。"), cfg.CraftTime);
+                new GUIContent(Tr("制作时间(秒)"), Tr("制作一次需要的时间，进度条按此推进。")), cfg.CraftTime);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改制作时间");
@@ -70,7 +71,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
             int newMax = EditorGUILayout.IntField(
-                new GUIContent("连续制作次数", "单次「制作」动作可连续重复的次数上限；与材料决定的可制作次数取小。-1 = 无限。"),
+                new GUIContent(Tr("连续制作次数"), Tr("单次「制作」动作可连续重复的次数上限；与材料决定的可制作次数取小。-1 = 无限。")),
                 cfg.MaxCraftCount);
             if (EditorGUI.EndChangeCheck())
             {
@@ -78,7 +79,7 @@ namespace Ale.Inventory.Editor
                 cfg.MaxCraftCount = newMax < 0 ? -1 : newMax;
                 ctx.MarkDirty();
             }
-            EditorGUILayout.LabelField("（-1 = 无限）", EditorStyles.miniLabel, GUILayout.Width(80));
+            EditorGUILayout.LabelField(Tr("（-1 = 无限）"), EditorStyles.miniLabel, GUILayout.Width(80));
             EditorGUILayout.EndHorizontal();
         }
 
@@ -87,36 +88,36 @@ namespace Ale.Inventory.Editor
         private static void DrawCraftInventories(IInventoryEditorContext ctx, ICraftingConfig cfg)
         {
             InventoryRefListDrawer.Draw(ctx, cfg.CraftInventoryRefs, CraftInventoriesDrag,
-                "制作仓库", "制作仓库",
-                hint: "按上下顺序作为优先级：先从第一个仓库消耗材料 / 放置产出，不足时顺延。",
-                emptyHint: "（未配置；消耗材料的来源与产出落点仓库）");
+                Tr("制作仓库"), "制作仓库",
+                hint: Tr("按上下顺序作为优先级：先从第一个仓库消耗材料 / 放置产出，不足时顺延。"),
+                emptyHint: Tr("（未配置；消耗材料的来源与产出落点仓库）"));
         }
 
         // ── UI 配置（数字格式 + 属性字段显示）────────────────────────────────────────
 
         private static void DrawUIConfig(IInventoryEditorContext ctx, ICraftingConfig cfg)
         {
-            EditorGUILayout.LabelField("UI 配置", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("UI 配置"), InventoryEditorStyles.Header);
 
-            NumberFormatConfigDrawer.DrawRefPopup(ctx, "数字格式",
+            NumberFormatConfigDrawer.DrawRefPopup(ctx, Tr("数字格式"),
                 cfg.NumberFormatRef, v => cfg.NumberFormatRef = v);
 
             EditorGUILayout.Space(2);
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("属性字段显示", EditorStyles.boldLabel);
-            if (GUILayout.Button("+ 添加", EditorStyles.miniButton, GUILayout.Width(64)))
+            EditorGUILayout.LabelField(Tr("属性字段显示"), EditorStyles.boldLabel);
+            if (GUILayout.Button(Tr("+ 添加"), EditorStyles.miniButton, GUILayout.Width(64)))
             {
                 ctx.RecordUndo("添加属性字段显示");
                 cfg.AttributeDisplays.Add(new CraftingAttributeDisplay());
                 ctx.MarkDirty();
             }
             EditorGUILayout.EndHorizontal();
-            EditorGUILayout.LabelField("在蓝图条目 / 详情上显示主产出道具的属性值（形如「Label 值」）。",
+            EditorGUILayout.LabelField(Tr("在蓝图条目 / 详情上显示主产出道具的属性值（形如「Label 值」）。"),
                 EditorStyles.miniLabel);
 
             var attrIds  = BuildAttrIdOptions(ctx.Database);
             var displays = new string[attrIds.Count + 1];
-            displays[0]  = "（无）";
+            displays[0]  = Tr("（无）");
             for (int i = 0; i < attrIds.Count; i++) displays[i + 1] = attrIds[i];
 
             var list = cfg.AttributeDisplays;
@@ -162,40 +163,40 @@ namespace Ale.Inventory.Editor
             var tmpl = db.GetCraftingBlueprintTemplate(bp.templateRef);
 
             // 制作仓库（只读）
-            EditorGUILayout.LabelField("制作仓库", InventoryEditorStyles.Header);
-            EditorGUILayout.LabelField("由蓝图模板配置，蓝图条目不可修改（仅展示）。", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField(Tr("制作仓库"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("由蓝图模板配置，蓝图条目不可修改（仅展示）。"), EditorStyles.miniLabel);
             DrawInventoryRefsReadonly(db, bp.craftInventoryRefs);
 
             EditorGUILayout.Space(6);
 
             // UI 配置（只读）
-            EditorGUILayout.LabelField("UI 配置", InventoryEditorStyles.Header);
-            EditorGUILayout.LabelField("由蓝图模板配置，蓝图条目不可修改（仅展示）。", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField(Tr("UI 配置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("由蓝图模板配置，蓝图条目不可修改（仅展示）。"), EditorStyles.miniLabel);
             using (new EditorGUI.DisabledScope(true))
-                EditorGUILayout.TextField("数字格式",
-                    string.IsNullOrEmpty(bp.numberFormatRef) ? "（无）" : bp.numberFormatRef);
+                EditorGUILayout.TextField(Tr("数字格式"),
+                    string.IsNullOrEmpty(bp.numberFormatRef) ? Tr("（无）") : bp.numberFormatRef);
 
-            EditorGUILayout.LabelField("属性字段显示", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Tr("属性字段显示"), EditorStyles.boldLabel);
             if (bp.attributeDisplays == null || bp.attributeDisplays.Count == 0)
             {
-                EditorGUILayout.LabelField("（无）", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr("（无）"), EditorStyles.miniLabel);
             }
             else
             {
                 foreach (var ad in bp.attributeDisplays)
                 {
-                    string label  = string.IsNullOrEmpty(ad.label)  ? "（无标签）"   : ad.label;
-                    string attrId = string.IsNullOrEmpty(ad.attrId) ? "（未选属性）" : ad.attrId;
+                    string label  = string.IsNullOrEmpty(ad.label)  ? Tr("（无标签）")   : ad.label;
+                    string attrId = string.IsNullOrEmpty(ad.attrId) ? Tr("（未选属性）") : ad.attrId;
                     EditorGUILayout.LabelField($"• {label}　{attrId}", EditorStyles.miniLabel);
                 }
             }
 
             // 来源模板提示
             if (string.IsNullOrEmpty(bp.templateRef))
-                EditorGUILayout.LabelField("（无来源模板：为蓝图指定模板后，可在该模板中配置以上项）",
+                EditorGUILayout.LabelField(Tr("（无来源模板：为蓝图指定模板后，可在该模板中配置以上项）"),
                     EditorStyles.miniLabel);
             else if (tmpl == null)
-                EditorGUILayout.LabelField($"⚠ 来源模板「{bp.templateRef}」不存在",
+                EditorGUILayout.LabelField(Fmt("⚠ 来源模板「{0}」不存在", bp.templateRef),
                     InventoryEditorStyles.StatusError);
         }
 
@@ -203,13 +204,13 @@ namespace Ale.Inventory.Editor
         {
             if (refs == null || refs.Count == 0)
             {
-                EditorGUILayout.LabelField("（未配置）", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr("（未配置）"), EditorStyles.miniLabel);
                 return;
             }
             for (int i = 0; i < refs.Count; i++)
             {
                 bool exists = db.GetInventory(refs[i]) != null;
-                EditorGUILayout.LabelField($"{i + 1}. " + (exists ? refs[i] : refs[i] + "（已删除）"),
+                EditorGUILayout.LabelField($"{i + 1}. " + (exists ? refs[i] : refs[i] + Tr("（已删除）")),
                     exists ? EditorStyles.miniLabel : InventoryEditorStyles.StatusError);
             }
         }

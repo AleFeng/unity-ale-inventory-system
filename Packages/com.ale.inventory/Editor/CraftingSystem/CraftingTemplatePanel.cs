@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -22,7 +23,7 @@ namespace Ale.Inventory.Editor
         protected override string RowLabel(CraftingBlueprintTemplate t) => t.name;
 
         protected override CraftingBlueprintTemplate CreateNew(InventoryDatabase db, List<CraftingBlueprintTemplate> list)
-            => new CraftingBlueprintTemplate("新蓝图模板");
+            => new CraftingBlueprintTemplate(Tr("新蓝图模板"));
 
         protected override void OnInvalidate() => _attrDefsDrawer.Invalidate();
 
@@ -34,13 +35,13 @@ namespace Ale.Inventory.Editor
         {
             if (template == null)
             {
-                EditorGUILayout.LabelField("请选择或新建一个蓝图模板。");
+                EditorGUILayout.LabelField(Tr("请选择或新建一个蓝图模板。"));
                 return;
             }
 
             EditorGUI.BeginChangeCheck();
-            string newName  = EditorGUILayout.TextField("模板名称", template.name);
-            Color  newColor = EditorGUILayout.ColorField("标识颜色", template.color);
+            string newName  = EditorGUILayout.TextField(Tr("模板名称"), template.name);
+            Color  newColor = EditorGUILayout.ColorField(Tr("标识颜色"), template.color);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改蓝图模板基本信息");
@@ -57,14 +58,14 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // 整理设置：仅模板持有，作为该模板下所有蓝图在 UI 列表中的排序依据（蓝图条目不再单独配置）。
-            EditorGUILayout.LabelField("整理设置", InventoryEditorStyles.Header);
-            EditorGUILayout.LabelField("此模板下所有蓝图在 UI 列表中按「整理列表」的配置与优先级排序。",
+            EditorGUILayout.LabelField(Tr("整理设置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("此模板下所有蓝图在 UI 列表中按「整理列表」的配置与优先级排序。"),
                 EditorStyles.miniLabel);
             SortSettingsDrawer.Draw(ctx, template.sortPriorities, template.sortTiebreakers);
 
             EditorGUILayout.Space(6);
 
-            _attrDefsDrawer.Draw(ctx, template.attributes, "自定义属性字段");
+            _attrDefsDrawer.Draw(ctx, template.attributes, Tr("自定义属性字段"));
         }
     }
 }

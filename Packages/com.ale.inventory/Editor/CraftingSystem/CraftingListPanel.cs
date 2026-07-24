@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -55,15 +56,15 @@ namespace Ale.Inventory.Editor
         {
             // ── 上行：列名表头 ──────────────────────────────────────────────────
             float kx = cx;
-            GUI.Label(new Rect(kx, keyRow.y + 1, IdColW,    KeyRowH - 2), "ID",    KeyStyle); kx += IdColW    + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, NameColW,  KeyRowH - 2), "名称",  KeyStyle); kx += NameColW  + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, DescColW,  KeyRowH - 2), "描述",  KeyStyle); kx += DescColW  + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, GroupColW, KeyRowH - 2), "主分组", KeyStyle); kx += GroupColW + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, OutColW,   KeyRowH - 2), "产出",  KeyStyle);
+            GUI.Label(new Rect(kx, keyRow.y + 1, IdColW,    KeyRowH - 2), "ID",         KeyStyle); kx += IdColW    + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, NameColW,  KeyRowH - 2), Tr("名称"),   KeyStyle); kx += NameColW  + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, DescColW,  KeyRowH - 2), Tr("描述"),   KeyStyle); kx += DescColW  + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, GroupColW, KeyRowH - 2), Tr("主分组"), KeyStyle); kx += GroupColW + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, OutColW,   KeyRowH - 2), Tr("产出"),   KeyStyle);
 
             // ── 下行：值 ────────────────────────────────────────────────────────
             GUI.Label(new Rect(cx, vy, IdColW, vh),
-                string.IsNullOrWhiteSpace(bp.id) ? "(空 ID)" : bp.id, IdStyle);
+                string.IsNullOrWhiteSpace(bp.id) ? Tr("(空 ID)") : bp.id, IdStyle);
             cx += IdColW + Pad;
 
             string bpName = bp.displayText != null ? bp.displayText.GetTextValue(0) : null;

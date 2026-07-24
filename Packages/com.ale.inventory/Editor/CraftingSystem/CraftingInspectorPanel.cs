@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -32,7 +33,7 @@ namespace Ale.Inventory.Editor
         {
             if (bp == null)
             {
-                EditorGUILayout.LabelField("请在中间列表选中一个蓝图。");
+                EditorGUILayout.LabelField(Tr("请在中间列表选中一个蓝图。"));
                 return;
             }
 
@@ -57,14 +58,14 @@ namespace Ale.Inventory.Editor
 
         private static void DrawBasic(IInventoryEditorContext ctx, CraftingBlueprint bp)
         {
-            EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础属性"), InventoryEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "蓝图", bp.id,
                 ctx.DuplicateIdsOf(EInventoryEntityKind.Crafting), v => bp.id = v);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器）
-            AttributeFieldDrawer.Draw(ctx, "名称", bp.displayText, null);
-            AttributeFieldDrawer.Draw(ctx, "描述", bp.descriptionText, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("名称"), bp.displayText, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("描述"), bp.descriptionText, null);
 
             EditorEntityHeader.DrawTemplateRefReadonly(bp.templateRef);
         }
@@ -74,17 +75,17 @@ namespace Ale.Inventory.Editor
         private void DrawGroupTags(IInventoryEditorContext ctx, CraftingBlueprint bp)
         {
             var db = ctx.Database;
-            EditorGUILayout.LabelField("分组标签", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("分组标签"), InventoryEditorStyles.Header);
 
             if (db.CraftingGroupTags.Count == 0)
             {
-                EditorGUILayout.LabelField("（暂无分组标签；请在左侧「分组标签」中添加）", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr("（暂无分组标签；请在左侧「分组标签」中添加）"), EditorStyles.miniLabel);
                 return;
             }
 
             // 主分组（单选 Popup；index 0 = 无）
             var ids      = new List<string>();
-            var displays = new List<string> { "（无）" };
+            var displays = new List<string> { Tr("（无）") };
             foreach (var g in db.CraftingGroupTags)
             {
                 ids.Add(g.id);
@@ -95,7 +96,7 @@ namespace Ale.Inventory.Editor
                 if (ids[i] == bp.primaryGroupTag) { curIdx = i + 1; break; }
 
             EditorGUI.BeginChangeCheck();
-            int picked = EditorGUILayout.Popup("主分组标签", curIdx, displays.ToArray());
+            int picked = EditorGUILayout.Popup(Tr("主分组标签"), curIdx, displays.ToArray());
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改主分组标签");
@@ -106,7 +107,7 @@ namespace Ale.Inventory.Editor
             // 副分组（列表 + 「+」下拉添加，已添加的不在下拉中显示）
             EditorGUILayout.Space(2);
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("副分组标签", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Tr("副分组标签"), EditorStyles.boldLabel);
             if (GUILayout.Button("+", GUILayout.Width(24)))
                 ShowAddSecondaryGroupMenu(ctx, bp);
             EditorGUILayout.EndHorizontal();
@@ -114,7 +115,7 @@ namespace Ale.Inventory.Editor
             var secs = bp.secondaryGroupTags;
             if (secs.Count == 0)
             {
-                EditorGUILayout.LabelField("（未添加）", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr("（未添加）"), EditorStyles.miniLabel);
                 return;
             }
 
@@ -122,7 +123,7 @@ namespace Ale.Inventory.Editor
             {
                 var    g      = db.GetCraftingGroupTag(tagId);
                 bool   exists = g != null;
-                string label  = exists ? g.PlainName() : tagId + "（已删除）";
+                string label  = exists ? g.PlainName() : tagId + Tr("（已删除）");
                 EditorGUILayout.LabelField(label,
                     exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
             });
@@ -148,7 +149,7 @@ namespace Ale.Inventory.Editor
                 });
             }
             if (!any)
-                menu.AddDisabledItem(new GUIContent("（无可添加的分组标签）"));
+                menu.AddDisabledItem(new GUIContent(Tr("（无可添加的分组标签）")));
             menu.ShowAsContext();
         }
 
@@ -162,8 +163,8 @@ namespace Ale.Inventory.Editor
             List<CraftingItemAmount> list, string header, bool isOutput)
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(header, InventoryEditorStyles.Header);
-            if (GUILayout.Button("+ 添加", EditorStyles.miniButton, GUILayout.Width(64)))
+            EditorGUILayout.LabelField(Tr(header), InventoryEditorStyles.Header);
+            if (GUILayout.Button(Tr("+ 添加"), EditorStyles.miniButton, GUILayout.Width(64)))
             {
                 ctx.RecordUndo("添加" + header);
                 list.Add(new CraftingItemAmount());
@@ -172,7 +173,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.EndHorizontal();
 
             if (isOutput)
-                EditorGUILayout.LabelField("第 1 项为主产出（用于 UI 显示），其余为副产出；拖拽左侧句柄调整顺序。",
+                EditorGUILayout.LabelField(Tr("第 1 项为主产出（用于 UI 显示），其余为副产出；拖拽左侧句柄调整顺序。"),
                     EditorStyles.miniLabel);
 
             var drag = isOutput ? _outputDrag : _inputDrag;
@@ -191,14 +192,14 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
                 if (isOutput && i == 0)
-                    EditorGUILayout.LabelField("★ 主产出", MainStyle);
+                    EditorGUILayout.LabelField(Tr("★ 主产出"), MainStyle);
 
                 // 道具ID 行：输入框 + 「选择」下拉（同一字段的快捷设置）+ 删除
                 bool invalid = !string.IsNullOrEmpty(amount.itemId) && ctx.Database.GetItem(amount.itemId) == null;
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
                 string newItemId = EditorGUILayout.DelayedTextField(
-                    new GUIContent("道具ID", "直接输入道具 ID，回车确认；右侧「选择」可从道具列表快捷选择，写入此处。"),
+                    new GUIContent(Tr("道具ID"), Tr("直接输入道具 ID，回车确认；右侧「选择」可从道具列表快捷选择，写入此处。")),
                     amount.itemId ?? string.Empty,
                     invalid ? InventoryEditorStyles.RedField : EditorStyles.textField);
                 if (EditorGUI.EndChangeCheck())
@@ -207,9 +208,9 @@ namespace Ale.Inventory.Editor
                     amount.itemId = newItemId;
                     ctx.MarkDirty();
                 }
-                Rect dropRect = GUILayoutUtility.GetRect(new GUIContent("选择"), EditorStyles.popup, GUILayout.Width(56));
+                Rect dropRect = GUILayoutUtility.GetRect(new GUIContent(Tr("选择")), EditorStyles.popup, GUILayout.Width(56));
                 if (EditorGUI.DropdownButton(dropRect,
-                        new GUIContent("选择", "从道具列表快捷选择，结果写入左侧道具ID。"),
+                        new GUIContent(Tr("选择"), Tr("从道具列表快捷选择，结果写入左侧道具ID。")),
                         FocusType.Keyboard, EditorStyles.popup))
                     ShowItemMenu(ctx, amount, dropRect);
                 if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
@@ -217,12 +218,12 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.EndHorizontal();
 
                 if (invalid)
-                    EditorGUILayout.LabelField("⚠ 无效道具 ID（导出将被阻止）", InventoryEditorStyles.StatusError);
+                    EditorGUILayout.LabelField(Tr("⚠ 无效道具 ID（导出将被阻止）"), InventoryEditorStyles.StatusError);
 
                 // 数量
                 EditorGUI.BeginChangeCheck();
                 int newCount = EditorGUILayout.IntField(
-                    new GUIContent("数量", isOutput ? "制作一次获得的该道具数量。" : "制作一次需要的该道具数量。"),
+                    new GUIContent(Tr("数量"), isOutput ? Tr("制作一次获得的该道具数量。") : Tr("制作一次需要的该道具数量。")),
                     amount.count);
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -252,7 +253,7 @@ namespace Ale.Inventory.Editor
             var db   = ctx.Database;
             var menu = new GenericMenu();
 
-            menu.AddItem(new GUIContent("（未选择）"), string.IsNullOrEmpty(amount.itemId), () =>
+            menu.AddItem(new GUIContent(Tr("（未选择）")), string.IsNullOrEmpty(amount.itemId), () =>
             {
                 ctx.RecordUndo("修改道具");
                 amount.itemId = string.Empty;
@@ -264,7 +265,7 @@ namespace Ale.Inventory.Editor
             foreach (var item in db.Items)
             {
                 if (string.IsNullOrEmpty(item.id)) continue;
-                string group   = string.IsNullOrEmpty(item.templateRef) ? "（无模板）" : item.templateRef;
+                string group   = string.IsNullOrEmpty(item.templateRef) ? Tr("（无模板）") : item.templateRef;
                 string path    = group + "/" + item.id;
                 string capture = item.id;
                 menu.AddItem(new GUIContent(path), amount.itemId == item.id, () =>
