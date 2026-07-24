@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -43,17 +44,17 @@ namespace Ale.Inventory.Editor
             {
                 case ESkillSource.Equipment:
                     EditorGUILayout.PropertyField(_equipmentGroupId,
-                        new GUIContent("装备组 ID", "从该装备组所有装备槽的已装备道具采集技能。"));
+                        new GUIContent(Tr("装备组 ID"), Tr("从该装备组所有装备槽的已装备道具采集技能。")));
                     EditorGUILayout.PropertyField(_skillRefAttrId);
                     break;
                 case ESkillSource.Inventory:
                     EditorGUILayout.PropertyField(_inventoryId,
-                        new GUIContent("仓库 ID", "从该仓库所有道具采集技能。"));
+                        new GUIContent(Tr("仓库 ID"), Tr("从该仓库所有道具采集技能。")));
                     EditorGUILayout.PropertyField(_skillRefAttrId);
                     break;
                 case ESkillSource.Character:
                     EditorGUILayout.PropertyField(_characterId,
-                        new GUIContent("角色 ID", "显示该角色（SkillRuntimeManager）当前已学会的技能。"));
+                        new GUIContent(Tr("角色 ID"), Tr("显示该角色（SkillRuntimeManager）当前已学会的技能。")));
                     break;
                 // InventoryDatabase：显示数据库全部技能，无需 ID 与技能引用属性。
             }

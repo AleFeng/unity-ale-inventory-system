@@ -1,5 +1,6 @@
 using UnityEditor;
 using Ale.Inventory.Runtime.UI;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -44,16 +45,16 @@ namespace Ale.Inventory.Editor
             var mode = (UiwEquipmentGroupPanel.DisplayMode)_displayMode.enumValueIndex;
             if (mode == UiwEquipmentGroupPanel.DisplayMode.Manual)
             {
-                EditorGUILayout.LabelField("手动模式", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField(Tr("手动模式"), EditorStyles.boldLabel);
                 EditorGUILayout.HelpBox(
-                    "在本物体层级下手动摆放槽位列表物体，再在下方逐条指定「槽位列表 ID → 槽位列表」。\n" +
-                    "槽位列表 ID 须与装备组配置中某槽位列表的 ID 一致。",
+                    Tr("在本物体层级下手动摆放槽位列表物体，再在下方逐条指定「槽位列表 ID → 槽位列表」。\n" +
+                       "槽位列表 ID 须与装备组配置中某槽位列表的 ID 一致。"),
                     MessageType.Info);
                 EditorGUILayout.PropertyField(_manualSlotLists, true);
             }
             else
             {
-                EditorGUILayout.LabelField("自动模式", EditorStyles.boldLabel);
+                EditorGUILayout.LabelField(Tr("自动模式"), EditorStyles.boldLabel);
                 EditorGUILayout.PropertyField(_slotListPrefab);
                 EditorGUILayout.PropertyField(_slotListContainer);
             }

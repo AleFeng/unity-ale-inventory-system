@@ -73,6 +73,7 @@ namespace Ale.Inventory.Editor
         static partial void RegisterDrawers();
         static partial void RegisterEnums();
         static partial void RegisterDemo();
+        static partial void RegisterComponentInspectors();
 
         private static void RegisterTables()
         {
@@ -87,6 +88,7 @@ namespace Ale.Inventory.Editor
             RegisterDrawers();
             RegisterEnums();
             RegisterDemo();
+            RegisterComponentInspectors();
         }
 
         /// <summary>登记一条译文。<paramref name="en"/> / <paramref name="ja"/> 为空则该语言回退中文。</summary>
@@ -202,14 +204,16 @@ namespace Ale.Inventory.Editor
 
         // ── 刷新 ──────────────────────────────────────────────────────────────────
 
-        /// <summary>刷新所有已打开的相关编辑器窗口，使语言 / 开关变更即时可见。</summary>
+        /// <summary>
+        /// 刷新所有已打开的编辑器窗口，使语言 / 开关变更即时可见。
+        /// <para>不止本插件的两个窗口：运行时组件的自定义 Inspector
+        /// （<c>UiwEquipmentGroupPanel</c> / <c>UiwEquipmentSlotList</c> / <c>UiwSkillView</c>）
+        /// 同样显示已翻译文本，需连 Inspector 面板一起刷新。</para>
+        /// </summary>
         public static void RepaintAll()
         {
             foreach (var w in Resources.FindObjectsOfTypeAll<EditorWindow>())
-            {
-                if (w is InventoryWelcomeWindow || w is InventoryEditorWindow)
-                    w.Repaint();
-            }
+                if (w) w.Repaint();
         }
     }
 }
