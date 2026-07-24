@@ -2,6 +2,7 @@
     "name": "Ale.Inventory.Addressables.Runtime",
     "rootNamespace": "Ale.Inventory.Runtime.AddressableSupport",
     "references": [
+        "Ale.Toolkit.Runtime",
         "Ale.Inventory.Runtime",
         "Unity.Addressables",
         "Unity.ResourceManager"

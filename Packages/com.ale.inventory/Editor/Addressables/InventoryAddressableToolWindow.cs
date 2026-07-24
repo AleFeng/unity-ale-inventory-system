@@ -6,6 +6,7 @@ using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Editor
 {

@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 仓库系统运行时数据访问单例。统一管理一个或多个 <see cref="InventoryDatabase"/>，
     /// 对外提供按 ID/名称 跨库查询道具、枚举、功能标签、模板的接口。
-    /// 继承自插件内部单例基类 <see cref="InventorySystemSingleton{T}"/>，不依赖 Fs 框架。
+    /// 继承自插件内部单例基类 <see cref="ToolkitSingleton{T}"/>，不依赖 Fs 框架。
     ///
     /// <para><b>查询索引：</b>所有 <c>GetXxx(id/name)</c> 均走惰性构建的字典（O(1)），
     /// 而非逐库线性遍历——UI 每个格子绑定、排序比较器每次两两比较都会打这些接口，
@@ -14,7 +15,7 @@ namespace Ale.Inventory.Runtime
     /// 下次查询时重建一次。构建按 <see cref="Databases"/> 顺序「先到先得」，
     /// 与旧的「第一个命中的数据库优先」语义完全一致。</para>
     /// </summary>
-    public class InventoryDataManager : InventorySystemSingleton<InventoryDataManager>
+    public class InventoryDataManager : ToolkitSingleton<InventoryDataManager>
     {
         private readonly List<InventoryDatabase> _databases = new List<InventoryDatabase>();
 

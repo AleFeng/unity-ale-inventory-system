@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Runtime
 {
@@ -21,7 +22,7 @@ namespace Ale.Inventory.Runtime
     /// <see cref="ShopTradeFailReason.NotSupported"/>。</para>
     /// </summary>
     public class ShopRuntimeManager
-        : InventorySystemSingleton<ShopRuntimeManager>, IInventorySaveable<ShopRuntimeState>
+        : ToolkitSingleton<ShopRuntimeManager>, ISaveable<ShopRuntimeState>
     {
         /// <summary>shopId → 每玩家运行时状态（交易进度）。按需创建。</summary>
         private readonly Dictionary<string, ShopRuntimeState> _shopStates
@@ -434,7 +435,7 @@ namespace Ale.Inventory.Runtime
 
         #region 存档
 
-        /// <inheritdoc cref="IInventorySaveable{TState}.GetSaveData"/>
+        /// <inheritdoc cref="ISaveable{TState}.GetSaveData"/>
         public List<ShopRuntimeState> GetSaveData()
         {
             var result = new List<ShopRuntimeState>(_shopStates.Count);
@@ -443,7 +444,7 @@ namespace Ale.Inventory.Runtime
             return result;
         }
 
-        /// <inheritdoc cref="IInventorySaveable{TState}.LoadSaveData"/>
+        /// <inheritdoc cref="ISaveable{TState}.LoadSaveData"/>
         public void LoadSaveData(List<ShopRuntimeState> data)
         {
             _shopStates.Clear();
@@ -455,7 +456,7 @@ namespace Ale.Inventory.Runtime
             }
         }
 
-        /// <inheritdoc cref="IInventorySaveable.ResetAll"/>
+        /// <inheritdoc cref="ISaveable.ResetAll"/>
         public void ResetAll() => _shopStates.Clear();
 
         #endregion

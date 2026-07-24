@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Runtime
 {
@@ -23,7 +24,7 @@ namespace Ale.Inventory.Runtime
     /// 与实例状态无关的排序实现已独立为 <see cref="InventorySortService"/>。</para>
     /// </summary>
     public partial class InventoryRuntimeManager
-        : InventorySystemMonoBehaviourSingleton<InventoryRuntimeManager>, IInventorySaveable<RuntimeInventoryState>
+        : ToolkitMonoSingleton<InventoryRuntimeManager>, ISaveable<RuntimeInventoryState>
     {
         [Header("数据库（可挂载多个，运行时合并查询）")]
         [SerializeField] private InventoryDatabase[] databases;
@@ -493,7 +494,7 @@ namespace Ale.Inventory.Runtime
 
         #region 存档
 
-        /// <inheritdoc cref="IInventorySaveable{TState}.GetSaveData"/>
+        /// <inheritdoc cref="ISaveable{TState}.GetSaveData"/>
         public List<RuntimeInventoryState> GetSaveData()
         {
             var result = new List<RuntimeInventoryState>(_inventoryStates.Count);
@@ -508,7 +509,7 @@ namespace Ale.Inventory.Runtime
         }
 
         /// <summary>
-        /// 从存档数据恢复运行时状态（在 Init() 之后调用）。契约见 <see cref="IInventorySaveable{TState}"/>。
+        /// 从存档数据恢复运行时状态（在 Init() 之后调用）。契约见 <see cref="ISaveable{TState}"/>。
         /// <para>本实现的覆盖分三步：清空 → 重建所有仓库的空骨架（固定容量仓库恢复预分配空槽）→ 叠加存档中的槽位。
         /// 未在存档中的仓库因此回到初始空态，而非残留上一局的内容。</para>
         /// </summary>
@@ -539,7 +540,7 @@ namespace Ale.Inventory.Runtime
         }
 
         /// <summary>
-        /// 清空全部仓库运行时状态并重建为初始空状态，如开始新游戏。契约见 <see cref="IInventorySaveable"/>。
+        /// 清空全部仓库运行时状态并重建为初始空状态，如开始新游戏。契约见 <see cref="ISaveable"/>。
         /// <para>区别于其余三个管理器的裸 <c>Clear()</c>：仓库有「按容量预分配空槽」的概念，
         /// 清空后须重建空骨架，否则固定容量仓库会变成 0 格。</para>
         /// </summary>

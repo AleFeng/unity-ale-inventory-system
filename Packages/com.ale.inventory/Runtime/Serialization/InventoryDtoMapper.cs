@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Text;
 using UnityEngine;
 using Object = UnityEngine.Object;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Runtime.Serialization
 {

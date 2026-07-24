@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Runtime
 {
@@ -14,7 +15,7 @@ namespace Ale.Inventory.Runtime
     /// 已学技能变化时触发 <see cref="OnLearnedChanged"/> 供技能 UI 刷新。</para>
     /// </summary>
     public class SkillRuntimeManager
-        : InventorySystemSingleton<SkillRuntimeManager>, IInventorySaveable<RuntimeLearnedSkillState>
+        : ToolkitSingleton<SkillRuntimeManager>, ISaveable<RuntimeLearnedSkillState>
     {
         /// <summary>角色 ID → 已学技能 ID 列表（保持学习顺序、去重）。按需创建；无已学技能的角色不入字典。</summary>
         private readonly Dictionary<string, List<string>> _learned
@@ -102,7 +103,7 @@ namespace Ale.Inventory.Runtime
 
         #region 存档
 
-        /// <inheritdoc cref="IInventorySaveable{TState}.GetSaveData"/>
+        /// <inheritdoc cref="ISaveable{TState}.GetSaveData"/>
         public List<RuntimeLearnedSkillState> GetSaveData()
         {
             var result = new List<RuntimeLearnedSkillState>(_learned.Count);
@@ -115,7 +116,7 @@ namespace Ale.Inventory.Runtime
             return result;
         }
 
-        /// <inheritdoc cref="IInventorySaveable{TState}.LoadSaveData"/>
+        /// <inheritdoc cref="ISaveable{TState}.LoadSaveData"/>
         public void LoadSaveData(List<RuntimeLearnedSkillState> data)
         {
             _learned.Clear();
@@ -131,7 +132,7 @@ namespace Ale.Inventory.Runtime
             }
         }
 
-        /// <inheritdoc cref="IInventorySaveable.ResetAll"/>
+        /// <inheritdoc cref="ISaveable.ResetAll"/>
         public void ResetAll() => _learned.Clear();
 
         #endregion

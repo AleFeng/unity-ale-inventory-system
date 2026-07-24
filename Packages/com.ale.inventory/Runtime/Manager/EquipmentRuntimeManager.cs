@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Runtime
 {
@@ -21,7 +22,7 @@ namespace Ale.Inventory.Runtime
     /// 本管理器自身的 <see cref="OnEquipmentChanged"/> 供装备 UI 刷新。</para>
     /// </summary>
     public class EquipmentRuntimeManager
-        : InventorySystemSingleton<EquipmentRuntimeManager>, IInventorySaveable<RuntimeEquipmentState>
+        : ToolkitSingleton<EquipmentRuntimeManager>, ISaveable<RuntimeEquipmentState>
     {
         /// <summary>装备组 ID → (槽位 ID → 已装备道具 ID)。按需创建；空槽不入字典。</summary>
         private readonly Dictionary<string, Dictionary<string, string>> _equipped
@@ -530,7 +531,7 @@ namespace Ale.Inventory.Runtime
 
         #region 存档
 
-        /// <inheritdoc cref="IInventorySaveable{TState}.GetSaveData"/>
+        /// <inheritdoc cref="ISaveable{TState}.GetSaveData"/>
         public List<RuntimeEquipmentState> GetSaveData()
         {
             var result = new List<RuntimeEquipmentState>(_equipped.Count);
@@ -545,7 +546,7 @@ namespace Ale.Inventory.Runtime
             return result;
         }
 
-        /// <inheritdoc cref="IInventorySaveable{TState}.LoadSaveData"/>
+        /// <inheritdoc cref="ISaveable{TState}.LoadSaveData"/>
         public void LoadSaveData(List<RuntimeEquipmentState> data)
         {
             _equipped.Clear();
@@ -561,7 +562,7 @@ namespace Ale.Inventory.Runtime
             }
         }
 
-        /// <inheritdoc cref="IInventorySaveable.ResetAll"/>
+        /// <inheritdoc cref="ISaveable.ResetAll"/>
         public void ResetAll() => _equipped.Clear();
 
         #endregion

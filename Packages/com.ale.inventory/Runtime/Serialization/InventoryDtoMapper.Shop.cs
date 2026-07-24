@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Runtime.Serialization
 {

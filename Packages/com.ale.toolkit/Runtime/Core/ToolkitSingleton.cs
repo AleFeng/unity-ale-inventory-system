@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     // ── 单例静态状态重置中枢 ────────────────────────────────────────────────────────
     /// <summary>
@@ -10,7 +10,7 @@ namespace Ale.Inventory.Runtime
     ///
     /// <para><b>为什么需要它：</b>关闭 Domain Reload
     /// （Project Settings → Editor → Enter Play Mode Options → 取消 Reload Domain）时，
-    /// 静态字段会跨播放会话残留——上一次 Play 注册的数据库、装备状态、商店进度、
+    /// 静态字段会跨播放会话残留——上一次 Play 注册的实例、缓存状态、
     /// 以及 <c>IsQuitting</c> 标记都会带进下一次 Play。而
     /// <see cref="RuntimeInitializeOnLoadMethodAttribute"/> 无法直接标注在泛型类型的方法上
     /// （Unity 不知道该用哪个 T 去调用），故由各闭合泛型在首次创建实例时把自己的重置动作
@@ -20,7 +20,7 @@ namespace Ale.Inventory.Runtime
     /// <para>Domain Reload 开启（默认）时本机制为无害的空转：登记表本身也会被重置，
     /// 每次播放开始时为空。</para>
     /// </summary>
-    internal static class InventorySingletonRegistry
+    internal static class ToolkitSingletonRegistry
     {
         private static readonly List<Action> Resetters = new List<Action>();
 
@@ -42,21 +42,20 @@ namespace Ale.Inventory.Runtime
     }
 
     // ── 非 MonoBehaviour 单例基类 ──────────────────────────────────────────────────
-    // 参考 Fs.Utility.Singleton.Singleton<T> 的设计，独立实现，不引用任何 Fs 命名空间。
-    // 供 InventoryDataManager 等无需 MonoBehaviour 生命周期的管理器使用。
+    // 供无需 MonoBehaviour 生命周期的管理器 / 服务使用。
     /// <summary>
-    /// InventorySystem 插件内部普通（非 MonoBehaviour）单例基类。
+    /// 普通（非 MonoBehaviour）单例基类。
     /// 首次访问 <see cref="Instance"/> 时通过 <see cref="Activator.CreateInstance{T}"/>
     /// 自动实例化，并调用 <see cref="Init"/>；子类通过 <c>protected override void Init()</c> 执行初始化逻辑。
     ///
     /// <para><b>仅限主线程访问。</b><see cref="Instance"/> 的「检查 + 创建」并非原子操作，
     /// 字段虽标 <c>volatile</c> 也不构成线程安全；Unity 侧的调用方本就在主线程，无需额外同步。</para>
     /// </summary>
-    public abstract class InventorySystemSingleton<T> where T : InventorySystemSingleton<T>
+    public abstract class ToolkitSingleton<T> where T : ToolkitSingleton<T>
     {
         private static volatile T _instance;
 
-        // 是否已向 InventorySingletonRegistry 登记过重置动作（每个闭合泛型各一份）。
+        // 是否已向 ToolkitSingletonRegistry 登记过重置动作（每个闭合泛型各一份）。
         private static bool _resetHookRegistered;
 
         #region 实例与生命周期
@@ -89,7 +88,7 @@ namespace Ale.Inventory.Runtime
         public static bool IsQuitting { get; private set; }
 
         /// <summary>子类构造函数必须通过 base() 隐式调用，确保 _instance 被赋值。</summary>
-        protected InventorySystemSingleton()
+        protected ToolkitSingleton()
         {
             _instance = (T)this;
         }
@@ -112,7 +111,7 @@ namespace Ale.Inventory.Runtime
         {
             if (_resetHookRegistered) return;
             _resetHookRegistered = true;
-            InventorySingletonRegistry.Register(ResetStatics);
+            ToolkitSingletonRegistry.Register(ResetStatics);
         }
 
         private static void HandleQuitting() => IsQuitting = true;
@@ -130,19 +129,18 @@ namespace Ale.Inventory.Runtime
     }
 
     // ── MonoBehaviour 单例基类 ──────────────────────────────────────────────────────
-    // 参考 Fs.Utility.Singleton.MonoBehaviourSingleton<T> 的设计，独立实现。
-    // 供 InventoryRuntimeManager 等需要 MonoBehaviour 生命周期的管理器使用。
+    // 供需要 MonoBehaviour 生命周期（Awake / OnDestroy / 跨场景持久）的管理器使用。
     /// <summary>
-    /// InventorySystem 插件内部 MonoBehaviour 单例基类。
+    /// MonoBehaviour 单例基类。
     /// 在 Scene 中挂载此组件后，<c>Awake</c> 时自动设置单例实例并调用 <see cref="Init"/>；
     /// <c>DontDestroyOnLoad</c> 保证跨场景持久；重复实例时后来者自动销毁。
     /// </summary>
-    public abstract class InventorySystemMonoBehaviourSingleton<T>
-        : MonoBehaviour where T : InventorySystemMonoBehaviourSingleton<T>
+    public abstract class ToolkitMonoSingleton<T>
+        : MonoBehaviour where T : ToolkitMonoSingleton<T>
     {
         private static T _instance;
 
-        // 是否已向 InventorySingletonRegistry 登记过重置动作（每个闭合泛型各一份）。
+        // 是否已向 ToolkitSingletonRegistry 登记过重置动作（每个闭合泛型各一份）。
         private static bool _resetHookRegistered;
 
         #region 实例与生命周期
@@ -194,7 +192,7 @@ namespace Ale.Inventory.Runtime
         {
             if (_resetHookRegistered) return;
             _resetHookRegistered = true;
-            InventorySingletonRegistry.Register(ResetStatics);
+            ToolkitSingletonRegistry.Register(ResetStatics);
         }
 
         /// <summary>播放开始时复位全部静态状态（关闭 Domain Reload 时残留的实例引用与退出标记）。</summary>

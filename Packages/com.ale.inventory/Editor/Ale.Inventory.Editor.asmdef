@@ -7,7 +7,9 @@
         "Ale.Inventory.UI.Localization",
         "Unity.TextMeshPro",
         "Unity.Localization",
-        "Unity.Localization.Editor"
+        "Unity.Localization.Editor",
+        "Ale.Toolkit.Runtime",
+        "Ale.Toolkit.Editor"
     ],
     "includePlatforms": [
         "Editor"

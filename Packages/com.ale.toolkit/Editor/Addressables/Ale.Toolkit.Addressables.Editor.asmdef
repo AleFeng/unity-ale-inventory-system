@@ -1,0 +1,24 @@
+{
+    "name": "Ale.Toolkit.Addressables.Editor",
+    "rootNamespace": "Ale.Toolkit.Editor.AddressableSupport",
+    "references": [
+        "Ale.Toolkit.Runtime",
+        "Ale.Toolkit.Editor",
+        "Unity.Addressables",
+        "Unity.Addressables.Editor",
+        "Unity.ResourceManager"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "IS_ADDRESSABLE"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

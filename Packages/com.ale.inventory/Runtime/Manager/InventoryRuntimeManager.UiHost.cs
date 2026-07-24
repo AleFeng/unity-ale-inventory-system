@@ -1,3 +1,4 @@
+using Ale.Toolkit.Runtime;
 using UnityEngine;
 
 namespace Ale.Inventory.Runtime
@@ -39,7 +40,7 @@ namespace Ale.Inventory.Runtime
         /// </summary>
         public void SetCoverUiLayer(int layer)
         {
-            coverUiLayer      = Mathf.Clamp(layer, 0, 31);
+            coverUiLayer      = CoverUiUtil.ClampLayer(layer);
             applyCoverUiLayer = true;
         }
 
@@ -68,15 +69,7 @@ namespace Ale.Inventory.Runtime
         public void ApplyCoverUiLayer(GameObject go)
         {
             if (!go || !applyCoverUiLayer) return;
-            SetLayerRecursively(go, coverUiLayer);
-        }
-
-        private static void SetLayerRecursively(GameObject go, int layer)
-        {
-            go.layer = layer;
-            var t = go.transform;
-            for (int i = 0; i < t.childCount; i++)
-                SetLayerRecursively(t.GetChild(i).gameObject, layer);
+            CoverUiUtil.SetLayerRecursively(go, coverUiLayer);
         }
 
         #region 道具悬停弹窗
@@ -101,7 +94,7 @@ namespace Ale.Inventory.Runtime
 
             if (!itemTooltipPrefab) return _itemTooltip = null;
 
-            var parent = coverUiRoot ? coverUiRoot : FindCanvasTransform();
+            var parent = coverUiRoot ? coverUiRoot : CoverUiUtil.FindCanvasTransform();
             var go     = parent ? Instantiate(itemTooltipPrefab, parent) : Instantiate(itemTooltipPrefab);
             go.transform.SetAsLastSibling();   // 置于父级最上层渲染
             ApplyCoverUiLayer(go);             // 覆盖式UI：按需强制到指定 Layer（如 UI）
@@ -109,12 +102,6 @@ namespace Ale.Inventory.Runtime
             if (_itemTooltip == null)
                 Debug.LogWarning("[InventoryRuntimeManager] itemTooltipPrefab 根节点未实现 IItemTooltip（如 UiwItemTooltip），悬停弹窗不可用。");
             return _itemTooltip;
-        }
-
-        private static Transform FindCanvasTransform()
-        {
-            var canvas = FindAnyObjectByType<Canvas>();
-            return canvas ? canvas.transform : null;
         }
 
         /// <summary>在光标处（屏幕坐标）显示指定道具的悬停详情弹窗（全局统一入口）。count 为持有数量（显示在数量文本）。</summary>
@@ -151,7 +138,7 @@ namespace Ale.Inventory.Runtime
 
             if (!skillTooltipPrefab) return _skillTooltip = null;
 
-            var parent = coverUiRoot ? coverUiRoot : FindCanvasTransform();
+            var parent = coverUiRoot ? coverUiRoot : CoverUiUtil.FindCanvasTransform();
             var go     = parent ? Instantiate(skillTooltipPrefab, parent) : Instantiate(skillTooltipPrefab);
             go.transform.SetAsLastSibling();   // 置于父级最上层渲染
             ApplyCoverUiLayer(go);             // 覆盖式UI：按需强制到指定 Layer（如 UI）

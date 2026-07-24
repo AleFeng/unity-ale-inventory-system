@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.Serialization;
 using UnityEditor;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Editor
 {

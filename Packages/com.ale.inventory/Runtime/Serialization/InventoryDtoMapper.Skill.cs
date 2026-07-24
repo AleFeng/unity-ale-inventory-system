@@ -1,4 +1,5 @@
 using UnityEngine;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Runtime.Serialization
 {

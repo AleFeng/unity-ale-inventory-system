@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text;
 using UnityEngine;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Runtime.Serialization
 {

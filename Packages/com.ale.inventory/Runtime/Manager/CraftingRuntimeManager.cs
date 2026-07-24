@@ -1,4 +1,5 @@
 using UnityEngine;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Runtime
 {
@@ -18,7 +19,7 @@ namespace Ale.Inventory.Runtime
     /// <para>道具数据经 <see cref="InventoryDataManager"/> 查询；仓库读写一律经
     /// <see cref="InventoryRuntimeManager"/>（消耗/产出会自动触发其 OnInventoryChanged，UI 据此刷新）。</para>
     /// </summary>
-    public class CraftingRuntimeManager : InventorySystemSingleton<CraftingRuntimeManager>
+    public class CraftingRuntimeManager : ToolkitSingleton<CraftingRuntimeManager>
     {
         protected override void Init()
         {

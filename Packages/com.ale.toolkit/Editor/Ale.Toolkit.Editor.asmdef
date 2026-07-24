@@ -1,0 +1,23 @@
+{
+    "name": "Ale.Toolkit.Editor",
+    "rootNamespace": "Ale.Toolkit.Editor",
+    "references": [
+        "Ale.Toolkit.Runtime",
+        "Ale.Toolkit.UI",
+        "Ale.Toolkit.UI.Localization",
+        "Unity.TextMeshPro",
+        "Unity.Localization",
+        "Unity.Localization.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -2,6 +2,7 @@
     "name": "Ale.Inventory.UI",
     "rootNamespace": "Ale.Inventory.Runtime.UI",
     "references": [
+        "Ale.Toolkit.Runtime",
         "Ale.Inventory.Runtime",
         "Unity.TextMeshPro",
         "Unity.Localization"

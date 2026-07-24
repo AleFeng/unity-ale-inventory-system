@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
     /// 标记一个 <c>int</c> 字段为「单个 Layer 选择」，在 Inspector 中以 Layer 单选下拉呈现

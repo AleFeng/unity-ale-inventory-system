@@ -6,7 +6,9 @@
         "Ale.Inventory.Editor",
         "Unity.Addressables",
         "Unity.Addressables.Editor",
-        "Unity.ResourceManager"
+        "Unity.ResourceManager",
+        "Ale.Toolkit.Runtime",
+        "Ale.Toolkit.Editor"
     ],
     "includePlatforms": [
         "Editor"

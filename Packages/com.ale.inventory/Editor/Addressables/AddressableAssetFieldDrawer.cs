@@ -5,6 +5,7 @@ using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Editor
 {

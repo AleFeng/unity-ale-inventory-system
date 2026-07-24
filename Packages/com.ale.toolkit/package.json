@@ -1,0 +1,17 @@
+{
+  "name": "com.ale.toolkit",
+  "version": "1.0.0",
+  "displayName": "Ale Toolkit",
+  "description": "面向 Unity 插件开发的通用底层：自定义属性系统、虚拟滚动列表、编辑器三列框架、编辑器界面多语言，以及 TextMeshPro / Localization / Addressables 的可选支持层。",
+  "unity": "2022.3",
+  "documentationUrl": "https://github.com/AleFeng/unity-ale-inventory-system/blob/main/Packages/com.ale.toolkit/README.md",
+  "changelogUrl": "https://github.com/AleFeng/unity-ale-inventory-system/blob/main/Packages/com.ale.toolkit/CHANGELOG.md",
+  "licensesUrl": "https://github.com/AleFeng/unity-ale-inventory-system/blob/main/Packages/com.ale.toolkit/LICENSE.md",
+  "keywords": ["toolkit", "framework", "editor", "attribute", "virtual-list", "localization"],
+  "author": {
+    "name": "Able Games",
+    "url": "https://github.com/AleFeng/unity-ale-inventory-system"
+  },
+  "category": "Utility",
+  "dependencies": {}
+}

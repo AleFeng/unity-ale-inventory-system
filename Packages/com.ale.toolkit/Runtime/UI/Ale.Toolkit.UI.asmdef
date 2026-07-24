@@ -1,0 +1,18 @@
+{
+    "name": "Ale.Toolkit.UI",
+    "rootNamespace": "Ale.Toolkit.Runtime.UI",
+    "references": [
+        "Ale.Toolkit.Runtime",
+        "Unity.TextMeshPro",
+        "Unity.Localization"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

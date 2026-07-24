@@ -1,12 +1,12 @@
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Ale.Inventory.Runtime.Serialization
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
     /// 资源引用 <-> GUID 的转换抽象。导出时把 Unity 对象引用转为可移植的 GUID 字符串，
     /// 导入时反向解析。运行时使用 <see cref="NullAssetRefResolver"/>（不解析，引用保持为空）；
-    /// 编辑器侧由 EditorAssetGuidResolver（基于 AssetDatabase）实现。
+    /// 编辑器侧由 <c>EditorAssetGuidResolver</c>（基于 AssetDatabase）实现。
     /// </summary>
     public interface IAssetRefResolver
     {
