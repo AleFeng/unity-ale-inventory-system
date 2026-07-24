@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -22,7 +23,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
             bool allActive = current == null;
-            if (GUILayout.Toggle(allActive, "全部", EditorStyles.toolbarButton) && !allActive)
+            if (GUILayout.Toggle(allActive, Tr("全部"), EditorStyles.toolbarButton) && !allActive)
                 current = null;
 
             for (int i = 0; i < options.Count; i++)

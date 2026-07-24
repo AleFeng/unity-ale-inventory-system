@@ -4,6 +4,7 @@ using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.Serialization;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -68,7 +69,7 @@ namespace Ale.Inventory.Editor
         private static InventoryEditorWindow OpenWindow()
         {
             bool isNew = !HasOpenInstances<InventoryEditorWindow>();
-            var window = GetWindow<InventoryEditorWindow>("Inventory Editor");
+            var window = GetWindow<InventoryEditorWindow>(Tr("Inventory Editor"));
             window.minSize = WindowMinSize;
             if (isNew)
             {
@@ -160,6 +161,8 @@ namespace Ale.Inventory.Editor
 
         private void OnGUI()
         {
+            titleContent.text = Tr("Inventory Editor");
+
             // Layout 阶段刷新快照与缓存。
             if (Event.current.type == EventType.Layout)
             {
@@ -207,7 +210,7 @@ namespace Ale.Inventory.Editor
             GUILayout.BeginArea(rect, EditorStyles.toolbar);
             EditorGUILayout.BeginHorizontal();
 
-            EditorGUILayout.LabelField("数据文件", GUILayout.Width(56));
+            EditorGUILayout.LabelField(Tr("数据文件"), GUILayout.Width(56));
             var newDb = (InventoryDatabase)EditorGUILayout.ObjectField
                 (_db, typeof(InventoryDatabase), false, GUILayout.Width(240));
             if (newDb != _db)
@@ -228,9 +231,9 @@ namespace Ale.Inventory.Editor
 
                 using (new EditorGUI.DisabledScope(hasNonEmptyDups))
                 {
-                    if (GUILayout.Button("导出 JSON", EditorStyles.toolbarButton, GUILayout.Width(90)))
+                    if (GUILayout.Button(Tr("导出 JSON"), EditorStyles.toolbarButton, GUILayout.Width(90)))
                         ExportJson();
-                    if (GUILayout.Button("导出二进制", EditorStyles.toolbarButton, GUILayout.Width(90)))
+                    if (GUILayout.Button(Tr("导出二进制"), EditorStyles.toolbarButton, GUILayout.Width(90)))
                         ExportBinary();
                 }
             }
@@ -243,7 +246,9 @@ namespace Ale.Inventory.Editor
         {
             var rect = new Rect(0, ToolbarHeight, position.width, TabRowHeight);
             GUILayout.BeginArea(rect);
-            _systemTab = GUILayout.Toolbar(_systemTab, SystemTabs, GUILayout.Height(TabRowHeight - 2));
+            var tabs = new string[SystemTabs.Length];
+            for (int i = 0; i < tabs.Length; i++) tabs[i] = Tr(SystemTabs[i]);
+            _systemTab = GUILayout.Toolbar(_systemTab, tabs, GUILayout.Height(TabRowHeight - 2));
             GUILayout.EndArea();
         }
 
@@ -271,9 +276,9 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             EditorGUILayout.BeginVertical(GUILayout.Width(360));
-            EditorGUILayout.LabelField("请创建或选择一个 InventoryDatabase 数据文件", InventoryEditorStyles.Placeholder);
+            EditorGUILayout.LabelField(Tr("请创建或选择一个 InventoryDatabase 数据文件"), InventoryEditorStyles.Placeholder);
             EditorGUILayout.Space(8);
-            if (GUILayout.Button("创建新的数据文件", GUILayout.Height(30)))
+            if (GUILayout.Button(Tr("创建新的数据文件"), GUILayout.Height(30)))
                 CreateNewDatabase();
             EditorGUILayout.EndVertical();
             GUILayout.FlexibleSpace();
@@ -304,12 +309,12 @@ namespace Ale.Inventory.Editor
 
                 var ids = new List<string>(set.Count);
                 foreach (var id in set)
-                    ids.Add(string.IsNullOrEmpty(id) ? "(空ID)" : id);
+                    ids.Add(string.IsNullOrEmpty(id) ? Tr("(空ID)") : id);
 
-                string noun = EditorDuplicateIdScanner.NounOf(kind);
+                string noun = Tr(EditorDuplicateIdScanner.NounOf(kind));
                 parts.Add(EditorDuplicateIdScanner.HasNonEmpty(set)
-                    ? $"⚠ {noun}重复 ID：{string.Join(", ", ids)}（导出已禁用）"
-                    : $"⚠ {noun}存在空 ID（导出时将跳过）");
+                    ? Fmt("⚠ {0}重复 ID：{1}（导出已禁用）", noun, string.Join(", ", ids))
+                    : Fmt("⚠ {0}存在空 ID（导出时将跳过）", noun));
             }
 
             return string.Join("  |  ", parts);
@@ -343,8 +348,8 @@ namespace Ale.Inventory.Editor
         private void CreateNewDatabase()
         {
             string path = EditorUtility.SaveFilePanelInProject(
-                "创建仓库系统数据文件", "InventoryDatabase", "asset",
-                "请选择数据文件保存位置");
+                Tr("创建仓库系统数据文件"), "InventoryDatabase", "asset",
+                Tr("请选择数据文件保存位置"));
             if (string.IsNullOrEmpty(path)) return;
 
             var db = ScriptableObject.CreateInstance<InventoryDatabase>();
@@ -362,25 +367,25 @@ namespace Ale.Inventory.Editor
         private void ExportJson()
         {
             if (!ValidateForExport()) return;
-            string path = EditorUtility.SaveFilePanel("导出为 JSON", Application.dataPath, _db.name, "json");
+            string path = EditorUtility.SaveFilePanel(Tr("导出为 JSON"), Application.dataPath, _db.name, "json");
             if (string.IsNullOrEmpty(path)) return;
 
             string json = InventoryJsonSerializer.Export(_db, Resolver);
             File.WriteAllText(path, json);
             AssetDatabase.Refresh();
-            ShowNotification(new GUIContent("已导出 JSON"));
+            ShowNotification(new GUIContent(Tr("已导出 JSON")));
         }
 
         private void ExportBinary()
         {
             if (!ValidateForExport()) return;
-            string path = EditorUtility.SaveFilePanel("导出为二进制", Application.dataPath, _db.name, "bytes");
+            string path = EditorUtility.SaveFilePanel(Tr("导出为二进制"), Application.dataPath, _db.name, "bytes");
             if (string.IsNullOrEmpty(path)) return;
 
             byte[] bytes = InventoryBinarySerializer.Export(_db, Resolver);
             File.WriteAllBytes(path, bytes);
             AssetDatabase.Refresh();
-            ShowNotification(new GUIContent("已导出二进制"));
+            ShowNotification(new GUIContent(Tr("已导出二进制")));
         }
 
         private bool ValidateForExport()
@@ -388,7 +393,7 @@ namespace Ale.Inventory.Editor
             if (!_db) return false;
             if (!_db.Validate(out var errors))
             {
-                EditorUtility.DisplayDialog("无法导出", string.Join("\n", errors), "确定");
+                EditorUtility.DisplayDialog(Tr("无法导出"), string.Join("\n", errors), Tr("确定"));
                 return false;
             }
             return true;

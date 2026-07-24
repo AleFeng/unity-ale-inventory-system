@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -103,7 +104,7 @@ namespace Ale.Inventory.Editor
             Rect keyRow, float contentX, float contentRight, float valY, float valH);
 
         /// <summary>「从模板添加」菜单在无可用模板时的提示。</summary>
-        protected virtual string NoTemplateHint => $"（无可用{Noun}模板）";
+        protected virtual string NoTemplateHint => Fmt("（无可用{0}模板）", Tr(Noun));
 
         #endregion
 
@@ -125,11 +126,11 @@ namespace Ale.Inventory.Editor
             // ── 工具栏 ──────────────────────────────────────────────────────────
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
             _search = GUILayout.TextField(_search, EditorStyles.toolbarSearchField, GUILayout.ExpandWidth(true));
-            if (GUILayout.Button("从模板添加", EditorStyles.toolbarDropDown, GUILayout.Width(84)))
+            if (GUILayout.Button(Tr("从模板添加"), EditorStyles.toolbarDropDown, GUILayout.Width(84)))
                 ShowAddFromTemplateMenu(ctx);
             using (new EditorGUI.DisabledScope(entities.Count == 0))
             {
-                if (GUILayout.Button("快速添加", EditorStyles.toolbarButton, GUILayout.Width(72)))
+                if (GUILayout.Button(Tr("快速添加"), EditorStyles.toolbarButton, GUILayout.Width(72)))
                     selected = QuickAdd(ctx);
             }
             EditorGUILayout.EndHorizontal();

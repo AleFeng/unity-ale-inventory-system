@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -26,13 +27,13 @@ namespace Ale.Inventory.Editor
         protected override Color  RowColor(T item) => item.color;
 
         protected override string RowLabel(T item)
-            => string.IsNullOrEmpty(item.id) ? "(空 ID)" : item.id;
+            => string.IsNullOrEmpty(item.id) ? Tr("(空 ID)") : item.id;
 
         /// <summary>新建一个标签：自动分配唯一 ID，显示名默认「新分组」（等价于各子类原先的 (id, "新分组") 构造）。</summary>
         protected override T CreateNew(InventoryDatabase db, List<T> list)
         {
             var tag = new T { id = GenerateId(list) };
-            tag.displayName.SetTextValue(0, "新分组");
+            tag.displayName.SetTextValue(0, Tr("新分组"));
             return tag;
         }
 
@@ -61,15 +62,15 @@ namespace Ale.Inventory.Editor
         {
             if (tag == null)
             {
-                EditorGUILayout.LabelField("请选择或新建一个分组标签。");
+                EditorGUILayout.LabelField(Tr("请选择或新建一个分组标签。"));
                 return;
             }
 
-            EditorGUILayout.LabelField("基础信息", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础信息"), InventoryEditorStyles.Header);
 
             EditorGUI.BeginChangeCheck();
             string id    = EditorGUILayout.TextField("ID", tag.id);
-            Color  color = EditorGUILayout.ColorField("标识颜色", tag.color);
+            Color  color = EditorGUILayout.ColorField(Tr("标识颜色"), tag.color);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改分组标签");
@@ -80,8 +81,8 @@ namespace Ale.Inventory.Editor
 
             // 名称 / 描述为 Text 类型属性值（纯文本 fallback + 可选本地化引用），复用统一属性绘制器。
             tag.NormalizeTextFields();
-            AttributeFieldDrawer.Draw(ctx, "名称", tag.displayName, null);
-            AttributeFieldDrawer.Draw(ctx, "描述", tag.description, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("名称"), tag.displayName, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("描述"), tag.description, null);
         }
 
         #endregion

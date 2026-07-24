@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEditor;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -33,7 +34,7 @@ namespace Ale.Inventory.Editor
             var db = ctx.Database;
             if (db.FunctionTags.Count == 0)
             {
-                EditorGUILayout.LabelField(emptyHint, EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr(emptyHint), EditorStyles.miniLabel);
                 return;
             }
 

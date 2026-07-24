@@ -3,6 +3,7 @@ using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -139,7 +140,7 @@ namespace Ale.Inventory.Editor
             if (CanAdd)
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(Noun, InventoryEditorStyles.Header);
+                EditorGUILayout.LabelField(Tr(Noun), InventoryEditorStyles.Header);
                 if (GUILayout.Button("+", GUILayout.Width(24)))
                 {
                     var created = CreateNew(db, list);
@@ -156,15 +157,15 @@ namespace Ale.Inventory.Editor
             }
             else
             {
-                EditorGUILayout.LabelField(Noun, InventoryEditorStyles.Header);
+                EditorGUILayout.LabelField(Tr(Noun), InventoryEditorStyles.Header);
             }
 
             if (!string.IsNullOrEmpty(HeaderHelp))
-                EditorGUILayout.HelpBox(HeaderHelp, MessageType.None);
+                EditorGUILayout.HelpBox(Tr(HeaderHelp), MessageType.None);
 
             if (list.Count == 0 && !string.IsNullOrEmpty(EmptyPlaceholder))
             {
-                EditorGUILayout.LabelField(EmptyPlaceholder, InventoryEditorStyles.Placeholder);
+                EditorGUILayout.LabelField(Tr(EmptyPlaceholder), InventoryEditorStyles.Placeholder);
                 return _selectedIndex;
             }
 

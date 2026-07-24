@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -44,15 +45,15 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.EndHorizontal();
 
             if (isDup)
-                EditorGUILayout.LabelField(dupHint, InventoryEditorStyles.StatusError);
+                EditorGUILayout.LabelField(Tr(dupHint), InventoryEditorStyles.StatusError);
         }
 
         /// <summary>只读「来源模板」行（创建后不可更改；为空显示「（无）」）。</summary>
         public static void DrawTemplateRefReadonly(string templateRef)
         {
             using (new EditorGUI.DisabledScope(true))
-                EditorGUILayout.TextField("来源模板",
-                    string.IsNullOrEmpty(templateRef) ? "（无）" : templateRef);
+                EditorGUILayout.TextField(Tr("来源模板"),
+                    string.IsNullOrEmpty(templateRef) ? Tr("（无）") : templateRef);
         }
 
         /// <summary>
@@ -68,11 +69,11 @@ namespace Ale.Inventory.Editor
             List<AttributeEntry> values, List<AttributeDefinition> templateAttrs,
             string emptyHint, GUIStyle emptyStyle = null)
         {
-            EditorGUILayout.LabelField("自定义属性", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("自定义属性"), InventoryEditorStyles.Header);
 
             if (values == null || values.Count == 0)
             {
-                EditorGUILayout.LabelField(emptyHint, emptyStyle ?? EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr(emptyHint), emptyStyle ?? EditorStyles.miniLabel);
                 return;
             }
 
