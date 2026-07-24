@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Ale.Inventory.Runtime;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 #if IS_TMP
 using TMPro;
@@ -88,7 +89,7 @@ namespace Ale.Inventory.Editor
 
         private static InventoryWelcomeWindow OpenWindow()
         {
-            var window = GetWindow<InventoryWelcomeWindow>(true, "Inventory 道具仓库系统", true);
+            var window = GetWindow<InventoryWelcomeWindow>(true, Tr("Inventory 道具仓库系统"), true);
             window.minSize = WindowSize;
             window.maxSize = WindowSize;
             window.CenterOnMainWin();
@@ -157,9 +158,13 @@ namespace Ale.Inventory.Editor
         private void OnGUI()
         {
             LoadPrefs();
+            titleContent.text = Tr("Inventory 道具仓库系统");
 
             DrawHeader();
             EditorGUILayout.Space(8);
+
+            DrawLanguageSettings();
+            DrawSeparator();
 
             DrawQuickActions();
             DrawSeparator();
@@ -206,40 +211,79 @@ namespace Ale.Inventory.Editor
             }
 
             EditorGUILayout.LabelField($"Inventory System  v{Version}", headerStyle);
-            EditorGUILayout.LabelField("面向设计师的 道具与仓库 配置工具", subStyle);
+            EditorGUILayout.LabelField(Tr("面向设计师的 道具与仓库 配置工具"), subStyle);
+            EditorGUILayout.Space(6);
+            DrawLanguageButtons();
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndVertical();
         }
 
+        /// <summary>页眉底部居中的「中文 / English / 日本語」语言切换按钮，当前语言高亮。</summary>
+        private void DrawLanguageButtons()
+        {
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            DrawLangButton("中文",    EditorLanguage.ChineseSimplified);
+            DrawLangButton("English", EditorLanguage.English);
+            DrawLangButton("日本語",  EditorLanguage.Japanese);
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private static void DrawLangButton(string label, EditorLanguage lang)
+        {
+            bool active = Current == lang;
+            var prevBg = GUI.backgroundColor;
+            if (active) GUI.backgroundColor = new Color(0.35f, 0.55f, 0.95f);
+            // 当前语言用按下态 + 蓝色底色区分；点击非当前语言时切换。
+            if (GUILayout.Toggle(active, label, EditorStyles.miniButton,
+                    GUILayout.Width(72), GUILayout.Height(22)) && !active)
+                Current = lang;
+            GUI.backgroundColor = prevBg;
+        }
+
+        /// <summary>「多语言设定」区：枚举值是否随语言切换的勾选项（默认关，关时枚举显示代码原名）。</summary>
+        private void DrawLanguageSettings()
+        {
+            EditorGUILayout.LabelField(Tr("多语言设定"), EditorStyles.boldLabel);
+            EditorGUI.BeginChangeCheck();
+            bool newEnum = EditorGUILayout.ToggleLeft(
+                new GUIContent(Tr("枚举值"),
+                    Tr("勾选后，类型下拉等枚举值也随语言切换；不勾选则保持代码中的英文原名。")),
+                TranslateEnums);
+            if (EditorGUI.EndChangeCheck())
+                TranslateEnums = newEnum;
+        }
+
         private void DrawQuickActions()
         {
-            EditorGUILayout.LabelField("快捷操作", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Tr("快捷操作"), EditorStyles.boldLabel);
             EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("创建新数据文件", GUILayout.Height(28)))
+            if (GUILayout.Button(Tr("创建新数据文件"), GUILayout.Height(28)))
                 InventoryDatabaseCreateMenu.CreateDatabase();
 
-            if (GUILayout.Button("打开 Inventory Editor", GUILayout.Height(28)))
+            if (GUILayout.Button(Tr("打开 Inventory Editor"), GUILayout.Height(28)))
                 InventoryEditorWindow.Open();
-            
+
             // 仅在启用 IS_ADDRESSABLE（迁移窗口已注入钩子）时显示。
             if (OpenAddressableMigration != null
-                && GUILayout.Button("打开 Addressable工具窗口", GUILayout.Height(28)))
+                && GUILayout.Button(Tr("打开 Addressable工具窗口"), GUILayout.Height(28)))
                 OpenAddressableMigration();
 
 #if IS_LOCALIZATION
             // 仅在启用 IS_LOCALIZATION 时显示（本地化工具窗口同在本程序集，可直接调用）。
-            if (GUILayout.Button("打开 本地化工具窗口", GUILayout.Height(28)))
+            if (GUILayout.Button(Tr("打开 本地化工具窗口"), GUILayout.Height(28)))
                 InventoryLocalizationToolWindow.Open();
 #endif
 
-            if (GUILayout.Button("查看文档", GUILayout.Height(28)))
+            if (GUILayout.Button(Tr("查看文档"), GUILayout.Height(28)))
                 OpenDocumentation();
 
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Space(4);
-            _genFoldout = EditorGUILayout.Foldout(_genFoldout, "预制体生成", true);
+            _genFoldout = EditorGUILayout.Foldout(_genFoldout, Tr("预制体生成"), true);
             if (_genFoldout)
             {
                 // 生成全部（列表最上方）
@@ -248,7 +292,7 @@ namespace Ale.Inventory.Editor
                     fontStyle = FontStyle.Normal,
                     normal    = { textColor = new Color(0.85f, 1f, 0.85f) }
                 };
-                if (GUILayout.Button("生成全部（数据库 + 全部 Prefab）", demoStyle, GUILayout.Height(26)))
+                if (GUILayout.Button(Tr("生成全部（数据库 + 全部 Prefab）"), demoStyle, GUILayout.Height(26)))
                     InventoryDemoWizard.GenerateAll();
 
                 // 滚动列表：按子系统分类折叠，逐项「生成」
@@ -262,7 +306,7 @@ namespace Ale.Inventory.Editor
                     if (count == 0) continue;
 
                     _genCategoryFoldouts.TryGetValue(category, out bool catOpen);
-                    catOpen = EditorGUILayout.Foldout(catOpen, $"{category}（{count}）", true);
+                    catOpen = EditorGUILayout.Foldout(catOpen, Fmt("{0}（{1}）", Tr(category), count), true);
                     _genCategoryFoldouts[category] = catOpen;
                     if (!catOpen) continue;
 
@@ -271,8 +315,8 @@ namespace Ale.Inventory.Editor
                     {
                         if (item.Category != category) continue;
                         EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                        EditorGUILayout.LabelField(item.DisplayName, GUILayout.ExpandWidth(true));
-                        if (GUILayout.Button("生成", GUILayout.Width(64), GUILayout.Height(20)))
+                        EditorGUILayout.LabelField(Tr(item.DisplayName), GUILayout.ExpandWidth(true));
+                        if (GUILayout.Button(Tr("生成"), GUILayout.Width(64), GUILayout.Height(20)))
                             InventoryDemoWizard.GenerateItem(item.Key);
                         EditorGUILayout.EndHorizontal();
                     }
@@ -284,9 +328,9 @@ namespace Ale.Inventory.Editor
 
         private void DrawTemplateSection()
         {
-            EditorGUILayout.LabelField("数据模板", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Tr("数据模板"), EditorStyles.boldLabel);
             EditorGUILayout.LabelField(
-                "创建新数据文件时使用的模板（留空则使用默认数据）：",
+                Tr("创建新数据文件时使用的模板（留空则使用默认数据）："),
                 EditorStyles.wordWrappedMiniLabel);
 
             EditorGUI.BeginChangeCheck();
@@ -302,15 +346,15 @@ namespace Ale.Inventory.Editor
             {
                 var db = _templateDb;
                 EditorGUILayout.LabelField(
-                    $"  包含：{db.EnumTypes.Count} 枚举类型  |  {db.FunctionTags.Count} 功能标签  |  " +
-                    $"{db.ItemTemplates.Count} 道具模板  |  {db.Items.Count} 道具",
+                    Fmt("  包含：{0} 枚举类型  |  {1} 功能标签  |  {2} 道具模板  |  {3} 道具",
+                        db.EnumTypes.Count, db.FunctionTags.Count, db.ItemTemplates.Count, db.Items.Count),
                     EditorStyles.miniLabel);
             }
         }
 
         private void DrawMacroSection()
         {
-            EditorGUILayout.LabelField("插件支持", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField(Tr("插件支持"), EditorStyles.boldLabel);
 
             _macroScrollPos = EditorGUILayout.BeginScrollView(
                 _macroScrollPos, GUILayout.ExpandHeight(true));
@@ -321,11 +365,11 @@ namespace Ale.Inventory.Editor
                 InventoryEditorPrefs.Package_Tmp,
                 ref _tmpEnabled,
                 _tmpPackageInstalled,
-                "启用后，道具 UI 脚本（Uiw 开头）的文本组件使用 TMP_Text；" +
-                "未启用时使用 UnityEngine.UI.Text。Unity 2021+ 已内置 TextMeshPro，通常可直接启用。",
-                "TMPro 命名空间未检测到。\n" +
-                "请确认 TextMeshPro 已通过 Package Manager 安装。\n\n" +
-                "确定要继续启用吗？",
+                Tr("启用后，道具 UI 脚本（Uiw 开头）的文本组件使用 TMP_Text；" +
+                   "未启用时使用 UnityEngine.UI.Text。Unity 2021+ 已内置 TextMeshPro，通常可直接启用。"),
+                Tr("TMPro 命名空间未检测到。\n" +
+                   "请确认 TextMeshPro 已通过 Package Manager 安装。\n\n" +
+                   "确定要继续启用吗？"),
                 DrawTmpFontFoldout);
 
             EditorGUILayout.Space(2);
@@ -336,10 +380,10 @@ namespace Ale.Inventory.Editor
                 InventoryEditorPrefs.Package_Localization,
                 ref _localizationEnabled,
                 _localizationPackageInstalled,
-                "启用后，属性字段类型可选择 LocalizedString，支持 Unity Localization 多语言配置。",
-                "com.unity.localization 包尚未安装。\n" +
-                "启用宏后，LocalizedString 字段将出现在编辑器中，但运行时无法解析。\n\n" +
-                "确定要继续启用吗？",
+                Tr("启用后，属性字段类型可选择 LocalizedString，支持 Unity Localization 多语言配置。"),
+                Tr("com.unity.localization 包尚未安装。\n" +
+                   "启用宏后，LocalizedString 字段将出现在编辑器中，但运行时无法解析。\n\n" +
+                   "确定要继续启用吗？"),
                 DrawLocalizationFontFoldout);
             
             EditorGUILayout.Space(2);
@@ -350,13 +394,13 @@ namespace Ale.Inventory.Editor
                 InventoryEditorPrefs.Package_Addressables,
                 ref _addressableEnabled,
                 _addressablePackageInstalled,
-                "启用后，属性系统的资源字段（Sprite/Prefab 等）在编辑器改用原生 AssetReference 选择器授权（仅存 GUID，" +
-                "不硬引用、加载数据库不再一并载入资源）；运行时经 Addressable 按需异步加载、引用计数随宿主销毁自动卸载。" +
-                "导出时自动把被引用资源登记进默认 Addressable 分组。" +
-                "已有数据可用菜单 Tools/Inventory System/Addressables/资源引用迁移工具（带进度条与实时日志）在「Object 引用 ↔ AssetReference(GUID)」间批量互转。",
-                "com.unity.addressables 包尚未安装。\n" +
-                "启用宏后，运行时无法通过 Addressable 加载资源。\n\n" +
-                "确定要继续启用吗？");
+                Tr("启用后，属性系统的资源字段（Sprite/Prefab 等）在编辑器改用原生 AssetReference 选择器授权（仅存 GUID，" +
+                   "不硬引用、加载数据库不再一并载入资源）；运行时经 Addressable 按需异步加载、引用计数随宿主销毁自动卸载。" +
+                   "导出时自动把被引用资源登记进默认 Addressable 分组。" +
+                   "已有数据可用菜单 Tools/Inventory System/Addressables/资源引用迁移工具（带进度条与实时日志）在「Object 引用 ↔ AssetReference(GUID)」间批量互转。"),
+                Tr("com.unity.addressables 包尚未安装。\n" +
+                   "启用宏后，运行时无法通过 Addressable 加载资源。\n\n" +
+                   "确定要继续启用吗？"));
 
             EditorGUILayout.Space(2);
 
@@ -368,19 +412,19 @@ namespace Ale.Inventory.Editor
         {
 #if IS_TMP
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            _wizardFontFoldout = EditorGUILayout.Foldout(_wizardFontFoldout, "TextMeshPro 设置", true);
+            _wizardFontFoldout = EditorGUILayout.Foldout(_wizardFontFoldout, Tr("TextMeshPro 设置"), true);
             if (_wizardFontFoldout)
             {
                 EditorGUI.BeginChangeCheck();
                 var newFont = (TMP_FontAsset)EditorGUILayout.ObjectField(
-                    "默认字体", _wizardDefaultTmpFont, typeof(TMP_FontAsset), false);
+                    Tr("默认字体"), _wizardDefaultTmpFont, typeof(TMP_FontAsset), false);
                 if (EditorGUI.EndChangeCheck())
                 {
                     _wizardDefaultTmpFont = newFont;
                     InventoryEditorPrefs.SaveWizardDefaultTmpFont(newFont);
                 }
                 EditorGUILayout.LabelField(
-                    "生成测试 Prefab 时将此字体应用于所有 TMP 文本节点（留空则使用 TMP 默认字体）。",
+                    Tr("生成测试 Prefab 时将此字体应用于所有 TMP 文本节点（留空则使用 TMP 默认字体）。"),
                     EditorStyles.wordWrappedMiniLabel);
             }
             EditorGUILayout.EndVertical();
@@ -393,7 +437,7 @@ namespace Ale.Inventory.Editor
 #if IS_TMP && IS_LOCALIZATION
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             _wizardLocalizedFontFoldout = EditorGUILayout.Foldout(
-                _wizardLocalizedFontFoldout, "Unity Localization 设置", true);
+                _wizardLocalizedFontFoldout, Tr("Unity Localization 设置"), true);
             if (_wizardLocalizedFontFoldout)
             {
                 // 使用 Unity.Localization 的内置 PropertyField 绘制表/条目选择器
@@ -405,8 +449,8 @@ namespace Ale.Inventory.Editor
                     so.ApplyModifiedProperties();
                 }
                 EditorGUILayout.LabelField(
-                    "生成测试 Prefab 时赋给 InventoryTmpFontEvent 组件的本地化字体资源。" +
-                    "需同时启用 IS_TMP 才生效。",
+                    Tr("生成测试 Prefab 时赋给 InventoryTmpFontEvent 组件的本地化字体资源。" +
+                       "需同时启用 IS_TMP 才生效。"),
                     EditorStyles.wordWrappedMiniLabel);
             }
             EditorGUILayout.EndVertical();
@@ -432,7 +476,7 @@ namespace Ale.Inventory.Editor
             {
                 if (newEnabled && !packageInstalled)
                 {
-                    if (!EditorUtility.DisplayDialog("警告", warnDialog, "确定", "取消"))
+                    if (!EditorUtility.DisplayDialog(Tr("警告"), warnDialog, Tr("确定"), Tr("取消")))
                         newEnabled = false;
                 }
 
@@ -450,13 +494,13 @@ namespace Ale.Inventory.Editor
             {
                 var checkStyle = new GUIStyle(EditorStyles.miniLabel)
                     { normal = { textColor = new Color(0.3f, 0.8f, 0.3f) } };
-                EditorGUILayout.LabelField($"  ✓ {package} 已安装", checkStyle);
+                EditorGUILayout.LabelField(Fmt("  ✓ {0} 已安装", package), checkStyle);
             }
             else
             {
                 var warnStyle = new GUIStyle(EditorStyles.miniLabel)
                     { normal = { textColor = new Color(0.9f, 0.7f, 0.2f) } };
-                EditorGUILayout.LabelField($"  ⚠ {package} 未安装（需通过 Package Manager 安装）", warnStyle);
+                EditorGUILayout.LabelField(Fmt("  ⚠ {0} 未安装（需通过 Package Manager 安装）", package), warnStyle);
             }
 
             // 说明文字
@@ -467,7 +511,7 @@ namespace Ale.Inventory.Editor
             {
                 var recompileStyle = new GUIStyle(EditorStyles.miniLabel)
                     { normal = { textColor = new Color(0.9f, 0.7f, 0.2f) } };
-                EditorGUILayout.LabelField("  ⏳ 宏定义已更改，等待 Unity 重新编译…", recompileStyle);
+                EditorGUILayout.LabelField(Tr("  ⏳ 宏定义已更改，等待 Unity 重新编译…"), recompileStyle);
                 if (!EditorApplication.isCompiling)
                     _pendingRecompile = false;
             }
@@ -488,7 +532,7 @@ namespace Ale.Inventory.Editor
             GUILayout.FlexibleSpace();
 
             EditorGUI.BeginChangeCheck();
-            bool newAutoShow = EditorGUILayout.ToggleLeft("启动时自动显示", _autoShow, GUILayout.Width(140));
+            bool newAutoShow = EditorGUILayout.ToggleLeft(Tr("启动时自动显示"), _autoShow, GUILayout.Width(140));
             if (EditorGUI.EndChangeCheck())
             {
                 _autoShow = newAutoShow;
@@ -556,8 +600,8 @@ namespace Ale.Inventory.Editor
             }
             else
             {
-                EditorUtility.DisplayDialog("文档未找到",
-                    "未能找到文档文件：\nPackages/com.ale.inventory/README.md", "确定");
+                EditorUtility.DisplayDialog(Tr("文档未找到"),
+                    Tr("未能找到文档文件：\nPackages/com.ale.inventory/README.md"), Tr("确定"));
             }
         }
 

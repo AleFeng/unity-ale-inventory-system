@@ -20,6 +20,10 @@ namespace Ale.Inventory.Editor
         public const string TemplateDatabasePath  = "IS_TemplateDatabasePath";
         /// <summary>上次打开的 InventoryDatabase 资产路径。</summary>
         public const string LastDatabasePath      = "InventorySystem.DatabasePath";
+        /// <summary>编辑器 UI 显示语言（<see cref="EditorLanguage"/> 的整数值）。持久化经 <see cref="InventoryEditorL10n"/>。</summary>
+        public const string EditorLanguage        = "InventorySystem.Editor.Language";
+        /// <summary>是否翻译枚举下拉值（默认关）。持久化经 <see cref="InventoryEditorL10n"/>。</summary>
+        public const string EditorTranslateEnums  = "InventorySystem.Editor.TranslateEnums";
 
         // ── IS_LOCALIZATION 宏定义名 ──────────────────────────────────────────
         public const string Define_IsLocalization = "IS_LOCALIZATION";

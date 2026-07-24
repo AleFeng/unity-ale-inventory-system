@@ -6794,7 +6794,8 @@ MonoBehaviour:
     sortPriorities: []
     sortTiebreakers: []
     groups:
-    - name: "\u5E38\u9A7B"
+    - guid: f4e54cc977174f9eb8f9a22ae6d4b60d
+      name: "\u5E38\u9A7B"
       description: 
       refresh:
         refreshType: 0
@@ -6805,7 +6806,8 @@ MonoBehaviour:
         dayOfWeek: 0
         dayOfMonth: 1
       commodities:
-      - itemId: "\u7C97\u7CD9\u7684\u9762\u5305"
+      - guid: f1ece7d58c59412199d2ea1bdf469bdf
+        itemId: "\u7C97\u7CD9\u7684\u9762\u5305"
         count: 3
         priceMultiplier: 1
         tradeLimit: -1
@@ -6818,7 +6820,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-      - itemId: "\u52A3\u8D28\u6CBB\u7597\u836F\u6C34"
+      - guid: fb6400c120324d14ac356dc035062fb5
+        itemId: "\u52A3\u8D28\u6CBB\u7597\u836F\u6C34"
         count: 1
         priceMultiplier: 1
         tradeLimit: -1
@@ -6831,7 +6834,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-      - itemId: "\u5E03\u5E3D"
+      - guid: 0821ee0979ea4fa0b2d256e7ad70cc6e
+        itemId: "\u5E03\u5E3D"
         count: 1
         priceMultiplier: 1
         tradeLimit: -1
@@ -6844,7 +6848,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-      - itemId: "\u732A\u76AE\u7532"
+      - guid: b259a5dc9ebe4b2f9c3f9ec48ca594b1
+        itemId: "\u732A\u76AE\u7532"
         count: 1
         priceMultiplier: 1
         tradeLimit: -1
@@ -6857,7 +6862,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-      - itemId: "\u836F\u8349"
+      - guid: 6fac13be8b8e43fca98425857b8c1e65
+        itemId: "\u836F\u8349"
         count: 1
         priceMultiplier: 1
         tradeLimit: -1
@@ -6870,7 +6876,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-      - itemId: "\u94C1\u77FF"
+      - guid: b9f79dc3ce1d477690ca12412bb523c4
+        itemId: "\u94C1\u77FF"
         count: 1
         priceMultiplier: 1
         tradeLimit: -1
@@ -6883,7 +6890,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-      - itemId: "\u94C1\u5251"
+      - guid: 702dafdf13a947e0a9ec8176a7e2625a
+        itemId: "\u94C1\u5251"
         count: 1
         priceMultiplier: 1
         tradeLimit: -1
@@ -6896,7 +6904,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-      - itemId: "\u6A61\u6728\u6CD5\u6756"
+      - guid: 6d73b6d285de4c55bc1024e7695e8147
+        itemId: "\u6A61\u6728\u6CD5\u6756"
         count: 1
         priceMultiplier: 1
         tradeLimit: -1
@@ -6909,7 +6918,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-      - itemId: "\u6728\u5F13"
+      - guid: ed5a0422168d492dae8a31eb086d4978
+        itemId: "\u6728\u5F13"
         count: 1
         priceMultiplier: 1
         tradeLimit: -1
@@ -6922,7 +6932,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-    - name: "\u6BCF\u65E5\u7279\u4EF7"
+    - guid: cbcbae04276d4112a2bd3e5549bdef88
+      name: "\u6BCF\u65E5\u7279\u4EF7"
       description: 
       refresh:
         refreshType: 1
@@ -6933,7 +6944,8 @@ MonoBehaviour:
         dayOfWeek: 0
         dayOfMonth: 1
       commodities:
-      - itemId: "\u521D\u7EA7\u6CBB\u7597\u836F\u6C34"
+      - guid: e4cfa5573d1f470e8afc3779a8bff7f0
+        itemId: "\u521D\u7EA7\u6CBB\u7597\u836F\u6C34"
         count: 1
         priceMultiplier: 0.5
         tradeLimit: 5
@@ -6946,7 +6958,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-      - itemId: "\u521D\u7EA7\u6CD5\u529B\u836F\u6C34"
+      - guid: 6a0d5a25463d48f1bdddfa35f5711368
+        itemId: "\u521D\u7EA7\u6CD5\u529B\u836F\u6C34"
         count: 1
         priceMultiplier: 0.5
         tradeLimit: 5
@@ -6959,7 +6972,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-      - itemId: "\u521D\u7EA7\u4F53\u529B\u836F\u6C34"
+      - guid: a97c273c7dde4cd3a0e34a15978a1407
+        itemId: "\u521D\u7EA7\u4F53\u529B\u836F\u6C34"
         count: 1
         priceMultiplier: 0.5
         tradeLimit: 5
@@ -6972,7 +6986,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-    - name: "\u6BCF\u5468\u9650\u5B9A"
+    - guid: 0fd2b5c0f6ad4a20b2c39b72ee84fd7d
+      name: "\u6BCF\u5468\u9650\u5B9A"
       description: 
       refresh:
         refreshType: 2
@@ -6983,7 +6998,8 @@ MonoBehaviour:
         dayOfWeek: 1
         dayOfMonth: 1
       commodities:
-      - itemId: "\u795E\u8840\u6676"
+      - guid: f35a9a60c0f842d886c36be47a375731
+        itemId: "\u795E\u8840\u6676"
         count: 1
         priceMultiplier: 1
         tradeLimit: 10
@@ -6996,7 +7012,8 @@ MonoBehaviour:
           minute: 0
           dayOfWeek: 0
           dayOfMonth: 1
-      - itemId: "\u94BB\u77F3"
+      - guid: 2253571b86f545109160e43d1c0c679d
+        itemId: "\u94BB\u77F3"
         count: 1
         priceMultiplier: 1
         tradeLimit: 50
@@ -9453,6 +9470,21 @@ MonoBehaviour:
   skillTemplates:
   - name: "\u653B\u51FB"
     color: {r: 1, g: 0.3372549, b: 0.3372549, a: 1}
+    attributes:
+    - id: "\u4F4D\u9636"
+      type: 4
+      isArray: 0
+      enumTypeRef: "\u4F4D\u9636"
+      defaultValue:
+        type: 4
+        isArray: 0
+        enumTypeRef: "\u4F4D\u9636"
+        ints: 00000000
+        floats: []
+        strings: []
+        objRefs: []
+        curves: []
+        objAddresses: []
     displayText:
       type: 10
       isArray: 0
@@ -9483,6 +9515,8 @@ MonoBehaviour:
     iconAddress: '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
     primaryGroupTag: "\u653B\u51FB"
     secondaryGroupTags: []
+  - name: "\u6CBB\u7597"
+    color: {r: 0.38039216, g: 1, b: 0.3254902, a: 1}
     attributes:
     - id: "\u4F4D\u9636"
       type: 4
@@ -9498,8 +9532,6 @@ MonoBehaviour:
         objRefs: []
         curves: []
         objAddresses: []
-  - name: "\u6CBB\u7597"
-    color: {r: 0.38039216, g: 1, b: 0.3254902, a: 1}
     displayText:
       type: 10
       isArray: 0
@@ -9530,6 +9562,8 @@ MonoBehaviour:
     iconAddress: '56b433935163ec949bad2114e1733312[T_Skill_Healing]'
     primaryGroupTag: "\u6CBB\u7597"
     secondaryGroupTags: []
+  - name: "\u5F3A\u5316"
+    color: {r: 1, g: 0.63529414, b: 0.29803923, a: 1}
     attributes:
     - id: "\u4F4D\u9636"
       type: 4
@@ -9545,8 +9579,6 @@ MonoBehaviour:
         objRefs: []
         curves: []
         objAddresses: []
-  - name: "\u5F3A\u5316"
-    color: {r: 1, g: 0.63529414, b: 0.29803923, a: 1}
     displayText:
       type: 10
       isArray: 0
@@ -9577,6 +9609,8 @@ MonoBehaviour:
     iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     primaryGroupTag: "\u5F3A\u5316"
     secondaryGroupTags: []
+  - name: "\u5F31\u5316"
+    color: {r: 1, g: 0.37254903, b: 0.89411765, a: 1}
     attributes:
     - id: "\u4F4D\u9636"
       type: 4
@@ -9592,8 +9626,6 @@ MonoBehaviour:
         objRefs: []
         curves: []
         objAddresses: []
-  - name: "\u5F31\u5316"
-    color: {r: 1, g: 0.37254903, b: 0.89411765, a: 1}
     displayText:
       type: 10
       isArray: 0
@@ -9624,6 +9656,8 @@ MonoBehaviour:
     iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     primaryGroupTag: "\u5F31\u5316"
     secondaryGroupTags: []
+  - name: "\u8F85\u52A9"
+    color: {r: 0.27058825, g: 0.75686276, b: 1, a: 1}
     attributes:
     - id: "\u4F4D\u9636"
       type: 4
@@ -9639,8 +9673,6 @@ MonoBehaviour:
         objRefs: []
         curves: []
         objAddresses: []
-  - name: "\u8F85\u52A9"
-    color: {r: 0.27058825, g: 0.75686276, b: 1, a: 1}
     displayText:
       type: 10
       isArray: 0
@@ -9671,21 +9703,6 @@ MonoBehaviour:
     iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     primaryGroupTag: "\u8F85\u52A9"
     secondaryGroupTags: []
-    attributes:
-    - id: "\u4F4D\u9636"
-      type: 4
-      isArray: 0
-      enumTypeRef: "\u4F4D\u9636"
-      defaultValue:
-        type: 4
-        isArray: 0
-        enumTypeRef: "\u4F4D\u9636"
-        ints: 00000000
-        floats: []
-        strings: []
-        objRefs: []
-        curves: []
-        objAddresses: []
   skills:
   - id: "\u81F4\u6B7B\u6253\u51FB"
     displayText:
