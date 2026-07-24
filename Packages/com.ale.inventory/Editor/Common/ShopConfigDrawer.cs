@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -104,9 +105,9 @@ namespace Ale.Inventory.Editor
 
         private static void DrawShopType(IInventoryEditorContext ctx, IShopConfig cfg)
         {
-            EditorGUILayout.LabelField("商店类型", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("商店类型"), InventoryEditorStyles.Header);
             EditorGUI.BeginChangeCheck();
-            var newType = (ShopType)EditorGUILayout.EnumPopup("类型", cfg.ShopType);
+            var newType = (ShopType)EditorGUILayout.EnumPopup(Tr("类型"), cfg.ShopType);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改商店类型");
@@ -120,16 +121,16 @@ namespace Ale.Inventory.Editor
         private static void DrawTradeInventories(IInventoryEditorContext ctx, IShopConfig cfg)
         {
             InventoryRefListDrawer.Draw(ctx, cfg.TradeInventoryRefs, TradeInventoriesDrag,
-                "交易仓库", "交易仓库",
-                emptyHint: "（未配置；与本商店交易时使用的玩家仓库）");
+                Tr("交易仓库"), "交易仓库",
+                emptyHint: Tr("（未配置；与本商店交易时使用的玩家仓库）"));
         }
 
         // ── 交易功能标签 ──────────────────────────────────────────────────────────────
 
         private static void DrawTradeTags(IInventoryEditorContext ctx, IShopConfig cfg)
         {
-            EditorGUILayout.LabelField("交易功能标签", InventoryEditorStyles.Header);
-            EditorGUILayout.LabelField("仅「回收」生效：只回收含勾选标签的道具；不勾选 = 不限制。", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField(Tr("交易功能标签"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("仅「回收」生效：只回收含勾选标签的道具；不勾选 = 不限制。"), EditorStyles.miniLabel);
 
             EditorTagToggleList.Draw(ctx, cfg.TradeTagRefs,
                 "添加交易功能标签", "移除交易功能标签");
@@ -139,13 +140,13 @@ namespace Ale.Inventory.Editor
 
         private static void DrawFilterTags(IInventoryEditorContext ctx, IShopConfig cfg)
         {
-            EditorGUILayout.LabelField("过滤设置", InventoryEditorStyles.Header);
-            EditorGUILayout.LabelField("过滤列表（UI 中以标签按钮形式显示）：", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField(Tr("过滤设置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("过滤列表（UI 中以标签按钮形式显示）："), EditorStyles.miniLabel);
 
             EditorGUI.BeginChangeCheck();
             bool newShowAll = EditorGUILayout.ToggleLeft(
-                new GUIContent("全部", "勾选后 UI 页签栏会显示「全部」页签（默认选中、显示全部商品）；" +
-                                       "取消后不显示「全部」，默认选中第一个商品组。"),
+                new GUIContent(Tr("全部"), Tr("勾选后 UI 页签栏会显示「全部」页签（默认选中、显示全部商品）；" +
+                                       "取消后不显示「全部」，默认选中第一个商品组。")),
                 cfg.ShowAllFilterTab);
             if (EditorGUI.EndChangeCheck())
             {
@@ -162,9 +163,9 @@ namespace Ale.Inventory.Editor
 
         private static void DrawSortSettings(IInventoryEditorContext ctx, IShopConfig cfg)
         {
-            EditorGUILayout.LabelField("整理排序", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("整理排序"), InventoryEditorStyles.Header);
             EditorGUILayout.LabelField(
-                "排序条件（UI 中以下拉菜单显示，玩家选择并可升降序；商店仅按当前选中条件对商品显示排序）：",
+                Tr("排序条件（UI 中以下拉菜单显示，玩家选择并可升降序；商店仅按当前选中条件对商品显示排序）："),
                 EditorStyles.miniLabel);
             SortSettingsDrawer.Draw(ctx, cfg.SortPriorities, cfg.SortTiebreakers);
         }
@@ -173,15 +174,15 @@ namespace Ale.Inventory.Editor
 
         private static void DrawUIConfig(IInventoryEditorContext ctx, IShopConfig cfg)
         {
-            EditorGUILayout.LabelField("UI 配置", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("UI 配置"), InventoryEditorStyles.Header);
 
-            NumberFormatConfigDrawer.DrawRefPopup(ctx, "数字格式",
+            NumberFormatConfigDrawer.DrawRefPopup(ctx, Tr("数字格式"),
                 cfg.NumberFormatRef, v => cfg.NumberFormatRef = v);
 
             // 价格属性来源：枚举所有 StringIntPair 属性 id
             var attrIds  = BuildStringIntPairAttrOptions(ctx.Database);
             var displays = new string[attrIds.Count + 1];
-            displays[0]  = "（无）";
+            displays[0]  = Tr("（无）");
             int curIdx   = 0;
             for (int i = 0; i < attrIds.Count; i++)
             {
@@ -190,7 +191,7 @@ namespace Ale.Inventory.Editor
             }
 
             EditorGUI.BeginChangeCheck();
-            int picked = EditorGUILayout.Popup("价格属性来源", curIdx, displays);
+            int picked = EditorGUILayout.Popup(Tr("价格属性来源"), curIdx, displays);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改价格属性来源");
@@ -198,7 +199,7 @@ namespace Ale.Inventory.Editor
                 ctx.MarkDirty();
             }
             EditorGUILayout.LabelField(
-                "（道具上 StringIntPair 类型属性：货币ID→价格）", EditorStyles.miniLabel);
+                Tr("（道具上 StringIntPair 类型属性：货币ID→价格）"), EditorStyles.miniLabel);
         }
 
         /// <summary>收集数据库中所有 StringIntPair 类型属性字段 id（来自道具模板与功能标签，去重保序）。</summary>
@@ -230,14 +231,14 @@ namespace Ale.Inventory.Editor
             var groups = cfg.Groups;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("商品组", InventoryEditorStyles.Header);
-            if (GUILayout.Button("+ 添加商品组", EditorStyles.miniButton, GUILayout.Width(96)))
+            EditorGUILayout.LabelField(Tr("商品组"), InventoryEditorStyles.Header);
+            if (GUILayout.Button(Tr("+ 添加商品组"), EditorStyles.miniButton, GUILayout.Width(96)))
             {
                 ctx.RecordUndo("添加商品组");
                 groups.Add(new ShopCommodityGroup
                 {
                     guid = InventoryDatabase.NewShopEntryGuid(),   // 交易进度存档键，创建即分配
-                    name = "新商品组",
+                    name = Tr("新商品组"),
                 });
                 ctx.MarkDirty();
             }
@@ -259,7 +260,7 @@ namespace Ale.Inventory.Editor
 
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
-                string newName = EditorGUILayout.TextField($"组 {gi} 名称", group.name);
+                string newName = EditorGUILayout.TextField(Fmt("组 {0} 名称", gi), group.name);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改商品组名称");
@@ -271,7 +272,7 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.EndHorizontal();
 
                 EditorGUI.BeginChangeCheck();
-                string newDesc = EditorGUILayout.TextField("描述", group.description);
+                string newDesc = EditorGUILayout.TextField(Tr("描述"), group.description);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改商品组描述");
@@ -279,7 +280,7 @@ namespace Ale.Inventory.Editor
                     ctx.MarkDirty();
                 }
 
-                ShopRefreshScheduleDrawer.Draw(ctx, "组刷新计划", group.refresh);
+                ShopRefreshScheduleDrawer.Draw(ctx, Tr("组刷新计划"), group.refresh);
 
                 DrawCommodities(ctx, group);
 
@@ -305,9 +306,9 @@ namespace Ale.Inventory.Editor
 
             // ── 折叠标题行 + 添加按钮（默认折叠）──────────────────────────────────
             EditorGUILayout.BeginHorizontal();
-            state.Expanded = EditorGUILayout.Foldout(state.Expanded, $"商品列表（{group.commodities.Count}）", true);
+            state.Expanded = EditorGUILayout.Foldout(state.Expanded, Fmt("商品列表（{0}）", group.commodities.Count), true);
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button("+ 添加商品", EditorStyles.miniButton, GUILayout.Width(80)))
+            if (GUILayout.Button(Tr("+ 添加商品"), EditorStyles.miniButton, GUILayout.Width(80)))
             {
                 ctx.RecordUndo("添加商品");
                 group.commodities.Add(new ShopCommodity { guid = InventoryDatabase.NewShopEntryGuid() });
@@ -322,7 +323,7 @@ namespace Ale.Inventory.Editor
 
             // ── 搜索行：按道具 ID 查找 + 1/N 指示 + 上/下切换 ─────────────────────
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("搜索", GUILayout.Width(30));
+            EditorGUILayout.LabelField(Tr("搜索"), GUILayout.Width(30));
             EditorGUI.BeginChangeCheck();
             string newSearch = EditorGUILayout.TextField(state.Search ?? string.Empty);
             if (EditorGUI.EndChangeCheck())
@@ -349,7 +350,7 @@ namespace Ale.Inventory.Editor
             }
             else if (!string.IsNullOrEmpty(state.Search))
             {
-                EditorGUILayout.LabelField("无匹配", EditorStyles.miniLabel, GUILayout.Width(48));
+                EditorGUILayout.LabelField(Tr("无匹配"), EditorStyles.miniLabel, GUILayout.Width(48));
             }
             EditorGUILayout.EndHorizontal();
 
@@ -381,14 +382,14 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
                 if (ci == currentMatch)
-                    EditorGUILayout.LabelField("▶ 搜索匹配", MatchStyle);
+                    EditorGUILayout.LabelField(Tr("▶ 搜索匹配"), MatchStyle);
 
                 // 道具ID 行：直接输入（无效 ID 红色高亮，回车确认）+ 右侧「选择」下拉（同一字段的快捷设置）+ 删除
                 bool invalid = !string.IsNullOrEmpty(c.itemId) && ctx.Database.GetItem(c.itemId) == null;
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
                 string newItemId = EditorGUILayout.DelayedTextField(
-                    new GUIContent("道具ID", "直接输入道具 ID，回车确认；右侧「选择」可按道具模板分组从道具列表快捷选择，写入此处。无对应道具时红色提示且无法导出。"),
+                    new GUIContent(Tr("道具ID"), Tr("直接输入道具 ID，回车确认；右侧「选择」可按道具模板分组从道具列表快捷选择，写入此处。无对应道具时红色提示且无法导出。")),
                     c.itemId ?? string.Empty,
                     invalid ? InventoryEditorStyles.RedField : EditorStyles.textField);
                 if (EditorGUI.EndChangeCheck())
@@ -397,9 +398,9 @@ namespace Ale.Inventory.Editor
                     c.itemId = newItemId;
                     ctx.MarkDirty();
                 }
-                Rect dropRect = GUILayoutUtility.GetRect(new GUIContent("选择"), EditorStyles.popup, GUILayout.Width(56));
+                Rect dropRect = GUILayoutUtility.GetRect(new GUIContent(Tr("选择")), EditorStyles.popup, GUILayout.Width(56));
                 if (EditorGUI.DropdownButton(dropRect,
-                        new GUIContent("选择", "从道具列表快捷选择，结果写入左侧道具ID。"),
+                        new GUIContent(Tr("选择"), Tr("从道具列表快捷选择，结果写入左侧道具ID。")),
                         FocusType.Keyboard, EditorStyles.popup))
                     ShowItemMenu(ctx, c, dropRect);
                 if (GUILayout.Button("✕", EditorStyles.miniButton, GUILayout.Width(22)))
@@ -407,16 +408,16 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.EndHorizontal();
 
                 if (invalid)
-                    EditorGUILayout.LabelField("⚠ 无效道具 ID（导出将被阻止）", InventoryEditorStyles.StatusError);
+                    EditorGUILayout.LabelField(Tr("⚠ 无效道具 ID（导出将被阻止）"), InventoryEditorStyles.StatusError);
 
                 // 行 3：数量 / 倍率 / 次数（含 tooltip）
                 EditorGUI.BeginChangeCheck();
                 int newCount = EditorGUILayout.IntField(
-                    new GUIContent("每次购买数量", "每完成一次交易（购买 / 回收）获得或扣除的该道具数量。"), c.count);
+                    new GUIContent(Tr("每次购买数量"), Tr("每完成一次交易（购买 / 回收）获得或扣除的该道具数量。")), c.count);
                 float newMul = EditorGUILayout.FloatField(
-                    new GUIContent("价格倍率", "在道具基础价格（价格属性来源）上乘以的倍率。1 = 原价；回收常用 <1，如 0.5 = 半价回收。"), c.priceMultiplier);
+                    new GUIContent(Tr("价格倍率"), Tr("在道具基础价格（价格属性来源）上乘以的倍率。1 = 原价；回收常用 <1，如 0.5 = 半价回收。")), c.priceMultiplier);
                 int newLimit = EditorGUILayout.IntField(
-                    new GUIContent("可交易次数", "每个刷新周期内该商品可被购买 / 回收的次数。-1 = 无限；刷新周期为「不刷新」时为终身上限。"), c.tradeLimit);
+                    new GUIContent(Tr("可交易次数"), Tr("每个刷新周期内该商品可被购买 / 回收的次数。-1 = 无限；刷新周期为「不刷新」时为终身上限。")), c.tradeLimit);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改商品参数");
@@ -429,7 +430,7 @@ namespace Ale.Inventory.Editor
                 // 行 4：覆盖刷新
                 EditorGUI.BeginChangeCheck();
                 bool newOverride = EditorGUILayout.Toggle(
-                    new GUIContent("覆盖组刷新", "勾选后该商品使用自己的刷新计划，覆盖所属商品组的刷新计划。"), c.overrideRefresh);
+                    new GUIContent(Tr("覆盖组刷新"), Tr("勾选后该商品使用自己的刷新计划，覆盖所属商品组的刷新计划。")), c.overrideRefresh);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改商品覆盖刷新");
@@ -437,7 +438,7 @@ namespace Ale.Inventory.Editor
                     ctx.MarkDirty();
                 }
                 if (c.overrideRefresh)
-                    ShopRefreshScheduleDrawer.Draw(ctx, "商品刷新计划", c.refresh);
+                    ShopRefreshScheduleDrawer.Draw(ctx, Tr("商品刷新计划"), c.refresh);
 
                 EditorGUILayout.EndVertical();
 
@@ -480,7 +481,7 @@ namespace Ale.Inventory.Editor
             var db   = ctx.Database;
             var menu = new GenericMenu();
 
-            menu.AddItem(new GUIContent("（未选择）"), string.IsNullOrEmpty(c.itemId), () =>
+            menu.AddItem(new GUIContent(Tr("（未选择）")), string.IsNullOrEmpty(c.itemId), () =>
             {
                 ctx.RecordUndo("修改商品道具");
                 c.itemId = string.Empty;
@@ -492,7 +493,7 @@ namespace Ale.Inventory.Editor
             foreach (var item in db.Items)
             {
                 if (string.IsNullOrEmpty(item.id)) continue;
-                string group   = string.IsNullOrEmpty(item.templateRef) ? "（无模板）" : item.templateRef;
+                string group   = string.IsNullOrEmpty(item.templateRef) ? Tr("（无模板）") : item.templateRef;
                 string path    = group + "/" + item.id;
                 string capture = item.id;
                 menu.AddItem(new GUIContent(path), c.itemId == item.id, () =>

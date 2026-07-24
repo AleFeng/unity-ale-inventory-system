@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -22,7 +23,7 @@ namespace Ale.Inventory.Editor
         protected override string RowLabel(ShopTemplate t) => t.name;
 
         protected override ShopTemplate CreateNew(InventoryDatabase db, List<ShopTemplate> list)
-            => new ShopTemplate("新商店模板");
+            => new ShopTemplate(Tr("新商店模板"));
 
         protected override void OnInvalidate() => _attrDefsDrawer.Invalidate();
 
@@ -34,13 +35,13 @@ namespace Ale.Inventory.Editor
         {
             if (template == null)
             {
-                EditorGUILayout.LabelField("请选择或新建一个商店模板。");
+                EditorGUILayout.LabelField(Tr("请选择或新建一个商店模板。"));
                 return;
             }
 
             EditorGUI.BeginChangeCheck();
-            string newName  = EditorGUILayout.TextField("模板名称", template.name);
-            Color  newColor = EditorGUILayout.ColorField("标识颜色", template.color);
+            string newName  = EditorGUILayout.TextField(Tr("模板名称"), template.name);
+            Color  newColor = EditorGUILayout.ColorField(Tr("标识颜色"), template.color);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改商店模板基本信息");
@@ -56,7 +57,7 @@ namespace Ale.Inventory.Editor
 
             EditorGUILayout.Space(6);
 
-            _attrDefsDrawer.Draw(ctx, template.attributes, "自定义属性字段");
+            _attrDefsDrawer.Draw(ctx, template.attributes, Tr("自定义属性字段"));
         }
     }
 }

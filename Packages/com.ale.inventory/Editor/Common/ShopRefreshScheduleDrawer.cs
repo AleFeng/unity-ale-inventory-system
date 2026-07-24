@@ -1,6 +1,7 @@
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -11,8 +12,16 @@ namespace Ale.Inventory.Editor
     /// </summary>
     public static class ShopRefreshScheduleDrawer
     {
-        private static readonly string[] WeekDayNames =
+        // 中文键；显示时经 LocalizedWeekDays() 逐帧翻译（语言切换即时生效）。
+        private static readonly string[] WeekDayKeys =
             { "周日", "周一", "周二", "周三", "周四", "周五", "周六" };
+
+        private static string[] LocalizedWeekDays()
+        {
+            var r = new string[WeekDayKeys.Length];
+            for (int i = 0; i < r.Length; i++) r[i] = Tr(WeekDayKeys[i]);
+            return r;
+        }
 
         /// <summary>绘制刷新计划。修改时已内部 RecordUndo / MarkDirty。</summary>
         public static void Draw(IInventoryEditorContext ctx, string label, ShopRefreshSchedule schedule)
@@ -26,7 +35,7 @@ namespace Ale.Inventory.Editor
 
             // 刷新周期
             EditorGUI.BeginChangeCheck();
-            var newType = (ShopRefreshType)EditorGUILayout.EnumPopup("刷新周期", schedule.refreshType);
+            var newType = (ShopRefreshType)EditorGUILayout.EnumPopup(Tr("刷新周期"), schedule.refreshType);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改刷新周期");
@@ -39,7 +48,7 @@ namespace Ale.Inventory.Editor
             {
                 // 刷新时间类型
                 EditorGUI.BeginChangeCheck();
-                var newTimeType = (ShopTimeType)EditorGUILayout.EnumPopup("时间类型", schedule.timeType);
+                var newTimeType = (ShopTimeType)EditorGUILayout.EnumPopup(Tr("时间类型"), schedule.timeType);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改刷新时间类型");
@@ -53,14 +62,14 @@ namespace Ale.Inventory.Editor
                 // 单位用 GUILayout.Label（不受缩进影响、宽度充足）。
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.PrefixLabel(
-                    new GUIContent("时间点", "刷新触发的时间点，24 小时制（时 0-23，分 0-59）"));
+                    new GUIContent(Tr("时间点"), Tr("刷新触发的时间点，24 小时制（时 0-23，分 0-59）")));
                 int prevIndent = EditorGUI.indentLevel;
                 EditorGUI.indentLevel = 0;
                 EditorGUI.BeginChangeCheck();
                 int newHour = EditorGUILayout.IntField(schedule.hour, GUILayout.Width(40));
-                GUILayout.Label("时", GUILayout.Width(22));
+                GUILayout.Label(Tr("时"), GUILayout.Width(22));
                 int newMinute = EditorGUILayout.IntField(schedule.minute, GUILayout.Width(40));
-                GUILayout.Label("分", GUILayout.Width(22));
+                GUILayout.Label(Tr("分"), GUILayout.Width(22));
                 GUILayout.Label("(24h)", EditorStyles.miniLabel);
                 GUILayout.FlexibleSpace();
                 EditorGUI.indentLevel = prevIndent;
@@ -77,7 +86,7 @@ namespace Ale.Inventory.Editor
                 if (schedule.refreshType == ShopRefreshType.Weekly)
                 {
                     EditorGUI.BeginChangeCheck();
-                    int newDow = EditorGUILayout.Popup("星期", Mathf.Clamp(schedule.dayOfWeek, 0, 6), WeekDayNames);
+                    int newDow = EditorGUILayout.Popup(Tr("星期"), Mathf.Clamp(schedule.dayOfWeek, 0, 6), LocalizedWeekDays());
                     if (EditorGUI.EndChangeCheck())
                     {
                         ctx.RecordUndo("修改刷新星期");
@@ -90,7 +99,7 @@ namespace Ale.Inventory.Editor
                 if (schedule.refreshType == ShopRefreshType.Monthly)
                 {
                     EditorGUI.BeginChangeCheck();
-                    int newDom = EditorGUILayout.IntField("几号（1-31）", schedule.dayOfMonth);
+                    int newDom = EditorGUILayout.IntField(Tr("几号（1-31）"), schedule.dayOfMonth);
                     if (EditorGUI.EndChangeCheck())
                     {
                         ctx.RecordUndo("修改刷新月日");
@@ -101,7 +110,7 @@ namespace Ale.Inventory.Editor
 
                 // 时区（可选）
                 EditorGUI.BeginChangeCheck();
-                string newTz = EditorGUILayout.TextField("时区 ID（可空）", schedule.timeZoneId ?? string.Empty);
+                string newTz = EditorGUILayout.TextField(Tr("时区 ID（可空）"), schedule.timeZoneId ?? string.Empty);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改刷新时区");

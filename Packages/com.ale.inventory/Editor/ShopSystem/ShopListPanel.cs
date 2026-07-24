@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -55,15 +56,15 @@ namespace Ale.Inventory.Editor
         {
             // ── 上行：列名表头 ──────────────────────────────────────────────────
             float kx = cx;
-            GUI.Label(new Rect(kx, keyRow.y + 1, IdColW,   KeyRowH - 2), "ID",     KeyStyle); kx += IdColW   + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, NameColW, KeyRowH - 2), "名称",   KeyStyle); kx += NameColW + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, DescColW, KeyRowH - 2), "描述",   KeyStyle); kx += DescColW + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, TypeColW, KeyRowH - 2), "类型",   KeyStyle); kx += TypeColW + Pad;
-            GUI.Label(new Rect(kx, keyRow.y + 1, GrpColW,  KeyRowH - 2), "商品组", KeyStyle);
+            GUI.Label(new Rect(kx, keyRow.y + 1, IdColW,   KeyRowH - 2), "ID",         KeyStyle); kx += IdColW   + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, NameColW, KeyRowH - 2), Tr("名称"),   KeyStyle); kx += NameColW + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, DescColW, KeyRowH - 2), Tr("描述"),   KeyStyle); kx += DescColW + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, TypeColW, KeyRowH - 2), Tr("类型"),   KeyStyle); kx += TypeColW + Pad;
+            GUI.Label(new Rect(kx, keyRow.y + 1, GrpColW,  KeyRowH - 2), Tr("商品组"), KeyStyle);
 
             // ── 下行：值 ────────────────────────────────────────────────────────
             GUI.Label(new Rect(cx, vy, IdColW, vh),
-                string.IsNullOrWhiteSpace(shop.id) ? "(空 ID)" : shop.id, IdStyle);
+                string.IsNullOrWhiteSpace(shop.id) ? Tr("(空 ID)") : shop.id, IdStyle);
             cx += IdColW + Pad;
 
             string shopName = shop.displayNameText != null ? shop.displayNameText.GetTextValue() : null;
@@ -76,7 +77,7 @@ namespace Ale.Inventory.Editor
                 string.IsNullOrEmpty(shopDesc) ? "—" : shopDesc, SubStyle);
             cx += DescColW + Pad;
 
-            GUI.Label(new Rect(cx, vy, TypeColW, vh), shop.shopType.ToString(), SubStyle);
+            GUI.Label(new Rect(cx, vy, TypeColW, vh), TrEnum(shop.shopType), SubStyle);
             cx += TypeColW + Pad;
 
             GUI.Label(new Rect(cx, vy, GrpColW, vh), shop.groups.Count.ToString(), SubStyle);

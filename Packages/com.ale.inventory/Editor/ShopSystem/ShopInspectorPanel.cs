@@ -1,5 +1,6 @@
 using Ale.Inventory.Runtime;
 using UnityEditor;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -13,7 +14,7 @@ namespace Ale.Inventory.Editor
         {
             if (shop == null)
             {
-                EditorGUILayout.LabelField("请在中间列表选中一个商店。");
+                EditorGUILayout.LabelField(Tr("请在中间列表选中一个商店。"));
                 return;
             }
 
@@ -28,14 +29,14 @@ namespace Ale.Inventory.Editor
 
         private static void DrawBasic(IInventoryEditorContext ctx, Shop shop)
         {
-            EditorGUILayout.LabelField("基础属性", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础属性"), InventoryEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "商店", shop.id,
                 ctx.DuplicateIdsOf(EInventoryEntityKind.Shop), v => shop.id = v);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器）
-            AttributeFieldDrawer.Draw(ctx, "名称", shop.displayNameText, null);
-            AttributeFieldDrawer.Draw(ctx, "描述", shop.descriptionText, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("名称"), shop.displayNameText, null);
+            AttributeFieldDrawer.Draw(ctx, Tr("描述"), shop.descriptionText, null);
 
             EditorEntityHeader.DrawTemplateRefReadonly(shop.templateRef);
         }
