@@ -107,7 +107,7 @@ namespace Ale.Inventory.Editor
         {
             EditorGUILayout.LabelField(Tr("商店类型"), InventoryEditorStyles.Header);
             EditorGUI.BeginChangeCheck();
-            var newType = (ShopType)EditorGUILayout.EnumPopup(Tr("类型"), cfg.ShopType);
+            var newType = TrEnumPopup(Tr("类型"), cfg.ShopType);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改商店类型");

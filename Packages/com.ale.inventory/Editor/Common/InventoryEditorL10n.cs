@@ -180,6 +180,26 @@ namespace Ale.Inventory.Editor
             }
         }
 
+        /// <summary>
+        /// 枚举下拉框，显示名经 <see cref="TrEnum"/> 解析（受 <see cref="TranslateEnums"/> 门控）。
+        /// 语义等同 <c>EditorGUILayout.EnumPopup</c>，但显示名可随语言切换；
+        /// 同时使 <c>[InspectorName]</c> 在此路径下失效的问题不再影响显示
+        /// （<c>[InspectorName]</c> 仅在 <c>SerializedProperty</c> 路径生效）。
+        /// </summary>
+        public static TEnum TrEnumPopup<TEnum>(string label, TEnum current) where TEnum : struct, Enum
+        {
+            var values = (TEnum[])Enum.GetValues(typeof(TEnum));
+            var names  = new string[values.Length];
+            int idx    = 0;
+            for (int i = 0; i < values.Length; i++)
+            {
+                names[i] = TrEnum(values[i]);
+                if (EqualityComparer<TEnum>.Default.Equals(values[i], current)) idx = i;
+            }
+            int picked = EditorGUILayout.Popup(label, idx, names);
+            return (picked >= 0 && picked < values.Length) ? values[picked] : current;
+        }
+
         // ── 刷新 ──────────────────────────────────────────────────────────────────
 
         /// <summary>刷新所有已打开的相关编辑器窗口，使语言 / 开关变更即时可见。</summary>

@@ -35,7 +35,7 @@ namespace Ale.Inventory.Editor
 
             // 刷新周期
             EditorGUI.BeginChangeCheck();
-            var newType = (ShopRefreshType)EditorGUILayout.EnumPopup(Tr("刷新周期"), schedule.refreshType);
+            var newType = TrEnumPopup(Tr("刷新周期"), schedule.refreshType);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改刷新周期");
@@ -48,7 +48,7 @@ namespace Ale.Inventory.Editor
             {
                 // 刷新时间类型
                 EditorGUI.BeginChangeCheck();
-                var newTimeType = (ShopTimeType)EditorGUILayout.EnumPopup(Tr("时间类型"), schedule.timeType);
+                var newTimeType = TrEnumPopup(Tr("时间类型"), schedule.timeType);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改刷新时间类型");
