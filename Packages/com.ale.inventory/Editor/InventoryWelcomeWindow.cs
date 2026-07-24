@@ -315,7 +315,8 @@ namespace Ale.Inventory.Editor
                     {
                         if (item.Category != category) continue;
                         EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                        EditorGUILayout.LabelField(Tr(item.DisplayName), GUILayout.ExpandWidth(true));
+                        // DisplayName 已由 InventoryDemoWizard 目录按当前语言构建，此处无需再翻译。
+                        EditorGUILayout.LabelField(item.DisplayName, GUILayout.ExpandWidth(true));
                         if (GUILayout.Button(Tr("生成"), GUILayout.Width(64), GUILayout.Height(20)))
                             InventoryDemoWizard.GenerateItem(item.Key);
                         EditorGUILayout.EndHorizontal();

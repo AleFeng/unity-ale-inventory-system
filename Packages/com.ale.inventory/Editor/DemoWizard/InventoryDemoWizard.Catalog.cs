@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 #if  IS_TMP
 using TMPro;
@@ -48,9 +49,22 @@ namespace Ale.Inventory.Editor
         };
 
         private static List<GenItem> _items;
+        // 构建 _items 时所用的编辑器语言；语言切换后需重建，否则 DisplayName 停留在旧语言。
+        private static EditorLanguage _itemsLang;
 
         /// <summary>全部可生成项（拓扑有序：依赖先于被依赖者）。</summary>
-        public static IReadOnlyList<GenItem> Items => _items ?? (_items = BuildItems());
+        public static IReadOnlyList<GenItem> Items
+        {
+            get
+            {
+                if (_items == null || _itemsLang != InventoryEditorL10n.Current)
+                {
+                    _itemsLang = InventoryEditorL10n.Current;
+                    _items     = BuildItems();
+                }
+                return _items;
+            }
+        }
 
         /// <summary>预制体 → 子文件夹（与 Runtime/UI 中对应组件所在子文件夹保持一致）。</summary>
         private static string PrefabSubfolder(string name)
@@ -108,66 +122,67 @@ namespace Ale.Inventory.Editor
 
         private static List<GenItem> BuildItems()
         {
-            NumberFormatConfig Fmt() => GetOrCreateNumberFormat();
+            // 局部名 NumFmt：避免与本文件 using static 引入的 InventoryEditorL10n.Fmt 冲突。
+            NumberFormatConfig NumFmt() => GetOrCreateNumberFormat();
             return new List<GenItem>
             {
-                new GenItem { Category = CatCommon, Key = "DB",       DisplayName = "数据库 InventoryDatabase",         AssetPath = DatabasePath,                  DepKeys = new string[0],
+                new GenItem { Category = CatCommon, Key = "DB",       DisplayName = Fmt("数据库 {0}", "InventoryDatabase"), AssetPath = DatabasePath,             DepKeys = new string[0],
                     Build = () => GetOrCreateDatabase() },
-                new GenItem { Category = CatInventory, Key = "Tab",      DisplayName = $"仓库页签 {KPfInventoryTab}",      AssetPath = Pfb(KPfInventoryTab),           DepKeys = new string[0],
+                new GenItem { Category = CatInventory, Key = "Tab",      DisplayName = Fmt("仓库页签 {0}", KPfInventoryTab), AssetPath = Pfb(KPfInventoryTab),           DepKeys = new string[0],
                     Build = () => BuildTabPrefab() },
-                new GenItem { Category = CatInventory, Key = "Filter",   DisplayName = $"过滤按钮 {KPfFilterButton}",      AssetPath = Pfb(KPfFilterButton),           DepKeys = new string[0],
+                new GenItem { Category = CatInventory, Key = "Filter",   DisplayName = Fmt("过滤按钮 {0}", KPfFilterButton), AssetPath = Pfb(KPfFilterButton),           DepKeys = new string[0],
                     Build = () => BuildFilterButtonPrefab() },
-                new GenItem { Category = CatInventory, Key = "FoldTab",  DisplayName = $"折叠页签 {KPfFoldTab}",           AssetPath = Pfb(KPfFoldTab),                DepKeys = new string[0],
+                new GenItem { Category = CatInventory, Key = "FoldTab",  DisplayName = Fmt("折叠页签 {0}", KPfFoldTab),      AssetPath = Pfb(KPfFoldTab),                DepKeys = new string[0],
                     Build = () => BuildFoldTabPrefab() },
-                new GenItem { Category = CatItem, Key = "Simple",   DisplayName = $"简易格子 {KPfItemSimple}",        AssetPath = Pfb(KPfItemSimple),             DepKeys = new string[0],
-                    Build = () => BuildItemSimplePrefab(Fmt()) },
-                new GenItem { Category = CatItem, Key = "Cell",     DisplayName = $"网格格子 {KPfItemCell}",          AssetPath = Pfb(KPfItemCell),               DepKeys = new string[0],
-                    Build = () => BuildItemCellPrefab(Fmt()) },
-                new GenItem { Category = CatItem, Key = "Label",    DisplayName = $"功能标签 {KPfItemLabel}",         AssetPath = Pfb(KPfItemLabel),              DepKeys = new string[0],
+                new GenItem { Category = CatItem, Key = "Simple",   DisplayName = Fmt("简易格子 {0}", KPfItemSimple),   AssetPath = Pfb(KPfItemSimple),             DepKeys = new string[0],
+                    Build = () => BuildItemSimplePrefab(NumFmt()) },
+                new GenItem { Category = CatItem, Key = "Cell",     DisplayName = Fmt("网格格子 {0}", KPfItemCell),     AssetPath = Pfb(KPfItemCell),               DepKeys = new string[0],
+                    Build = () => BuildItemCellPrefab(NumFmt()) },
+                new GenItem { Category = CatItem, Key = "Label",    DisplayName = Fmt("功能标签 {0}", KPfItemLabel),    AssetPath = Pfb(KPfItemLabel),              DepKeys = new string[0],
                     Build = () => BuildItemLabelPrefab() },
-                new GenItem { Category = CatItem, Key = "Price",    DisplayName = $"价格货币 {KPfItemPrice}",         AssetPath = Pfb(KPfItemPrice),              DepKeys = new string[0],
-                    Build = () => BuildItemPricePrefab(Fmt()) },
-                new GenItem { Category = CatItem, Key = "Detail",   DisplayName = $"列表格子 {KPfItemDetail}",        AssetPath = Pfb(KPfItemDetail),             DepKeys = new[] { "Label", "Price" },
-                    Build = () => BuildItemDetailPrefab(Fmt(),
+                new GenItem { Category = CatItem, Key = "Price",    DisplayName = Fmt("价格货币 {0}", KPfItemPrice),    AssetPath = Pfb(KPfItemPrice),              DepKeys = new string[0],
+                    Build = () => BuildItemPricePrefab(NumFmt()) },
+                new GenItem { Category = CatItem, Key = "Detail",   DisplayName = Fmt("列表格子 {0}", KPfItemDetail),   AssetPath = Pfb(KPfItemDetail),             DepKeys = new[] { "Label", "Price" },
+                    Build = () => BuildItemDetailPrefab(NumFmt(),
                         LoadPrefabComp<UiwTextLabel>(Pfb(KPfItemLabel)),
                         LoadPrefabComp<UiwInventoryItemSimple>(Pfb(KPfItemPrice))) },
                 // 悬停弹窗：预制体由 InventoryManager 持有，运行时全局实例化一次（见 BuildInventoryManagerPrefab）。
-                new GenItem { Category = CatItem, Key = "Tooltip",  DisplayName = $"道具悬停弹窗 {KPfItemTooltip}",   AssetPath = Pfb(KPfItemTooltip),            DepKeys = new[] { "Detail" },
+                new GenItem { Category = CatItem, Key = "Tooltip",  DisplayName = Fmt("道具悬停弹窗 {0}", KPfItemTooltip), AssetPath = Pfb(KPfItemTooltip),         DepKeys = new[] { "Detail" },
                     Build = () => BuildItemTooltipPrefab(
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemDetail))) },
-                new GenItem { Category = CatInventory, Key = "ListPanel",DisplayName = $"列表面板 {KPfInventoryOrderList}", AssetPath = Pfb(KPfInventoryOrderList),    DepKeys = new[] { "Detail" },
+                new GenItem { Category = CatInventory, Key = "ListPanel",DisplayName = Fmt("列表面板 {0}", KPfInventoryOrderList), AssetPath = Pfb(KPfInventoryOrderList), DepKeys = new[] { "Detail" },
                     Build = () => BuildInventoryListPanelPrefab(LoadPrefabComp<UiwInventoryItemDetail>(Pfb(KPfItemDetail))) },
-                new GenItem { Category = CatInventory, Key = "Grid",     DisplayName = $"网格面板 {KPfInventoryGridList}",  AssetPath = Pfb(KPfInventoryGridList),     DepKeys = new[] { "Cell" },
+                new GenItem { Category = CatInventory, Key = "Grid",     DisplayName = Fmt("网格面板 {0}", KPfInventoryGridList),  AssetPath = Pfb(KPfInventoryGridList),  DepKeys = new[] { "Cell" },
                     Build = () => BuildInventoryGridPrefab(LoadPrefabComp<UiwInventoryItemCell>(Pfb(KPfItemCell))) },
-                new GenItem { Category = CatInventory, Key = "Panel",    DisplayName = $"仓库面板 {KPfInventoryPanel}",    AssetPath = Pfb(KPfInventoryPanel),         DepKeys = new[] { "Tab", "Filter", "Simple", "ListPanel", "Grid" },
+                new GenItem { Category = CatInventory, Key = "Panel",    DisplayName = Fmt("仓库面板 {0}", KPfInventoryPanel),     AssetPath = Pfb(KPfInventoryPanel),     DepKeys = new[] { "Tab", "Filter", "Simple", "ListPanel", "Grid" },
                     Build = () => BuildInventoryPanelPrefab(
                         LoadPrefabComp<UiwInventoryTab>(Pfb(KPfInventoryTab)),
                         LoadPrefabComp<Button>(Pfb(KPfFilterButton)),
                         LoadPrefabComp<UiwInventoryItemSimple>(Pfb(KPfItemSimple)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfInventoryOrderList)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfInventoryGridList))) },
-                new GenItem { Category = CatShop, Key = "ShopTab",  DisplayName = $"商店组页签 {KPfShopGroupTab}",     AssetPath = Pfb(KPfShopGroupTab),           DepKeys = new string[0],
+                new GenItem { Category = CatShop, Key = "ShopTab",  DisplayName = Fmt("商店组页签 {0}", KPfShopGroupTab), AssetPath = Pfb(KPfShopGroupTab),           DepKeys = new string[0],
                     Build = () => BuildShopGroupTabPrefab() },
-                new GenItem { Category = CatShop, Key = "Counter",  DisplayName = $"数量计数器 {KPfNumberCounter}",    AssetPath = Pfb(KPfNumberCounter),          DepKeys = new string[0],
+                new GenItem { Category = CatShop, Key = "Counter",  DisplayName = Fmt("数量计数器 {0}", KPfNumberCounter), AssetPath = Pfb(KPfNumberCounter),         DepKeys = new string[0],
                     Build = () => BuildNumberCounterPrefab() },
-                new GenItem { Category = CatShop, Key = "ShopCell", DisplayName = $"商店商品条目 {KPfShopItemDetail}", AssetPath = Pfb(KPfShopItemDetail),  DepKeys = new[] { "Price", "Counter" },
-                    Build = () => BuildShopItemDetailPrefab(Fmt(),
+                new GenItem { Category = CatShop, Key = "ShopCell", DisplayName = Fmt("商店商品条目 {0}", KPfShopItemDetail), AssetPath = Pfb(KPfShopItemDetail),  DepKeys = new[] { "Price", "Counter" },
+                    Build = () => BuildShopItemDetailPrefab(NumFmt(),
                         LoadPrefabComp<UiwInventoryItemSimple>(Pfb(KPfItemPrice)),
                         LoadPrefabComp<UiwNumberCounter>(Pfb(KPfNumberCounter))) },
-                new GenItem { Category = CatShop, Key = "ShopPanel",DisplayName = $"商店面板 {KPfShopPanel}",         AssetPath = Pfb(KPfShopPanel),              DepKeys = new[] { "ShopTab", "ShopCell", "Simple" },
+                new GenItem { Category = CatShop, Key = "ShopPanel",DisplayName = Fmt("商店面板 {0}", KPfShopPanel),      AssetPath = Pfb(KPfShopPanel),              DepKeys = new[] { "ShopTab", "ShopCell", "Simple" },
                     Build = () => BuildShopPanelPrefab(
                         LoadPrefabComp<UiwShopGroupTab>(Pfb(KPfShopGroupTab)),
                         LoadPrefabComp<UiwShopItemDetail>(Pfb(KPfShopItemDetail)),
                         LoadPrefabComp<UiwInventoryItemSimple>(Pfb(KPfItemSimple))) },
-                new GenItem { Category = CatCrafting, Key = "CraftInput", DisplayName = $"制作消耗行 {KPfCraftingInputCell}", AssetPath = Pfb(KPfCraftingInputCell),  DepKeys = new string[0],
-                    Build = () => BuildCraftingInputCellPrefab(Fmt()) },
-                new GenItem { Category = CatCrafting, Key = "CraftCell",  DisplayName = $"蓝图条目 {KPfCraftingBlueprintCell}", AssetPath = Pfb(KPfCraftingBlueprintCell), DepKeys = new[] { "Label" },
-                    Build = () => BuildCraftingBlueprintCellPrefab(Fmt(),
+                new GenItem { Category = CatCrafting, Key = "CraftInput", DisplayName = Fmt("制作消耗行 {0}", KPfCraftingInputCell), AssetPath = Pfb(KPfCraftingInputCell), DepKeys = new string[0],
+                    Build = () => BuildCraftingInputCellPrefab(NumFmt()) },
+                new GenItem { Category = CatCrafting, Key = "CraftCell",  DisplayName = Fmt("蓝图条目 {0}", KPfCraftingBlueprintCell), AssetPath = Pfb(KPfCraftingBlueprintCell), DepKeys = new[] { "Label" },
+                    Build = () => BuildCraftingBlueprintCellPrefab(NumFmt(),
                         LoadPrefabComp<UiwTextLabel>(Pfb(KPfItemLabel))) },
-                new GenItem { Category = CatCrafting, Key = "CraftList",  DisplayName = $"蓝图列表 {KPfCraftingBlueprintList}", AssetPath = Pfb(KPfCraftingBlueprintList), DepKeys = new[] { "CraftCell" },
+                new GenItem { Category = CatCrafting, Key = "CraftList",  DisplayName = Fmt("蓝图列表 {0}", KPfCraftingBlueprintList), AssetPath = Pfb(KPfCraftingBlueprintList), DepKeys = new[] { "CraftCell" },
                     Build = () => BuildCraftingBlueprintListPrefab(
                         LoadPrefabComp<UiwCraftingBlueprintCell>(Pfb(KPfCraftingBlueprintCell))) },
-                new GenItem { Category = CatCrafting, Key = "CraftView",  DisplayName = $"制作主界面 {KPfCraftingView}", AssetPath = Pfb(KPfCraftingView),          DepKeys = new[] { "CraftList", "CraftInput", "Detail", "Simple", "Tab", "FoldTab", "Counter" },
+                new GenItem { Category = CatCrafting, Key = "CraftView",  DisplayName = Fmt("制作主界面 {0}", KPfCraftingView), AssetPath = Pfb(KPfCraftingView),      DepKeys = new[] { "CraftList", "CraftInput", "Detail", "Simple", "Tab", "FoldTab", "Counter" },
                     Build = () => BuildCraftingViewPrefab(
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfCraftingBlueprintList)),
                         LoadPrefabComp<UiwCraftingInputCell>(Pfb(KPfCraftingInputCell)),
@@ -176,45 +191,45 @@ namespace Ale.Inventory.Editor
                         LoadPrefabComp<UiwInventoryTab>(Pfb(KPfInventoryTab)),
                         LoadPrefabComp<UiwFoldTab>(Pfb(KPfFoldTab)),
                         LoadPrefabComp<UiwNumberCounter>(Pfb(KPfNumberCounter))) },
-                new GenItem { Category = CatEquipment, Key = "EquipSlot",     DisplayName = $"装备槽 {KPfEquipSlot}",            AssetPath = Pfb(KPfEquipSlot),          DepKeys = new string[0],
-                    Build = () => BuildEquipmentSlotPrefab(Fmt()) },
-                new GenItem { Category = CatEquipment, Key = "EquipCandidate",DisplayName = $"候选道具格子 {KPfEquipCandidateCell}", AssetPath = Pfb(KPfEquipCandidateCell), DepKeys = new string[0],
-                    Build = () => BuildEquipmentCandidateCellPrefab(Fmt()) },
-                new GenItem { Category = CatEquipment, Key = "EquipBonusEntry",DisplayName = $"属性加成条目 {KPfEquipBonusEntry}", AssetPath = Pfb(KPfEquipBonusEntry),   DepKeys = new string[0],
+                new GenItem { Category = CatEquipment, Key = "EquipSlot",     DisplayName = Fmt("装备槽 {0}", KPfEquipSlot),   AssetPath = Pfb(KPfEquipSlot),          DepKeys = new string[0],
+                    Build = () => BuildEquipmentSlotPrefab(NumFmt()) },
+                new GenItem { Category = CatEquipment, Key = "EquipCandidate",DisplayName = Fmt("候选道具格子 {0}", KPfEquipCandidateCell), AssetPath = Pfb(KPfEquipCandidateCell), DepKeys = new string[0],
+                    Build = () => BuildEquipmentCandidateCellPrefab(NumFmt()) },
+                new GenItem { Category = CatEquipment, Key = "EquipBonusEntry",DisplayName = Fmt("属性加成条目 {0}", KPfEquipBonusEntry), AssetPath = Pfb(KPfEquipBonusEntry), DepKeys = new string[0],
                     Build = () => BuildEquipmentBonusEntryPrefab() },
-                new GenItem { Category = CatEquipment, Key = "EquipSlotList",     DisplayName = $"槽位列表 {KPfEquipSlotList}",       AssetPath = Pfb(KPfEquipSlotList),      DepKeys = new[] { "EquipSlot" },
+                new GenItem { Category = CatEquipment, Key = "EquipSlotList",     DisplayName = Fmt("槽位列表 {0}", KPfEquipSlotList), AssetPath = Pfb(KPfEquipSlotList),      DepKeys = new[] { "EquipSlot" },
                     Build = () => BuildEquipmentSlotListPrefab(LoadPrefabComp<UiwEquipmentSlot>(Pfb(KPfEquipSlot))) },
-                new GenItem { Category = CatEquipment, Key = "EquipCandidateList",DisplayName = $"候选道具列表 {KPfEquipCandidateList}", AssetPath = Pfb(KPfEquipCandidateList), DepKeys = new[] { "EquipCandidate" },
+                new GenItem { Category = CatEquipment, Key = "EquipCandidateList",DisplayName = Fmt("候选道具列表 {0}", KPfEquipCandidateList), AssetPath = Pfb(KPfEquipCandidateList), DepKeys = new[] { "EquipCandidate" },
                     Build = () => BuildEquipmentCandidateListPrefab(LoadPrefabComp<UiwInventoryItemCell>(Pfb(KPfEquipCandidateCell))) },
-                new GenItem { Category = CatEquipment, Key = "EquipGroupPanel",   DisplayName = $"装备组面板 {KPfEquipGroupPanel}",   AssetPath = Pfb(KPfEquipGroupPanel),    DepKeys = new[] { "EquipSlotList" },
+                new GenItem { Category = CatEquipment, Key = "EquipGroupPanel",   DisplayName = Fmt("装备组面板 {0}", KPfEquipGroupPanel), AssetPath = Pfb(KPfEquipGroupPanel), DepKeys = new[] { "EquipSlotList" },
                     Build = () => BuildEquipmentGroupPanelPrefab(LoadPrefabComp<UiwEquipmentSlotList>(Pfb(KPfEquipSlotList))) },
-                new GenItem { Category = CatEquipment, Key = "EquipBonusPanel",   DisplayName = $"属性加成面板 {KPfEquipBonusPanel}", AssetPath = Pfb(KPfEquipBonusPanel),    DepKeys = new[] { "EquipBonusEntry" },
+                new GenItem { Category = CatEquipment, Key = "EquipBonusPanel",   DisplayName = Fmt("属性加成面板 {0}", KPfEquipBonusPanel), AssetPath = Pfb(KPfEquipBonusPanel), DepKeys = new[] { "EquipBonusEntry" },
                     Build = () => BuildEquipmentBonusPanelPrefab(LoadPrefabComp<UiwEquipmentBonusEntry>(Pfb(KPfEquipBonusEntry))) },
-                new GenItem { Category = CatEquipment, Key = "EquipSelectPanel",  DisplayName = $"装备选择面板 {KPfEquipSelectPanel}", AssetPath = Pfb(KPfEquipSelectPanel), DepKeys = new[] { "EquipSlotList", "EquipCandidateList" },
+                new GenItem { Category = CatEquipment, Key = "EquipSelectPanel",  DisplayName = Fmt("装备选择面板 {0}", KPfEquipSelectPanel), AssetPath = Pfb(KPfEquipSelectPanel), DepKeys = new[] { "EquipSlotList", "EquipCandidateList" },
                     Build = () => BuildEquipmentSelectPanelPrefab(
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipSlotList)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipCandidateList))) },
-                new GenItem { Category = CatEquipment, Key = "EquipView",         DisplayName = $"装备主界面 {KPfEquipView}",        AssetPath = Pfb(KPfEquipView),          DepKeys = new[] { "EquipGroupPanel", "EquipBonusPanel", "EquipSelectPanel" },
+                new GenItem { Category = CatEquipment, Key = "EquipView",         DisplayName = Fmt("装备主界面 {0}", KPfEquipView), AssetPath = Pfb(KPfEquipView),          DepKeys = new[] { "EquipGroupPanel", "EquipBonusPanel", "EquipSelectPanel" },
                     Build = () => BuildEquipmentViewPrefab(
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipGroupPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipBonusPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipSelectPanel))) },
-                new GenItem { Category = CatSkill, Key = "SkillCell",   DisplayName = $"技能网格条目 {KPfSkillCell}",   AssetPath = Pfb(KPfSkillCell),   DepKeys = new string[0],
+                new GenItem { Category = CatSkill, Key = "SkillCell",   DisplayName = Fmt("技能网格条目 {0}", KPfSkillCell),   AssetPath = Pfb(KPfSkillCell),   DepKeys = new string[0],
                     Build = () => BuildSkillCellPrefab() },
-                new GenItem { Category = CatSkill, Key = "SkillDetail", DisplayName = $"技能列表条目 {KPfSkillDetail}", AssetPath = Pfb(KPfSkillDetail), DepKeys = new string[0],
+                new GenItem { Category = CatSkill, Key = "SkillDetail", DisplayName = Fmt("技能列表条目 {0}", KPfSkillDetail), AssetPath = Pfb(KPfSkillDetail), DepKeys = new string[0],
                     Build = () => BuildSkillDetailPrefab() },
-                new GenItem { Category = CatSkill, Key = "SkillGridList", DisplayName = $"技能网格列表 {KPfSkillGridList}", AssetPath = Pfb(KPfSkillGridList), DepKeys = new[] { "SkillCell" },
+                new GenItem { Category = CatSkill, Key = "SkillGridList", DisplayName = Fmt("技能网格列表 {0}", KPfSkillGridList), AssetPath = Pfb(KPfSkillGridList), DepKeys = new[] { "SkillCell" },
                     Build = () => BuildSkillGridListPrefab(LoadPrefabComp<UiwSkillEntry>(Pfb(KPfSkillCell))) },
-                new GenItem { Category = CatSkill, Key = "SkillOrderList", DisplayName = $"技能顺序列表 {KPfSkillOrderList}", AssetPath = Pfb(KPfSkillOrderList), DepKeys = new[] { "SkillDetail" },
+                new GenItem { Category = CatSkill, Key = "SkillOrderList", DisplayName = Fmt("技能顺序列表 {0}", KPfSkillOrderList), AssetPath = Pfb(KPfSkillOrderList), DepKeys = new[] { "SkillDetail" },
                     Build = () => BuildSkillOrderListPrefab(LoadPrefabComp<UiwSkillEntry>(Pfb(KPfSkillDetail))) },
-                new GenItem { Category = CatSkill, Key = "SkillTooltip", DisplayName = $"技能悬停弹窗 {KPfSkillTooltip}", AssetPath = Pfb(KPfSkillTooltip), DepKeys = new string[0],
+                new GenItem { Category = CatSkill, Key = "SkillTooltip", DisplayName = Fmt("技能悬停弹窗 {0}", KPfSkillTooltip), AssetPath = Pfb(KPfSkillTooltip), DepKeys = new string[0],
                     Build = () => BuildSkillTooltipPrefab() },
-                new GenItem { Category = CatSkill, Key = "SkillView", DisplayName = $"技能主界面 {KPfSkillView}", AssetPath = Pfb(KPfSkillView), DepKeys = new[] { "SkillGridList", "SkillOrderList", "Filter" },
+                new GenItem { Category = CatSkill, Key = "SkillView", DisplayName = Fmt("技能主界面 {0}", KPfSkillView), AssetPath = Pfb(KPfSkillView), DepKeys = new[] { "SkillGridList", "SkillOrderList", "Filter" },
                     Build = () => BuildSkillViewPrefab(
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfSkillGridList)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfSkillOrderList)),
                         LoadPrefabComp<Button>(Pfb(KPfFilterButton))) },
-                new GenItem { Category = CatCommon, Key = "Manager",  DisplayName = $"管理器 {KPfInventoryManager}",   AssetPath = Pfb(KPfInventoryManager),       DepKeys = new[] { "DB", "Panel", "ShopPanel", "CraftView", "EquipView", "SkillView", "Tooltip", "SkillTooltip" },
+                new GenItem { Category = CatCommon, Key = "Manager",  DisplayName = Fmt("管理器 {0}", KPfInventoryManager), AssetPath = Pfb(KPfInventoryManager),  DepKeys = new[] { "DB", "Panel", "ShopPanel", "CraftView", "EquipView", "SkillView", "Tooltip", "SkillTooltip" },
                     Build = () => BuildInventoryManagerPrefab(
                         AssetDatabase.LoadAssetAtPath<InventoryDatabase>(DatabasePath),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfInventoryPanel)),
@@ -234,9 +249,9 @@ namespace Ale.Inventory.Editor
             var all = new List<GenItem>(Items);
             if (!ConfirmOverwrite(all)) return;
             BuildSubset(all);
-            EditorUtility.DisplayDialog("生成完成",
-                $"已生成全部资产：\n{DataDir}/\n{PrefabRoot}/\n\n" +
-                "将 InventoryManager.prefab 拖入场景，点击 Play 即可验证。", "OK");
+            EditorUtility.DisplayDialog(Tr("生成完成"),
+                Fmt("已生成全部资产：\n{0}/\n{1}/\n\n" +
+                    "将 InventoryManager.prefab 拖入场景，点击 Play 即可验证。", DataDir, PrefabRoot), "OK");
         }
 
         /// <summary>生成单项：依赖型条目询问是否一并生成子项，再覆盖确认。</summary>
@@ -252,11 +267,11 @@ namespace Ale.Inventory.Editor
             List<GenItem> toGen;
             if (onlyDeps.Count > 0)
             {
-                int c = EditorUtility.DisplayDialogComplex("依赖提示",
-                    $"「{item.DisplayName}」依赖以下子项：\n\n" +
-                    string.Join("\n", onlyDeps.Select(d => "· " + d.DisplayName)) +
-                    "\n\n是否一并生成这些依赖？",
-                    "一并生成", "取消", "仅生成此项");
+                int c = EditorUtility.DisplayDialogComplex(Tr("依赖提示"),
+                    Fmt("「{0}」依赖以下子项：\n\n{1}\n\n是否一并生成这些依赖？",
+                        item.DisplayName,
+                        string.Join("\n", onlyDeps.Select(d => "· " + d.DisplayName))),
+                    Tr("一并生成"), Tr("取消"), Tr("仅生成此项"));
                 if (c == 1) return;
                 toGen = c == 0 ? deps : new List<GenItem> { item };
                 if (c == 2)
@@ -307,9 +322,9 @@ namespace Ale.Inventory.Editor
         {
             var existing = toGen.Where(Exists).ToList();
             if (existing.Count == 0) return true;
-            string msg = "以下资产已存在，将被覆盖：\n\n" +
-                         string.Join("\n", existing.Select(e => "· " + e.DisplayName));
-            return EditorUtility.DisplayDialog("覆盖确认", msg, "覆盖", "取消");
+            string msg = Fmt("以下资产已存在，将被覆盖：\n\n{0}",
+                             string.Join("\n", existing.Select(e => "· " + e.DisplayName)));
+            return EditorUtility.DisplayDialog(Tr("覆盖确认"), msg, Tr("覆盖"), Tr("取消"));
         }
 
         /// <summary>按给定顺序构建（带进度条），末尾保存刷新。</summary>
@@ -319,11 +334,11 @@ namespace Ale.Inventory.Editor
             {
                 for (int i = 0; i < toGen.Count; i++)
                 {
-                    EditorUtility.DisplayProgressBar("生成测试资产",
+                    EditorUtility.DisplayProgressBar(Tr("生成测试资产"),
                         toGen[i].DisplayName, (float)i / toGen.Count);
                     toGen[i].Build();
                 }
-                EditorUtility.DisplayProgressBar("生成测试资产", "保存并刷新资产数据库...", 0.97f);
+                EditorUtility.DisplayProgressBar(Tr("生成测试资产"), Tr("保存并刷新资产数据库..."), 0.97f);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
             }
