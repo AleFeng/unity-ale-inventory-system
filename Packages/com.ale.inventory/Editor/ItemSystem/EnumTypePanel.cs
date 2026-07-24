@@ -3,6 +3,7 @@ using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditorInternal;   // 枚举项列表仍自持一个 ReorderableList（主列表已下沉基类）
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -41,7 +42,7 @@ namespace Ale.Inventory.Editor
         protected override string RowLabel(EnumType e) => $"{e.name}  ({e.items.Count})";
 
         protected override EnumType CreateNew(InventoryDatabase db, List<EnumType> list)
-            => new EnumType("新枚举");
+            => new EnumType(Tr("新枚举"));
 
         protected override void OnInvalidate()
         {
@@ -61,7 +62,7 @@ namespace Ale.Inventory.Editor
         {
             if (e == null)
             {
-                EditorGUILayout.LabelField("请选择或新建一个枚举类型。");
+                EditorGUILayout.LabelField(Tr("请选择或新建一个枚举类型。"));
                 return;
             }
 
@@ -72,7 +73,7 @@ namespace Ale.Inventory.Editor
 
             // ── 1. 枚举名称 ───────────────────────────────────────────────────
             EditorGUI.BeginChangeCheck();
-            string newName = EditorGUILayout.TextField("枚举名称", e.name);
+            string newName = EditorGUILayout.TextField(Tr("枚举名称"), e.name);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改枚举名称");
@@ -83,7 +84,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 2. 属性字段定义（schema）────────────────────────────────────
-            _attrDefsDrawer.Draw(ctx, e.attributes, "枚举项属性字段");
+            _attrDefsDrawer.Draw(ctx, e.attributes, Tr("枚举项属性字段"));
             // 定义变更后立刻同步各枚举项
             e.RebuildItemAttributes();
 
@@ -112,7 +113,7 @@ namespace Ale.Inventory.Editor
                 var enumItem = e.items[_selectedItemIndex];
 
                 EditorGUILayout.Space(4);
-                EditorGUILayout.LabelField($"▸ {enumItem.name}  的属性值", ItemHeaderStyle);
+                EditorGUILayout.LabelField(Fmt("▸ {0}  的属性值", enumItem.name), ItemHeaderStyle);
                 EditorGUI.indentLevel++;
 
                 foreach (var def in e.attributes)
@@ -140,7 +141,7 @@ namespace Ale.Inventory.Editor
             _itemList  = new ReorderableList(e.items, typeof(EnumItem), true, true, true, true);
 
             _itemList.drawHeaderCallback = rect =>
-                EditorGUI.LabelField(rect, "枚举项（值由系统分配、只读；点击行选中以编辑属性值）");
+                EditorGUI.LabelField(rect, Tr("枚举项（值由系统分配、只读；点击行选中以编辑属性值）"));
 
             _itemList.drawElementCallback = (rect, index, active, focused) =>
             {
@@ -169,7 +170,7 @@ namespace Ale.Inventory.Editor
             _itemList.onAddCallback = list =>
             {
                 _ctx.RecordUndo("添加枚举项");
-                e.AddItem("新项");
+                e.AddItem(Tr("新项"));
                 _ctx.MarkDirty();
             };
 

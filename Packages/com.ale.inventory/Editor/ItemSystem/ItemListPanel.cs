@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -41,7 +42,7 @@ namespace Ale.Inventory.Editor
         protected override string IdOf(Item e)                 => e.id;
         protected override EInventoryEntityKind Kind           => EInventoryEntityKind.Item;
         protected override string Noun                         => "道具";
-        protected override string NoTemplateHint               => "（无可用模板）";
+        protected override string NoTemplateHint               => Tr("（无可用模板）");
 
         protected override Color RowDotColor(InventoryDatabase db, Item e)
         {
@@ -69,7 +70,7 @@ namespace Ale.Inventory.Editor
             // ID 列
             GUI.Label(new Rect(cx, keyRow.y + 1, IdColW, KeyRowH - 2), "ID", KeyStyle);
             GUI.Label(new Rect(cx, vy, IdColW, vh),
-                string.IsNullOrWhiteSpace(item.id) ? "(空 ID)" : item.id, IdStyle);
+                string.IsNullOrWhiteSpace(item.id) ? Tr("(空 ID)") : item.id, IdStyle);
             cx += IdColW + Pad;
 
             // ── 动态属性列：逐个按列宽排布，放不下即停 ──────────────────────────
@@ -148,7 +149,7 @@ namespace Ale.Inventory.Editor
                 case EFieldType.Int:    return val.AsInt.ToString();
                 case EFieldType.Float:  return val.AsFloat.ToString("F2");
                 case EFieldType.String: return val.AsString;
-                case EFieldType.Bool:   return val.AsBool ? "是" : "否";
+                case EFieldType.Bool:   return val.AsBool ? Tr("是") : Tr("否");
                 case EFieldType.Enum:
                     return enumType != null
                         ? enumType.GetDisplayName(val.AsEnumValue)
@@ -179,7 +180,7 @@ namespace Ale.Inventory.Editor
                 case EFieldType.AnimationCurve:
                 {
                     var c = val.GetAnimationCurve(0);
-                    return c != null && c.length > 0 ? $"曲线({c.length}帧)" : "—";
+                    return c != null && c.length > 0 ? Fmt("曲线({0}帧)", c.length) : "—";
                 }
                 case EFieldType.Text:
                 {

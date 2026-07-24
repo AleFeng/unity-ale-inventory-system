@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -21,7 +22,7 @@ namespace Ale.Inventory.Editor
 
         private IEditorMasterListPanel[] _leftPanels;
 
-        protected override string[] LeftSubTabs => new[] { "枚举类型", "功能标签", "道具模板" };
+        protected override string[] LeftSubTabs => new[] { Tr("枚举类型"), Tr("功能标签"), Tr("道具模板") };
 
         protected override IEditorMasterListPanel[] LeftPanels
             => _leftPanels ??= new IEditorMasterListPanel[] { _enumPanel, _tagPanel, _templatePanel };

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -50,7 +51,7 @@ namespace Ale.Inventory.Editor
         {
             if (item == null)
             {
-                EditorGUILayout.LabelField("请在中间列表选择一个道具。");
+                EditorGUILayout.LabelField(Tr("请在中间列表选择一个道具。"));
                 return;
             }
 
@@ -67,7 +68,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 功能标签（多选，隐藏已被模板覆盖的标签）────────────────────────────
-            EditorGUILayout.LabelField("功能标签", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("功能标签"), InventoryEditorStyles.Header);
 
             // 收集模板自身携带的标签（道具层面不可手动切换）
             var templateTagSet = new HashSet<string>();
@@ -86,7 +87,7 @@ namespace Ale.Inventory.Editor
                 if (templateTagSet.Contains(tag.name))
                 {
                     using (new EditorGUI.DisabledScope(true))
-                        EditorGUILayout.ToggleLeft($"{tag.name}  （由模板锁定）", true);
+                        EditorGUILayout.ToggleLeft(Fmt("{0}  （由模板锁定）", tag.name), true);
                     continue;
                 }
 
@@ -102,39 +103,39 @@ namespace Ale.Inventory.Editor
             }
 
             if (db.FunctionTags.Count == 0 || (!hasTogglableTags && templateTagSet.Count == 0))
-                EditorGUILayout.LabelField("（暂无可用功能标签）", EditorStyles.miniLabel);
+                EditorGUILayout.LabelField(Tr("（暂无可用功能标签）"), EditorStyles.miniLabel);
 
             EditorGUILayout.Space(6);
 
             // ── 仓库属性 ──────────────────────────────────────────────────────────────
-            EditorGUILayout.LabelField("仓库属性", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("仓库属性"), InventoryEditorStyles.Header);
 
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
-            float newWeight = EditorGUILayout.FloatField("重量", item.weight);
+            float newWeight = EditorGUILayout.FloatField(Tr("重量"), item.weight);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改道具重量");
                 item.weight = Mathf.Max(0f, newWeight);
                 ctx.MarkDirty();
             }
-            EditorGUILayout.LabelField("（0 = 无重量）", EditorStyles.miniLabel, GUILayout.Width(90));
+            EditorGUILayout.LabelField(Tr("（0 = 无重量）"), EditorStyles.miniLabel, GUILayout.Width(90));
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
-            int newStackLimit = EditorGUILayout.IntField("堆叠上限", item.stackLimit);
+            int newStackLimit = EditorGUILayout.IntField(Tr("堆叠上限"), item.stackLimit);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改道具堆叠上限");
                 item.stackLimit = Mathf.Max(0, newStackLimit);
                 ctx.MarkDirty();
             }
-            EditorGUILayout.LabelField("（0 = 无上限）", EditorStyles.miniLabel, GUILayout.Width(90));
+            EditorGUILayout.LabelField(Tr("（0 = 无上限）"), EditorStyles.miniLabel, GUILayout.Width(90));
             EditorGUILayout.EndHorizontal();
 
             EditorGUI.BeginChangeCheck();
-            bool newHideInInventory = EditorGUILayout.Toggle("仓库中隐藏", item.hideInInventory);
+            bool newHideInInventory = EditorGUILayout.Toggle(Tr("仓库中隐藏"), item.hideInInventory);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改道具 仓库中隐藏");
@@ -145,7 +146,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 属性值（按来源分组，可折叠）─────────────────────────────────────────
-            EditorGUILayout.LabelField("属性", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("属性"), InventoryEditorStyles.Header);
 
             // 每次绘制前同步属性结构：修正类型/顺序变更（幂等，不影响 Undo 历史）
             item.RebuildAttributes(db);
@@ -153,8 +154,8 @@ namespace Ale.Inventory.Editor
             if (item.values.Count == 0)
             {
                 EditorGUILayout.LabelField(
-                    "⚠  该道具暂无属性字段。请先在左侧「道具模板」中添加自定义属性字段，" +
-                    "或为道具关联带属性定义的功能标签。",
+                    Tr("⚠  该道具暂无属性字段。请先在左侧「道具模板」中添加自定义属性字段，" +
+                       "或为道具关联带属性定义的功能标签。"),
                     WarnStyle);
                 return;
             }
@@ -193,7 +194,7 @@ namespace Ale.Inventory.Editor
 
             if (tmpl != null)
             {
-                TrackSources(tmpl.attributes, $"模板：{item.templateRef}");
+                TrackSources(tmpl.attributes, Fmt("模板：{0}", item.templateRef));
                 // 模板锁定的标签：以各自标签名为来源（不合并进模板）
                 foreach (var tTagName in tmpl.tagRefs)
                 {
@@ -215,11 +216,11 @@ namespace Ale.Inventory.Editor
 
             if (hasConflict)
             {
-                EditorGUILayout.LabelField("⚠ 存在重复 ID（仅首个来源生效，其余来源已被忽略）：", WarnStyle);
+                EditorGUILayout.LabelField(Tr("⚠ 存在重复 ID（仅首个来源生效，其余来源已被忽略）："), WarnStyle);
                 foreach (var kv in allIdSources)
                 {
                     if (kv.Value.Count <= 1) continue;
-                    EditorGUILayout.LabelField($"    \"{kv.Key}\"  ← {string.Join("、", kv.Value)}", WarnStyle);
+                    EditorGUILayout.LabelField($"    \"{kv.Key}\"  ← {string.Join(Tr("、"), kv.Value)}", WarnStyle);
                 }
                 EditorGUILayout.Space(4);
             }
@@ -279,7 +280,7 @@ namespace Ale.Inventory.Editor
             {
                 var entries = CollectEntries(item, idSource, "__template__");
                 if (entries.Count > 0)
-                    DrawGroup(ctx, db, defMap, $"模板：{item.templateRef}", "__template__", entries);
+                    DrawGroup(ctx, db, defMap, Fmt("模板：{0}", item.templateRef), "__template__", entries);
             }
 
             // ── 5 & 6. 功能标签组：按 db.FunctionTags 顺序，模板锁定与道具自身标签统一排序 ──
@@ -293,7 +294,7 @@ namespace Ale.Inventory.Editor
                 var entries = CollectEntries(item, idSource, ft.name);
                 if (entries.Count > 0)
                 {
-                    string label = fromTemplate ? $"{ft.name}  （模板锁定）" : ft.name;
+                    string label = fromTemplate ? Fmt("{0}  （模板锁定）", ft.name) : ft.name;
                     DrawGroup(ctx, db, defMap, label, ft.name, entries);
                 }
                 drawnTagGroups.Add(ft.name);
@@ -306,7 +307,7 @@ namespace Ale.Inventory.Editor
                     if (drawnTagGroups.Contains(tTagName)) continue;
                     var entries = CollectEntries(item, idSource, tTagName);
                     if (entries.Count > 0)
-                        DrawGroup(ctx, db, defMap, $"{tTagName}  （模板锁定）", tTagName, entries);
+                        DrawGroup(ctx, db, defMap, Fmt("{0}  （模板锁定）", tTagName), tTagName, entries);
                     drawnTagGroups.Add(tTagName);
                 }
 
@@ -325,7 +326,7 @@ namespace Ale.Inventory.Editor
                 if (!idSource.ContainsKey(e.id)) orphaned.Add(e);
 
             if (orphaned.Count > 0)
-                DrawGroup(ctx, db, defMap, "其他（来源已删除）", "__orphaned__", orphaned);
+                DrawGroup(ctx, db, defMap, Tr("其他（来源已删除）"), "__orphaned__", orphaned);
         }
 
         /// <summary>绘制一个可折叠分组。</summary>

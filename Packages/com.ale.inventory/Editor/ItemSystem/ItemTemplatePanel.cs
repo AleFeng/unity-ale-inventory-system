@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
+using static Ale.Inventory.Editor.InventoryEditorL10n;
 
 namespace Ale.Inventory.Editor
 {
@@ -21,7 +22,7 @@ namespace Ale.Inventory.Editor
         protected override Color  RowColor(ItemTemplate t) => t.color;
 
         protected override ItemTemplate CreateNew(InventoryDatabase db, List<ItemTemplate> list)
-            => new ItemTemplate("新模板");
+            => new ItemTemplate(Tr("新模板"));
 
         protected override void OnInvalidate() => _attrDefsDrawer.Invalidate();
 
@@ -33,7 +34,7 @@ namespace Ale.Inventory.Editor
         {
             if (template == null)
             {
-                EditorGUILayout.LabelField("请选择或新建一个道具模板。");
+                EditorGUILayout.LabelField(Tr("请选择或新建一个道具模板。"));
                 return;
             }
 
@@ -41,8 +42,8 @@ namespace Ale.Inventory.Editor
 
             // ── 模板名称 + 颜色 ──────────────────────────────────────────────
             EditorGUI.BeginChangeCheck();
-            string newName  = EditorGUILayout.TextField("模板名称", template.name);
-            Color  newColor = EditorGUILayout.ColorField("标识颜色", template.color);
+            string newName  = EditorGUILayout.TextField(Tr("模板名称"), template.name);
+            Color  newColor = EditorGUILayout.ColorField(Tr("标识颜色"), template.color);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改模板基本信息");
@@ -54,19 +55,19 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 默认功能标签 ─────────────────────────────────────────────────
-            EditorGUILayout.LabelField("默认功能标签", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("默认功能标签"), InventoryEditorStyles.Header);
             EditorTagToggleList.Draw(ctx, template.tagRefs,
                 "模板添加功能标签", "模板移除功能标签",
-                emptyHint: "（暂无功能标签，请先在左侧「功能标签」中创建）");
+                emptyHint: Tr("（暂无功能标签，请先在左侧「功能标签」中创建）"));
 
             EditorGUILayout.Space(6);
 
             // ── 仓库属性 ─────────────────────────────────────────────────────
-            EditorGUILayout.LabelField("仓库属性", InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("仓库属性"), InventoryEditorStyles.Header);
             EditorGUI.BeginChangeCheck();
-            float newWeight     = EditorGUILayout.FloatField("重量", template.weight);
-            int   newStackLimit = EditorGUILayout.IntField("堆叠上限", template.stackLimit);
-            bool  newHideInInventory = EditorGUILayout.Toggle("仓库中隐藏", template.hideInInventory);
+            float newWeight     = EditorGUILayout.FloatField(Tr("重量"), template.weight);
+            int   newStackLimit = EditorGUILayout.IntField(Tr("堆叠上限"), template.stackLimit);
+            bool  newHideInInventory = EditorGUILayout.Toggle(Tr("仓库中隐藏"), template.hideInInventory);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改模板仓库属性");
@@ -79,7 +80,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 属性字段定义 ─────────────────────────────────────────────────
-            _attrDefsDrawer.Draw(ctx, template.attributes, "属性字段");
+            _attrDefsDrawer.Draw(ctx, template.attributes, Tr("属性字段"));
         }
     }
 }
