@@ -16,11 +16,15 @@ namespace Ale.Inventory.Editor
     // 类型 Inventory 与命名空间段 Ale.Inventory 同名，此处显式别名消歧义（否则 CS0118）。
     using Inventory = global::Ale.Inventory.Runtime.Inventory;
 
-    /// <summary>IS_TMP && IS_LOCALIZATION 下的字体事件挂载与 TMP 文本辅助。</summary>
+    /// <summary>
+    /// 向导专属的本地化字体事件挂载（IS_TMP &amp;&amp; IS_LOCALIZATION）：把欢迎窗中配置的本地化字体引用
+    /// 写入根节点的 <see cref="LocalizedFontEvent"/>。IS_TMP 感知的文本 / 按钮构建已下沉至
+    /// <see cref="Ale.Toolkit.Editor.UiTextBuilder"/>。
+    /// </summary>
     public static partial class InventoryDemoWizard
     {
         #region IS_TMP && IS_LOCALIZATION 字体事件辅助
-        
+
 #if IS_TMP && IS_LOCALIZATION
         /// <summary>
         /// 在 <paramref name="root"/> 上挂载 <see cref="LocalizedFontEvent"/>，
@@ -50,87 +54,6 @@ namespace Ale.Inventory.Editor
         }
 #endif
 
-        // ═══════════════════════════════════════════════════════════════════════
-        // IS_TMP 感知文本辅助
-        // ═══════════════════════════════════════════════════════════════════════
-
-        /// <summary>
-        /// 向 <paramref name="go"/> 添加文本组件并设置基础属性。
-        /// <list type="bullet">
-        ///   <item>IS_TMP 宏启用时：使用 <c>TMPro.TextMeshProUGUI</c>，
-        ///         对齐通过 <see cref="AnchorToTmp"/> 转换，字体样式映射为
-        ///         <c>TMPro.FontStyles</c>，并关闭自动换行（enableWordWrapping = false）。</item>
-        ///   <item>未启用时：使用 <c>UnityEngine.UI.Text</c>，直接赋值原生属性。</item>
-        /// </list>
-        /// 返回 <c>Component</c>，可直接传给 <see cref="SetSerializedRef"/>。
-        /// </summary>
-        static Component AddText(
-            GameObject go,
-            string     text,
-            int        fontSize,
-            Color      color,
-            TextAnchor anchor    = TextAnchor.MiddleCenter,
-            FontStyle  fontStyle = FontStyle.Normal)
-        {
-#if IS_TMP
-            var t = go.AddComponent<TextMeshProUGUI>();
-            t.text               = text;
-            t.fontSize           = fontSize;
-            t.color              = color;
-            t.alignment          = AnchorToTmp(anchor);
-            t.fontStyle          = fontStyle == FontStyle.Bold
-                                       ? FontStyles.Bold
-                                       : FontStyles.Normal;
-#if UNITY_6000_0_OR_NEWER
-            t.textWrappingMode = TextWrappingModes.NoWrap; // 不换行
-#else
-            t.enableWordWrapping = false; // 不换行（Unity 2022 及以下 TMP 接口）
-#endif
-
-            // 应用 WelcomeWindow 中配置的默认字体（留空则 TMP 使用内置默认字体）
-            var defaultFont = InventoryEditorPrefs.LoadWizardDefaultTmpFont();
-            if (defaultFont) t.font = defaultFont;
-
-#if IS_LOCALIZATION
-            // 为每个 TMP 文本节点添加 LocalizedTextEvent，
-            // 开发者可在生成后为各节点配置本地化字符串引用。
-            go.AddComponent<LocalizedTextEvent>();
-#endif
-
-            return t;
-#else
-            var t = go.AddComponent<Text>();
-            t.text      = text;
-            t.fontSize  = fontSize;
-            t.color     = color;
-            t.alignment = anchor;
-            t.fontStyle = fontStyle;
-            return t;
-#endif
-        }
-
-#if IS_TMP
-        /// <summary>
-        /// 将 <see cref="TextAnchor"/> 九宫格枚举转换为等价的
-        /// <see cref="TMPro.TextAlignmentOptions"/> 值。
-        /// </summary>
-        static TextAlignmentOptions AnchorToTmp(TextAnchor anchor)
-        {
-            switch (anchor)
-            {
-                case TextAnchor.UpperLeft:    return TextAlignmentOptions.TopLeft;
-                case TextAnchor.UpperCenter:  return TextAlignmentOptions.Top;
-                case TextAnchor.UpperRight:   return TextAlignmentOptions.TopRight;
-                case TextAnchor.MiddleLeft:   return TextAlignmentOptions.MidlineLeft;
-                case TextAnchor.MiddleCenter: return TextAlignmentOptions.Center;
-                case TextAnchor.MiddleRight:  return TextAlignmentOptions.MidlineRight;
-                case TextAnchor.LowerLeft:    return TextAlignmentOptions.BottomLeft;
-                case TextAnchor.LowerCenter:  return TextAlignmentOptions.Bottom;
-                case TextAnchor.LowerRight:   return TextAlignmentOptions.BottomRight;
-                default:                      return TextAlignmentOptions.Center;
-            }
-        }
-#endif
         #endregion
     }
 }

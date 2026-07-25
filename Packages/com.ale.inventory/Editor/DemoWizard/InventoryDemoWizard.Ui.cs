@@ -18,8 +18,9 @@ namespace Ale.Inventory.Editor
     using Inventory = global::Ale.Inventory.Runtime.Inventory;
 
     /// <summary>
-    /// 向导专属的 UI 构建辅助：仍依赖领域数据（Demo 精灵 / 预制体路径）或本地化文本（<c>AddText</c> /
-    /// 字体事件）的少数几件。与领域无关的底层 UGUI 原语已下沉至 <see cref="Ale.Toolkit.Editor.UiPrefabBuilder"/>。
+    /// 向导专属的 UI 构建辅助：仍依赖领域数据（Demo 精灵 / 预制体路径）或本地化字体事件的少数几件。
+    /// 与领域无关的底层 UGUI 原语已下沉至 <see cref="Ale.Toolkit.Editor.UiPrefabBuilder"/>，
+    /// 文本 / 按钮构建已下沉至 <see cref="Ale.Toolkit.Editor.UiTextBuilder"/>。
     /// </summary>
     public static partial class InventoryDemoWizard
     {
@@ -51,41 +52,6 @@ namespace Ale.Inventory.Editor
             icon = iconGo.AddComponent<Image>();
             icon.color = Color.white; icon.preserveAspect = true; icon.raycastTarget = false;
         }
-
-        /// <summary>
-        /// 在 <paramref name="parent"/> 下建一个「背景 Image + Button + 居中文本子节点」的带标签按钮并返回 Button。
-        /// 合并原先的 MakeMiniButton（文本子节点名 "Label"）与 MakeEquipButton（名 "Text"）：
-        /// 子节点名、字号、字形、对齐、高亮/按下色均为参数，两处调用各自保持原样。
-        /// <para>文本子节点用向导侧的 <c>AddText</c>（IS_TMP 感知 + 本地化事件），故留在此处。</para>
-        /// </summary>
-        static Button MakeLabeledButton(string name, Transform parent, string label,
-            Color normal, Color highlight, Color pressed,
-            string textChildName, int fontSize, FontStyle fontStyle, TextAnchor align)
-        {
-            var go = ChildGameObject(name, parent);
-            go.AddComponent<RectTransform>();
-            var img = go.AddComponent<Image>();
-            img.color = normal;
-            var btn = go.AddComponent<Button>();
-            btn.targetGraphic = img;
-            SetButtonColors(btn, normal, highlight, pressed);
-
-            var lblGo = ChildGameObject(textChildName, go.transform);
-            Stretch(lblGo.AddComponent<RectTransform>());
-            AddText(lblGo, label, fontSize, Color.white, align, fontStyle);
-            return btn;
-        }
-
-        /// <summary>小按钮（文本子节点名 "Label"，16 号加粗居中）。三色高亮由调用方指定。</summary>
-        static Button MakeMiniButton(string name, Transform parent, string label,
-            Color normal, Color highlight, Color pressed)
-            => MakeLabeledButton(name, parent, label, normal, highlight, pressed,
-                "Label", 16, FontStyle.Bold, TextAnchor.MiddleCenter);
-
-        /// <summary>装备按钮（文本子节点名 "Text"，13 号常规居中）。高亮/按下色由底色派生。</summary>
-        static Button MakeEquipButton(string name, Transform parent, string label, Color bg)
-            => MakeLabeledButton(name, parent, label, bg, bg * 1.2f, bg * 0.8f,
-                "Text", 13, FontStyle.Normal, TextAnchor.MiddleCenter);
 
         /// <summary>
         /// 保存 Prefab 到指定路径并销毁临时 GameObject。

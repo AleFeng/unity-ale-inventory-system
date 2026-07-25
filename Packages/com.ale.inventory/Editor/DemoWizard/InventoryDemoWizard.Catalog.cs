@@ -334,6 +334,10 @@ namespace Ale.Inventory.Editor
         /// <summary>按给定顺序构建（带进度条），末尾保存刷新。</summary>
         private static void BuildSubset(IList<GenItem> toGen)
         {
+#if IS_TMP
+            // AddText 已下沉 toolkit；生成前向 UiTextBuilder 注入向导默认字体（字体来源仍是本包偏好）。
+            UiTextBuilder.DefaultTmpFont = InventoryEditorPrefs.LoadWizardDefaultTmpFont;
+#endif
             try
             {
                 for (int i = 0; i < toGen.Count; i++)

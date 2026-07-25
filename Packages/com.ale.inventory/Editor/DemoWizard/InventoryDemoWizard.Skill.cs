@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
 using static Ale.Toolkit.Editor.UiPrefabBuilder;
+using static Ale.Toolkit.Editor.UiTextBuilder;
 using Ale.Toolkit.Runtime.UI;
 
 #if  IS_TMP
