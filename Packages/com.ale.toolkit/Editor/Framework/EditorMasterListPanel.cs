@@ -1,26 +1,24 @@
 using System.Collections.Generic;
-using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
-using Ale.Toolkit.Editor;
-
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
-    /// <see cref="EditorMasterListPanel{T}"/> 的非泛型驱动面。
-    /// 供 <see cref="EditorThreeColumnTab{TEntity}"/> 用一个数组统一驱动左栏那几个**元素类型各不相同**的主列表面板
+    /// <see cref="EditorMasterListPanel{TDb,T}"/> 的非泛型（对 T 而言）驱动面。
+    /// 供 <see cref="EditorThreeColumnTab{TDb,TEntity}"/> 用一个数组统一驱动左栏那几个**元素类型各不相同**的主列表面板
     /// （泛型基类本身无法放进同一个数组）。
     /// </summary>
-    public interface IEditorMasterListPanel
+    /// <typeparam name="TDb">宿主数据库类型。</typeparam>
+    public interface IEditorMasterListPanel<TDb> where TDb : ScriptableObject
     {
         /// <summary>绘制主列表，返回当前选中索引。</summary>
-        int DrawMasterList(IInventoryEditorContext ctx, int selectedIndex);
+        int DrawMasterList(IEditorDbContext<TDb> ctx, int selectedIndex);
 
         /// <summary>绘制第 <paramref name="index"/> 项的 Inspector（越界 / -1 时按「未选中」绘制）。</summary>
-        void DrawInspectorAt(IInventoryEditorContext ctx, int index);
+        void DrawInspectorAt(IEditorDbContext<TDb> ctx, int index);
 
         /// <summary>清空缓存（切库 / Undo-Redo）。</summary>
         void Invalidate();
@@ -28,25 +26,23 @@ namespace Ale.Inventory.Editor
 
     /// <summary>
     /// 编辑器「左栏主列表」泛型基类：标题栏（+「+」添加）→ 可拖拽重排的 <see cref="ReorderableList"/>
-    /// （每行：可选色点 + 标签 +「✕」）→ 延迟删除，并与调用方（各 SystemTab）双向同步选中索引。
+    /// （每行：可选色点 + 标签 +「✕」）→ 延迟删除，并与调用方（各页签）双向同步选中索引。
     ///
-    /// <para>此前该四段骨架在 13 处各写了一遍，四个 <see cref="ReorderableList"/> 回调体逐字相同、
-    /// 只有标签表达式不同，且已开始漂移（部分拷贝多了无用的 <c>_masterList != null</c> 空守卫、
-    /// 部分用 C# 9 弃元参数）。现统一到本类，子类只提供「取哪个列表 / 叫什么 / 每行显示什么」。</para>
-    ///
-    /// <para>Undo 文案由 <see cref="Noun"/> 机械推导为「添加X」「删除X」「调整X顺序」，
-    /// 与 13 处原有字面量逐字一致；标题同样取 <see cref="Noun"/>。</para>
+    /// <para>子类只提供「取哪个列表 / 叫什么 / 每行显示什么」。Undo 文案由 <see cref="Noun"/> 机械推导为
+    /// 「添加X」「删除X」「调整X顺序」；标题同样取 <see cref="Noun"/>。</para>
     /// </summary>
+    /// <typeparam name="TDb">宿主数据库类型。</typeparam>
     /// <typeparam name="T">列表元素类型。</typeparam>
-    public abstract class EditorMasterListPanel<T> : IEditorMasterListPanel where T : class
+    public abstract class EditorMasterListPanel<TDb, T> : IEditorMasterListPanel<TDb>
+        where TDb : ScriptableObject where T : class
     {
-        private ReorderableList         _masterList;
-        private List<T>                 _boundList;
-        private int                     _selectedIndex      = -1;
-        private int                     _pendingDeleteIndex = -1;
-        private IInventoryEditorContext _masterCtx;
+        private ReorderableList        _masterList;
+        private List<T>                _boundList;
+        private int                    _selectedIndex      = -1;
+        private int                    _pendingDeleteIndex = -1;
+        private IEditorDbContext<TDb>  _masterCtx;
 
-        /// <summary>行高（与 13 处原实现一致）。</summary>
+        /// <summary>行高。</summary>
         private const float RowHeight = 22f;
         /// <summary>行尾「✕」按钮的占位宽度 / 按钮宽度。</summary>
         private const float DelSlotWidth = 22f, DelButtonWidth = 20f;
@@ -56,7 +52,7 @@ namespace Ale.Inventory.Editor
         #region 子类契约
 
         /// <summary>取本面板绑定的列表（如 <c>db.ItemTemplates</c>）。</summary>
-        protected abstract List<T> GetList(InventoryDatabase db);
+        protected abstract List<T> GetList(TDb db);
 
         /// <summary>名词：既作标题，也作 Undo 文案词根（「添加X」「删除X」「调整X顺序」）。</summary>
         protected abstract string Noun { get; }
@@ -65,7 +61,7 @@ namespace Ale.Inventory.Editor
         protected abstract string RowLabel(T item);
 
         /// <summary>新建一个条目（仅当 <see cref="CanAdd"/> 为真时调用）。</summary>
-        protected virtual T CreateNew(InventoryDatabase db, List<T> list) => null;
+        protected virtual T CreateNew(TDb db, List<T> list) => null;
 
         /// <summary>是否在行首绘制圆形色点。</summary>
         protected virtual bool HasColorDot => false;
@@ -89,20 +85,20 @@ namespace Ale.Inventory.Editor
         protected virtual string EmptyPlaceholder => null;
 
         /// <summary>绘制列表之前的钩子（如按需重建数据源）。默认空。</summary>
-        protected virtual void BeforeDrawList(IInventoryEditorContext ctx) { }
+        protected virtual void BeforeDrawList(IEditorDbContext<TDb> ctx) { }
 
         /// <summary><see cref="Invalidate"/> 时的附加清理（如内嵌绘制器的缓存）。默认空。</summary>
         protected virtual void OnInvalidate() { }
 
         /// <summary>绘制选中项的 Inspector（右栏）。<paramref name="item"/> 为 null 表示未选中。</summary>
-        public abstract void DrawInspector(IInventoryEditorContext ctx, T item);
+        public abstract void DrawInspector(IEditorDbContext<TDb> ctx, T item);
 
         #endregion
 
         #region 非泛型驱动面
 
         /// <summary>按索引绘制 Inspector（越界 / -1 → 按未选中绘制）。供页签基类统一驱动。</summary>
-        public void DrawInspectorAt(IInventoryEditorContext ctx, int index)
+        public void DrawInspectorAt(IEditorDbContext<TDb> ctx, int index)
         {
             var list = GetList(ctx.Database);
             DrawInspector(ctx, index >= 0 && index < list.Count ? list[index] : null);
@@ -113,7 +109,7 @@ namespace Ale.Inventory.Editor
         #region 主列表
 
         /// <summary>绘制主列表，返回当前选中索引（-1 = 未选中）。</summary>
-        public int DrawMasterList(IInventoryEditorContext ctx, int selectedIndex)
+        public int DrawMasterList(IEditorDbContext<TDb> ctx, int selectedIndex)
         {
             _masterCtx = ctx;
             BeforeDrawList(ctx);
@@ -128,7 +124,7 @@ namespace Ale.Inventory.Editor
             }
             else
             {
-                // 外部同步：调用方（Tab）重置索引时以调用方为准，
+                // 外部同步：调用方（页签）重置索引时以调用方为准，
                 // 避免面板返回旧索引触发错误的选中切换。
                 int clamped = Mathf.Clamp(selectedIndex, -1, list.Count - 1);
                 if (_selectedIndex != clamped)
@@ -230,7 +226,7 @@ namespace Ale.Inventory.Editor
                 if (CanDelete)
                 {
                     var delRect = new Rect(rect.xMax - DelSlotWidth, cy, DelButtonWidth, lh);
-                    // 标签右侧留白：带色点的行沿用 7px，不带色点的沿用 4px（与各原实现一致）。
+                    // 标签右侧留白：带色点的行沿用 7px，不带色点的沿用 4px。
                     labelRight = rect.xMax - DelSlotWidth - (HasColorDot ? 7f : 4f);
                     if (GUI.Button(delRect, "✕", EditorStyles.miniButton))
                         _pendingDeleteIndex = index;

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -21,12 +23,12 @@ namespace Ale.Inventory.Editor
         private readonly ItemListPanel      _itemListPanel      = new ItemListPanel();
         private readonly ItemInspectorPanel _itemInspectorPanel = new ItemInspectorPanel();
 
-        private IEditorMasterListPanel[] _leftPanels;
+        private IEditorMasterListPanel<InventoryDatabase>[] _leftPanels;
 
         protected override string[] LeftSubTabs => new[] { Tr("枚举类型"), Tr("功能标签"), Tr("道具模板") };
 
-        protected override IEditorMasterListPanel[] LeftPanels
-            => _leftPanels ??= new IEditorMasterListPanel[] { _enumPanel, _tagPanel, _templatePanel };
+        protected override IEditorMasterListPanel<InventoryDatabase>[] LeftPanels
+            => _leftPanels ??= new IEditorMasterListPanel<InventoryDatabase>[] { _enumPanel, _tagPanel, _templatePanel };
 
         protected override string EntityNoun        => "道具";
         protected override float  DeleteButtonWidth => 68f;

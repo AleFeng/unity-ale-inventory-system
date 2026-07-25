@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -17,12 +19,12 @@ namespace Ale.Inventory.Editor
         private readonly EquipmentListPanel      _listPanel      = new EquipmentListPanel();
         private readonly EquipmentInspectorPanel _inspectorPanel = new EquipmentInspectorPanel();
 
-        private IEditorMasterListPanel[] _leftPanels;
+        private IEditorMasterListPanel<InventoryDatabase>[] _leftPanels;
 
         protected override string[] LeftSubTabs => new[] { Tr("分组标签"), Tr("装备组模板") };
 
-        protected override IEditorMasterListPanel[] LeftPanels
-            => _leftPanels ??= new IEditorMasterListPanel[] { _groupTagPanel, _templatePanel };
+        protected override IEditorMasterListPanel<InventoryDatabase>[] LeftPanels
+            => _leftPanels ??= new IEditorMasterListPanel<InventoryDatabase>[] { _groupTagPanel, _templatePanel };
 
         protected override string EntityNoun        => "装备组";
         protected override float  DeleteButtonWidth => 72f;   // 「删除装备组」较长，沿用原有的更宽按钮

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -17,12 +19,12 @@ namespace Ale.Inventory.Editor
         private readonly CraftingListPanel      _listPanel      = new CraftingListPanel();
         private readonly CraftingInspectorPanel _inspectorPanel = new CraftingInspectorPanel();
 
-        private IEditorMasterListPanel[] _leftPanels;
+        private IEditorMasterListPanel<InventoryDatabase>[] _leftPanels;
 
         protected override string[] LeftSubTabs => new[] { Tr("分组标签"), Tr("蓝图模板") };
 
-        protected override IEditorMasterListPanel[] LeftPanels
-            => _leftPanels ??= new IEditorMasterListPanel[] { _groupTagPanel, _templatePanel };
+        protected override IEditorMasterListPanel<InventoryDatabase>[] LeftPanels
+            => _leftPanels ??= new IEditorMasterListPanel<InventoryDatabase>[] { _groupTagPanel, _templatePanel };
 
         protected override string EntityNoun => "蓝图";
 

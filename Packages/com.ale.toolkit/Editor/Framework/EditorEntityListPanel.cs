@@ -1,31 +1,25 @@
 using System;
 using System.Collections.Generic;
-using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
-using Ale.Toolkit.Editor;
-
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// 编辑器「中栏实体列表」泛型基类：模板过滤页签 + 搜索栏 +「从模板添加」/「快速添加」+ 双行条目列表
     /// （拖拽句柄 / 模板色点 / 若干列 / 删除按钮）+ 拖拽重排 + 延迟删除 + 上下键导航。
     ///
-    /// <para>六个系统的中栏列表此前是同一份骨架的六份拷贝。各面板真正不同的只有
-    /// <see cref="DrawRowColumns"/>（列布局）与新增 / 搜索规则，其余全部收口于此。</para>
-    ///
-    /// <para>顺带统一了三处既有漂移：<c>SubStyle</c> 灰度（0.6f vs 0.62f）、
-    /// 值行垂直居中算法（<c>+3/-6</c> vs 按行高居中）、以及把 <c>_pendingSelect</c>
-    /// 由 <c>static</c> 改为实例字段（原写法在同时存在两个编辑器窗口时会串台）。</para>
+    /// <para>各面板真正不同的只有 <see cref="DrawRowColumns"/>（列布局）与新增 / 搜索规则，其余全部收口于此。
+    /// 重复 ID 集合由宿主经 <see cref="DuplicateIds"/> 提供（与具体的「实体种类」枚举解耦）。</para>
     /// </summary>
+    /// <typeparam name="TDb">宿主数据库类型。</typeparam>
     /// <typeparam name="TEntity">实体类型（道具 / 仓库 / 商店 / 蓝图 / 装备组 / 技能）。</typeparam>
     /// <typeparam name="TTemplate">其模板类型。</typeparam>
-    public abstract class EditorEntityListPanel<TEntity, TTemplate>
-        where TEntity : class where TTemplate : class
+    public abstract class EditorEntityListPanel<TDb, TEntity, TTemplate>
+        where TDb : ScriptableObject where TEntity : class where TTemplate : class
     {
-        // ── 布局常量（此前六处各声明一遍，值相同）──────────────────────────────────
+        // ── 布局常量 ──────────────────────────────────────────────────────────────
         protected const float KeyRowH     = 13f;   // 列名行高
         protected const float ValRowH     = 22f;   // 值行高
         protected const float DragHandleW = 16f;   // 拖拽句柄列宽
@@ -62,10 +56,10 @@ namespace Ale.Inventory.Editor
         #region 子类契约
 
         /// <summary>数据库中的实体列表。</summary>
-        protected abstract List<TEntity> Entities(InventoryDatabase db);
+        protected abstract List<TEntity> Entities(TDb db);
 
         /// <summary>数据库中的模板列表（用于顶部过滤页签与「从模板添加」菜单）。</summary>
-        protected abstract List<TTemplate> Templates(InventoryDatabase db);
+        protected abstract List<TTemplate> Templates(TDb db);
 
         /// <summary>模板显示名 / 键。</summary>
         protected abstract string TemplateName(TTemplate t);
@@ -76,36 +70,29 @@ namespace Ale.Inventory.Editor
         /// <summary>实体 ID（用于重复高亮）。</summary>
         protected abstract string IdOf(TEntity e);
 
-        /// <summary>实体种类（用于取重复 ID 集合）。</summary>
-        protected abstract EInventoryEntityKind Kind { get; }
+        /// <summary>本列表实体的重复 / 空 ID 集合（用于红字高亮）。宿主按自己的实体种类提供。</summary>
+        protected abstract HashSet<string> DuplicateIds(IEditorDbContext<TDb> ctx);
 
         /// <summary>实体名词（Undo 文案：删除X / 调整X顺序 / …）。</summary>
         protected abstract string Noun { get; }
 
         /// <summary>行首色点颜色（一般取来源模板的标识色）。</summary>
-        protected abstract Color RowDotColor(InventoryDatabase db, TEntity e);
+        protected abstract Color RowDotColor(TDb db, TEntity e);
 
-        /// <summary>搜索匹配规则（道具面板需要 <paramref name="db"/> 以按属性值匹配）。</summary>
-        protected abstract bool Matches(InventoryDatabase db, TEntity e, string term);
+        /// <summary>搜索匹配规则（如道具面板需要 <paramref name="db"/> 以按属性值匹配）。</summary>
+        protected abstract bool Matches(TDb db, TEntity e, string term);
 
         /// <summary>从模板新建一个实体并加入数据库，返回之（含 RecordUndo / MarkDirty）。</summary>
-        protected abstract TEntity AddFromTemplate(IInventoryEditorContext ctx, string templateName);
+        protected abstract TEntity AddFromTemplate(IEditorDbContext<TDb> ctx, string templateName);
 
         /// <summary>复制末尾条目新建一个实体并加入数据库，返回之（含 RecordUndo / MarkDirty）。</summary>
-        protected abstract TEntity QuickAdd(IInventoryEditorContext ctx);
+        protected abstract TEntity QuickAdd(IEditorDbContext<TDb> ctx);
 
         /// <summary>
         /// 绘制该行的列（表头行 + 值行）。基类已画好背景、句柄、色点与删除按钮，
         /// 子类只需从 <paramref name="contentX"/> 起向右排布自己的列。
         /// </summary>
-        /// <param name="keyRow">整行的 Rect。</param>
-        /// <param name="contentX">内容区起始 X（已跳过句柄列与色点）。</param>
-        /// <param name="contentRight">内容区右边界（已扣掉删除按钮列）；动态列布局据此决定放得下几列。</param>
-        /// <param name="valY">值行中已垂直居中的 Y。</param>
-        /// <param name="valH">值行控件高（单行高）。</param>
-        /// <param name="db">数据库实例。</param>
-        /// <param name="entity">当前行的实体。</param>
-        protected abstract void DrawRowColumns(InventoryDatabase db, TEntity entity,
+        protected abstract void DrawRowColumns(TDb db, TEntity entity,
             Rect keyRow, float contentX, float contentRight, float valY, float valH);
 
         /// <summary>「从模板添加」菜单在无可用模板时的提示。</summary>
@@ -116,7 +103,7 @@ namespace Ale.Inventory.Editor
         #region 绘制
 
         /// <summary>绘制列表，返回当前选中的实体引用。</summary>
-        public TEntity DrawList(IInventoryEditorContext ctx, TEntity selected)
+        public TEntity DrawList(IEditorDbContext<TDb> ctx, TEntity selected)
         {
             var db        = ctx.Database;
             var entities  = Entities(db);
@@ -145,7 +132,7 @@ namespace Ale.Inventory.Editor
 
             int deleteIndex = -1;
             var visible     = new List<TEntity>();   // 本帧可见（已过滤）条目，供键盘上下键导航
-            var dupIds      = ctx.DuplicateIdsOf(Kind);
+            var dupIds      = DuplicateIds(ctx);
 
             for (int i = 0; i < entities.Count; i++)
             {
@@ -235,7 +222,7 @@ namespace Ale.Inventory.Editor
             return selected;
         }
 
-        /// <summary>取出并清空「待选中」条目（由所属 SystemTab 在每帧 Layout 前调用）。</summary>
+        /// <summary>取出并清空「待选中」条目（由所属页签在每帧 Layout 前调用）。</summary>
         public TEntity ConsumePendingSelect()
         {
             var e = _pendingSelect;
@@ -243,7 +230,7 @@ namespace Ale.Inventory.Editor
             return e;
         }
 
-        private void ShowAddFromTemplateMenu(IInventoryEditorContext ctx)
+        private void ShowAddFromTemplateMenu(IEditorDbContext<TDb> ctx)
         {
             var templates = Templates(ctx.Database);
             var menu      = new GenericMenu();
@@ -279,7 +266,7 @@ namespace Ale.Inventory.Editor
         #region 辅助
 
         /// <summary>生成唯一 ID：<c>{prefix}{n}</c>，n 自「当前条目数 + 1」起递增直到 <paramref name="exists"/> 返回 false。</summary>
-        protected string GenerateId(InventoryDatabase db, string prefix, Func<string, bool> exists)
+        protected string GenerateId(TDb db, string prefix, Func<string, bool> exists)
         {
             int n = Entities(db).Count + 1;
             string id;

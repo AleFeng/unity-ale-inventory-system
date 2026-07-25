@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -14,10 +16,10 @@ namespace Ale.Inventory.Editor
         private readonly ShopListPanel      _listPanel      = new ShopListPanel();
         private readonly ShopInspectorPanel _inspectorPanel = new ShopInspectorPanel();
 
-        private IEditorMasterListPanel[] _leftPanels;
+        private IEditorMasterListPanel<InventoryDatabase>[] _leftPanels;
 
-        protected override IEditorMasterListPanel[] LeftPanels
-            => _leftPanels ??= new IEditorMasterListPanel[] { _templatePanel };
+        protected override IEditorMasterListPanel<InventoryDatabase>[] LeftPanels
+            => _leftPanels ??= new IEditorMasterListPanel<InventoryDatabase>[] { _templatePanel };
 
         protected override string EntityNoun => "商店";
 

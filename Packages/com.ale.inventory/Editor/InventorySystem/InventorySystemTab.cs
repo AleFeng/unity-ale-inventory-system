@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     // 类型 Inventory 与命名空间段 Ale.Inventory 同名，此处显式别名消歧义（否则 CS0118）。
@@ -21,12 +23,12 @@ namespace Ale.Inventory.Editor
         private readonly InventoryListPanel      _listPanel         = new InventoryListPanel();
         private readonly InventoryInspectorPanel _inspectorPanel    = new InventoryInspectorPanel();
 
-        private IEditorMasterListPanel[] _leftPanels;
+        private IEditorMasterListPanel<InventoryDatabase>[] _leftPanels;
 
         protected override string[] LeftSubTabs => new[] { Tr("整理选项"), Tr("数字格式"), Tr("仓库模板") };
 
-        protected override IEditorMasterListPanel[] LeftPanels
-            => _leftPanels ??= new IEditorMasterListPanel[]
+        protected override IEditorMasterListPanel<InventoryDatabase>[] LeftPanels
+            => _leftPanels ??= new IEditorMasterListPanel<InventoryDatabase>[]
                 { _sortOptionPanel, _numberFormatPanel, _templatePanel };
 
         protected override string EntityNoun => "仓库";
