@@ -11,7 +11,7 @@ namespace Ale.Inventory.Runtime
     /// 编辑器始终且仅在该资产上工作；JSON / 二进制 仅作为单向导出格式（见 Serialization 目录）。
     /// 通过菜单 Assets/Create/InventorySystem/Inventory Database 创建（由编辑器菜单项处理，支持模板）。
     /// </summary>
-    public class InventoryDatabase : ScriptableObject
+    public class InventoryDatabase : ScriptableObject, IEnumTypeSource
     {
         [SerializeField] private List<EnumType>          enumTypes          = new List<EnumType>();
         [SerializeField] private List<FunctionTag>       functionTags       = new List<FunctionTag>();
@@ -43,7 +43,10 @@ namespace Ale.Inventory.Runtime
         /// 枚举类型 列表
         /// </summary>
         public List<EnumType>          EnumTypes          => enumTypes;
-        
+
+        // 显式实现 IEnumTypeSource：公开属性返回 List，此处以只读视图满足接口（供编辑器绘制器取用）。
+        IReadOnlyList<EnumType> IEnumTypeSource.EnumTypes => enumTypes;
+
         /// <summary>
         /// 功能标签 列表
         /// </summary>
