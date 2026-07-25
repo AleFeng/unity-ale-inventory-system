@@ -1,4 +1,5 @@
 using System;
+using Ale.Toolkit.Runtime;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -8,9 +9,9 @@ namespace Ale.Inventory.Runtime.AddressableSupport
     /// 基于 Addressables 的资源加载器。优先使用属性值里的实时引用（兼容直接打包 SO 的场景），
     /// 无实时引用时回退到地址走 Addressable 异步加载（运行时从导出数据加载的常态）。
     ///
-    /// 启动时（IS_ADDRESSABLE 启用）自动注册为 <see cref="InventoryAssets.Loader"/>，替换默认的 DirectAssetLoader。
+    /// 启动时（IS_ADDRESSABLE 启用）自动注册为 <see cref="ToolkitAssets.Loader"/>，替换默认的 DirectAssetLoader。
     /// </summary>
-    public sealed class AddressableAssetLoader : IInventoryAssetLoader
+    public sealed class AddressableAssetLoader : IAssetLoader
     {
         public void Load<T>(AttributeValue value, int index, GameObject owner, Action<T> onLoaded) where T : Object
         {
@@ -65,7 +66,7 @@ namespace Ale.Inventory.Runtime.AddressableSupport
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Install()
         {
-            InventoryAssets.Loader = new AddressableAssetLoader();
+            ToolkitAssets.Loader = new AddressableAssetLoader();
         }
     }
 }

@@ -2,14 +2,14 @@ using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
     /// 默认加载器：直接返回 SO 中保存的实时对象引用，同步回调。
     /// 适用于编辑器内、或运行时直接加载 SO（引用未被剥离）的场景。
     /// 不持有任何句柄，<see cref="Release"/> 为空操作。
     /// </summary>
-    public sealed class DirectAssetLoader : IInventoryAssetLoader
+    public sealed class DirectAssetLoader : IAssetLoader
     {
         public static readonly DirectAssetLoader Instance = new DirectAssetLoader();
 

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Localization;
 #endif
 
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
     /// 拥有属性字段集合的对象基类。

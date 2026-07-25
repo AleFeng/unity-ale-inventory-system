@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using UnityEngine;
 
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
     /// <see cref="AttributeValue"/> 的文本 / 展示分部：<see cref="EFieldType.Text"/> 的纯文本 fallback 与
@@ -168,8 +168,8 @@ namespace Ale.Inventory.Runtime
         /// <summary>把枚举的整数值解析为枚举项名称；无法解析时回退为整数字符串。</summary>
         private string EnumValueName(int rawValue)
         {
-            var dm = InventoryDataManager.Instance;
-            var et = dm != null ? dm.GetEnumType(enumTypeRef) : null;
+            // 枚举类型集合由宿主插件持有（见 EnumTypeResolver）；未注入时回退整数字符串。
+            var et = EnumTypeResolver.Get(enumTypeRef);
             var ei = et != null ? et.GetItemByValue(rawValue) : null;
             return ei != null ? ei.name : rawValue.ToString();
         }

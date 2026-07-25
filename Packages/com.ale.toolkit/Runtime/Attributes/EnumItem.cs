@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
     /// 枚举项。<see cref="value"/> 在添加时由系统自动分配、不可修改、永不复用，

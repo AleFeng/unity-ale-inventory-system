@@ -1,4 +1,4 @@
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
     /// 属性字段的数据类型。每个 <see cref="AttributeValue"/> 都携带其中一种类型，

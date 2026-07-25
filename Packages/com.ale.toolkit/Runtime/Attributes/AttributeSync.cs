@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
     /// 属性值集合与属性字段定义（schema）之间的同步工具。

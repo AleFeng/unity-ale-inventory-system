@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
     /// 配置模板基类。承载六大系统模板（道具 <see cref="ItemTemplate"/> / 仓库 <see cref="InventoryTemplate"/> /

@@ -1,45 +1,36 @@
 using System;
+using Ale.Toolkit.Runtime;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Ale.Inventory.Runtime
 {
     /// <summary>
-    /// 资源取用统一门面。无论底层是「直接实时引用」还是「Addressable 异步加载」，
-    /// 调用方代码完全一致：
-    /// <code>
-    ///   InventoryAssets.Bind&lt;Sprite&gt;(item, "icon", image.gameObject, s =&gt; image.sprite = s);
-    /// </code>
-    /// 有实时引用时同步赋值；只有地址（运行时从导出数据加载）时异步加载完成后再赋值；
-    /// 宿主 GameObject 销毁时自动释放对应句柄。
+    /// 资源取用门面（库存侧）。通用能力已下沉到 <see cref="ToolkitAssets"/>；本类为薄适配层，
+    /// 保留库存插件既有调用点的签名不变，并额外提供「按道具 + 属性 key 绑定」这一带领域类型的重载。
     ///
-    /// core 程序集对 Addressables 零依赖：默认 <see cref="Loader"/> 为 <see cref="DirectAssetLoader"/>，
-    /// 启用 IS_ADDRESSABLE 后由 Addressable 运行时程序集在启动时替换为异步加载器。
+    /// <para>除下方 <see cref="Bind{T}(Item,string,GameObject,Action{T},int)"/> 外，其余方法一律转发
+    /// <see cref="ToolkitAssets"/>；<see cref="Loader"/> 亦为其转发属性（读写同一底层加载器）。</para>
     /// </summary>
     public static class InventoryAssets
     {
-        /// <summary>当前激活的加载器。默认直接模式；Addressable 程序集启动时会覆盖此值。</summary>
-        public static IInventoryAssetLoader Loader = DirectAssetLoader.Instance;
-
-        // ── Bind：跟踪宿主、自动释放 ────────────────────────────────────────────────
+        /// <summary>当前激活的加载器（转发 <see cref="ToolkitAssets.Loader"/>）。</summary>
+        public static IAssetLoader Loader
+        {
+            get => ToolkitAssets.Loader;
+            set => ToolkitAssets.Loader = value;
+        }
 
         /// <summary>绑定属性值的资源到宿主：加载完成后回调 <paramref name="set"/>，宿主销毁时自动释放。</summary>
         public static void Bind<T>(AttributeValue value, GameObject owner, Action<T> set, int index = 0) where T : Object
-        {
-            if (value == null || set == null) return;
-            (Loader ?? DirectAssetLoader.Instance).Load(value, index, owner, set);
-        }
+            => ToolkitAssets.Bind(value, owner, set, index);
 
         /// <summary>
         /// 绑定固定资源引用（配置类具名字段，如 <c>Skill.icon</c> + <c>Skill.iconAddress</c>）到宿主：
         /// 直接模式同步返回 <paramref name="liveRef"/>；授权模式无实时引用时按 <paramref name="address"/> 异步加载。
-        /// 宿主销毁时自动释放句柄。
         /// </summary>
         public static void Bind<T>(Object liveRef, string address, GameObject owner, Action<T> set) where T : Object
-        {
-            if (set == null) return;
-            (Loader ?? DirectAssetLoader.Instance).Load(liveRef, address, owner, set);
-        }
+            => ToolkitAssets.Bind(liveRef, address, owner, set);
 
         /// <summary>按道具 + 属性 key 绑定资源到宿主。找不到该属性时回调 null。</summary>
         public static void Bind<T>(Item item, string key, GameObject owner, Action<T> set, int index = 0) where T : Object
@@ -47,40 +38,17 @@ namespace Ale.Inventory.Runtime
             if (item == null || set == null) return;
             var entry = item.GetEntry(key);
             if (entry == null || entry.value == null) { set(null); return; }
-            Bind(entry.value, owner, set, index);
+            ToolkitAssets.Bind(entry.value, owner, set, index);
         }
 
-        // ── Load：不跟踪宿主，调用方自行管理生命周期 ────────────────────────────────
-
-        /// <summary>
-        /// 加载属性值的资源并回调，不绑定任何宿主。
-        /// <para>Addressable 模式下句柄不随宿主自动释放，调用方用完后必须调用
-        /// <see cref="Release(AttributeValue,int)"/>（传入同一 value 与 index）配对释放，否则句柄泄漏。
-        /// 若能提供宿主 GameObject，优先用 <see cref="Bind{T}(AttributeValue,GameObject,Action{T},int)"/>（自动释放）。</para>
-        /// </summary>
+        /// <summary>加载属性值的资源并回调，不绑定任何宿主（须自行配对 <see cref="Release(AttributeValue,int)"/>）。</summary>
         public static void Load<T>(AttributeValue value, Action<T> onLoaded, int index = 0) where T : Object
-        {
-            if (value == null || onLoaded == null) return;
-            (Loader ?? DirectAssetLoader.Instance).Load(value, index, null, onLoaded);
-        }
-
-        // ── Release ─────────────────────────────────────────────────────────────────
+            => ToolkitAssets.Load(value, onLoaded, index);
 
         /// <summary>释放宿主名下加载的全部资源句柄（直接模式为空操作）。</summary>
-        public static void Release(GameObject owner)
-        {
-            (Loader ?? DirectAssetLoader.Instance).Release(owner);
-        }
+        public static void Release(GameObject owner) => ToolkitAssets.Release(owner);
 
-        /// <summary>
-        /// 释放由无宿主 <see cref="Load{T}(AttributeValue,Action{T},int)"/> 加载的资源句柄（按属性值在 <paramref name="index"/> 处的地址）。
-        /// 与该无宿主 Load 配对使用；直接模式为空操作。
-        /// </summary>
-        public static void Release(AttributeValue value, int index = 0)
-        {
-            if (value == null) return;
-            (Loader ?? DirectAssetLoader.Instance).ReleaseAddress(value.GetObjAddress(index));
-        }
-
+        /// <summary>释放由无宿主 <see cref="Load{T}"/> 加载的资源句柄（按属性值在 <paramref name="index"/> 处的地址）。</summary>
+        public static void Release(AttributeValue value, int index = 0) => ToolkitAssets.Release(value, index);
     }
 }

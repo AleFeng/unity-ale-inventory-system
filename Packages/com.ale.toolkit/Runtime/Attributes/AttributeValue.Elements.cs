@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
     /// <see cref="AttributeValue"/> 的数组元素访问分部：按逻辑索引对各后备列表增 / 删 / 改 / 重排，
