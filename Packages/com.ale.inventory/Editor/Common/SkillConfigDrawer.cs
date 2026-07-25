@@ -28,7 +28,7 @@ namespace Ale.Inventory.Editor
             AttributeFieldDrawer.Draw(ctx, Tr("描述"), cfg.Description, null);
 
             // 图标：直接模式 ObjectField / 授权模式原生 AssetReference 选择器
-            if (InventoryAssetRefField.DrawSprite(Tr("图标"), cfg, "skillIcon", cfg.Icon, cfg.IconAddress,
+            if (EditorAssetRefField.DrawSprite(Tr("图标"), cfg, "skillIcon", cfg.Icon, cfg.IconAddress,
                     out var newIcon, out var newIconAddr))
             {
                 ctx.RecordUndo("修改技能图标");

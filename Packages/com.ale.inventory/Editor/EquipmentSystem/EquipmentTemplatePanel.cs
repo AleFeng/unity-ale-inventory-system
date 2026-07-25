@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -59,7 +61,7 @@ namespace Ale.Inventory.Editor
 
             EditorGUILayout.Space(6);
 
-            _attrDefsDrawer.Draw(ctx, template.attributes, Tr("自定义属性字段"));
+            _attrDefsDrawer.Draw(ctx, ctx.Database, template.attributes, Tr("自定义属性字段"));
         }
     }
 }

@@ -1,6 +1,8 @@
 
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>

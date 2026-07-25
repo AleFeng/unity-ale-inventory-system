@@ -7,7 +7,7 @@ using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
 using Ale.Toolkit.Editor;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// 绘制一组 <see cref="AttributeDefinition"/>（功能标签 / 道具模板共用）：
@@ -27,7 +27,8 @@ namespace Ale.Inventory.Editor
         // ── ReorderableList 状态 ──────────────────────────────────────────────────
         private ReorderableList              _list;
         private List<AttributeDefinition>    _bound;
-        private IInventoryEditorContext      _ctx;
+        private IEditorContext      _ctx;
+        private IEnumTypeSource     _src;
 
         // ── Pending 操作（在 DoLayoutList 之后执行，避免在回调中修改集合）────────────
         private bool _pendingAdd;
@@ -53,9 +54,10 @@ namespace Ale.Inventory.Editor
         /// <summary>
         /// 绘制属性字段定义列表：标题行（含「添加字段」按钮）+ 可拖拽排序列表。
         /// </summary>
-        public void Draw(IInventoryEditorContext ctx, List<AttributeDefinition> defs, string title)
+        public void Draw(IEditorContext ctx, IEnumTypeSource src, List<AttributeDefinition> defs, string title)
         {
             _ctx = ctx;
+            _src = src;
 
             // 初始化或 defs 引用变更时重建列表
             if (_list == null || !ReferenceEquals(_bound, defs))
@@ -140,7 +142,7 @@ namespace Ale.Inventory.Editor
                 // ── 字段详情（AttributeDefinitionDrawer.DrawRect，同样无 GUILayout）────
                 float contentH = rect.yMax - y - 1f;
                 if (contentH > 0f)
-                    AttributeDefinitionDrawer.DrawRect(_ctx, defs[index],
+                    AttributeDefinitionDrawer.DrawRect(_ctx, _src, defs[index],
                         new Rect(x, y, w, contentH));
             };
 

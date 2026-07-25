@@ -179,7 +179,7 @@ namespace Ale.Inventory.Editor
         {
             EditorGUILayout.LabelField(Tr("UI 配置"), ToolkitEditorStyles.Header);
 
-            NumberFormatConfigDrawer.DrawRefPopup(ctx, Tr("数字格式"),
+            NumberFormatConfigDrawer.DrawRefPopup(ctx, ctx.Database.NumberFormatConfigs, Tr("数字格式"),
                 cfg.NumberFormatRef, v => cfg.NumberFormatRef = v);
 
             // 价格属性来源：枚举所有 StringIntPair 属性 id

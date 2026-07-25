@@ -60,7 +60,7 @@ namespace Ale.Inventory.Editor
             AttributeFieldDrawer.Draw(ctx, Tr("描述"), tag.descriptionText, null);
 
             // 背景图：直接模式 ObjectField / 授权模式原生 AssetReference 选择器
-            if (InventoryAssetRefField.DrawSprite(Tr("背景图"), tag, "tagBg", tag.backgroundSprite, tag.backgroundSpriteAddress,
+            if (EditorAssetRefField.DrawSprite(Tr("背景图"), tag, "tagBg", tag.backgroundSprite, tag.backgroundSpriteAddress,
                     out var newBg, out var newBgAddr))
             {
                 ctx.RecordUndo("修改功能标签背景图");
@@ -83,7 +83,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 道具属性字段 ──────────────────────────────────────────────────────
-            _attrDefsDrawer.Draw(ctx, tag.attributes, Tr("道具属性字段"));
+            _attrDefsDrawer.Draw(ctx, ctx.Database, tag.attributes, Tr("道具属性字段"));
             EditorGUILayout.HelpBox(Tr("附加到道具后，会自动添加至道具的「属性字段」列表中"), MessageType.None);
         }
     }

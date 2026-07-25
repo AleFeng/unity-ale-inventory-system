@@ -1,9 +1,10 @@
 using Ale.Toolkit.Runtime;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// <see cref="NumberFormatConfig"/> 的 IMGUI 绘制辅助类。
@@ -18,10 +19,9 @@ namespace Ale.Inventory.Editor
         /// 绘制「数字格式」引用下拉框：选项为 None + 数据库中所有数字格式配置名称。
         /// 选择后通过 <paramref name="setRef"/> 回写引用名称（None → 空字符串）。
         /// </summary>
-        public static void DrawRefPopup(IInventoryEditorContext ctx, string label,
+        public static void DrawRefPopup(IEditorContext ctx, IReadOnlyList<NumberFormatConfig> configs, string label,
             string current, System.Action<string> setRef)
         {
-            var configs = ctx.Database.NumberFormatConfigs;
 
             // 选项 0 = None，其后为各配置名称
             var displays = new string[configs.Count + 1];
@@ -46,7 +46,7 @@ namespace Ale.Inventory.Editor
         }
 
         /// <summary>绘制 <see cref="NumberFormatConfig"/> 的完整 Inspector UI。</summary>
-        public static void Draw(IInventoryEditorContext ctx, NumberFormatConfig config)
+        public static void Draw(IEditorContext ctx, NumberFormatConfig config)
         {
             if (config == null) return;
 
@@ -97,7 +97,7 @@ namespace Ale.Inventory.Editor
             }
         }
 
-        private static void DrawRules(IInventoryEditorContext ctx, NumberFormatLocale locale)
+        private static void DrawRules(IEditorContext ctx, NumberFormatLocale locale)
         {
             // ── 列标题 ───────────────────────────────────────────────────
             EditorGUILayout.BeginHorizontal();

@@ -8,6 +8,8 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Ale.Toolkit.Runtime;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>

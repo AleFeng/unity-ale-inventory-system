@@ -1,11 +1,10 @@
 using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
-using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// 绘制并编辑单个 <see cref="AttributeDefinition"/>：显示名、key、类型、是否数组、枚举类型引用、默认值。
@@ -14,10 +13,10 @@ namespace Ale.Inventory.Editor
     {
         #region Layout 绘制
 
-        public static void Draw(IInventoryEditorContext ctx, AttributeDefinition def)
+        public static void Draw(IEditorContext ctx, IEnumTypeSource src, AttributeDefinition def)
         {
             if (def == null) return;
-            var db = ctx.Database;
+            var db = src;
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
@@ -76,10 +75,10 @@ namespace Ale.Inventory.Editor
         /// 在指定 <paramref name="rect"/> 内绘制单个 <see cref="AttributeDefinition"/>。
         /// 不调用任何 GUILayout / BeginArea API，可安全用于 <c>drawElementCallback</c>。
         /// </summary>
-        public static void DrawRect(IInventoryEditorContext ctx, AttributeDefinition def, Rect rect)
+        public static void DrawRect(IEditorContext ctx, IEnumTypeSource src, AttributeDefinition def, Rect rect)
         {
             if (def == null) return;
-            var db = ctx.Database;
+            var db = src;
 
             // 暂时缩小 labelWidth，让字段列更宽
             float prevLw = EditorGUIUtility.labelWidth;
@@ -184,10 +183,10 @@ namespace Ale.Inventory.Editor
 
         /// <summary>Rect-based 枚举类型引用弹窗。</summary>
         private static void DrawEnumTypeRefRect(
-            IInventoryEditorContext ctx, AttributeDefinition def, InventoryDatabase db, Rect rect)
+            IEditorContext ctx, AttributeDefinition def, IEnumTypeSource db, Rect rect)
         {
             var names = new List<string>();
-            if (db)
+            if (db != null)
                 foreach (var e in db.EnumTypes)
                     names.Add(e.name);
 
@@ -237,10 +236,10 @@ namespace Ale.Inventory.Editor
             return (picked >= 0 && picked < types.Count) ? types[picked] : current;
         }
 
-        private static void DrawEnumTypeRef(IInventoryEditorContext ctx, AttributeDefinition def, InventoryDatabase db)
+        private static void DrawEnumTypeRef(IEditorContext ctx, AttributeDefinition def, IEnumTypeSource db)
         {
             var names = new List<string>();
-            if (db)
+            if (db != null)
                 foreach (var e in db.EnumTypes)
                     names.Add(e.name);
 

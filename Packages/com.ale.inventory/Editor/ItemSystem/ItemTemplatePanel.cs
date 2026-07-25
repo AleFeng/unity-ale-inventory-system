@@ -83,7 +83,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 属性字段定义 ─────────────────────────────────────────────────
-            _attrDefsDrawer.Draw(ctx, template.attributes, Tr("属性字段"));
+            _attrDefsDrawer.Draw(ctx, ctx.Database, template.attributes, Tr("属性字段"));
         }
     }
 }

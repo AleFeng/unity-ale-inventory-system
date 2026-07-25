@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// 配置类<b>固定资源字段</b>（具名字段，如 <c>Skill.icon</c> / <c>FunctionTag.backgroundSprite</c>）的编辑器绘制辅助。
@@ -13,7 +13,7 @@ namespace Ale.Inventory.Editor
     /// </list>
     /// core 编辑器程序集对 Addressables 零依赖，具体选择器由受约束的 Addressable 编辑器程序集注入。
     /// </summary>
-    public static class InventoryAssetRefField
+    public static class EditorAssetRefField
     {
         /// <summary>
         /// 绘制一个固定 <see cref="Sprite"/> 资源引用字段（GUILayout）。返回是否变更；

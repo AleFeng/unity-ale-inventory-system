@@ -129,7 +129,7 @@ namespace Ale.Inventory.Editor
 
             // ── 5. UI 配置 ────────────────────────────────────────────────────────────
             EditorGUILayout.LabelField(Tr("UI 配置"), ToolkitEditorStyles.Header);
-            NumberFormatConfigDrawer.DrawRefPopup(ctx, Tr("数字格式"),
+            NumberFormatConfigDrawer.DrawRefPopup(ctx, ctx.Database.NumberFormatConfigs, Tr("数字格式"),
                 inventory.numberFormatRef, v => inventory.numberFormatRef = v);
 
             EditorGUILayout.Space(6);

@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEngine.Localization;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>

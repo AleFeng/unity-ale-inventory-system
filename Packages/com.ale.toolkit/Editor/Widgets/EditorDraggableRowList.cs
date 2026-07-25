@@ -42,9 +42,9 @@ namespace Ale.Toolkit.Editor
         /// </param>
         /// <param name="removeUndoLabel">删除的 Undo 文案；为空则取「移除{undoNoun}」。</param>
         /// <param name="lineRightInset">拖拽插入指示线相对整行右边缘的内缩（一般取「✕」按钮宽度，或 0 = 画满）。</param>
-        public static void Draw<TDb, T>(IEditorDbContext<TDb> ctx, IList<T> list, EditorReorderableDrag drag,
+        public static void Draw<T>(IEditorContext ctx, IList<T> list, EditorReorderableDrag drag,
             string undoNoun, Action<int, T> drawContent,
-            string removeUndoLabel = null, float lineRightInset = 0f) where TDb : ScriptableObject
+            string removeUndoLabel = null, float lineRightInset = 0f)
         {
             if (list == null || list.Count == 0) return;
 

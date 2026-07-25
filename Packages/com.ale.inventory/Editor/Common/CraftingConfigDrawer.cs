@@ -102,7 +102,7 @@ namespace Ale.Inventory.Editor
         {
             EditorGUILayout.LabelField(Tr("UI 配置"), ToolkitEditorStyles.Header);
 
-            NumberFormatConfigDrawer.DrawRefPopup(ctx, Tr("数字格式"),
+            NumberFormatConfigDrawer.DrawRefPopup(ctx, ctx.Database.NumberFormatConfigs, Tr("数字格式"),
                 cfg.NumberFormatRef, v => cfg.NumberFormatRef = v);
 
             EditorGUILayout.Space(2);

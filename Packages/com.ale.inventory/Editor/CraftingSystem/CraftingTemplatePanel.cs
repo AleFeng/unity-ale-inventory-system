@@ -68,7 +68,7 @@ namespace Ale.Inventory.Editor
 
             EditorGUILayout.Space(6);
 
-            _attrDefsDrawer.Draw(ctx, template.attributes, Tr("自定义属性字段"));
+            _attrDefsDrawer.Draw(ctx, ctx.Database, template.attributes, Tr("自定义属性字段"));
         }
     }
 }

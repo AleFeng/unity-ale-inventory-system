@@ -7,6 +7,8 @@ using UnityEditorInternal;   // 枚举项列表仍自持一个 ReorderableList�
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -86,7 +88,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 2. 属性字段定义（schema）────────────────────────────────────
-            _attrDefsDrawer.Draw(ctx, e.attributes, Tr("枚举项属性字段"));
+            _attrDefsDrawer.Draw(ctx, ctx.Database, e.attributes, Tr("枚举项属性字段"));
             // 定义变更后立刻同步各枚举项
             e.RebuildItemAttributes();
 

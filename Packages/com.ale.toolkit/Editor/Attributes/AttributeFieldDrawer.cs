@@ -7,11 +7,11 @@ using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
 using Ale.Toolkit.Editor;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// 按 <see cref="EFieldType"/> 绘制单个 <see cref="AttributeValue"/>（支持标量与数组形态）。
-    /// 修改时通过 <see cref="IInventoryEditorContext"/> 记录 Undo 并标记脏。
+    /// 修改时通过 <see cref="IEditorContext"/> 记录 Undo 并标记脏。
     ///
     /// Text 类型需独立垂直绘制：纯文本 fallback 一行 + 原生本地化选择器（复合子控件，
     /// 放入 BeginHorizontal 会导致布局错乱、后续控件消失）。
@@ -79,7 +79,7 @@ namespace Ale.Inventory.Editor
         /// 绘制对象引用字段（rect 版）。授权模式（已注入）走原生 AssetReference 选择器——
         /// GUID 存入授权地址、objRefs 对应槽置空（不硬引用资源）；否则普通 <c>ObjectField</c>（直接存 objRefs）。
         /// </summary>
-        private static void DrawObjectFieldRect(IInventoryEditorContext ctx, AttributeValue value,
+        private static void DrawObjectFieldRect(IEditorContext ctx, AttributeValue value,
             int index, System.Type objType, Rect rect)
         {
             if (AddressableFieldDrawer != null)
@@ -131,7 +131,7 @@ namespace Ale.Inventory.Editor
         /// <summary>
         /// 绘制一个属性值。<paramref name="enumType"/> 仅在类型为 Enum 时使用（可为 null）。
         /// </summary>
-        public static void Draw(IInventoryEditorContext ctx, string label, AttributeValue value, EnumType enumType)
+        public static void Draw(IEditorContext ctx, string label, AttributeValue value, EnumType enumType)
         {
             if (value == null) return;
 
@@ -146,7 +146,7 @@ namespace Ale.Inventory.Editor
         }
 
         /// <summary>实际绘制属性值内容（不含复制 / 粘贴交互）。</summary>
-        private static void DrawBody(IInventoryEditorContext ctx, string label, AttributeValue value, EnumType enumType)
+        private static void DrawBody(IEditorContext ctx, string label, AttributeValue value, EnumType enumType)
         {
             if (value == null) return;
 
@@ -309,7 +309,7 @@ namespace Ale.Inventory.Editor
         /// 在 <paramref name="rect"/> 内绘制属性值（非数组=单行；数组=内嵌 helpBox）。
         /// 纯 <c>EditorGUI.*</c> 实现，不调用任何 GUILayout API。
         /// </summary>
-        public static void DrawRect(IInventoryEditorContext ctx, string label,
+        public static void DrawRect(IEditorContext ctx, string label,
             AttributeValue value, EnumType enumType, Rect rect)
         {
             if (value == null) return;
@@ -390,7 +390,7 @@ namespace Ale.Inventory.Editor
         /// </para>
         /// </summary>
         private static void DrawLabeledFieldControlRect(
-            IInventoryEditorContext ctx, AttributeValue value, EnumType enumType,
+            IEditorContext ctx, AttributeValue value, EnumType enumType,
             int index, Rect rect, string label)
         {
             float lh = EditorGUIUtility.singleLineHeight;
@@ -415,7 +415,7 @@ namespace Ale.Inventory.Editor
 
         /// <summary>绘制无标签的字段 control（数组元素，标签由调用方绘制）。</summary>
         private static void DrawFieldControlRect(
-            IInventoryEditorContext ctx, AttributeValue value, EnumType enumType,
+            IEditorContext ctx, AttributeValue value, EnumType enumType,
             int index, Rect rect)
         {
             switch (value.Type)
@@ -569,7 +569,7 @@ namespace Ale.Inventory.Editor
 
         /// <summary>Rect-based 枚举弹窗（<paramref name="label"/> 为 null 时不绘制标签列）。</summary>
         private static void DrawEnumPopupRect(
-            IInventoryEditorContext ctx, AttributeValue value, EnumType enumType,
+            IEditorContext ctx, AttributeValue value, EnumType enumType,
             int index, Rect rect, string label)
         {
             if (enumType == null || enumType.items.Count == 0)
@@ -604,7 +604,7 @@ namespace Ale.Inventory.Editor
 
         /// <summary>Rect-based：EnumIntPair 的枚举键弹窗（仅改写 pair 的枚举分量，保留整数分量）。</summary>
         private static void DrawEnumIntPairPopupRect(
-            IInventoryEditorContext ctx, AttributeValue value, EnumType enumType, int index, Rect rect)
+            IEditorContext ctx, AttributeValue value, EnumType enumType, int index, Rect rect)
         {
             if (enumType == null || enumType.items.Count == 0)
             {
@@ -637,7 +637,7 @@ namespace Ale.Inventory.Editor
         /// 仅当 Unity.Localization 原生属性路径与当前包版本不匹配时使用。
         /// </summary>
         private static void DrawLocalizedStringFallbackRect(
-            IInventoryEditorContext ctx, AttributeValue value, int index, string label, Rect rect)
+            IEditorContext ctx, AttributeValue value, int index, string label, Rect rect)
         {
             float lh = EditorGUIUtility.singleLineHeight;
             var (tableRef, entryKey) = value.GetLocalizedStringRef(index);
@@ -674,7 +674,7 @@ namespace Ale.Inventory.Editor
         /// Vector4 不再多出一个空标签列；数组内 Sprite 采用与 Rect 版一致的正方形预览；
         /// VectorInt4 / StringIntPair 由纵向堆叠改为与 Rect 版一致的横向分栏；未知类型显示类型名。</para>
         /// </summary>
-        private static void DrawElementField(IInventoryEditorContext ctx, AttributeValue value, EnumType enumType, int index)
+        private static void DrawElementField(IEditorContext ctx, AttributeValue value, EnumType enumType, int index)
         {
             Rect rect = EditorGUILayout.GetControlRect(false, RowHeight(value, index));
             DrawFieldControlRect(ctx, value, enumType, index, rect);
@@ -687,7 +687,7 @@ namespace Ale.Inventory.Editor
         #region Text 与本地化
 
         /// <summary>GUILayout：绘制一个 Text 元素（纯文本框 + 原生可搜索本地化选择器）。</summary>
-        private static void DrawTextFieldLayout(IInventoryEditorContext ctx, AttributeValue value, int index)
+        private static void DrawTextFieldLayout(IEditorContext ctx, AttributeValue value, int index)
         {
             EditorGUI.BeginChangeCheck();
             string plain = EditorGUILayout.TextField(Tr("文本"), value.GetTextValue(index));
@@ -698,7 +698,7 @@ namespace Ale.Inventory.Editor
         }
 
         /// <summary>rect：绘制一个 Text 元素（纯文本框 + 原生可搜索本地化选择器）。高度须由调用方按 <see cref="GetTextRowHeight"/> 预留。</summary>
-        private static void DrawTextRect(IInventoryEditorContext ctx, AttributeValue value, int index, string label, Rect rect)
+        private static void DrawTextRect(IEditorContext ctx, AttributeValue value, int index, string label, Rect rect)
         {
             float lh = EditorGUIUtility.singleLineHeight;
             // float sp = EditorGUIUtility.standardVerticalSpacing;
@@ -798,7 +798,7 @@ namespace Ale.Inventory.Editor
         }
 
         /// <summary>把 holder 中（用户经原生控件改动后的）表 / 条目回写到 value 元素。</summary>
-        private static void ApplyLsReadback(IInventoryEditorContext ctx, AttributeValue value, int index,
+        private static void ApplyLsReadback(IEditorContext ctx, AttributeValue value, int index,
             SerializedProperty tableProp, SerializedProperty keyProp)
         {
             string newTable = tableProp.stringValue ?? string.Empty;
@@ -807,7 +807,7 @@ namespace Ale.Inventory.Editor
         }
 
         /// <summary>GUILayout：原生本地化选择器（表 / 条目，弹窗可搜索快速指定）。</summary>
-        private static void DrawLocalizedStringField(IInventoryEditorContext ctx, AttributeValue value, int index)
+        private static void DrawLocalizedStringField(IEditorContext ctx, AttributeValue value, int index)
         {
             var valueProp = SyncLsHolder(value, index, out var so, out var tableProp, out var keyProp);
             if (valueProp == null || tableProp == null || keyProp == null)
@@ -823,7 +823,7 @@ namespace Ale.Inventory.Editor
         }
 
         /// <summary>rect：原生本地化选择器（表 / 条目，弹窗可搜索快速指定）。</summary>
-        private static void DrawLocalizedStringFieldRect(IInventoryEditorContext ctx, AttributeValue value, int index, Rect rect)
+        private static void DrawLocalizedStringFieldRect(IEditorContext ctx, AttributeValue value, int index, Rect rect)
         {
             var valueProp = SyncLsHolder(value, index, out var so, out var tableProp, out var keyProp);
             if (valueProp == null || tableProp == null || keyProp == null)
@@ -839,7 +839,7 @@ namespace Ale.Inventory.Editor
         }
 
         /// <summary>GUILayout 降级文本输入：当 Unity.Localization 内部属性路径与当前包版本不匹配时使用。</summary>
-        private static void DrawLocalizedStringFallback(IInventoryEditorContext ctx, AttributeValue value, int index)
+        private static void DrawLocalizedStringFallback(IEditorContext ctx, AttributeValue value, int index)
         {
             var (tableRef, entryKey) = value.GetLocalizedStringRef(index);
             EditorGUI.BeginChangeCheck();
@@ -897,15 +897,15 @@ namespace Ale.Inventory.Editor
         /// 若调用方未传入（多数值级面板对非 Enum 类型传 null），则按值携带的 <see cref="AttributeValue.EnumTypeRef"/>
         /// 从编辑器数据库解析，使 EnumIntPair 无需逐一改动各面板即可在任意处正确编辑。
         /// </summary>
-        private static EnumType ResolveEnumType(IInventoryEditorContext ctx, AttributeValue value, EnumType enumType)
+        private static EnumType ResolveEnumType(IEditorContext ctx, AttributeValue value, EnumType enumType)
         {
             if (enumType != null || value == null) return enumType;
             if (value.Type != EFieldType.Enum && value.Type != EFieldType.EnumIntPair) return null;
             if (string.IsNullOrEmpty(value.EnumTypeRef)) return null;
-            return ctx?.Database?.GetEnumType(value.EnumTypeRef);
+            return EnumTypeResolver.Get(value.EnumTypeRef);
         }
 
-        private static void Apply(IInventoryEditorContext ctx, System.Action mutate)
+        private static void Apply(IEditorContext ctx, System.Action mutate)
         {
             ctx.RecordUndo("修改属性值");
             mutate();
@@ -931,7 +931,7 @@ namespace Ale.Inventory.Editor
         /// </list>
         /// 仅当剪贴板属性与目标的类型 / 数组形态（枚举还需同枚举类型）一致时才允许粘贴，确保数据有效。
         /// </summary>
-        private static void HandleEntryCopyPaste(IInventoryEditorContext ctx, AttributeValue value, Rect rowRect)
+        private static void HandleEntryCopyPaste(IEditorContext ctx, AttributeValue value, Rect rowRect)
         {
             var e = Event.current;
             if (e == null || value == null) return;
@@ -973,7 +973,7 @@ namespace Ale.Inventory.Editor
         }
 
         /// <summary>尝试把剪贴板中的属性值粘贴到 <paramref name="target"/>（类型兼容时）。返回是否成功。</summary>
-        private static bool TryPasteValue(IInventoryEditorContext ctx, AttributeValue target)
+        private static bool TryPasteValue(IEditorContext ctx, AttributeValue target)
         {
             var clip = ReadClipboardCompatible(target);
             if (clip == null) return false;

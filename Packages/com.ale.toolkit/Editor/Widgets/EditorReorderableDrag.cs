@@ -99,8 +99,8 @@ namespace Ale.Toolkit.Editor
         /// <param name="lineInset">插入线相对整行左边缘的内缩（一般等于句柄列宽，让线从内容区起画）。</param>
         /// <param name="lineRightInset">插入线相对整行右边缘的内缩（一般等于右侧删除按钮宽度）。</param>
         /// <returns>本帧是否发生了重排。</returns>
-        public bool EndFrame<TDb, T>(IEditorDbContext<TDb> ctx, IList<T> list, string undoLabel,
-            float lineInset = HandleWidth, float lineRightInset = 0f) where TDb : ScriptableObject
+        public bool EndFrame<T>(IEditorContext ctx, IList<T> list, string undoLabel,
+            float lineInset = HandleWidth, float lineRightInset = 0f)
         {
             if (_srcIndex < 0) return false;
             bool reordered = false;

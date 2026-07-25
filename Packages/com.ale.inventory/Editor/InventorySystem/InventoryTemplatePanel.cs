@@ -140,12 +140,12 @@ namespace Ale.Inventory.Editor
 
             // ── UI 配置 ──────────────────────────────────────────────────────
             EditorGUILayout.LabelField(Tr("UI 配置"), ToolkitEditorStyles.Header);
-            NumberFormatConfigDrawer.DrawRefPopup(ctx, Tr("数字格式"),
+            NumberFormatConfigDrawer.DrawRefPopup(ctx, ctx.Database.NumberFormatConfigs, Tr("数字格式"),
                 template.numberFormatRef, v => template.numberFormatRef = v);
 
             EditorGUILayout.Space(6);
 
-            _attrDefsDrawer.Draw(ctx, template.attributes, Tr("自定义属性字段"));
+            _attrDefsDrawer.Draw(ctx, ctx.Database, template.attributes, Tr("自定义属性字段"));
         }
 
         // ── 过滤标签勾选 ──────────────────────────────────────────────────────────
