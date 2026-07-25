@@ -142,13 +142,13 @@ namespace Ale.Inventory.Editor
         }
 
         private static void DrawFilterTagList(IInventoryEditorContext ctx, List<string> filterTagRefs)
-            => EditorTagToggleList.Draw(ctx, filterTagRefs, "添加过滤标签", "移除过滤标签");
+            => EditorTagToggleList.Draw(ctx, ctx.Database.FunctionTags, filterTagRefs, "添加过滤标签", "移除过滤标签");
 
         private static void DrawTagRefList(IInventoryEditorContext ctx,
             List<string> tagRefs, string labelText)
         {
             EditorGUILayout.LabelField(Tr(labelText), ToolkitEditorStyles.Header);
-            EditorTagToggleList.Draw(ctx, tagRefs, $"添加{labelText}", $"移除{labelText}");
+            EditorTagToggleList.Draw(ctx, ctx.Database.FunctionTags, tagRefs, $"添加{labelText}", $"移除{labelText}");
         }
 
     }

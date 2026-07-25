@@ -135,7 +135,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.LabelField(Tr("交易功能标签"), ToolkitEditorStyles.Header);
             EditorGUILayout.LabelField(Tr("仅「回收」生效：只回收含勾选标签的道具；不勾选 = 不限制。"), EditorStyles.miniLabel);
 
-            EditorTagToggleList.Draw(ctx, cfg.TradeTagRefs,
+            EditorTagToggleList.Draw(ctx, ctx.Database.FunctionTags, cfg.TradeTagRefs,
                 "添加交易功能标签", "移除交易功能标签");
         }
 
@@ -158,7 +158,7 @@ namespace Ale.Inventory.Editor
                 ctx.MarkDirty();
             }
 
-            EditorTagToggleList.Draw(ctx, cfg.FilterTagRefs,
+            EditorTagToggleList.Draw(ctx, ctx.Database.FunctionTags, cfg.FilterTagRefs,
                 "添加过滤标签", "移除过滤标签");
         }
 

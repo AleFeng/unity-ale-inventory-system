@@ -59,7 +59,7 @@ namespace Ale.Inventory.Editor
 
             // ── 默认功能标签 ─────────────────────────────────────────────────
             EditorGUILayout.LabelField(Tr("默认功能标签"), ToolkitEditorStyles.Header);
-            EditorTagToggleList.Draw(ctx, template.tagRefs,
+            EditorTagToggleList.Draw(ctx, ctx.Database.FunctionTags, template.tagRefs,
                 "模板添加功能标签", "模板移除功能标签",
                 emptyHint: Tr("（暂无功能标签，请先在左侧「功能标签」中创建）"));
 
