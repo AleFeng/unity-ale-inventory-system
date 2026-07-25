@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Ale.Toolkit.Runtime;
+using Ale.Toolkit.Editor;
 
 namespace Ale.Inventory.Editor
 {
@@ -209,8 +210,8 @@ namespace Ale.Inventory.Editor
         {
             var steps = new List<Func<string>>();
 
-            // 属性系统对象值（反射遍历全库）
-            foreach (var av in CollectObjectValues(db))
+            // 属性系统对象值（反射遍历全库，通用遍历见 AttributeValueWalker）
+            foreach (var av in AttributeValueWalker.Collect(db))
             {
                 var cap = av;
                 steps.Add(() => ProcessAttributeValue(cap, op));
@@ -366,60 +367,6 @@ namespace Ale.Inventory.Editor
             }
         }
 
-        // ── 反射遍历：收集数据库内全部对象类 AttributeValue ─────────────────────────────
-
-        private static List<AttributeValue> CollectObjectValues(InventoryDatabase db)
-        {
-            var sink    = new List<AttributeValue>();
-            var visited = new HashSet<object>(RefComparer.Instance);
-            // 从数据库自身字段起步（数据库本身是 UnityEngine.Object，直接下钻其序列化字段）
-            foreach (var f in typeof(InventoryDatabase).GetFields(
-                         BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-                Walk(f.GetValue(db), sink, visited);
-            return sink;
-        }
-
-        private static void Walk(object node, List<AttributeValue> sink, HashSet<object> visited)
-        {
-            if (node == null) return;
-
-            // 命中属性值：收集对象类的，停止下钻
-            if (node is AttributeValue av)
-            {
-                if (av.Type.IsObjectBacked()) sink.Add(av);
-                return;
-            }
-
-            // 外部资源引用 / 值类型（基元 / 枚举 / Vector* / Color 等结构体，均不含 AttributeValue）/ 字符串：不下钻
-            if (node is Object) return;
-            var type = node.GetType();
-            if (type.IsValueType || node is string) return;
-            if (!visited.Add(node)) return;
-
-            // 集合逐元素下钻
-            if (node is System.Collections.IEnumerable en)
-            {
-                foreach (var e in en) Walk(e, sink, visited);
-                return;
-            }
-
-            // 普通 [Serializable] 数据类：逐字段下钻
-            foreach (var f in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-            {
-                var ft = f.FieldType;
-                if (ft.IsPrimitive || ft.IsEnum || ft == typeof(string)) continue;
-                if (typeof(Object).IsAssignableFrom(ft)) continue;   // 跳过外部资源引用字段
-                Walk(f.GetValue(node), sink, visited);
-            }
-        }
-
-        /// <summary>引用相等比较器（避免值类型 / 重写 Equals 干扰访问过标记）。</summary>
-        private sealed class RefComparer : IEqualityComparer<object>
-        {
-            public static readonly RefComparer Instance = new RefComparer();
-            bool IEqualityComparer<object>.Equals(object a, object b) => ReferenceEquals(a, b);
-            int IEqualityComparer<object>.GetHashCode(object o) => RuntimeHelpers.GetHashCode(o);
-        }
         #endregion
 
     }
