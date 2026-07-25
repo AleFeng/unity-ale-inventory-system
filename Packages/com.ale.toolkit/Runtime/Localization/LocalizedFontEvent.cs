@@ -1,7 +1,7 @@
 // 本组件是 TMP 专用的字体本地化事件：基类 LocalizedAssetEvent<> 与两个 LocalizedAsset<> 子类
 // 都直接依赖 TMPro + Unity Localization，无法在缺任一包时提供退化实现，故整文件受双宏门控
-// （与 InventoryTmpTextEvent 的整文件 #if IS_LOCALIZATION 同一写法）。
-// 引用方 InventoryTmpTextEvent 与 InventoryWelcomeWindow 对本文件类型的引用亦均在 IS_TMP 块内。
+// （与 LocalizedTextEvent 的整文件 #if IS_LOCALIZATION 同一写法）。
+// 引用方 LocalizedTextEvent 与宿主向导对本文件类型的引用亦均在 IS_TMP 块内。
 #if IS_TMP && IS_LOCALIZATION
 
 using System;
@@ -13,41 +13,41 @@ using UnityEngine.Localization.Components;
 using UnityEngine.Localization.Settings;
 using TMPro;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// 用于本地化 TextMeshPro 字体资源的 LocalizedAsset 封装类型。
     /// </summary>
     [Serializable]
-    public class InventoryLocalizedTmpFont : LocalizedAsset<TMP_FontAsset> { }
+    public class LocalizedTmpFont : LocalizedAsset<TMP_FontAsset> { }
 
     /// <summary>
     /// 用于本地化 TextMeshPro 字体材质预设的 LocalizedAsset 封装类型。
     /// </summary>
     [Serializable]
-    public class InventoryLocalizedTmpFontMaterial : LocalizedAsset<Material> { }
+    public class LocalizedTmpFontMaterial : LocalizedAsset<Material> { }
 
     /// <summary>
     /// 用于本地化 TextMeshPro 字体资源的事件组件。
     /// 挂载在面板根节点，自动管理根节点及所有子节点的 TMP_Text 字体替换，
-    /// 并与子节点的 <see cref="InventoryTmpTextEvent"/> 联动，避免语言切换时出现缺字。
+    /// 并与子节点的 <see cref="LocalizedTextEvent"/> 联动，避免语言切换时出现缺字。
     /// <para>参考 Fs.GameFramework.Common.LocalizationSystem.LocalizeTmpFontEvent，
-    /// 针对 InventorySystem 简化（不支持嵌套 FontEvent 子树排除）。</para>
+    /// 针对本工具包简化（不支持嵌套 FontEvent 子树排除）。</para>
     /// </summary>
-    [AddComponentMenu("InventorySystem/UI/Inventory TMP Font Event")]
+    [AddComponentMenu("Ale Toolkit/Localization/Localized Font Event")]
     [DisallowMultipleComponent]
-    public class InventoryTmpFontEvent
-        : LocalizedAssetEvent<TMP_FontAsset, InventoryLocalizedTmpFont, UnityEvent<TMP_FontAsset>>
+    public class LocalizedFontEvent
+        : LocalizedAssetEvent<TMP_FontAsset, LocalizedTmpFont, UnityEvent<TMP_FontAsset>>
     {
         [SerializeField, Tooltip("受控的 TMP_Text 组件列表（自动扫描子节点）。")]
         private List<TMP_Text> texts;
 
-        [SerializeField, Tooltip("受控的 InventoryTmpTextEvent 组件列表（自动扫描子节点）。")]
-        private List<InventoryTmpTextEvent> textEvents;
+        [SerializeField, Tooltip("受控的 LocalizedTextEvent 组件列表（自动扫描子节点）。")]
+        private List<LocalizedTextEvent> textEvents;
 
         [Header("Font Material")]
         [SerializeField, Tooltip("本地化材质预设资源引用。为空则不进行材质本地化。")]
-        private InventoryLocalizedTmpFontMaterial fontMaterial = new InventoryLocalizedTmpFontMaterial();
+        private LocalizedTmpFontMaterial fontMaterial = new LocalizedTmpFontMaterial();
 
         private TMP_FontAsset _fontCache;
         private Material      _materialCache;
@@ -177,7 +177,7 @@ namespace Ale.Inventory.Runtime.UI
             }
         }
 
-        /// <summary>仅对指定文本应用字体缓存，供 <see cref="InventoryTmpTextEvent"/> 调用。</summary>
+        /// <summary>仅对指定文本应用字体缓存，供 <see cref="LocalizedTextEvent"/> 调用。</summary>
         internal void ApplyFontTo(TMP_Text t)
         {
             if (!t || !_fontCache) return;
@@ -211,9 +211,9 @@ namespace Ale.Inventory.Runtime.UI
                 dirty = true;
             }
 
-            // InventoryTmpTextEvent 列表
-            var newEvents = new List<InventoryTmpTextEvent>(
-                GetComponentsInChildren<InventoryTmpTextEvent>(true));
+            // LocalizedTextEvent 列表
+            var newEvents = new List<LocalizedTextEvent>(
+                GetComponentsInChildren<LocalizedTextEvent>(true));
 
             if (!ListEquals(newEvents, textEvents))
             {

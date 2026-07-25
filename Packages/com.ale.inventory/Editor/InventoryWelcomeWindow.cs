@@ -73,12 +73,12 @@ namespace Ale.Inventory.Editor
 #endif
 
 #if IS_TMP && IS_LOCALIZATION
-        /// <summary>向导生成 Prefab 时赋给 InventoryTmpFontEvent 的本地化字体引用。</summary>
-        [SerializeField] private InventoryLocalizedTmpFont wizardLocalizedFont = new InventoryLocalizedTmpFont();
+        /// <summary>向导生成 Prefab 时赋给 LocalizedFontEvent 的本地化字体引用。</summary>
+        [SerializeField] private LocalizedTmpFont wizardLocalizedFont = new LocalizedTmpFont();
         private bool _wizardLocalizedFontFoldout;
 
         /// <summary>供 InventoryDemoWizard 读取当前窗口中配置的本地化字体引用。</summary>
-        internal static InventoryLocalizedTmpFont WizardLocalizedFont => _active?.wizardLocalizedFont;
+        internal static LocalizedTmpFont WizardLocalizedFont => _active?.wizardLocalizedFont;
         private static InventoryWelcomeWindow _active;
 #endif
 
@@ -453,7 +453,7 @@ namespace Ale.Inventory.Editor
                     so.ApplyModifiedProperties();
                 }
                 EditorGUILayout.LabelField(
-                    Tr("生成测试 Prefab 时赋给 InventoryTmpFontEvent 组件的本地化字体资源。" +
+                    Tr("生成测试 Prefab 时赋给 LocalizedFontEvent 组件的本地化字体资源。" +
                        "需同时启用 IS_TMP 才生效。"),
                     EditorStyles.wordWrappedMiniLabel);
             }

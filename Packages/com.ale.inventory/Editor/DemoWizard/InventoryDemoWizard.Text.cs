@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
+using Ale.Toolkit.Runtime.UI;
 
 #if  IS_TMP
 using TMPro;
@@ -22,16 +23,16 @@ namespace Ale.Inventory.Editor
         
 #if IS_TMP && IS_LOCALIZATION
         /// <summary>
-        /// 在 <paramref name="root"/> 上挂载 <see cref="InventoryTmpFontEvent"/>，
+        /// 在 <paramref name="root"/> 上挂载 <see cref="LocalizedFontEvent"/>，
         /// 将 WelcomeWindow 中配置的本地化字体引用通过 JsonUtility roundtrip 写入组件，
         /// 然后扫描所有子节点以填充 texts / textEvents 列表并建立双向绑定。
         ///
-        /// <para>必须在所有子节点（含 <see cref="InventoryTmpTextEvent"/>）都已添加后调用，
-        /// 否则 <see cref="InventoryTmpFontEvent.RefreshComponents"/> 扫描结果不完整。</para>
+        /// <para>必须在所有子节点（含 <see cref="LocalizedTextEvent"/>）都已添加后调用，
+        /// 否则 <see cref="LocalizedFontEvent.RefreshComponents"/> 扫描结果不完整。</para>
         /// </summary>
         static void AttachFontEvent(GameObject root)
         {
-            var fontEvent = root.AddComponent<InventoryTmpFontEvent>();
+            var fontEvent = root.AddComponent<LocalizedFontEvent>();
 
             // 将 WelcomeWindow 中配置的本地化字体引用写入 LocalizedAssetEvent 基类的
             // AssetReference（即 m_AssetReference），这才是基类实际用于驱动本地化的字段。
@@ -91,9 +92,9 @@ namespace Ale.Inventory.Editor
             if (defaultFont) t.font = defaultFont;
 
 #if IS_LOCALIZATION
-            // 为每个 TMP 文本节点添加 InventoryTmpTextEvent，
+            // 为每个 TMP 文本节点添加 LocalizedTextEvent，
             // 开发者可在生成后为各节点配置本地化字符串引用。
-            go.AddComponent<InventoryTmpTextEvent>();
+            go.AddComponent<LocalizedTextEvent>();
 #endif
 
             return t;

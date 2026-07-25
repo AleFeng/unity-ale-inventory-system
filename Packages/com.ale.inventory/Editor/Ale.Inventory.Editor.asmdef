@@ -4,7 +4,7 @@
     "references": [
         "Ale.Inventory.Runtime",
         "Ale.Inventory.Runtime.UI",
-        "Ale.Inventory.UI.Localization",
+        "Ale.Toolkit.UI.Localization",
         "Unity.TextMeshPro",
         "Unity.Localization",
         "Unity.Localization.Editor",

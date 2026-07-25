@@ -10,36 +10,36 @@ using UnityEngine.Localization.Tables;
 using TMPro;
 #endif
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// 用于本地化 TextMeshPro 文本内容的事件组件。
-    /// 支持在语言环境变化时被动更新文本内容，配合 <see cref="InventoryTmpFontEvent"/>
+    /// 支持在语言环境变化时被动更新文本内容，配合 <see cref="LocalizedFontEvent"/>
     /// 实现先换字体再填充文本的顺序，避免缺字和 Warning。
     ///
     /// <para>参考 Fs.GameFramework.Common.LocalizationSystem.LocalizeTmpTextEvent，
-    /// 针对 InventorySystem 宏（IS_TMP / IS_LOCALIZATION）改写。</para>
+    /// 针对 IS_TMP / IS_LOCALIZATION 宏改写。</para>
     /// </summary>
-    [AddComponentMenu("InventorySystem/UI/Inventory TMP Text Event")]
+    [AddComponentMenu("Ale Toolkit/Localization/Localized Text Event")]
     [DisallowMultipleComponent]
-    public class InventoryTmpTextEvent : LocalizeStringEvent
+    public class LocalizedTextEvent : LocalizeStringEvent
     {
 #if IS_TMP
         [SerializeField, Tooltip("驱动的 TextMeshPro 文本组件。")]
         private TMP_Text _text;
 
         [SerializeField,
-         Tooltip("驱动此文本的 InventoryTmpFontEvent 组件引用。由字体事件自动反向绑定。")]
-        private InventoryTmpFontEvent _fontEvent;
+         Tooltip("驱动此文本的 LocalizedFontEvent 组件引用。由字体事件自动反向绑定。")]
+        private LocalizedFontEvent _fontEvent;
 
-        /// <summary>此组件驱动的 TMP_Text，供 InventoryTmpFontEvent 识别被驱动文本。</summary>
+        /// <summary>此组件驱动的 TMP_Text，供 LocalizedFontEvent 识别被驱动文本。</summary>
         internal TMP_Text Text => _text;
 
         /// <summary>
-        /// 由 <see cref="InventoryTmpFontEvent"/> 调用：绑定（或解绑）驱动此文本的字体事件，
+        /// 由 <see cref="LocalizedFontEvent"/> 调用：绑定（或解绑）驱动此文本的字体事件，
         /// 同步设置被动更新标志。
         /// </summary>
-        internal void BindFontEvent(InventoryTmpFontEvent fe)
+        internal void BindFontEvent(LocalizedFontEvent fe)
         {
             bool passive = fe != null;
             if (_fontEvent == fe && passiveUpdate == passive) return;
@@ -117,7 +117,7 @@ namespace Ale.Inventory.Runtime.UI
 #endif
         }
 
-        // ── 内部接口（供 InventoryTmpFontEvent 调用）────────────────────────────
+        // ── 内部接口（供 LocalizedFontEvent 调用）──────────────────────────────
 
         /// <summary>更新语言标记并触发文本刷新（由字体事件调用）。</summary>
         internal void RefreshStringAndUpdateMark()
@@ -152,11 +152,11 @@ namespace Ale.Inventory.Runtime.UI
                 if (_text) dirty = true;
             }
 
-            // _fontEvent 正常由 InventoryTmpFontEvent 通过 BindFontEvent 反向绑定；
+            // _fontEvent 正常由 LocalizedFontEvent 通过 BindFontEvent 反向绑定；
             // 此处向父节点查找作为兜底，以覆盖字体事件挂载在父节点的情形。
             if (!_fontEvent)
             {
-                _fontEvent = GetComponentInParent<InventoryTmpFontEvent>();
+                _fontEvent = GetComponentInParent<LocalizedFontEvent>();
                 if (_fontEvent)
                 {
                     passiveUpdate = true;
