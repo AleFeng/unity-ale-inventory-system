@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
+using static Ale.Toolkit.Editor.UiPrefabBuilder;
 using Ale.Toolkit.Editor;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
