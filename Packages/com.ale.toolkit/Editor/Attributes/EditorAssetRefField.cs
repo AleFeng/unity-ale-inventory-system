@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Ale.Toolkit.Editor
 {
     /// <summary>
-    /// 配置类<b>固定资源字段</b>（具名字段，如 <c>Skill.icon</c> / <c>FunctionTag.backgroundSprite</c>）的编辑器绘制辅助。
+    /// 配置类<b>固定资源字段</b>（具名字段，如 <c>Skill.icon</c> / <c>Tag.backgroundSprite</c>）的编辑器绘制辅助。
     /// 与属性系统对象字段一致：
     /// <list type="bullet">
     ///   <item>未注入（IS_ADDRESSABLE 关 / 包未装）：绘制普通 <c>ObjectField</c>，写实时引用、地址置空。</item>

@@ -22,7 +22,7 @@ namespace Ale.Inventory.Runtime
         /// <summary>功能说明（可选，用于编辑器提示）。</summary>
         public string description;
 
-        /// <summary>功能标签限制（引用 <see cref="FunctionTag.name"/>；多条之间 AND，全部需具备）。</summary>
+        /// <summary>功能标签限制（引用 <see cref="Ale.Toolkit.Runtime.Tag.name"/>；多条之间 AND，全部需具备）。</summary>
         public List<string> requiredTags = new List<string>();
 
         /// <summary>枚举类型约束（多条之间 AND，全部需满足）。</summary>

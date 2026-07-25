@@ -81,7 +81,7 @@ namespace Ale.Inventory.Runtime
 
         private readonly Dictionary<string, Item>                     _items         = new Dictionary<string, Item>();
         private readonly Dictionary<string, EnumType>                 _enumTypes     = new Dictionary<string, EnumType>();
-        private readonly Dictionary<string, FunctionTag>              _tags          = new Dictionary<string, FunctionTag>();
+        private readonly Dictionary<string, Tag>                     _tags          = new Dictionary<string, Tag>();
         private readonly Dictionary<string, ItemTemplate>             _itemTemplates = new Dictionary<string, ItemTemplate>();
         private readonly Dictionary<string, Inventory>                _inventories   = new Dictionary<string, Inventory>();
         private readonly Dictionary<string, Shop>                     _shops         = new Dictionary<string, Shop>();
@@ -179,7 +179,7 @@ namespace Ale.Inventory.Runtime
         public EnumType GetEnumType(string enumName) => Lookup(_enumTypes, enumName);
 
         /// <summary>按名称跨库查找功能标签，未找到返回 null。</summary>
-        public FunctionTag GetTag(string tagName) => Lookup(_tags, tagName);
+        public Tag GetTag(string tagName) => Lookup(_tags, tagName);
 
         /// <summary>按名称跨库查找道具模板，未找到返回 null。</summary>
         public ItemTemplate GetTemplate(string templateName) => Lookup(_itemTemplates, templateName);

@@ -14,7 +14,7 @@ namespace Ale.Inventory.Editor
     /// Addressable工具窗口（仅 IS_ADDRESSABLE 编译）。
     /// 在「直接 Object 引用」与「AssetReference 授权（GUID）」
     /// 两种存储之间批量互转某个 <see cref="InventoryDatabase"/> 的<b>全部</b>资源字段
-    /// （属性系统对象值 + 固定资源字段 Skill.icon / SkillTemplate.icon / FunctionTag.backgroundSprite）——
+    /// （属性系统对象值 + 固定资源字段 Skill.icon / SkillTemplate.icon / Tag.backgroundSprite）——
     /// 因二者磁盘格式不同、无法靠同名字段自动共用，需本工具做一次性转换。
     ///
     /// <list type="bullet">

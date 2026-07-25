@@ -13,18 +13,18 @@ namespace Ale.Inventory.Editor
     /// 功能标签面板：左侧主列表（功能标签行，可拖拽排序）+ 右侧 Inspector（名称、说明、属性字段定义列表）。
     /// 功能标签的顺序会影响「整理列表」中「功能标签」的排序依据。
     /// </summary>
-    public class FunctionTagPanel : EditorMasterListPanel<FunctionTag>
+    public class FunctionTagPanel : EditorMasterListPanel<Tag>
     {
         private readonly AttributeDefinitionListDrawer _attrDefsDrawer = new AttributeDefinitionListDrawer();
 
         #region 主列表配置
 
-        protected override List<FunctionTag> GetList(InventoryDatabase db) => db.FunctionTags;
+        protected override List<Tag> GetList(InventoryDatabase db) => db.FunctionTags;
         protected override string Noun => "功能标签";
-        protected override string RowLabel(FunctionTag t) => t.name;
+        protected override string RowLabel(Tag t) => t.name;
 
-        protected override FunctionTag CreateNew(InventoryDatabase db, List<FunctionTag> list)
-            => new FunctionTag(Tr("新标签"));
+        protected override Tag CreateNew(InventoryDatabase db, List<Tag> list)
+            => new Tag(Tr("新标签"));
 
         protected override void OnInvalidate() => _attrDefsDrawer.Invalidate();
 
@@ -32,7 +32,7 @@ namespace Ale.Inventory.Editor
 
         // ── Inspector ────────────────────────────────────────────────────────────
 
-        public override void DrawInspector(IInventoryEditorContext ctx, FunctionTag tag)
+        public override void DrawInspector(IInventoryEditorContext ctx, Tag tag)
         {
             if (tag == null)
             {

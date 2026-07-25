@@ -14,7 +14,7 @@ namespace Ale.Inventory.Runtime
     public class InventoryDatabase : ScriptableObject, IEnumTypeSource
     {
         [SerializeField] private List<EnumType>          enumTypes          = new List<EnumType>();
-        [SerializeField] private List<FunctionTag>       functionTags       = new List<FunctionTag>();
+        [SerializeField] private List<Tag>               functionTags       = new List<Tag>();
         [SerializeField] private List<ItemTemplate>      itemTemplates      = new List<ItemTemplate>();
         [SerializeField] private List<Item>              items              = new List<Item>();
         [SerializeField] private List<InventoryTemplate> inventoryTemplates    = new List<InventoryTemplate>();
@@ -50,7 +50,7 @@ namespace Ale.Inventory.Runtime
         /// <summary>
         /// 功能标签 列表
         /// </summary>
-        public List<FunctionTag>       FunctionTags       => functionTags;
+        public List<Tag>               FunctionTags       => functionTags;
         
         /// <summary>
         /// 道具模板 列表
@@ -180,7 +180,7 @@ namespace Ale.Inventory.Runtime
         public EnumType GetEnumType(string enumName) => Find(enumTypes, enumName, e => e.name);
 
         /// <summary>按名称查找功能标签，未找到返回 null。</summary>
-        public FunctionTag GetTag(string tagName) => Find(functionTags, tagName, t => t.name);
+        public Tag GetTag(string tagName) => Find(functionTags, tagName, t => t.name);
 
         /// <summary>按名称查找道具模板，未找到返回 null。</summary>
         public ItemTemplate GetTemplate(string templateName) => Find(itemTemplates, templateName, t => t.name);
@@ -562,7 +562,7 @@ namespace Ale.Inventory.Runtime
         public void AddFunctionTag(string tagName, string description)
         {
             if (GetTag(tagName) != null) return;
-            functionTags.Add(new FunctionTag(tagName, description));
+            functionTags.Add(new Tag(tagName, description));
         }
         #endregion
     }

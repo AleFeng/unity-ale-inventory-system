@@ -88,7 +88,7 @@ namespace Ale.Inventory.Runtime.Serialization
             };
         }
 
-        private static FunctionTagDto ToDto(FunctionTag t, IAssetRefResolver resolver)
+        private static FunctionTagDto ToDto(Tag t, IAssetRefResolver resolver)
         {
             return new FunctionTagDto
             {
@@ -230,10 +230,10 @@ namespace Ale.Inventory.Runtime.Serialization
             return e;
         }
 
-        private static FunctionTag FromDto(FunctionTagDto dto, IAssetRefResolver resolver)
+        private static Tag FromDto(FunctionTagDto dto, IAssetRefResolver resolver)
         {
             // 描述：v6 起以 descriptionText 为准；缺省（v5 及更早的数据）回退到纯文本 description。
-            var t = new FunctionTag(dto.name, dto.description);
+            var t = new Tag(dto.name, dto.description);
             if (dto.descriptionText != null) t.descriptionText = FromDto(dto.descriptionText, resolver);
             t.displayNameText = TextFromDto(dto.displayNameText, resolver);
 
