@@ -1,5 +1,4 @@
 using Ale.Toolkit.Runtime;
-using System;
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
@@ -31,12 +30,10 @@ namespace Ale.Inventory.Editor
         /// <summary>商品列表的编辑器内存态（按商品组实例缓存；默认折叠）。</summary>
         private class CommodityListState
         {
-            public bool          expanded;
-            public Vector2       scroll;
-            public string        search = string.Empty;
-            public readonly List<int> matches = new List<int>();
-            public int           matchPtr      = -1;
-            public int           scrollToIndex = -1; // 请求滚动定位到的商品下标
+            public bool expanded;
+
+            /// <summary>搜索 / 匹配 / 滚动定位状态（通用逻辑见 <see cref="EditorSearchableList"/>）。</summary>
+            public readonly EditorSearchableListState search = new EditorSearchableListState();
 
             /// <summary>该组商品列表的拖拽重排状态机。</summary>
             public readonly EditorReorderableDrag drag = new EditorReorderableDrag("ShopCommoditiesDrag");
@@ -60,22 +57,6 @@ namespace Ale.Inventory.Editor
                 CommodityStates[group] = s;
             }
             return s;
-        }
-
-        /// <summary>重算搜索匹配（按道具 ID 包含搜索词，忽略大小写），并定位到首个匹配。</summary>
-        private static void RecomputeMatches(CommodityListState state, ShopCommodityGroup group)
-        {
-            state.matches.Clear();
-            string term = state.search?.Trim();
-            if (!string.IsNullOrEmpty(term))
-                for (int i = 0; i < group.commodities.Count; i++)
-                {
-                    string id = group.commodities[i].itemId;
-                    if (!string.IsNullOrEmpty(id) && id.IndexOf(term, StringComparison.OrdinalIgnoreCase) >= 0)
-                        state.matches.Add(i);
-                }
-            state.matchPtr      = state.matches.Count > 0 ? 0 : -1;
-            state.scrollToIndex = state.matchPtr >= 0 ? state.matches[state.matchPtr] : -1;
         }
 
         #endregion
@@ -316,52 +297,22 @@ namespace Ale.Inventory.Editor
                 ctx.RecordUndo("添加商品");
                 group.commodities.Add(new ShopCommodity { guid = InventoryDatabase.NewShopEntryGuid() });
                 ctx.MarkDirty();
-                state.expanded      = true;                        // 添加后自动展开
-                state.scrollToIndex = group.commodities.Count - 1; // 定位到新条目（末尾）
+                state.expanded             = true;                        // 添加后自动展开
+                state.search.ScrollToIndex = group.commodities.Count - 1; // 定位到新条目（末尾）
                 ctx.Repaint();
             }
             EditorGUILayout.EndHorizontal();
 
             if (!state.expanded) return;
 
-            // ── 搜索行：按道具 ID 查找 + 1/N 指示 + 上/下切换 ─────────────────────
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(Tr("搜索"), GUILayout.Width(30));
-            EditorGUI.BeginChangeCheck();
-            string newSearch = EditorGUILayout.TextField(state.search ?? string.Empty);
-            if (EditorGUI.EndChangeCheck())
-            {
-                state.search = newSearch;
-                RecomputeMatches(state, group);
-                ctx.Repaint();
-            }
-            if (state.matches.Count > 0)
-            {
-                EditorGUILayout.LabelField($"{state.matchPtr + 1}/{state.matches.Count}", GUILayout.Width(40));
-                if (GUILayout.Button("↑", EditorStyles.miniButtonLeft, GUILayout.Width(24)))
-                {
-                    state.matchPtr      = (state.matchPtr - 1 + state.matches.Count) % state.matches.Count;
-                    state.scrollToIndex = state.matches[state.matchPtr];
-                    ctx.Repaint();
-                }
-                if (GUILayout.Button("↓", EditorStyles.miniButtonRight, GUILayout.Width(24)))
-                {
-                    state.matchPtr      = (state.matchPtr + 1) % state.matches.Count;
-                    state.scrollToIndex = state.matches[state.matchPtr];
-                    ctx.Repaint();
-                }
-            }
-            else if (!string.IsNullOrEmpty(state.search))
-            {
-                EditorGUILayout.LabelField(Tr("无匹配"), EditorStyles.miniLabel, GUILayout.Width(48));
-            }
-            EditorGUILayout.EndHorizontal();
+            // ── 搜索行：按道具 ID 查找 + 1/N 指示 + 上/下切换（通用逻辑见 EditorSearchableList）──
+            EditorSearchableList.DrawSearchBar(state.search, group.commodities.Count,
+                i => group.commodities[i].itemId, ctx.Repaint);
 
-            int currentMatch = (state.matchPtr >= 0 && state.matchPtr < state.matches.Count)
-                ? state.matches[state.matchPtr] : -1;
+            int currentMatch = state.search.CurrentMatch;
 
             // ── 固定高度 300 的滚动区（隐藏横向滚动条，避免内容溢出不可见）──────────
-            state.scroll = EditorGUILayout.BeginScrollView(state.scroll, false, false,
+            state.search.Scroll = EditorGUILayout.BeginScrollView(state.search.Scroll, false, false,
                 GUIStyle.none, GUI.skin.verticalScrollbar, GUI.skin.scrollView,
                 GUILayout.Height(CommodityListHeight));
 
@@ -447,34 +398,28 @@ namespace Ale.Inventory.Editor
 
                 EditorGUILayout.EndHorizontal();
 
-                // 仅在 Repaint 阶段 rowRect 才返回有效坐标；Layout 阶段返回占位 rect(y≈0)，
-                // 若在此处采集会用 0 覆盖滚动并提前清掉定位请求，导致"滚不动"。
-                if (ci == state.scrollToIndex && Event.current.type == EventType.Repaint)
-                    targetY = rowRect.y;
+                EditorSearchableList.CaptureRow(state.search, ci, rowRect, ref targetY);
             }
 
             // 拖拽落点处理 + 插入指示线；重排后索引变化，重算搜索匹配。
             if (state.drag.EndFrame(ctx, group.commodities, "调整商品顺序"))
-                RecomputeMatches(state, group);
+                EditorSearchableList.Recompute(state.search, group.commodities.Count,
+                    i => group.commodities[i].itemId);
 
             EditorGUIUtility.labelWidth = prevLabelWidth;   // 还原标签列宽度
 
             EditorGUILayout.EndScrollView();
 
-            // 仅当 Repaint 成功取得目标 Y 时才应用定位（下一帧生效）：将目标商品滚动到视口顶部
-            if (state.scrollToIndex >= 0 && targetY.HasValue)
-            {
-                state.scroll.y      = Mathf.Max(0f, targetY.Value);
-                state.scrollToIndex = -1;
-                ctx.Repaint();
-            }
+            // 将目标商品滚动到视口顶部（下一帧生效）。
+            EditorSearchableList.ApplyScroll(state.search, targetY, ctx.Repaint);
 
             if (removeCommodity >= 0)
             {
                 ctx.RecordUndo("删除商品");
                 group.commodities.RemoveAt(removeCommodity);
                 ctx.MarkDirty();
-                RecomputeMatches(state, group);
+                EditorSearchableList.Recompute(state.search, group.commodities.Count,
+                    i => group.commodities[i].itemId);
             }
         }
 
