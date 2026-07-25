@@ -7,14 +7,14 @@ using InventoryText = UnityEngine.UI.Text;
 using Ale.Inventory.Runtime;
 using UnityEngine;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// 仓库页签按钮（MonoBehaviour）。
     /// 显示仓库名称（<see cref="Inventory.displayNameText"/>，为空时退回 <see cref="Inventory.id"/>）并反映选中状态。
     /// 由 <see cref="UiwInventoryView"/> 统一创建和管理。
     /// </summary>
-    public class UiwInventoryTab : MonoBehaviour
+    public class UiwTabButton : MonoBehaviour
     {
         [Header("子组件引用")]
         [Tooltip("显示仓库名称的文本组件。")]

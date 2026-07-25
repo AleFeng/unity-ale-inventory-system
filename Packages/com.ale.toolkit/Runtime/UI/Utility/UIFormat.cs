@@ -2,7 +2,7 @@ using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// UI 数值 / 价格文本格式化（静态）。把「按 <see cref="NumberFormatLocale"/> 格式化数值」

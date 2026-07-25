@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// 悬停弹窗基类。封装「光标定位 + 淡入淡出状态机 + 淡出期间的待显示队列」，

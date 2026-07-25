@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// 页签条（纯 C# 辅助类，非 MonoBehaviour）。管理「一排页签实例 + 与之平行的取值 / 显示名 + 单选高亮」，

@@ -8,7 +8,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// 功能标签 UI 组件。

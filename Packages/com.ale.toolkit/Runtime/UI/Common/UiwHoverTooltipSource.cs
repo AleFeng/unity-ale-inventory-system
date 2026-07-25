@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// 「悬停弹出详情」能力的基类。封装 进入 / 移出 / 停用 三条路径与「本格是否正显示弹窗」的标记，

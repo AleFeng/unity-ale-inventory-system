@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// 子项实例池（纯 C# 辅助类，非 MonoBehaviour）。管理「按需实例化 → 逐帧复用 → 多余的回收隐藏」，

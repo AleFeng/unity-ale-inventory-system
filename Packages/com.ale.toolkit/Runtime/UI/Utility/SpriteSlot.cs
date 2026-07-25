@@ -2,7 +2,7 @@ using Ale.Toolkit.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// 一个 <see cref="Image"/> 的异步图片绑定槽。封装「释放旧句柄 → 自增代次 → 经
