@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -54,7 +56,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // 技能默认信息（从模板创建技能时复制到新技能，之后可在技能条目上独立修改）
-            EditorGUILayout.LabelField(Tr("技能默认信息（从模板创建时复制）"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("技能默认信息（从模板创建时复制）"), ToolkitEditorStyles.Header);
             SkillConfigDrawer.DrawDisplayFields(ctx, template);
 
             EditorGUILayout.Space(6);

@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -56,7 +58,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 默认功能标签 ─────────────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("默认功能标签"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("默认功能标签"), ToolkitEditorStyles.Header);
             EditorTagToggleList.Draw(ctx, template.tagRefs,
                 "模板添加功能标签", "模板移除功能标签",
                 emptyHint: Tr("（暂无功能标签，请先在左侧「功能标签」中创建）"));
@@ -64,7 +66,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 仓库属性 ─────────────────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("仓库属性"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("仓库属性"), ToolkitEditorStyles.Header);
             EditorGUI.BeginChangeCheck();
             float newWeight     = EditorGUILayout.FloatField(Tr("重量"), template.weight);
             int   newStackLimit = EditorGUILayout.IntField(Tr("堆叠上限"), template.stackLimit);

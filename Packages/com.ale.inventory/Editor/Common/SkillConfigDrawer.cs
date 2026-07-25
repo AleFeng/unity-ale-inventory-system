@@ -4,6 +4,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -41,7 +43,7 @@ namespace Ale.Inventory.Editor
         public static void DrawGroupTags(IInventoryEditorContext ctx, ISkillConfig cfg)
         {
             var db = ctx.Database;
-            EditorGUILayout.LabelField(Tr("分组标签"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("分组标签"), ToolkitEditorStyles.Header);
 
             if (db.SkillGroupTags.Count == 0)
             {
@@ -91,7 +93,7 @@ namespace Ale.Inventory.Editor
                 bool   exists = g != null;
                 string label  = exists ? g.PlainName() : tagId + Tr("（已删除）");
                 EditorGUILayout.LabelField(label,
-                    exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
+                    exists ? EditorStyles.label : ToolkitEditorStyles.StatusError);
             });
         }
 

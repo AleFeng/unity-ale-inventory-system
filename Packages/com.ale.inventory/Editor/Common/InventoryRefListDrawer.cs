@@ -3,6 +3,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -29,7 +31,7 @@ namespace Ale.Inventory.Editor
             var db = ctx.Database;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(header, InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(header, ToolkitEditorStyles.Header);
             if (GUILayout.Button("+", GUILayout.Width(24)))
                 ShowAddMenu(ctx, refs, noun);
             EditorGUILayout.EndHorizontal();
@@ -49,7 +51,7 @@ namespace Ale.Inventory.Editor
                 bool exists = db.GetInventory(invId) != null;
                 EditorGUILayout.LabelField($"{i + 1}.", GUILayout.Width(20));
                 EditorGUILayout.LabelField(exists ? invId : invId + Tr("（已删除）"),
-                    exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
+                    exists ? EditorStyles.label : ToolkitEditorStyles.StatusError);
             });
         }
 

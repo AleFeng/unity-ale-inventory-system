@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -59,15 +61,15 @@ namespace Ale.Inventory.Editor
 
             // 名称为空 / 重复 时提示（引用按名称匹配，需保持唯一）
             if (string.IsNullOrEmpty(config.name))
-                EditorGUILayout.LabelField(Tr("⚠ 名称为空时无法被引用。"), InventoryEditorStyles.StatusError);
+                EditorGUILayout.LabelField(Tr("⚠ 名称为空时无法被引用。"), ToolkitEditorStyles.StatusError);
             else if (CountByName(ctx.Database.NumberFormatConfigs, config.name) > 1)
                 EditorGUILayout.LabelField(Tr("⚠ 名称重复，引用将命中第一个同名配置。"),
-                    InventoryEditorStyles.StatusError);
+                    ToolkitEditorStyles.StatusError);
 
             EditorGUILayout.Space(6);
 
             // ── 2. 语言 / 规则 ────────────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("语言与规则"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("语言与规则"), ToolkitEditorStyles.Header);
             NumberFormatConfigDrawer.Draw(ctx, config);
         }
 

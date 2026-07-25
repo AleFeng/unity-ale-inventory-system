@@ -4,6 +4,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -197,8 +199,8 @@ namespace Ale.Inventory.Editor
             if (drawEntity)
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(Fmt("{0} Inspector", Tr(EntityNoun)), InventoryEditorStyles.Header);
-                if (GUILayout.Button(Fmt("删除{0}", Tr(EntityNoun)), InventoryEditorStyles.DangerMiniButton,
+                EditorGUILayout.LabelField(Fmt("{0} Inspector", Tr(EntityNoun)), ToolkitEditorStyles.Header);
+                if (GUILayout.Button(Fmt("删除{0}", Tr(EntityNoun)), ToolkitEditorStyles.DangerMiniButton,
                         GUILayout.Width(DeleteButtonWidth)))
                     _pendingDeleteEntity = true;
                 EditorGUILayout.EndHorizontal();

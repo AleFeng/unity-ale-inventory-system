@@ -1,12 +1,12 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// 编辑器窗口共用的 GUIStyle 与颜色缓存。延迟初始化（首次访问时构建），避免在非 GUI 线程或静态构造期出错。
     /// </summary>
-    public static class InventoryEditorStyles
+    public static class ToolkitEditorStyles
     {
         private static bool _initialized;
 

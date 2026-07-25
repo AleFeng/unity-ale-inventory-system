@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -51,7 +53,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 功能标签属性（UI 显示配置）──────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("功能标签属性"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("功能标签属性"), ToolkitEditorStyles.Header);
 
             // 名称 / 描述：Text（纯文本 fallback + 原生可搜索本地化选择器）
             AttributeFieldDrawer.Draw(ctx, Tr("名称"), tag.displayNameText, null);

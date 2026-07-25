@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -83,7 +85,7 @@ namespace Ale.Inventory.Editor
         {
             if (selected == null)
             {
-                EditorGUILayout.LabelField(Tr("（请在左侧选择一个整理选项）"), InventoryEditorStyles.Placeholder);
+                EditorGUILayout.LabelField(Tr("（请在左侧选择一个整理选项）"), ToolkitEditorStyles.Placeholder);
                 return;
             }
 
@@ -108,7 +110,7 @@ namespace Ale.Inventory.Editor
             if (so.ignoreIds == null) so.ignoreIds = new List<string>();
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(Tr("忽略ID"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("忽略ID"), ToolkitEditorStyles.Header);
             if (GUILayout.Button("+", GUILayout.Width(24)))
             {
                 ctx.RecordUndo("添加忽略ID");

@@ -6,6 +6,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -65,7 +67,7 @@ namespace Ale.Inventory.Editor
 
         private void DrawSortSettings(IInventoryEditorContext ctx, IEquipmentConfig cfg)
         {
-            EditorGUILayout.LabelField(Tr("整理排序"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("整理排序"), ToolkitEditorStyles.Header);
             EditorGUILayout.LabelField(
                 Tr("可装备道具候选列表按此排序（候选列表有排序栏时玩家可选并升降序，否则以首条为默认排序）："),
                 EditorStyles.miniLabel);
@@ -83,7 +85,7 @@ namespace Ale.Inventory.Editor
             var slotLists = cfg.SlotLists;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(Tr("槽位列表"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("槽位列表"), ToolkitEditorStyles.Header);
             if (GUILayout.Button(Tr("+ 添加槽位列表"), EditorStyles.miniButton, GUILayout.Width(96)))
             {
                 ctx.RecordUndo("添加槽位列表");
@@ -201,7 +203,7 @@ namespace Ale.Inventory.Editor
                         ? (string.IsNullOrEmpty(ftName) ? ft.name : ftName)
                         : tagId + Tr("（已删除）");
                     EditorGUILayout.LabelField(label,
-                        exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
+                        exists ? EditorStyles.label : ToolkitEditorStyles.StatusError);
                 });
         }
 
@@ -411,7 +413,7 @@ namespace Ale.Inventory.Editor
                 if (def == null)
                 {
                     if (!string.IsNullOrEmpty(filter.attrId))
-                        EditorGUILayout.LabelField(Tr("⚠ 未找到属性定义（无法编辑期望值）"), InventoryEditorStyles.StatusError);
+                        EditorGUILayout.LabelField(Tr("⚠ 未找到属性定义（无法编辑期望值）"), ToolkitEditorStyles.StatusError);
                     continue;
                 }
 
@@ -449,7 +451,7 @@ namespace Ale.Inventory.Editor
             var list = cfg.AttributeDisplays;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(Tr("装备属性字段"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("装备属性字段"), ToolkitEditorStyles.Header);
             if (GUILayout.Button(Tr("+ 添加"), EditorStyles.miniButton, GUILayout.Width(64)))
             {
                 ctx.RecordUndo("添加装备属性字段");

@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -69,7 +71,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 功能标签（多选，隐藏已被模板覆盖的标签）────────────────────────────
-            EditorGUILayout.LabelField(Tr("功能标签"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("功能标签"), ToolkitEditorStyles.Header);
 
             // 收集模板自身携带的标签（道具层面不可手动切换）
             var templateTagSet = new HashSet<string>();
@@ -109,7 +111,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 仓库属性 ──────────────────────────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("仓库属性"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("仓库属性"), ToolkitEditorStyles.Header);
 
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
@@ -147,7 +149,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 属性值（按来源分组，可折叠）─────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("属性"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("属性"), ToolkitEditorStyles.Header);
 
             // 每次绘制前同步属性结构：修正类型/顺序变更（幂等，不影响 Undo 历史）
             item.RebuildAttributes(db);

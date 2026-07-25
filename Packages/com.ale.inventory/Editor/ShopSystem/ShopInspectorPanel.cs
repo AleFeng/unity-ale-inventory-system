@@ -2,6 +2,8 @@ using Ale.Inventory.Runtime;
 using UnityEditor;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -29,7 +31,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawBasic(IInventoryEditorContext ctx, Shop shop)
         {
-            EditorGUILayout.LabelField(Tr("基础属性"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础属性"), ToolkitEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "商店", shop.id,
                 ctx.DuplicateIdsOf(EInventoryEntityKind.Shop), v => shop.id = v);

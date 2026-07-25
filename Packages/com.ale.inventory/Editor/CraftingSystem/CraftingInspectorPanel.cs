@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -59,7 +61,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawBasic(IInventoryEditorContext ctx, CraftingBlueprint bp)
         {
-            EditorGUILayout.LabelField(Tr("基础属性"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础属性"), ToolkitEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "蓝图", bp.id,
                 ctx.DuplicateIdsOf(EInventoryEntityKind.Crafting), v => bp.id = v);
@@ -76,7 +78,7 @@ namespace Ale.Inventory.Editor
         private void DrawGroupTags(IInventoryEditorContext ctx, CraftingBlueprint bp)
         {
             var db = ctx.Database;
-            EditorGUILayout.LabelField(Tr("分组标签"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("分组标签"), ToolkitEditorStyles.Header);
 
             if (db.CraftingGroupTags.Count == 0)
             {
@@ -126,7 +128,7 @@ namespace Ale.Inventory.Editor
                 bool   exists = g != null;
                 string label  = exists ? g.PlainName() : tagId + Tr("（已删除）");
                 EditorGUILayout.LabelField(label,
-                    exists ? EditorStyles.label : InventoryEditorStyles.StatusError);
+                    exists ? EditorStyles.label : ToolkitEditorStyles.StatusError);
             });
         }
 
@@ -164,7 +166,7 @@ namespace Ale.Inventory.Editor
             List<CraftingItemAmount> list, string header, bool isOutput)
         {
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(Tr(header), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr(header), ToolkitEditorStyles.Header);
             if (GUILayout.Button(Tr("+ 添加"), EditorStyles.miniButton, GUILayout.Width(64)))
             {
                 ctx.RecordUndo("添加" + header);
@@ -202,7 +204,7 @@ namespace Ale.Inventory.Editor
                 string newItemId = EditorGUILayout.DelayedTextField(
                     new GUIContent(Tr("道具ID"), Tr("直接输入道具 ID，回车确认；右侧「选择」可从道具列表快捷选择，写入此处。")),
                     amount.itemId ?? string.Empty,
-                    invalid ? InventoryEditorStyles.RedField : EditorStyles.textField);
+                    invalid ? ToolkitEditorStyles.RedField : EditorStyles.textField);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改道具ID");
@@ -219,7 +221,7 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.EndHorizontal();
 
                 if (invalid)
-                    EditorGUILayout.LabelField(Tr("⚠ 无效道具 ID（导出将被阻止）"), InventoryEditorStyles.StatusError);
+                    EditorGUILayout.LabelField(Tr("⚠ 无效道具 ID（导出将被阻止）"), ToolkitEditorStyles.StatusError);
 
                 // 数量
                 EditorGUI.BeginChangeCheck();

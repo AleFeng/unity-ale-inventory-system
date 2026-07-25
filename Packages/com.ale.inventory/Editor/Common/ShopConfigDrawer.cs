@@ -6,6 +6,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -106,7 +108,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawShopType(IInventoryEditorContext ctx, IShopConfig cfg)
         {
-            EditorGUILayout.LabelField(Tr("商店类型"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("商店类型"), ToolkitEditorStyles.Header);
             EditorGUI.BeginChangeCheck();
             var newType = TrEnumPopup(Tr("类型"), cfg.ShopType);
             if (EditorGUI.EndChangeCheck())
@@ -130,7 +132,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawTradeTags(IInventoryEditorContext ctx, IShopConfig cfg)
         {
-            EditorGUILayout.LabelField(Tr("交易功能标签"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("交易功能标签"), ToolkitEditorStyles.Header);
             EditorGUILayout.LabelField(Tr("仅「回收」生效：只回收含勾选标签的道具；不勾选 = 不限制。"), EditorStyles.miniLabel);
 
             EditorTagToggleList.Draw(ctx, cfg.TradeTagRefs,
@@ -141,7 +143,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawFilterTags(IInventoryEditorContext ctx, IShopConfig cfg)
         {
-            EditorGUILayout.LabelField(Tr("过滤设置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("过滤设置"), ToolkitEditorStyles.Header);
             EditorGUILayout.LabelField(Tr("过滤列表（UI 中以标签按钮形式显示）："), EditorStyles.miniLabel);
 
             EditorGUI.BeginChangeCheck();
@@ -164,7 +166,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawSortSettings(IInventoryEditorContext ctx, IShopConfig cfg)
         {
-            EditorGUILayout.LabelField(Tr("整理排序"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("整理排序"), ToolkitEditorStyles.Header);
             EditorGUILayout.LabelField(
                 Tr("排序条件（UI 中以下拉菜单显示，玩家选择并可升降序；商店仅按当前选中条件对商品显示排序）："),
                 EditorStyles.miniLabel);
@@ -175,7 +177,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawUIConfig(IInventoryEditorContext ctx, IShopConfig cfg)
         {
-            EditorGUILayout.LabelField(Tr("UI 配置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("UI 配置"), ToolkitEditorStyles.Header);
 
             NumberFormatConfigDrawer.DrawRefPopup(ctx, Tr("数字格式"),
                 cfg.NumberFormatRef, v => cfg.NumberFormatRef = v);
@@ -232,7 +234,7 @@ namespace Ale.Inventory.Editor
             var groups = cfg.Groups;
 
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(Tr("商品组"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("商品组"), ToolkitEditorStyles.Header);
             if (GUILayout.Button(Tr("+ 添加商品组"), EditorStyles.miniButton, GUILayout.Width(96)))
             {
                 ctx.RecordUndo("添加商品组");
@@ -392,7 +394,7 @@ namespace Ale.Inventory.Editor
                 string newItemId = EditorGUILayout.DelayedTextField(
                     new GUIContent(Tr("道具ID"), Tr("直接输入道具 ID，回车确认；右侧「选择」可按道具模板分组从道具列表快捷选择，写入此处。无对应道具时红色提示且无法导出。")),
                     c.itemId ?? string.Empty,
-                    invalid ? InventoryEditorStyles.RedField : EditorStyles.textField);
+                    invalid ? ToolkitEditorStyles.RedField : EditorStyles.textField);
                 if (EditorGUI.EndChangeCheck())
                 {
                     ctx.RecordUndo("修改商品道具ID");
@@ -409,7 +411,7 @@ namespace Ale.Inventory.Editor
                 EditorGUILayout.EndHorizontal();
 
                 if (invalid)
-                    EditorGUILayout.LabelField(Tr("⚠ 无效道具 ID（导出将被阻止）"), InventoryEditorStyles.StatusError);
+                    EditorGUILayout.LabelField(Tr("⚠ 无效道具 ID（导出将被阻止）"), ToolkitEditorStyles.StatusError);
 
                 // 行 3：数量 / 倍率 / 次数（含 tooltip）
                 EditorGUI.BeginChangeCheck();

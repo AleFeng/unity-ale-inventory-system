@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -67,7 +69,7 @@ namespace Ale.Inventory.Editor
                 return;
             }
 
-            EditorGUILayout.LabelField(Tr("基础信息"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础信息"), ToolkitEditorStyles.Header);
 
             EditorGUI.BeginChangeCheck();
             string id    = EditorGUILayout.TextField("ID", tag.id);

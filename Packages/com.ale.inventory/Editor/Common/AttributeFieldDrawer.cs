@@ -5,6 +5,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -574,9 +576,9 @@ namespace Ale.Inventory.Editor
             {
                 string msg = Fmt("<未找到枚举类型 \"{0}\">", value.EnumTypeRef);
                 if (string.IsNullOrEmpty(label))
-                    EditorGUI.LabelField(rect, msg, InventoryEditorStyles.StatusError);
+                    EditorGUI.LabelField(rect, msg, ToolkitEditorStyles.StatusError);
                 else
-                    EditorGUI.LabelField(rect, label, msg, InventoryEditorStyles.StatusError);
+                    EditorGUI.LabelField(rect, label, msg, ToolkitEditorStyles.StatusError);
                 return;
             }
 
@@ -606,7 +608,7 @@ namespace Ale.Inventory.Editor
         {
             if (enumType == null || enumType.items.Count == 0)
             {
-                EditorGUI.LabelField(rect, Fmt("<未找到枚举类型 \"{0}\">", value.EnumTypeRef), InventoryEditorStyles.StatusError);
+                EditorGUI.LabelField(rect, Fmt("<未找到枚举类型 \"{0}\">", value.EnumTypeRef), ToolkitEditorStyles.StatusError);
                 return;
             }
 

@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -38,7 +40,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.PrefixLabel("ID");
             EditorGUI.BeginChangeCheck();
             string newId = EditorGUILayout.TextField(
-                currentId, isDup ? InventoryEditorStyles.RedField : EditorStyles.textField);
+                currentId, isDup ? ToolkitEditorStyles.RedField : EditorStyles.textField);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo($"修改{noun} ID");
@@ -48,7 +50,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.EndHorizontal();
 
             if (isDup)
-                EditorGUILayout.LabelField(Tr(dupHint), InventoryEditorStyles.StatusError);
+                EditorGUILayout.LabelField(Tr(dupHint), ToolkitEditorStyles.StatusError);
         }
 
         /// <summary>只读「来源模板」行（创建后不可更改；为空显示「（无）」）。</summary>
@@ -73,7 +75,7 @@ namespace Ale.Inventory.Editor
             List<AttributeEntry> values, List<AttributeDefinition> templateAttrs,
             string emptyHint, GUIStyle emptyStyle = null)
         {
-            EditorGUILayout.LabelField(Tr("自定义属性"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("自定义属性"), ToolkitEditorStyles.Header);
 
             if (values == null || values.Count == 0)
             {

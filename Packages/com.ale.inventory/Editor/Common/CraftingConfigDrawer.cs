@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -57,7 +59,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawCraftParams(IInventoryEditorContext ctx, ICraftingConfig cfg)
         {
-            EditorGUILayout.LabelField(Tr("制作参数"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("制作参数"), ToolkitEditorStyles.Header);
 
             EditorGUI.BeginChangeCheck();
             float newTime = EditorGUILayout.FloatField(
@@ -98,7 +100,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawUIConfig(IInventoryEditorContext ctx, ICraftingConfig cfg)
         {
-            EditorGUILayout.LabelField(Tr("UI 配置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("UI 配置"), ToolkitEditorStyles.Header);
 
             NumberFormatConfigDrawer.DrawRefPopup(ctx, Tr("数字格式"),
                 cfg.NumberFormatRef, v => cfg.NumberFormatRef = v);
@@ -164,14 +166,14 @@ namespace Ale.Inventory.Editor
             var tmpl = db.GetCraftingBlueprintTemplate(bp.templateRef);
 
             // 制作仓库（只读）
-            EditorGUILayout.LabelField(Tr("制作仓库"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("制作仓库"), ToolkitEditorStyles.Header);
             EditorGUILayout.LabelField(Tr("由蓝图模板配置，蓝图条目不可修改（仅展示）。"), EditorStyles.miniLabel);
             DrawInventoryRefsReadonly(db, bp.craftInventoryRefs);
 
             EditorGUILayout.Space(6);
 
             // UI 配置（只读）
-            EditorGUILayout.LabelField(Tr("UI 配置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("UI 配置"), ToolkitEditorStyles.Header);
             EditorGUILayout.LabelField(Tr("由蓝图模板配置，蓝图条目不可修改（仅展示）。"), EditorStyles.miniLabel);
             using (new EditorGUI.DisabledScope(true))
                 EditorGUILayout.TextField(Tr("数字格式"),
@@ -198,7 +200,7 @@ namespace Ale.Inventory.Editor
                     EditorStyles.miniLabel);
             else if (tmpl == null)
                 EditorGUILayout.LabelField(Fmt("⚠ 来源模板「{0}」不存在", bp.templateRef),
-                    InventoryEditorStyles.StatusError);
+                    ToolkitEditorStyles.StatusError);
         }
 
         private static void DrawInventoryRefsReadonly(InventoryDatabase db, List<string> refs)
@@ -212,7 +214,7 @@ namespace Ale.Inventory.Editor
             {
                 bool exists = db.GetInventory(refs[i]) != null;
                 EditorGUILayout.LabelField($"{i + 1}. " + (exists ? refs[i] : refs[i] + Tr("（已删除）")),
-                    exists ? EditorStyles.miniLabel : InventoryEditorStyles.StatusError);
+                    exists ? EditorStyles.miniLabel : ToolkitEditorStyles.StatusError);
             }
         }
 

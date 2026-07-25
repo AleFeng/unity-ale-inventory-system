@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -59,7 +61,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // 整理设置：仅模板持有，作为该模板下所有蓝图在 UI 列表中的排序依据（蓝图条目不再单独配置）。
-            EditorGUILayout.LabelField(Tr("整理设置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("整理设置"), ToolkitEditorStyles.Header);
             EditorGUILayout.LabelField(Tr("此模板下所有蓝图在 UI 列表中按「整理列表」的配置与优先级排序。"),
                 EditorStyles.miniLabel);
             SortSettingsDrawer.Draw(ctx, template.sortPriorities, template.sortTiebreakers);

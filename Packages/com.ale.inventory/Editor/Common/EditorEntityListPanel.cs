@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -166,14 +168,14 @@ namespace Ale.Inventory.Editor
 
                 // 三层行背景：选中 → 重复 ID → 拖拽源
                 if (isSel)
-                    InventoryEditorStyles.DrawRowBackground(fullRect, InventoryEditorStyles.SelectedColor);
+                    ToolkitEditorStyles.DrawRowBackground(fullRect, ToolkitEditorStyles.SelectedColor);
                 if (isDup)
-                    InventoryEditorStyles.DrawRowBackground(fullRect,
-                        new Color(InventoryEditorStyles.ErrorColor.r,
-                                  InventoryEditorStyles.ErrorColor.g,
-                                  InventoryEditorStyles.ErrorColor.b, 0.25f));
+                    ToolkitEditorStyles.DrawRowBackground(fullRect,
+                        new Color(ToolkitEditorStyles.ErrorColor.r,
+                                  ToolkitEditorStyles.ErrorColor.g,
+                                  ToolkitEditorStyles.ErrorColor.b, 0.25f));
                 if (_drag.IsDragSource(i))
-                    InventoryEditorStyles.DrawRowBackground(fullRect, EditorReorderableDrag.DragSourceTint);
+                    ToolkitEditorStyles.DrawRowBackground(fullRect, EditorReorderableDrag.DragSourceTint);
 
                 var delRect = new Rect(fullRect.xMax - DelBtnW, valRow.y + 2, DelBtnW - 2, ValRowH - 4);
                 if (GUI.Button(delRect, "✕", EditorStyles.miniButton))
@@ -184,7 +186,7 @@ namespace Ale.Inventory.Editor
 
                 // 模板色点
                 float cx = fullRect.x + DragHandleW;
-                InventoryEditorStyles.DrawColorDot(
+                ToolkitEditorStyles.DrawColorDot(
                     new Rect(cx, fullRect.y + (fullRect.height - DotW) * 0.5f, DotW, DotW),
                     RowDotColor(db, e));
                 cx += DotW + Pad;

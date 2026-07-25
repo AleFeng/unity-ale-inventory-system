@@ -5,6 +5,8 @@ using UnityEditorInternal;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -140,7 +142,7 @@ namespace Ale.Inventory.Editor
             if (CanAdd)
             {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(Tr(Noun), InventoryEditorStyles.Header);
+                EditorGUILayout.LabelField(Tr(Noun), ToolkitEditorStyles.Header);
                 if (GUILayout.Button("+", GUILayout.Width(24)))
                 {
                     var created = CreateNew(db, list);
@@ -157,7 +159,7 @@ namespace Ale.Inventory.Editor
             }
             else
             {
-                EditorGUILayout.LabelField(Tr(Noun), InventoryEditorStyles.Header);
+                EditorGUILayout.LabelField(Tr(Noun), ToolkitEditorStyles.Header);
             }
 
             if (!string.IsNullOrEmpty(HeaderHelp))
@@ -165,7 +167,7 @@ namespace Ale.Inventory.Editor
 
             if (list.Count == 0 && !string.IsNullOrEmpty(EmptyPlaceholder))
             {
-                EditorGUILayout.LabelField(Tr(EmptyPlaceholder), InventoryEditorStyles.Placeholder);
+                EditorGUILayout.LabelField(Tr(EmptyPlaceholder), ToolkitEditorStyles.Placeholder);
                 return _selectedIndex;
             }
 
@@ -205,7 +207,7 @@ namespace Ale.Inventory.Editor
             _masterList.drawElementBackgroundCallback = (rect, _, active, _) =>
             {
                 if (active)
-                    InventoryEditorStyles.DrawRowBackground(rect, InventoryEditorStyles.SelectedColor);
+                    ToolkitEditorStyles.DrawRowBackground(rect, ToolkitEditorStyles.SelectedColor);
             };
 
             _masterList.drawElementCallback = (rect, index, _, _) =>
@@ -221,7 +223,7 @@ namespace Ale.Inventory.Editor
                 if (HasColorDot)
                 {
                     var dotRect = new Rect(rect.x, cy, DotWidth, lh);
-                    InventoryEditorStyles.DrawColorDot(dotRect, RowColor(item));
+                    ToolkitEditorStyles.DrawColorDot(dotRect, RowColor(item));
                     labelX = dotRect.xMax + 3f;
                 }
 

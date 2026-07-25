@@ -5,6 +5,8 @@ using UnityEditorInternal;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -61,7 +63,7 @@ namespace Ale.Inventory.Editor
 
             // ── 标题 + 添加字段 按钮 ─────────────────────────────────────────────
             EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(title, InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(title, ToolkitEditorStyles.Header);
             if (GUILayout.Button(Tr("添加字段"), GUILayout.Width(72)))
                 _pendingAdd = true; // 延迟到 DoLayoutList 之后执行
             EditorGUILayout.EndHorizontal();

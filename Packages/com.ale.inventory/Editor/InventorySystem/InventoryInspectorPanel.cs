@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     // 类型 Inventory 与命名空间段 Ale.Inventory 同名，此处显式别名消歧义（否则 CS0118）。
@@ -30,7 +32,7 @@ namespace Ale.Inventory.Editor
             var db = ctx.Database;
 
             // ── 1. 基础属性 ───────────────────────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("基础属性"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础属性"), ToolkitEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "仓库", inventory.id,
                 ctx.DuplicateIdsOf(EInventoryEntityKind.Inventory), v => inventory.id = v);
@@ -80,7 +82,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 3. 过滤设置 ───────────────────────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("过滤设置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("过滤设置"), ToolkitEditorStyles.Header);
             EditorGUILayout.LabelField(Tr("过滤列表（UI 中以标签按钮形式显示）："),
                 EditorStyles.miniLabel);
 
@@ -101,7 +103,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 4. 整理设置 ───────────────────────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("整理设置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("整理设置"), ToolkitEditorStyles.Header);
 
             EditorGUI.BeginChangeCheck();
             bool newDragSort = EditorGUILayout.Toggle(Tr("允许拖拽整理"), inventory.dragSort);
@@ -126,7 +128,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 5. UI 配置 ────────────────────────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("UI 配置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("UI 配置"), ToolkitEditorStyles.Header);
             NumberFormatConfigDrawer.DrawRefPopup(ctx, Tr("数字格式"),
                 inventory.numberFormatRef, v => inventory.numberFormatRef = v);
 
@@ -145,7 +147,7 @@ namespace Ale.Inventory.Editor
         private static void DrawTagRefList(IInventoryEditorContext ctx,
             List<string> tagRefs, string labelText)
         {
-            EditorGUILayout.LabelField(Tr(labelText), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr(labelText), ToolkitEditorStyles.Header);
             EditorTagToggleList.Draw(ctx, tagRefs, $"添加{labelText}", $"移除{labelText}");
         }
 

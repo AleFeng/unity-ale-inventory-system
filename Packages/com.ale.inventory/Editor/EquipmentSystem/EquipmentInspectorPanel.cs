@@ -3,6 +3,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -33,7 +35,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawBasic(IInventoryEditorContext ctx, EquipmentGroup group)
         {
-            EditorGUILayout.LabelField(Tr("基础属性"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础属性"), ToolkitEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "装备组", group.id,
                 ctx.DuplicateIdsOf(EInventoryEntityKind.Equipment), v => group.id = v);

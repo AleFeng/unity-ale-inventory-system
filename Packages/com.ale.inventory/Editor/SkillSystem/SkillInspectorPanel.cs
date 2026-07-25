@@ -4,6 +4,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -32,7 +34,7 @@ namespace Ale.Inventory.Editor
 
         private static void DrawBasic(IInventoryEditorContext ctx, Skill skill)
         {
-            EditorGUILayout.LabelField(Tr("基础属性"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础属性"), ToolkitEditorStyles.Header);
 
             EditorEntityHeader.DrawIdField(ctx, "技能", skill.id,
                 ctx.DuplicateIdsOf(EInventoryEntityKind.Skill), v => skill.id = v);

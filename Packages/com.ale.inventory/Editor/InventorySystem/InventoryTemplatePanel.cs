@@ -5,6 +5,8 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -54,7 +56,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 容量上限 / 重量上限 ──────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("基础属性"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("基础属性"), ToolkitEditorStyles.Header);
 
             EditorGUILayout.BeginHorizontal();
             EditorGUI.BeginChangeCheck();
@@ -91,7 +93,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 过滤设置 ─────────────────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("过滤设置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("过滤设置"), ToolkitEditorStyles.Header);
             EditorGUILayout.LabelField(Tr("过滤列表（UI 中以标签按钮形式显示）："),
                 EditorStyles.miniLabel);
 
@@ -112,7 +114,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── 整理设置 ─────────────────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("整理设置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("整理设置"), ToolkitEditorStyles.Header);
 
             EditorGUI.BeginChangeCheck();
             bool newDragSort = EditorGUILayout.Toggle(Tr("允许拖拽整理"), template.dragSort);
@@ -137,7 +139,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.Space(6);
 
             // ── UI 配置 ──────────────────────────────────────────────────────
-            EditorGUILayout.LabelField(Tr("UI 配置"), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr("UI 配置"), ToolkitEditorStyles.Header);
             NumberFormatConfigDrawer.DrawRefPopup(ctx, Tr("数字格式"),
                 template.numberFormatRef, v => template.numberFormatRef = v);
 
@@ -156,7 +158,7 @@ namespace Ale.Inventory.Editor
         private static void DrawTagRefList(IInventoryEditorContext ctx,
             List<string> tagRefs, string labelText)
         {
-            EditorGUILayout.LabelField(Tr(labelText), InventoryEditorStyles.Header);
+            EditorGUILayout.LabelField(Tr(labelText), ToolkitEditorStyles.Header);
             EditorTagToggleList.Draw(ctx, tagRefs, $"模板添加{labelText}", $"模板移除{labelText}");
         }
     }

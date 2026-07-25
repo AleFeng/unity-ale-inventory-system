@@ -8,6 +8,8 @@ using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 using Ale.Toolkit.Runtime;
 
+using Ale.Toolkit.Editor;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -278,7 +280,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             EditorGUILayout.BeginVertical(GUILayout.Width(360));
-            EditorGUILayout.LabelField(Tr("请创建或选择一个 InventoryDatabase 数据文件"), InventoryEditorStyles.Placeholder);
+            EditorGUILayout.LabelField(Tr("请创建或选择一个 InventoryDatabase 数据文件"), ToolkitEditorStyles.Placeholder);
             EditorGUILayout.Space(8);
             if (GUILayout.Button(Tr("创建新的数据文件"), GUILayout.Height(30)))
                 CreateNewDatabase();
@@ -295,7 +297,7 @@ namespace Ale.Inventory.Editor
             EditorGUI.DrawRect(rect, new Color(0.16f, 0.16f, 0.16f));
             var labelRect = new Rect(rect.x + 8, rect.y + 2, rect.width - 16, rect.height - 4);
             if (!string.IsNullOrEmpty(_snapStatusMessage))
-                GUI.Label(labelRect, _snapStatusMessage, InventoryEditorStyles.StatusError);
+                GUI.Label(labelRect, _snapStatusMessage, ToolkitEditorStyles.StatusError);
         }
 
         private string BuildStatusMessage()
