@@ -6,16 +6,18 @@ namespace Ale.Inventory.Runtime
 {
     /// <summary>
     /// 库存领域的排序上下文：把通用排序引擎 <see cref="AttributeSortService"/> 所需的领域信息
-    /// （属性载体 / 字段定义 / 整理选项 / 特殊字段）接到 <see cref="InventoryDatabase"/> 与
-    /// <see cref="InventoryDataManager"/> 上。<typeparamref name="TData"/> 经构造时传入的 itemId 取值器
-    /// 取出道具 ID，再解析为道具定义（<see cref="Item"/>，即属性载体）。
+    /// （属性载体 / 字段定义 / 整理选项）接到 <see cref="InventoryDatabase"/> 与
+    /// <see cref="InventoryDataManager"/> 上。主键（<see cref="SortFieldKeys.Id"/>）比较与别名归一化的通用部分
+    /// 由基类 <see cref="SortContextBase{TData}"/> 承担；本类仅补全领域绑定与领域专属特殊字段
+    /// <see cref="SortFieldKeys.TagOrder"/>（功能标签序号）。
     ///
-    /// <para>内建一次排序过程内复用的字段查表缓存（整理选项 / 属性定义 / 道具模板 / 功能标签序号），
-    /// 把原先每次两两比较里的线性扫描降到 O(1)；只在单次排序期间存活、随即丢弃，不存在缓存过期问题。
-    /// 处理两个特殊排序字段 <c>__id__</c>（道具 ID 字典序）/ <c>__tagOrder__</c>（功能标签序号）及其中文别名。</para>
+    /// <para><typeparamref name="TData"/> 经构造时传入的 itemId 取值器取出道具 ID，再解析为道具定义
+    /// （<see cref="Item"/>，即属性载体）。内建一次排序过程内复用的字段查表缓存（整理选项 / 属性定义 /
+    /// 道具模板 / 功能标签序号），把原先每次两两比较里的线性扫描降到 O(1)；只在单次排序期间存活、随即丢弃，
+    /// 不存在缓存过期问题。</para>
     /// </summary>
     /// <typeparam name="TData">列表数据元素类型（如 <see cref="RuntimeItemSlot"/> / 商品条目 / 蓝图）。</typeparam>
-    public sealed class InventorySortContext<TData> : ISortContext<TData>
+    public sealed class InventorySortContext<TData> : SortContextBase<TData>
     {
         private readonly InventoryDatabase   _db;
         private readonly Func<TData, string> _itemIdOf;
@@ -34,17 +36,20 @@ namespace Ale.Inventory.Runtime
             _itemIdOf = itemIdOf;
         }
 
-        // ── ISortContext 实现 ──────────────────────────────────────────────────────
+        // ── 排序主键：库存以构造时传入的取值器取道具 ID（随上下文而变，故改写基类默认）───────────
+        protected override string IdOf(TData data) => _itemIdOf != null ? _itemIdOf(data) : null;
+
+        // ── 领域绑定（实现基类抽象）────────────────────────────────────────────────
 
         /// <summary>取该条数据对应的道具定义（属性载体）；无则 null。</summary>
-        public AttributeOwner OwnerOf(TData data)
+        public override AttributeOwner OwnerOf(TData data)
         {
-            string id = _itemIdOf != null ? _itemIdOf(data) : null;
+            string id = IdOf(data);
             return string.IsNullOrEmpty(id) ? null : InventoryDataManager.Instance.GetItem(id);
         }
 
         /// <summary>取排序字段的属性定义（道具模板与功能标签中先到先得；缓存复用）。</summary>
-        public AttributeDefinition FindDefinition(string field)
+        public override AttributeDefinition FindDefinition(string field)
         {
             if (string.IsNullOrEmpty(field)) return null;
             if (_attrDefs.TryGetValue(field, out var def)) return def;
@@ -54,7 +59,7 @@ namespace Ale.Inventory.Runtime
         }
 
         /// <summary>取该字段的整理选项（缓存复用）。</summary>
-        public SortOption OptionOf(string field)
+        public override SortOption OptionOf(string field)
         {
             if (string.IsNullOrEmpty(field)) return null;
             if (_options.TryGetValue(field, out var opt)) return opt;
@@ -63,33 +68,26 @@ namespace Ale.Inventory.Runtime
             return opt;
         }
 
-        /// <summary>处理特殊排序字段 <c>__id__</c> / <c>__tagOrder__</c>（含中文别名「道具ID」/「功能标签」）。</summary>
-        public bool TryCompareSpecial(TData a, TData b, string field, bool ascending, out int result)
-        {
-            // 中文别名 → 内部特殊键
-            if (field == "道具ID")  field = "__id__";
-            if (field == "功能标签") field = "__tagOrder__";
+        // ── 领域别名与特殊字段 ─────────────────────────────────────────────────────
 
-            if (field != "__id__" && field != "__tagOrder__") { result = 0; return false; }
+        /// <summary>把中文别名归一化为保留键：「道具ID」→ <see cref="SortFieldKeys.Id"/>；「功能标签」→ <see cref="SortFieldKeys.TagOrder"/>。</summary>
+        protected override string NormalizeField(string field)
+        {
+            if (field == "道具ID")  return SortFieldKeys.Id;
+            if (field == "功能标签") return SortFieldKeys.TagOrder;
+            return field;
+        }
+
+        /// <summary>处理 <see cref="SortFieldKeys.TagOrder"/>：功能标签序号（缺失 / 被忽略者恒排末尾，不受升降序影响）。</summary>
+        protected override bool TryCompareDomainSpecial(TData a, TData b, string field, bool ascending, out int result)
+        {
+            if (field != SortFieldKeys.TagOrder) { result = 0; return false; }
 
             int sign = ascending ? 1 : -1;
-            var ignoreIds = OptionOf(field)?.EffectiveIgnoreIds;
-            string ida = _itemIdOf != null ? _itemIdOf(a) : null;
-            string idb = _itemIdOf != null ? _itemIdOf(b) : null;
+            var ignoreIds = OptionOf(SortFieldKeys.TagOrder)?.EffectiveIgnoreIds;
 
-            if (field == "__id__")
-            {
-                bool aIgn = ignoreIds != null && AttributeSortService.Contains(ignoreIds, ida);
-                bool bIgn = ignoreIds != null && AttributeSortService.Contains(ignoreIds, idb);
-                if (aIgn != bIgn) { result = aIgn ? 1 : -1; return true; }
-                if (aIgn)         { result = 0; return true; }
-                result = string.Compare(ida ?? "", idb ?? "", StringComparison.Ordinal) * sign;
-                return true;
-            }
-
-            // __tagOrder__：功能标签序号（缺失 / 被忽略者恒排末尾，不受升降序影响）。
-            int oa = TagOrderOf(ida, ignoreIds);
-            int ob = TagOrderOf(idb, ignoreIds);
+            int oa = TagOrderOf(IdOf(a), ignoreIds);
+            int ob = TagOrderOf(IdOf(b), ignoreIds);
             if (oa == int.MaxValue && ob == int.MaxValue) { result = 0;  return true; }
             if (oa == int.MaxValue)                        { result = 1;  return true; }
             if (ob == int.MaxValue)                        { result = -1; return true; }
