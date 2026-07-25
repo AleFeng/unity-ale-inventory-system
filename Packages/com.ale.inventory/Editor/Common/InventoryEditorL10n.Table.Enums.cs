@@ -16,32 +16,6 @@ namespace Ale.Inventory.Editor
     {
         static partial void RegisterEnums()
         {
-            // ── EFieldType（属性字段类型下拉）─────────────────────────────────────
-            AddEnum(EFieldType.Int,               "Int",               "整数",                   "整数");
-            AddEnum(EFieldType.Float,             "Float",             "浮動小数点数",           "浮点数");
-            AddEnum(EFieldType.String,            "String",            "文字列",                 "字符串");
-            AddEnum(EFieldType.Bool,              "Bool",              "ブール値",               "布尔值");
-            AddEnum(EFieldType.Enum,              "Enum",              "列挙",                   "枚举");
-            AddEnum(EFieldType.Text,              "Text",              "テキスト",               "文本");
-            AddEnum(EFieldType.Vector2,           "Vector2",           "Vector2",                "二维向量");
-            AddEnum(EFieldType.Vector3,           "Vector3",           "Vector3",                "三维向量");
-            AddEnum(EFieldType.Vector4,           "Vector4",           "Vector4",                "四维向量");
-            AddEnum(EFieldType.VectorInt2,        "VectorInt2",        "VectorInt2",             "二维整数向量");
-            AddEnum(EFieldType.VectorInt3,        "VectorInt3",        "VectorInt3",             "三维整数向量");
-            AddEnum(EFieldType.VectorInt4,        "VectorInt4",        "VectorInt4",             "四维整数向量");
-            AddEnum(EFieldType.StringIntPair,     "StringIntPair",     "文字列-整数ペア",        "字符串-整数对");
-            AddEnum(EFieldType.EnumIntPair,       "EnumIntPair",       "列挙-整数ペア",          "枚举-整数对");
-            AddEnum(EFieldType.Color,             "Color",             "カラー",                 "颜色");
-            AddEnum(EFieldType.Prefab,            "Prefab",            "プレハブ",               "预制体");
-            AddEnum(EFieldType.Sprite,            "Sprite",            "スプライト",             "精灵图");
-            AddEnum(EFieldType.Texture,           "Texture",           "テクスチャ",             "贴图");
-            AddEnum(EFieldType.Material,          "Material",          "マテリアル",             "材质");
-            AddEnum(EFieldType.AudioClip,         "AudioClip",         "オーディオクリップ",     "音频剪辑");
-            AddEnum(EFieldType.AnimationClip,     "AnimationClip",     "アニメーションクリップ", "动画剪辑");
-            AddEnum(EFieldType.AnimationCurve,    "AnimationCurve",    "アニメーションカーブ",   "动画曲线");
-            AddEnum(EFieldType.PhysicsMaterial,   "PhysicsMaterial",   "物理マテリアル",         "物理材质");
-            AddEnum(EFieldType.PhysicsMaterial2D, "PhysicsMaterial2D", "物理マテリアル 2D",      "物理材质 2D");
-
             // ── ShopType（商店类型）──────────────────────────────────────────────
             AddEnum(ShopType.Sell,    "Sell",     "販売",     "售卖");
             AddEnum(ShopType.Recycle, "Buy-back", "買い取り", "回收");

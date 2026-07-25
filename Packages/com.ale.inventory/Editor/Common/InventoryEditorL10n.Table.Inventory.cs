@@ -33,21 +33,6 @@ namespace Ale.Inventory.Editor
                 "ソート時にこれらのエントリをスキップします（アイテム ID ソート = アイテム ID、機能タブ = タグ名、属性ソート = 属性値）。");
             Add("（未配置）", "(Not configured)", "（未設定）");
 
-            // ── 数字格式面板 ──────────────────────────────────────────────────────
-            Add("（未命名）", "(Unnamed)",    "（名称未設定）");
-            Add("新格式",     "New Format",   "新規フォーマット");
-            Add("请选择或新建一个数字格式配置。",
-                "Select or create a number-format config.",
-                "数値フォーマット設定を選択または新規作成してください。");
-            Add("配置名称", "Config Name", "設定名");
-            Add("⚠ 名称为空时无法被引用。",
-                "⚠ A config with an empty name cannot be referenced.",
-                "⚠ 名称が空の設定は参照できません。");
-            Add("⚠ 名称重复，引用将命中第一个同名配置。",
-                "⚠ Duplicate name; references will match the first config with this name.",
-                "⚠ 名称が重複しています。参照は最初の同名設定に一致します。");
-            Add("语言与规则", "Languages & Rules", "言語とルール");
-
             // ── 仓库模板 / Inspector 共用 ─────────────────────────────────────────
             Add("请选择或新建一个仓库模板。",
                 "Select or create a warehouse template.",

@@ -63,15 +63,6 @@ namespace Ale.Inventory.Editor
                 "中央の一覧からブループリントを選択してください。");
             Add("产出道具列表", "Output Item List", "産出アイテム一覧");
             Add("消耗道具列表", "Input Item List",  "消費アイテム一覧");
-            Add("（暂无分组标签；请在左侧「分组标签」中添加）",
-                "(No group tags yet; add them in \"Group Tags\" on the left)",
-                "（グループタグがありません。左の「グループタグ」で追加してください）");
-            Add("主分组标签", "Main Group Tag",       "主グループタグ");
-            Add("副分组标签", "Secondary Group Tags", "副グループタグ");
-            Add("（未添加）", "(None added)",         "（未追加）");
-            Add("（无可添加的分组标签）",
-                "(No group tags available to add)",
-                "（追加できるグループタグがありません）");
             Add("第 1 项为主产出（用于 UI 显示），其余为副产出；拖拽左侧句柄调整顺序。",
                 "The 1st item is the main output (used for UI display); the rest are secondary; drag the left handle to reorder.",
                 "1 番目が主産出（UI 表示に使用）、残りは副産出。左のハンドルをドラッグして順序を調整します。");

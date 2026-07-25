@@ -18,17 +18,6 @@ namespace Ale.Inventory.Editor
             Add("新模板", "New Template", "新規テンプレート");
             Add("新项",   "New Item",     "新規項目");
 
-            // ── 枚举类型面板 ──────────────────────────────────────────────────────
-            Add("请选择或新建一个枚举类型。",
-                "Select or create an enum type.",
-                "列挙型を選択または新規作成してください。");
-            Add("枚举名称", "Enum Name", "列挙名");
-            Add("枚举项属性字段", "Enum Item Attribute Fields", "列挙項目の属性フィールド");
-            Add("▸ {0}  的属性值", "▸ {0} — attribute values", "▸ {0} の属性値");
-            Add("枚举项（值由系统分配、只读；点击行选中以编辑属性值）",
-                "Enum items (values are system-assigned and read-only; click a row to edit its attribute values)",
-                "列挙項目（値はシステムが自動採番・読み取り専用。行をクリックして属性値を編集）");
-
             // ── 功能标签面板 ──────────────────────────────────────────────────────
             Add("请选择或新建一个功能标签。",
                 "Select or create a function tag.",
@@ -60,9 +49,6 @@ namespace Ale.Inventory.Editor
 
             // ── 道具列表（中列）──────────────────────────────────────────────────
             Add("（无可用模板）", "(No templates available)", "（利用可能なテンプレートがありません）");
-            Add("是", "Yes", "はい");
-            Add("否", "No",  "いいえ");
-            Add("曲线({0}帧)", "Curve ({0} keys)", "カーブ（{0} フレーム）");
 
             // ── 道具 Inspector ────────────────────────────────────────────────────
             Add("请在中间列表选择一个道具。",

@@ -20,13 +20,6 @@ namespace Ale.Inventory.Editor
                 "Item & inventory configuration tool for designers",
                 "デザイナー向けアイテム・インベントリ設定ツール");
 
-            // ── 多语言设定 ────────────────────────────────────────────────────────
-            Add("多语言设定", "Language Settings", "多言語設定");
-            Add("枚举值",     "Enum Values",       "列挙値");
-            Add("勾选后，类型下拉等枚举值也随语言切换；不勾选则保持代码中的英文原名。",
-                "When checked, enum values such as type dropdowns also switch language; otherwise the original English names in code are kept.",
-                "チェックすると、型ドロップダウンなどの列挙値も言語に合わせて切り替わります。チェックしない場合はコード内の英語の原名のままです。");
-
             // ── 快捷操作 ──────────────────────────────────────────────────────────
             Add("快捷操作",              "Quick Actions",           "クイック操作");
             Add("创建新数据文件",        "Create New Data File",    "新規データファイル作成");
@@ -125,21 +118,6 @@ namespace Ale.Inventory.Editor
                 "Requires IS_TMP to also be enabled.",
                 "テスト用 Prefab の生成時に InventoryTmpFontEvent コンポーネントへ割り当てるローカライズフォントアセット。" +
                 "IS_TMP も有効な場合にのみ機能します。");
-
-            // ── 宏开关：通用（对话框 / 状态行）────────────────────────────────────
-            Add("警告", "Warning", "警告");
-            Add("确定", "OK",      "OK");
-            Add("取消", "Cancel",  "キャンセル");
-            Add("  ✓ {0} 已安装", "  ✓ {0} installed", "  ✓ {0} インストール済み");
-            Add("  ⚠ {0} 未安装（需通过 Package Manager 安装）",
-                "  ⚠ {0} not installed (install via Package Manager)",
-                "  ⚠ {0} 未インストール（Package Manager からインストール）");
-            Add("  ⏳ 宏定义已更改，等待 Unity 重新编译…",
-                "  ⏳ Define changed, waiting for Unity to recompile…",
-                "  ⏳ マクロ定義が変更されました。Unity の再コンパイルを待っています…");
-
-            // ── 页脚 ──────────────────────────────────────────────────────────────
-            Add("启动时自动显示", "Show on startup", "起動時に表示");
 
             // ── 文档 ──────────────────────────────────────────────────────────────
             Add("文档未找到", "Documentation Not Found", "ドキュメントが見つかりません");
