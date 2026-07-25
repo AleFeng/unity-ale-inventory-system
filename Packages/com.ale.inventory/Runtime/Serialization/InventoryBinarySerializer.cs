@@ -2,6 +2,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 using Ale.Toolkit.Runtime;
+using Ale.Toolkit.Runtime.Serialization;
 
 namespace Ale.Inventory.Runtime.Serialization
 {
@@ -14,9 +15,10 @@ namespace Ale.Inventory.Runtime.Serialization
     /// <c>.bytes</c> 仍可正常导入（新增字段取运行时默认值）。反之新版导出的文件旧版读不了——单向导出格式，
     /// 按需重新导出即可。</para>
     ///
-    /// <para>本分部承载：顶层 Export / Import、道具系统的块读写、以及各分部共用的基础读写辅助。
-    /// 其余系统各有一个分部文件：<c>InventoryBinarySerializer.Inventory.cs</c> / <c>.Shop.cs</c> /
-    /// <c>.Crafting.cs</c> / <c>.Equipment.cs</c> / <c>.Skill.cs</c>。</para>
+    /// <para>本分部承载：顶层 Export / Import、道具系统的块读写、整理条件读写；属性系统 / 枚举 / 分组标签的
+    /// 紧凑读写与通用基础读写辅助已下沉到 <see cref="ToolkitBinaryCodec"/>，本类保留同名 <c>private</c> 转发，
+    /// 使各分部（<c>.Inventory.cs</c> / <c>.Shop.cs</c> / <c>.Crafting.cs</c> / <c>.Equipment.cs</c> /
+    /// <c>.Skill.cs</c>）调用点不变。导出格式保持不变，仅读写代码所在的类不同。</para>
     /// </summary>
     public static partial class InventoryBinarySerializer
     {
@@ -51,19 +53,6 @@ namespace Ale.Inventory.Runtime.Serialization
                 WriteStr(w, dto.localizationTableCollectionGuid);
             }
             return stream.ToArray();
-        }
-
-        private static void WriteEnumType(BinaryWriter w, EnumTypeDto e)
-        {
-            WriteStr(w, e.name);
-            w.Write(e.nextValue);
-            WriteArray(w, e.attributes, WriteDefinition);
-            WriteArray(w, e.items, (bw, it) =>
-            {
-                WriteStr(bw, it.name);
-                bw.Write(it.value);
-                WriteEntries(bw, it.attributeValues);
-            });
         }
 
         private static void WriteFunctionTag(BinaryWriter w, FunctionTagDto t)
@@ -104,28 +93,6 @@ namespace Ale.Inventory.Runtime.Serialization
             w.Write(item.weight);
             w.Write(item.stackLimit);
             w.Write(item.hideInInventory);
-        }
-
-        private static void WriteDefinition(BinaryWriter w, AttributeDefinitionDto d)
-        {
-            WriteStr(w, d.id);
-            w.Write(d.type);
-            w.Write(d.isArray);
-            WriteStr(w, d.enumTypeRef);
-            WriteValue(w, d.defaultValue);
-        }
-
-        private static void WriteValue(BinaryWriter w, AttributeValueDto v)
-        {
-            v ??= new AttributeValueDto();
-            w.Write(v.type);
-            w.Write(v.isArray);
-            WriteStr(w, v.enumTypeRef);
-            WriteIntArray(w, v.ints);
-            WriteFloatArray(w, v.floats);
-            WriteStrArray(w, v.strings);
-            WriteStrArray(w, v.objGuids);
-            WriteStrArray(w, v.curveData);  // v5: AnimationCurve 关键帧字符串数组
         }
 
         #endregion
@@ -183,19 +150,6 @@ namespace Ale.Inventory.Runtime.Serialization
             InventoryDtoMapper.FromDto(dto, target, resolver);
         }
 
-        private static EnumTypeDto ReadEnumType(BinaryReader r)
-        {
-            var e = new EnumTypeDto { name = ReadStr(r), nextValue = r.ReadInt32() };
-            e.attributes = ReadArray(r, ReadDefinition);
-            e.items = ReadArray(r, br =>
-            {
-                var it = new EnumItemDto { name = ReadStr(br), value = br.ReadInt32() };
-                it.attributeValues = ReadEntries(br);
-                return it;
-            });
-            return e;
-        }
-
         private static FunctionTagDto ReadFunctionTag(BinaryReader r, int version)
         {
             var t = new FunctionTagDto
@@ -248,133 +202,56 @@ namespace Ale.Inventory.Runtime.Serialization
             return item;
         }
 
-        private static AttributeDefinitionDto ReadDefinition(BinaryReader r)
-        {
-            return new AttributeDefinitionDto
-            {
-                id = ReadStr(r),
-                type = r.ReadInt32(),
-                isArray = r.ReadBoolean(),
-                enumTypeRef = ReadStr(r),
-                defaultValue = ReadValue(r)
-            };
-        }
-
-        private static AttributeValueDto ReadValue(BinaryReader r)
-        {
-            return new AttributeValueDto
-            {
-                type        = r.ReadInt32(),
-                isArray     = r.ReadBoolean(),
-                enumTypeRef = ReadStr(r),
-                ints        = ReadIntArray(r),
-                floats      = ReadFloatArray(r),
-                strings     = ReadStrArray(r),
-                objGuids    = ReadStrArray(r),
-                curveData   = ReadStrArray(r)   // v5: AnimationCurve 关键帧字符串数组
-            };
-        }
-
         #endregion
 
-        #region 基础读写辅助
+        #region 整理条件读写（field + ascending）——仓库 / 商店 / 制作 / 装备共用
 
-        private static void WriteStr(BinaryWriter w, string s) => w.Write(s ?? string.Empty);
-        private static string ReadStr(BinaryReader r) => r.ReadString();
-
-        /// <summary>属性值条目数组（id + value）——各系统实体的 values / attributeValues 共用。</summary>
-        private static void WriteEntries(BinaryWriter w, AttributeEntryDto[] entries)
-            => WriteArray(w, entries, (bw, e) => { WriteStr(bw, e.id); WriteValue(bw, e.value); });
-
-        private static AttributeEntryDto[] ReadEntries(BinaryReader r)
-            => ReadArray(r, br => new AttributeEntryDto { id = ReadStr(br), value = ReadValue(br) });
-
-        /// <summary>分组标签（id + 显示名 + 描述 + 色点）——制作 / 装备 / 技能三系统共用。</summary>
-        private static void WriteGroupTag(BinaryWriter w, GroupTagDto t)
-        {
-            WriteStr(w, t.id);
-            WriteValue(w, t.displayName);
-            WriteValue(w, t.description);
-            WriteFloatArray(w, t.color);
-        }
-
-        private static GroupTagDto ReadGroupTag(BinaryReader r)
-        {
-            return new GroupTagDto
-            {
-                id          = ReadStr(r),
-                displayName = ReadValue(r),
-                description = ReadValue(r),
-                color       = ReadFloatArray(r)
-            };
-        }
-
-        /// <summary>整理条件数组（field + ascending）——仓库 / 商店 / 制作 / 装备共用。</summary>
         private static void WriteSortPriorities(BinaryWriter w, SortPriorityDto[] a)
             => WriteArray(w, a, (bw, sp) => { WriteStr(bw, sp.field); bw.Write(sp.ascending); });
 
         private static SortPriorityDto[] ReadSortPriorities(BinaryReader r)
             => ReadArray(r, br => new SortPriorityDto { field = ReadStr(br), ascending = br.ReadBoolean() });
 
-        private static void WriteIntArray(BinaryWriter w, int[] a)
-        {
-            int n = a?.Length ?? 0;
-            w.Write(n);
-            for (int i = 0; i < n; i++) w.Write(a[i]);
-        }
+        #endregion
 
-        private static int[] ReadIntArray(BinaryReader r)
-        {
-            int n = r.ReadInt32();
-            var a = new int[n];
-            for (int i = 0; i < n; i++) a[i] = r.ReadInt32();
-            return a;
-        }
+        #region 基础读写辅助（转发 toolkit 通用编解码 ToolkitBinaryCodec）
 
-        private static void WriteFloatArray(BinaryWriter w, float[] a)
-        {
-            int n = a?.Length ?? 0;
-            w.Write(n);
-            for (int i = 0; i < n; i++) w.Write(a[i]);
-        }
+        // 属性值 / 定义 / 条目 / 枚举 / 分组标签的紧凑读写与长度前缀数组、字符串、Int/Float/Str 数组等
+        // 通用基础读写已下沉到 ToolkitBinaryCodec。下方保留同名 private 转发，使本类各分部与道具块读写的
+        // 调用点（含以方法组作为回调传入 WriteArray/ReadArray 的写法）无需改动。
 
-        private static float[] ReadFloatArray(BinaryReader r)
-        {
-            int n = r.ReadInt32();
-            var a = new float[n];
-            for (int i = 0; i < n; i++) a[i] = r.ReadSingle();
-            return a;
-        }
+        private static void WriteStr(BinaryWriter w, string s) => ToolkitBinaryCodec.WriteStr(w, s);
+        private static string ReadStr(BinaryReader r) => ToolkitBinaryCodec.ReadStr(r);
 
-        private static void WriteStrArray(BinaryWriter w, string[] a)
-        {
-            int n = a?.Length ?? 0;
-            w.Write(n);
-            for (int i = 0; i < n; i++) WriteStr(w, a[i]);
-        }
+        private static void WriteValue(BinaryWriter w, AttributeValueDto v) => ToolkitBinaryCodec.WriteValue(w, v);
+        private static AttributeValueDto ReadValue(BinaryReader r) => ToolkitBinaryCodec.ReadValue(r);
 
-        private static string[] ReadStrArray(BinaryReader r)
-        {
-            int n = r.ReadInt32();
-            var a = new string[n];
-            for (int i = 0; i < n; i++) a[i] = ReadStr(r);
-            return a;
-        }
+        private static void WriteDefinition(BinaryWriter w, AttributeDefinitionDto d) => ToolkitBinaryCodec.WriteDefinition(w, d);
+        private static AttributeDefinitionDto ReadDefinition(BinaryReader r) => ToolkitBinaryCodec.ReadDefinition(r);
+
+        private static void WriteEntries(BinaryWriter w, AttributeEntryDto[] entries) => ToolkitBinaryCodec.WriteEntries(w, entries);
+        private static AttributeEntryDto[] ReadEntries(BinaryReader r) => ToolkitBinaryCodec.ReadEntries(r);
+
+        private static void WriteEnumType(BinaryWriter w, EnumTypeDto e) => ToolkitBinaryCodec.WriteEnumType(w, e);
+        private static EnumTypeDto ReadEnumType(BinaryReader r) => ToolkitBinaryCodec.ReadEnumType(r);
+
+        private static void WriteGroupTag(BinaryWriter w, GroupTagDto t) => ToolkitBinaryCodec.WriteGroupTag(w, t);
+        private static GroupTagDto ReadGroupTag(BinaryReader r) => ToolkitBinaryCodec.ReadGroupTag(r);
+
+        private static void WriteIntArray(BinaryWriter w, int[] a) => ToolkitBinaryCodec.WriteIntArray(w, a);
+        private static int[] ReadIntArray(BinaryReader r) => ToolkitBinaryCodec.ReadIntArray(r);
+
+        private static void WriteFloatArray(BinaryWriter w, float[] a) => ToolkitBinaryCodec.WriteFloatArray(w, a);
+        private static float[] ReadFloatArray(BinaryReader r) => ToolkitBinaryCodec.ReadFloatArray(r);
+
+        private static void WriteStrArray(BinaryWriter w, string[] a) => ToolkitBinaryCodec.WriteStrArray(w, a);
+        private static string[] ReadStrArray(BinaryReader r) => ToolkitBinaryCodec.ReadStrArray(r);
 
         private static void WriteArray<T>(BinaryWriter w, T[] a, System.Action<BinaryWriter, T> write)
-        {
-            int n = a?.Length ?? 0;
-            w.Write(n);
-            for (int i = 0; i < n; i++) write(w, a[i]);
-        }
+            => ToolkitBinaryCodec.WriteArray(w, a, write);
 
         private static T[] ReadArray<T>(BinaryReader r, System.Func<BinaryReader, T> read)
-        {
-            int n = r.ReadInt32();
-            var a = new T[n];
-            for (int i = 0; i < n; i++) a[i] = read(r);
-            return a;
-        }
+            => ToolkitBinaryCodec.ReadArray(r, read);
 
         #endregion
     }

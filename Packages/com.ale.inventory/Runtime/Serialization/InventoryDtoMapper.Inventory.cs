@@ -1,4 +1,5 @@
 using Ale.Toolkit.Runtime;
+using Ale.Toolkit.Runtime.Serialization;
 
 namespace Ale.Inventory.Runtime.Serialization
 {

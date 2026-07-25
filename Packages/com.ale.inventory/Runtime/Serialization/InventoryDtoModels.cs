@@ -1,15 +1,18 @@
 using Ale.Toolkit.Runtime;
+using Ale.Toolkit.Runtime.Serialization;
 using System;
 
 namespace Ale.Inventory.Runtime.Serialization
 {
     /// <summary>
-    /// 扁平 DTO 模型，用于导出 JSON / 二进制 与运行时加载。与运行时数据模型一一镜像，
+    /// 库存领域的扁平 DTO 模型，用于导出 JSON / 二进制 与运行时加载。与运行时数据模型一一镜像，
     /// 区别在于 Unity 对象引用以 GUID 字符串承载（便于跨工程移植），而非 instanceID。
     /// 所有字段为 public 且类型受 JsonUtility 支持（基础类型 + 数组 + 嵌套 [Serializable]）。
     ///
-    /// <para>本文件<b>只放 DTO 定义</b>；与运行时模型的双向映射见 <see cref="InventoryDtoMapper"/>
-    /// （按系统拆成多个分部文件）。</para>
+    /// <para>属性系统 / 分组标签 / 模板基类 / 数字格式 / 整理排序等通用 DTO 定义在 toolkit 的
+    /// <see cref="Ale.Toolkit.Runtime.Serialization.ToolkitDtoModels"/> 一族里，本文件只放<b>领域 DTO</b>
+    /// （道具 / 仓库 / 商店 / 制作 / 装备 / 技能），并按需引用 / 派生通用 DTO。与运行时模型的双向映射见
+    /// <see cref="InventoryDtoMapper"/>（按系统拆成多个分部文件）。</para>
     /// </summary>
     [Serializable]
     public class InventoryDatabaseDto
@@ -52,93 +55,7 @@ namespace Ale.Inventory.Runtime.Serialization
         public string localizationTableCollectionGuid;
     }
 
-    #region 属性系统
-
-    [Serializable]
-    public class AttributeValueDto
-    {
-        public int      type;
-        public bool     isArray;
-        public string   enumTypeRef;
-        public int[]    ints;
-        public float[]  floats;
-        public string[] strings;
-        public string[] objGuids;
-        /// <summary>
-        /// AnimationCurve 序列化数据。每个元素对应一条曲线，格式：
-        /// 关键帧以 '|' 分隔，每帧 7 个值以 ',' 分隔：time,value,inTangent,outTangent,inWeight,outWeight,weightedMode。
-        /// </summary>
-        public string[] curveData;
-    }
-
-    [Serializable]
-    public class AttributeDefinitionDto
-    {
-        public string id;
-        public int type;
-        public bool isArray;
-        public string enumTypeRef;
-        public AttributeValueDto defaultValue;
-    }
-
-    [Serializable]
-    public class AttributeEntryDto
-    {
-        public string id;
-        public AttributeValueDto value;
-    }
-
-    /// <summary>
-    /// 六大系统模板共有的三项（对应运行时的 <see cref="ConfigTemplateBase"/>）：名称、色点、属性字段定义。
-    /// 各具体模板 DTO 由此派生——JsonUtility 与 Unity 序列化一样会把基类的 public 字段并入子类。
-    /// </summary>
-    [Serializable]
-    public class ConfigTemplateDto
-    {
-        public string name;
-        /// <summary>模板色点，RGBA 四个 0-1 浮点（v6 新增）。缺省（v5 及更早的数据）按 <c>Color.gray</c> 处理。</summary>
-        public float[] color;
-        public AttributeDefinitionDto[] attributes;
-    }
-
-    /// <summary>
-    /// 三大系统分组标签共有的四项（对应运行时的 <see cref="GroupTag"/>）：ID、显示名、描述、列表色点。
-    /// 制作 / 装备 / 技能的分组标签在数据上完全同形，故三者共用本 DTO（各自一个数组，互不混淆）。
-    /// </summary>
-    [Serializable]
-    public class GroupTagDto
-    {
-        public string id;
-        /// <summary>显示名（Text：纯文本 fallback + 本地化引用）。</summary>
-        public AttributeValueDto displayName;
-        /// <summary>描述（Text：纯文本 fallback + 本地化引用）。</summary>
-        public AttributeValueDto description;
-        /// <summary>列表色点，RGBA 四个 0-1 浮点。缺省按 <c>Color.gray</c> 处理。</summary>
-        public float[] color;
-    }
-
-    #endregion
-
     #region 道具系统
-
-    [Serializable]
-    public class EnumItemDto
-    {
-        public string name;
-        public int value;
-        /// <summary>枚举项携带的自定义属性值。</summary>
-        public AttributeEntryDto[] attributeValues;
-    }
-
-    [Serializable]
-    public class EnumTypeDto
-    {
-        public string name;
-        public EnumItemDto[] items;
-        public int nextValue;
-        /// <summary>枚举类型的属性字段定义（所有枚举项共享 schema）。</summary>
-        public AttributeDefinitionDto[] attributes;
-    }
 
     [Serializable]
     public class FunctionTagDto
@@ -195,13 +112,6 @@ namespace Ale.Inventory.Runtime.Serialization
     #region 仓库系统
 
     [Serializable]
-    public class SortPriorityDto
-    {
-        public string field;
-        public bool ascending;
-    }
-
-    [Serializable]
     public class InventoryTemplateDto : ConfigTemplateDto
     {
         public int   capacity;
@@ -241,42 +151,6 @@ namespace Ale.Inventory.Runtime.Serialization
         public SortPriorityDto[] sortTiebreakers;
         /// <summary>来自模板的自定义属性值。</summary>
         public AttributeEntryDto[] values;
-    }
-
-    [Serializable]
-    public class SortOptionDto
-    {
-        public string field;
-        /// <summary>内置：排序下拉显示名（Text：纯文本 fallback + 本地化引用）。</summary>
-        public AttributeValueDto displayName;
-        /// <summary>内置：排序时忽略（跳过）的条目 ID 列表。</summary>
-        public string[] ignoreIds;
-        /// <summary>额外自定义属性值（schema 见 <see cref="InventoryDatabaseDto.sortOptionAttributes"/>）。</summary>
-        public AttributeEntryDto[] attributeValues;
-    }
-
-    [Serializable]
-    public class NumberFormatRuleDto
-    {
-        public long   threshold;
-        public double divisor;
-        /// <summary>后缀（Text：纯文本 fallback + 本地化引用）。</summary>
-        public AttributeValueDto suffixText;
-        public int    decimalPlaces;
-    }
-
-    [Serializable]
-    public class NumberFormatLocaleDto
-    {
-        public string languageCode;
-        public NumberFormatRuleDto[] rules;
-    }
-
-    [Serializable]
-    public class NumberFormatConfigDto
-    {
-        public string name;
-        public NumberFormatLocaleDto[] locales;
     }
 
     #endregion

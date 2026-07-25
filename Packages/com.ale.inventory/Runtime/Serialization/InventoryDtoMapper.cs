@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Ale.Toolkit.Runtime;
+using Ale.Toolkit.Runtime.Serialization;
 
 namespace Ale.Inventory.Runtime.Serialization
 {
@@ -12,9 +11,11 @@ namespace Ale.Inventory.Runtime.Serialization
     /// 运行时数据模型 与 DTO 之间的双向映射。导出时用 <see cref="IAssetRefResolver"/> 把对象引用转 GUID，
     /// 导入时反向解析。
     ///
-    /// <para>本分部承载：版本号、顶层 <see cref="ToDto"/> / <see cref="FromDto"/>、属性系统与道具系统的映射，
-    /// 以及各分部共用的辅助方法。其余系统各有一个分部文件：<c>InventoryDtoMapper.Inventory.cs</c> /
-    /// <c>.Shop.cs</c> / <c>.Crafting.cs</c> / <c>.Equipment.cs</c> / <c>.Skill.cs</c>。</para>
+    /// <para>本分部承载：版本号、顶层 <see cref="ToDto"/> / <see cref="FromDto"/>、道具系统（枚举 / 功能标签 /
+    /// 道具）的映射，以及各分部对 toolkit 通用映射 <see cref="ToolkitDtoMapper"/> 的转发封装。其余系统各有一个
+    /// 分部文件：<c>InventoryDtoMapper.Inventory.cs</c> / <c>.Shop.cs</c> / <c>.Crafting.cs</c> /
+    /// <c>.Equipment.cs</c> / <c>.Skill.cs</c>。属性系统 / 分组标签 / 模板公共字段 / 整理排序等通用映射已下沉到
+    /// <see cref="ToolkitDtoMapper"/>；本类保留同名 <c>private</c> 转发以使各分部调用点不变。</para>
     /// </summary>
     public static partial class InventoryDtoMapper
     {
@@ -130,97 +131,6 @@ namespace Ale.Inventory.Runtime.Serialization
                 stackLimit      = item.stackLimit,
                 hideInInventory = item.hideInInventory
             };
-        }
-
-        private static AttributeDefinitionDto ToDto(AttributeDefinition d, IAssetRefResolver resolver)
-        {
-            return new AttributeDefinitionDto
-            {
-                id = d.id,
-                type = (int)d.type,
-                isArray = d.isArray,
-                enumTypeRef = d.enumTypeRef,
-                defaultValue = ToDto(d.defaultValue, resolver)
-            };
-        }
-
-        private static AttributeValueDto ToDto(AttributeValue v, IAssetRefResolver resolver)
-        {
-            if (v == null) return new AttributeValueDto();
-
-            string[] guids = null;
-            if (v.Type.IsObjectBacked())
-            {
-                var raw = v.RawObjects;
-                guids = new string[raw.Count];
-                for (int i = 0; i < raw.Count; i++)
-                    // 有实时引用（直接模式）→ 经解析器转 GUID 并登记进分组；
-                    // 无实时引用（IS_ADDRESSABLE 下 AssetReference 授权，objRefs 槽为 null）→ 直接用授权 GUID。
-                    guids[i] = raw[i] != null ? resolver.ToGuid(raw[i]) : v.GetObjAddress(i);
-            }
-
-            string[] curveData = null;
-            if (v.Type.IsAnimationCurveBacked())
-            {
-                var raw = v.RawCurves;
-                curveData = new string[raw.Count];
-                for (int i = 0; i < raw.Count; i++)
-                    curveData[i] = SerializeCurve(raw[i]);
-            }
-
-            return new AttributeValueDto
-            {
-                type       = (int)v.Type,
-                isArray    = v.IsArray,
-                enumTypeRef = v.EnumTypeRef,
-                ints       = v.RawInts.ToArray(),
-                floats     = v.RawFloats.ToArray(),
-                strings    = v.RawStrings.ToArray(),
-                objGuids   = guids     ?? Array.Empty<string>(),
-                curveData  = curveData ?? Array.Empty<string>()
-            };
-        }
-
-        // ─── AnimationCurve 序列化辅助 ────────────────────────────────────────────
-
-        private static string SerializeCurve(AnimationCurve curve)
-        {
-            if (curve == null || curve.length == 0) return string.Empty;
-            var sb = new StringBuilder();
-            for (int i = 0; i < curve.length; i++)
-            {
-                if (i > 0) sb.Append('|');
-                var k = curve.keys[i];
-                sb.Append(k.time.ToString("R", CultureInfo.InvariantCulture));     sb.Append(',');
-                sb.Append(k.value.ToString("R", CultureInfo.InvariantCulture));    sb.Append(',');
-                sb.Append(k.inTangent.ToString("R", CultureInfo.InvariantCulture)); sb.Append(',');
-                sb.Append(k.outTangent.ToString("R", CultureInfo.InvariantCulture)); sb.Append(',');
-                sb.Append(k.inWeight.ToString("R", CultureInfo.InvariantCulture)); sb.Append(',');
-                sb.Append(k.outWeight.ToString("R", CultureInfo.InvariantCulture)); sb.Append(',');
-                sb.Append((int)k.weightedMode);
-            }
-            return sb.ToString();
-        }
-
-        private static AnimationCurve DeserializeCurve(string s)
-        {
-            var curve = new AnimationCurve();
-            if (string.IsNullOrEmpty(s)) return curve;
-            foreach (var frame in s.Split('|'))
-            {
-                var vals = frame.Split(',');
-                if (vals.Length < 7) continue;
-                if (!float.TryParse(vals[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float t))  continue;
-                if (!float.TryParse(vals[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float v))  continue;
-                if (!float.TryParse(vals[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float it)) continue;
-                if (!float.TryParse(vals[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float ot)) continue;
-                if (!float.TryParse(vals[4], NumberStyles.Float, CultureInfo.InvariantCulture, out float iw)) continue;
-                if (!float.TryParse(vals[5], NumberStyles.Float, CultureInfo.InvariantCulture, out float ow)) continue;
-                if (!int.TryParse(vals[6], out int wm)) continue;
-                var key = new Keyframe(t, v, it, ot, iw, ow) { weightedMode = (WeightedMode)wm };
-                curve.AddKey(key);
-            }
-            return curve;
         }
 
         #endregion
@@ -364,168 +274,73 @@ namespace Ale.Inventory.Runtime.Serialization
             return item;
         }
 
-        private static AttributeDefinition FromDto(AttributeDefinitionDto dto, IAssetRefResolver resolver)
-        {
-            return new AttributeDefinition
-            {
-                id = dto.id,
-                type = (EFieldType)dto.type,
-                isArray = dto.isArray,
-                enumTypeRef = dto.enumTypeRef,
-                defaultValue = FromDto(dto.defaultValue, resolver)
-            };
-        }
-
-        private static AttributeValue FromDto(AttributeValueDto dto, IAssetRefResolver resolver)
-        {
-            var v = new AttributeValue();
-            if (dto == null) return v;
-
-            var type = (EFieldType)dto.type;
-
-            List<Object> objs = null;
-            List<string> addresses = null;
-            if (type.IsObjectBacked() && dto.objGuids != null)
-            {
-                objs = new List<Object>(dto.objGuids.Length);
-                foreach (var guid in dto.objGuids)
-                    objs.Add(resolver.FromGuid(guid));
-
-                // 同时把原始 GUID/地址保留下来：运行时（NullResolver）对象引用为 null，
-                // 此地址供 Addressable 取用门面按需异步加载。
-                addresses = new List<string>(dto.objGuids);
-            }
-
-            List<AnimationCurve> curves = null;
-            if (type.IsAnimationCurveBacked() && dto.curveData != null)
-            {
-                curves = new List<AnimationCurve>(dto.curveData.Length);
-                foreach (var s in dto.curveData)
-                    curves.Add(DeserializeCurve(s));
-            }
-
-            v.SetRaw(type, dto.isArray, dto.enumTypeRef,
-                dto.ints, dto.floats, dto.strings, objs,
-                curveList: curves, addressList: addresses);
-            return v;
-        }
-
         #endregion
 
-        #region 共用辅助
+        #region 共用辅助（转发 toolkit 通用映射 ToolkitDtoMapper）
+
+        // 属性系统 / 分组标签 / 模板公共字段 / 整理排序等通用映射已下沉到 ToolkitDtoMapper。
+        // 下方保留同名 private 转发，使本类各分部（Inventory / Shop / Crafting / Equipment / Skill）
+        // 与道具系统映射的调用点无需改动。
 
         private static TOut[] ToArray<TIn, TOut>(List<TIn> source, Func<TIn, TOut> map)
-        {
-            if (source == null) return Array.Empty<TOut>();
-            var result = new TOut[source.Count];
-            for (int i = 0; i < source.Count; i++)
-                result[i] = map(source[i]);
-            return result;
-        }
+            => ToolkitDtoMapper.ToArray(source, map);
 
-        /// <summary>带过滤器的 ToArray，仅映射满足条件的元素。</summary>
         private static TOut[] ToArrayFiltered<TIn, TOut>(List<TIn> source, Func<TIn, bool> filter, Func<TIn, TOut> map)
-        {
-            if (source == null) return Array.Empty<TOut>();
-            var list = new List<TOut>(source.Count);
-            foreach (var item in source)
-                if (filter(item)) list.Add(map(item));
-            return list.ToArray();
-        }
+            => ToolkitDtoMapper.ToArrayFiltered(source, filter, map);
 
-        /// <summary>字符串引用列表 -> 数组（null 视为空）。</summary>
         private static string[] ToArray(List<string> source)
-            => source != null ? source.ToArray() : Array.Empty<string>();
+            => ToolkitDtoMapper.ToArray(source);
 
-        /// <summary>数组 -> 字符串引用列表（null 视为空，始终返回可写列表）。</summary>
         private static List<string> FromDto(string[] source)
-            => source != null ? new List<string>(source) : new List<string>();
+            => ToolkitDtoMapper.FromDto(source);
 
-        /// <summary>属性值条目列表 -> DTO 数组。</summary>
-        private static AttributeEntryDto[] ToDto(List<AttributeEntry> source, IAssetRefResolver resolver)
-            => ToArray(source, e => new AttributeEntryDto { id = e.id, value = ToDto(e.value, resolver) });
+        private static AttributeValueDto ToDto(AttributeValue v, IAssetRefResolver resolver)
+            => ToolkitDtoMapper.ToDto(v, resolver);
 
-        /// <summary>DTO 数组 -> 属性值条目，追加进 <paramref name="dest"/>（null 视为空）。</summary>
-        private static void FromDto(AttributeEntryDto[] source, List<AttributeEntry> dest, IAssetRefResolver resolver)
-        {
-            if (source == null) return;
-            foreach (var e in source)
-                dest.Add(new AttributeEntry(e.id, FromDto(e.value, resolver)));
-        }
+        private static AttributeValue FromDto(AttributeValueDto dto, IAssetRefResolver resolver)
+            => ToolkitDtoMapper.FromDto(dto, resolver);
 
-        /// <summary>Text 型属性值的导入：DTO 缺省时给出一个空的 <see cref="EFieldType.Text"/> 值而非默认 Int。</summary>
         private static AttributeValue TextFromDto(AttributeValueDto dto, IAssetRefResolver resolver)
-            => dto != null ? FromDto(dto, resolver) : new AttributeValue(EFieldType.Text);
+            => ToolkitDtoMapper.TextFromDto(dto, resolver);
 
-        private static float[] ToDto(Color c) => new[] { c.r, c.g, c.b, c.a };
+        private static AttributeDefinitionDto ToDto(AttributeDefinition d, IAssetRefResolver resolver)
+            => ToolkitDtoMapper.ToDto(d, resolver);
 
-        /// <summary>RGBA 浮点数组 -> 颜色；缺省 / 长度不足时返回 <paramref name="fallback"/>。</summary>
+        private static AttributeDefinition FromDto(AttributeDefinitionDto dto, IAssetRefResolver resolver)
+            => ToolkitDtoMapper.FromDto(dto, resolver);
+
+        private static AttributeEntryDto[] ToDto(List<AttributeEntry> source, IAssetRefResolver resolver)
+            => ToolkitDtoMapper.ToDto(source, resolver);
+
+        private static void FromDto(AttributeEntryDto[] source, List<AttributeEntry> dest, IAssetRefResolver resolver)
+            => ToolkitDtoMapper.FromDto(source, dest, resolver);
+
+        private static float[] ToDto(Color c)
+            => ToolkitDtoMapper.ToDto(c);
+
         private static Color FromDto(float[] rgba, Color fallback)
-            => rgba != null && rgba.Length >= 4 ? new Color(rgba[0], rgba[1], rgba[2], rgba[3]) : fallback;
+            => ToolkitDtoMapper.FromDto(rgba, fallback);
 
-        /// <summary>把模板公共字段（名称 / 色点 / 属性字段）写入 DTO，供各模板 ToDto 复用。</summary>
         private static void FillTemplateDto(ConfigTemplateDto dto, ConfigTemplateBase src, IAssetRefResolver resolver)
-        {
-            dto.name       = src.name;
-            dto.color      = ToDto(src.color);
-            dto.attributes = ToArray(src.attributes, a => ToDto(a, resolver));
-        }
+            => ToolkitDtoMapper.FillTemplateDto(dto, src, resolver);
 
-        /// <summary>把 DTO 的模板公共字段写回运行时模板，供各模板 FromDto 复用。</summary>
         private static void FillTemplate(ConfigTemplateBase dest, ConfigTemplateDto dto, IAssetRefResolver resolver)
-        {
-            dest.name  = dto.name;
-            dest.color = FromDto(dto.color, Color.gray);
-            dest.attributes.Clear();
-            if (dto.attributes != null)
-                foreach (var a in dto.attributes)
-                    dest.attributes.Add(FromDto(a, resolver));
-        }
+            => ToolkitDtoMapper.FillTemplate(dest, dto, resolver);
 
-        /// <summary>
-        /// 分组标签（制作 / 装备 / 技能三系统同形）-> DTO。
-        /// </summary>
         private static GroupTagDto ToDto(GroupTag t, IAssetRefResolver resolver)
-        {
-            return new GroupTagDto
-            {
-                id          = t.id,
-                displayName = ToDto(t.displayName, resolver),
-                description = ToDto(t.description, resolver),
-                color       = ToDto(t.color)
-            };
-        }
+            => ToolkitDtoMapper.ToDto(t, resolver);
 
-        /// <summary>DTO -> 指定类型的分组标签（三系统的标签除类型外无差异，故用一个泛型工厂）。</summary>
         private static T FromDto<T>(GroupTagDto dto, IAssetRefResolver resolver) where T : GroupTag, new()
-        {
-            return new T
-            {
-                id          = dto.id,
-                displayName = TextFromDto(dto.displayName, resolver),
-                description = TextFromDto(dto.description, resolver),
-                color       = FromDto(dto.color, Color.gray)
-            };
-        }
+            => ToolkitDtoMapper.FromDto<T>(dto, resolver);
 
-        /// <summary>
-        /// 单个 Unity 对象引用 -> GUID：有实时引用时经解析器转 GUID，
-        /// 否则回退到已存的 Addressable 授权地址（约定同 <see cref="AttributeValue"/> 的对象槽）。
-        /// </summary>
         private static string ObjToGuid(Object obj, string address, IAssetRefResolver resolver)
-            => obj != null ? resolver.ToGuid(obj) : address;
+            => ToolkitDtoMapper.ObjToGuid(obj, address, resolver);
 
-        /// <summary>整理条件列表 -> DTO 数组。</summary>
         private static SortPriorityDto[] ToDto(List<SortPriority> source)
-            => ToArray(source, sp => new SortPriorityDto { field = sp.field, ascending = sp.ascending });
+            => ToolkitDtoMapper.ToDto(source);
 
-        /// <summary>DTO 数组 -> 整理条件，追加进 <paramref name="dest"/>（null 视为空）。</summary>
         private static void FromDto(SortPriorityDto[] source, List<SortPriority> dest)
-        {
-            if (source == null) return;
-            foreach (var sp in source)
-                dest.Add(new SortPriority(sp.field, sp.ascending));
-        }
+            => ToolkitDtoMapper.FromDto(source, dest);
 
         #endregion
     }
