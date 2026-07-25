@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
+using Ale.Toolkit.Editor;
 
 namespace Ale.Inventory.Editor
 {
@@ -16,9 +16,9 @@ namespace Ale.Inventory.Editor
     }
 
     /// <summary>
-    /// 重复 / 空 ID 扫描。此前六类各写了一份逐字相同的扫描器（道具那份在
-    /// <c>DuplicateIdChecker</c>、另五份在 <c>InventoryEditorWindow</c>），
-    /// 且两种写法对「空 ID」的判定并不一致 —— 见 <see cref="Scan{T}"/> 的说明。
+    /// 库存领域的重复 / 空 ID 扫描。通用的逐条扫描算法（<see cref="EditorIdScanner.Scan{T}"/> /
+    /// <see cref="EditorIdScanner.HasNonEmpty"/>）已下沉到 toolkit；本类只保留「六类实体种类」的领域枚举
+    /// 与整库扫描 <see cref="ScanAll"/>，并薄转发 <see cref="HasNonEmpty"/> 以保调用点不变。
     /// </summary>
     public static class EditorDuplicateIdScanner
     {
@@ -47,31 +47,6 @@ namespace Ale.Inventory.Editor
             }
         }
 
-        /// <summary>
-        /// 扫描出「重复」或「空白」的 ID 集合，空白 ID 以 <see cref="string.Empty"/> 计入。
-        /// <para><b>空 ID 一经出现即计入</b>（不必出现两次）—— 六个 Inspector 的提示文案都是
-        /// 「⚠ ID 重复或为空」，此前只有道具那份是这个语义，另五份用的是
-        /// <c>if (!seen.Add(id)) result.Add(id)</c>，导致**单个**空 ID 永远不被标记。</para>
-        /// </summary>
-        public static HashSet<string> Scan<T>(IEnumerable<T> items, Func<T, string> idOf)
-        {
-            var result = new HashSet<string>();
-            if (items == null || idOf == null) return result;
-
-            var seen = new HashSet<string>();
-            foreach (var it in items)
-            {
-                string id = idOf(it);
-                if (string.IsNullOrWhiteSpace(id))
-                {
-                    result.Add(string.Empty);
-                    continue;
-                }
-                if (!seen.Add(id)) result.Add(id);
-            }
-            return result;
-        }
-
         /// <summary>扫描整库六类实体，返回「种类 → 重复/空 ID 集合」。</summary>
         public static Dictionary<EInventoryEntityKind, HashSet<string>> ScanAll(InventoryDatabase db)
         {
@@ -79,22 +54,16 @@ namespace Ale.Inventory.Editor
             foreach (var kind in AllKinds) map[kind] = new HashSet<string>();
             if (!db) return map;
 
-            map[EInventoryEntityKind.Item]      = Scan(db.Items,              x => x.id);
-            map[EInventoryEntityKind.Inventory] = Scan(db.Inventories,        x => x.id);
-            map[EInventoryEntityKind.Shop]      = Scan(db.Shops,              x => x.id);
-            map[EInventoryEntityKind.Crafting]  = Scan(db.CraftingBlueprints, x => x.id);
-            map[EInventoryEntityKind.Equipment] = Scan(db.EquipmentGroups,    x => x.id);
-            map[EInventoryEntityKind.Skill]     = Scan(db.Skills,             x => x.id);
+            map[EInventoryEntityKind.Item]      = EditorIdScanner.Scan(db.Items,              x => x.id);
+            map[EInventoryEntityKind.Inventory] = EditorIdScanner.Scan(db.Inventories,        x => x.id);
+            map[EInventoryEntityKind.Shop]      = EditorIdScanner.Scan(db.Shops,              x => x.id);
+            map[EInventoryEntityKind.Crafting]  = EditorIdScanner.Scan(db.CraftingBlueprints, x => x.id);
+            map[EInventoryEntityKind.Equipment] = EditorIdScanner.Scan(db.EquipmentGroups,    x => x.id);
+            map[EInventoryEntityKind.Skill]     = EditorIdScanner.Scan(db.Skills,             x => x.id);
             return map;
         }
 
-        /// <summary>集合中是否含「非空」的重复 ID（空 ID 在导出时会被跳过，不阻塞导出）。</summary>
-        public static bool HasNonEmpty(HashSet<string> ids)
-        {
-            if (ids == null) return false;
-            foreach (var id in ids)
-                if (!string.IsNullOrEmpty(id)) return true;
-            return false;
-        }
+        /// <summary>集合中是否含「非空」的重复 ID（薄转发到 <see cref="EditorIdScanner.HasNonEmpty"/>）。</summary>
+        public static bool HasNonEmpty(HashSet<string> ids) => EditorIdScanner.HasNonEmpty(ids);
     }
 }

@@ -1,28 +1,27 @@
 using System;
 using System.Collections.Generic;
-using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
-    /// 库工具窗口基类：抽出「选数据库 + 逐帧时间预算步进 + 进度条 + 可选择日志 + 取消 + 完成收尾」等
-    /// 与具体操作无关的通用能力，供 InventoryAddressableToolWindow（资源引用迁移）与
-    /// <c>InventoryLocalizationToolWindow</c>（本地化建表/生成 Key）等工具窗口复用。
+    /// 工具窗口基类：抽出「选数据库 + 逐帧时间预算步进 + 进度条 + 可选择日志 + 取消 + 完成收尾」等
+    /// 与具体操作无关的通用能力，供各种「批量处理某数据库资产」的工具窗口复用。
     ///
     /// <para>子类只需：① 覆写 <see cref="DrawOperations"/> 画自己的操作按钮区，用 <see cref="RunSteps"/> 启动一批逐帧步骤；
     /// ② 覆写 <see cref="OnRunComplete"/>（保存/汇总日志）与 <see cref="OnRunFinished"/>（进度条满后弹完成窗）；
     /// ③ 可选覆写 <see cref="DrawHeader"/>（顶部说明）、<see cref="DoneVerb"/>（进度条动词）、
     /// <see cref="OnRunCanceled"/>。每步返回一条日志（无变化返回 null），步内自增 <see cref="changed"/>。</para>
     ///
-    /// <para>本类仅依赖 <see cref="EditorWindow"/> 与 <see cref="InventoryDatabase"/>，无 Addressables/Localization 依赖，
+    /// <para>本类仅依赖 <see cref="EditorWindow"/> 与数据库类型 <typeparamref name="TDb"/>，无 Addressables/Localization 依赖，
     /// 故不受任何编译宏门控，可被受宏约束的子类程序集继承。</para>
     /// </summary>
-    public abstract class InventoryToolWindowBase : EditorWindow
+    /// <typeparam name="TDb">工具处理的数据库资产类型（<see cref="ScriptableObject"/>）。</typeparam>
+    public abstract class EditorToolWindowBase<TDb> : EditorWindow where TDb : ScriptableObject
     {
         /// <summary>当前选中的数据库（<c>[SerializeField]</c> 跨域重载保留）。</summary>
-        [SerializeField] protected InventoryDatabase database;
+        [SerializeField] protected TDb database;
 
         // ── 日志 ─────────────────────────────────────────────────────────────────────
         private readonly List<string> _log = new List<string>();
@@ -139,8 +138,6 @@ namespace Ale.Inventory.Editor
             Repaint();
         }
 
-        // ── 子类钩子 ─────────────────────────────────────────────────────────────────
-
         #endregion
 
         #region 子类钩子
@@ -157,13 +154,11 @@ namespace Ale.Inventory.Editor
         /// <summary>运行完成（步进结束、进度条尚未重绘到 100% 前）：子类在此 SetDirty/SaveAssets 并打印汇总日志。</summary>
         protected virtual void OnRunComplete() { }
 
-        /// <summary>运行完成信息窗（进度条重绘到 100% 后经 delayCall 调用）：子类在此弹 EditorUtility.DisplayDialog"。</summary>
+        /// <summary>运行完成信息窗（进度条重绘到 100% 后经 delayCall 调用）：子类在此弹 EditorUtility.DisplayDialog。</summary>
         protected virtual void OnRunFinished() { }
 
         /// <summary>运行被取消：子类可在此 SetDirty/SaveAssets 并打印日志。</summary>
         protected virtual void OnRunCanceled() { }
-
-        // ── 绘制 ─────────────────────────────────────────────────────────────────────
 
         #endregion
 
@@ -174,8 +169,8 @@ namespace Ale.Inventory.Editor
         {
             using (new EditorGUI.DisabledScope(_running))
             {
-                database = (InventoryDatabase)EditorGUILayout.ObjectField(
-                    "数据库", database, typeof(InventoryDatabase), false);
+                database = (TDb)EditorGUILayout.ObjectField(
+                    "数据库", database, typeof(TDb), false);
             }
         }
 
@@ -253,6 +248,5 @@ namespace Ale.Inventory.Editor
             }
         }
         #endregion
-
     }
 }
