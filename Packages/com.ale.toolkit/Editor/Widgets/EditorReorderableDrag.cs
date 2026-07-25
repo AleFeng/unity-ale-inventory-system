@@ -2,20 +2,20 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// 通用「拖拽重排」状态机：在以「行 Rect」布局的列表里，左侧 ≡ 句柄长按拖动调整顺序，
     /// 拖动时绘制蓝色插入指示线，松开时对目标 <see cref="IList{T}"/> 执行带 Undo 的移动。
     ///
     /// <para>一个实例持有一条列表的拖拽状态；每帧按
-    /// <see cref="BeginFrame"/> → （每行）<see cref="DrawHandle"/> / <see cref="RecordRow"/> → <see cref="EndFrame{T}"/>
+    /// <see cref="BeginFrame"/> → （每行）<see cref="DrawHandle"/> / <see cref="RecordRow"/> → <see cref="EndFrame"/>
     /// 的顺序调用。</para>
     ///
     /// <para>同时适用于：</para>
     /// <list type="bullet">
-    /// <item>固定行高的滚动列表（道具 / 仓库 / 商店列表面板）——调用方自行计算句柄与整行 Rect；</item>
-    /// <item>自动布局的可变高度条目（商品组 / 商品列表）——用 <see cref="DrawHandleColumn"/> 预留左侧句柄列，
+    /// <item>固定行高的滚动列表——调用方自行计算句柄与整行 Rect；</item>
+    /// <item>自动布局的可变高度条目——用 <see cref="DrawHandleColumn"/> 预留左侧句柄列，
     /// 用 <c>EditorGUILayout.BeginHorizontal()</c> 的返回 Rect 作为整行 Rect。</item>
     /// </list>
     /// </summary>
@@ -93,14 +93,14 @@ namespace Ale.Inventory.Editor
         /// 每帧结束：处理拖拽 / 落点、绘制蓝色插入指示线；落点有效时对 <paramref name="list"/>
         /// 执行带 Undo 的移动。须在与各行 Rect 相同的坐标系（同一滚动区）内、行循环之后调用。
         /// </summary>
+        /// <param name="ctx">编辑器上下文（承担 Undo / MarkDirty / Repaint）。</param>
+        /// <param name="list">被就地重排的列表。</param>
         /// <param name="undoLabel">用于 Undo 的操作名称。</param>
         /// <param name="lineInset">插入线相对整行左边缘的内缩（一般等于句柄列宽，让线从内容区起画）。</param>
         /// <param name="lineRightInset">插入线相对整行右边缘的内缩（一般等于右侧删除按钮宽度）。</param>
-        /// <param name="ctx"></param>
-        /// <param name="list"></param>
         /// <returns>本帧是否发生了重排。</returns>
-        public bool EndFrame<T>(IInventoryEditorContext ctx, IList<T> list, string undoLabel,
-            float lineInset = HandleWidth, float lineRightInset = 0f)
+        public bool EndFrame<TDb, T>(IEditorDbContext<TDb> ctx, IList<T> list, string undoLabel,
+            float lineInset = HandleWidth, float lineRightInset = 0f) where TDb : ScriptableObject
         {
             if (_srcIndex < 0) return false;
             bool reordered = false;

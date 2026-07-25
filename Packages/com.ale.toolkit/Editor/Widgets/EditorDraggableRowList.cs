@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// 「可拖拽重排的单行列表」共享 IMGUI 绘制骨架：
     /// <c>BeginFrame</c> → 逐行（整行 Rect 记录 + 左侧句柄列 + <b>行内内容</b> + 右侧「✕」）→ <c>EndFrame</c>
     /// → 延迟删除。行内内容由调用方经 drawContent 提供，其余样板全部收口于此。
     ///
-    /// <para>此前该骨架在 6 处各写了一遍（仓库引用 / 忽略ID / 副分组标签 ×2 / 功能标签 / 枚举约束 / 属性字段显示），
-    /// 其中「句柄垂直居中」的三行 Rect 运算逐字相同 —— 现由 <see cref="CenteredHandleRect"/> 统一。</para>
-    ///
-    /// <para>拖拽状态机 <see cref="EditorReorderableDrag"/> 由调用方各持一个传入，
-    /// 保证同帧内多条列表互不干扰（详见该类文档）。</para>
+    /// <para>其中「句柄垂直居中」的三行 Rect 运算由 <see cref="CenteredHandleRect"/> 统一。
+    /// 拖拽状态机 <see cref="EditorReorderableDrag"/> 由调用方各持一个传入，保证同帧内多条列表互不干扰。</para>
     /// </summary>
     public static class EditorDraggableRowList
     {
@@ -35,7 +32,7 @@ namespace Ale.Inventory.Editor
         /// 绘制可拖拽重排的单行列表（就地重排 / 删除 <paramref name="list"/>）。列表为空时不绘制任何内容
         /// （标题、「+」按钮、空态提示等由调用方在外层自行处理）。
         /// </summary>
-        /// <param name="ctx">编辑器上下文（承担 Undo / MarkDirty / Repaint / Database）。</param>
+        /// <param name="ctx">编辑器上下文（承担 Undo / MarkDirty / Repaint）。</param>
         /// <param name="list">被绘制的列表，就地重排与删除。</param>
         /// <param name="drag">该列表专属的拖拽重排状态机（调用方持有）。</param>
         /// <param name="undoNoun">Undo 文案词根：重排记作「调整{noun}顺序」，删除记作「移除{noun}」。</param>
@@ -45,9 +42,9 @@ namespace Ale.Inventory.Editor
         /// </param>
         /// <param name="removeUndoLabel">删除的 Undo 文案；为空则取「移除{undoNoun}」。</param>
         /// <param name="lineRightInset">拖拽插入指示线相对整行右边缘的内缩（一般取「✕」按钮宽度，或 0 = 画满）。</param>
-        public static void Draw<T>(IInventoryEditorContext ctx, IList<T> list, EditorReorderableDrag drag,
+        public static void Draw<TDb, T>(IEditorDbContext<TDb> ctx, IList<T> list, EditorReorderableDrag drag,
             string undoNoun, Action<int, T> drawContent,
-            string removeUndoLabel = null, float lineRightInset = 0f)
+            string removeUndoLabel = null, float lineRightInset = 0f) where TDb : ScriptableObject
         {
             if (list == null || list.Count == 0) return;
 

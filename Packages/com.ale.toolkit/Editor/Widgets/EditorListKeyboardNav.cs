@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// 条目列表键盘导航：某条目已选中时，按 上/下 方向键切换到可见（已过滤）列表中的相邻条目，
     /// 并在新选中项超出可视区时自动滚动一行把它带回视野。
-    /// 供各系统「中间条目列表」面板（道具 / 仓库 / 商店 / 制作 / 装备 / 技能）复用；
-    /// 这些面板行结构统一为两行（列名行 + 值行），故行距一致，滚动逐行推进。
+    /// 供各系统「中间条目列表」面板复用；这些面板行结构统一（列名行 + 值行），故行距一致，滚动逐行推进。
     /// </summary>
     public static class EditorListKeyboardNav
     {

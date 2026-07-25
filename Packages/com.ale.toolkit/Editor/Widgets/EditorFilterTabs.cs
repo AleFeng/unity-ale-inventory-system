@@ -4,11 +4,11 @@ using UnityEditor;
 using UnityEngine;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// 通用「过滤页签栏」绘制：工具栏样式的「全部」+ 每个选项一个 Toggle 按钮，互斥单选。
-    /// 供道具 / 仓库 / 商店列表面板复用，按各自「模板」列表筛选条目。
+    /// 按各自的候选项列表筛选条目。
     /// </summary>
     public static class EditorFilterTabs
     {
