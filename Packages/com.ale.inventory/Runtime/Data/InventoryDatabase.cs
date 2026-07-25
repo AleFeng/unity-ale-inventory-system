@@ -255,118 +255,29 @@ namespace Ale.Inventory.Runtime
         /// </summary>
         public void RebuildSortOptions()
         {
-            // 收集所有可用排序字段（与"整理列表"下拉选项一致）。
-            // fieldOrder 一表三用：去重、下方的「是否仍是可用字段」判定、以及排序时的 O(1) 序号查询。
-            var fieldOrder    = new Dictionary<string, int>();
+            // 收集所有可用排序字段（领域逻辑：主键 + 道具模板属性 + 功能标签属性 + 功能页签序号）。
+            // 与「整理列表」下拉选项保持一致。
             var orderedFields = new List<string>();
+            var seen          = new HashSet<string>();
 
             void AddField(string id)
             {
-                if (string.IsNullOrEmpty(id) || fieldOrder.ContainsKey(id)) return;
-                fieldOrder[id] = orderedFields.Count;
-                orderedFields.Add(id);
+                if (!string.IsNullOrEmpty(id) && seen.Add(id))
+                    orderedFields.Add(id);
             }
 
-            // 道具 ID 始终第一个
-            AddField("__id__");
-
-            // 道具模板属性
-            foreach (var tmpl in itemTemplates)
+            AddField(SortFieldKeys.Id);            // 道具 ID 始终第一个
+            foreach (var tmpl in itemTemplates)    // 道具模板属性
                 foreach (var def in tmpl.attributes)
                     AddField(def.id);
-
-            // 功能标签属性
-            foreach (var tag in functionTags)
+            foreach (var tag in functionTags)      // 功能标签属性
                 foreach (var def in tag.attributes)
                     AddField(def.id);
+            if (functionTags.Count > 0)            // 功能页签顺序（有功能标签时才加入）
+                AddField(SortFieldKeys.TagOrder);
 
-            // 功能页签顺序（有功能标签时才加入）
-            if (functionTags.Count > 0)
-                AddField("__tagOrder__");
-
-            // 移除不再是可用排序字段的 SortOption（field 为 null 的脏数据一并清掉）
-            sortOptions.RemoveAll(so => so.field == null || !fieldOrder.ContainsKey(so.field));
-
-            // 追加新出现的 field，按首次出现顺序插入。
-            // 先把现有 field 收进集合，避免逐个 GetSortOption 线性查找（原为 O(n²)）。
-            var existingFields = new HashSet<string>();
-            foreach (var so in sortOptions)
-                existingFields.Add(so.field);
-            foreach (var field in orderedFields)
-                if (existingFields.Add(field))
-                    sortOptions.Add(new SortOption(field));
-
-            // 按 orderedFields 顺序排序（维持与模板中 sortPriorities 顺序一致）。
-            // 用序号字典而非 List.IndexOf：后者在比较器内是 O(n)，会让整个排序退化为 O(n² log n)。
-            sortOptions.Sort((a, b) =>
-            {
-                int ia = a.field != null && fieldOrder.TryGetValue(a.field, out int va) ? va : -1;
-                int ib = b.field != null && fieldOrder.TryGetValue(b.field, out int vb) ? vb : -1;
-                return ia.CompareTo(ib);
-            });
-
-            // 一次性迁移：把旧版存为通用属性值的「名称」「忽略ID」搬进内置字段（displayName / ignoreIds），
-            // 随后从 schema 移除这两个定义，下方的属性同步会清掉各选项里对应的残留属性值。幂等（迁移完毕后为空操作）。
-            MigrateBuiltinSortFields();
-
-            // 对每个 SortOption 按 schema 同步 attributeValues（增补缺失、移除孤立、类型漂移重置）
-            foreach (var so in sortOptions)
-            {
-                AttributeSync.Sync(so.attributeValues, sortOptionAttributes);
-                so.InvalidateEntryCache();
-            }
-        }
-
-        /// <summary>
-        /// 一次性迁移旧版整理选项数据：把存为通用属性值的「名称」「忽略ID」搬进内置字段
-        /// （<see cref="SortOption.displayName"/> / <see cref="SortOption.ignoreIds"/>），
-        /// 再从 <see cref="sortOptionAttributes"/> 移除这两个保留定义。仅当内置字段为空时迁移，避免覆盖已编辑值；
-        /// 迁移完成后（schema 中已无这两项、各选项残留值被同步移除）本方法为空操作。
-        /// </summary>
-        private void MigrateBuiltinSortFields()
-        {
-            foreach (var so in sortOptions)
-            {
-                so.NormalizeDisplayName();
-
-                // 名称 → displayName（内置纯文本 / 本地化引用均为空才迁移）
-                var nameEntry = so.GetEntry(SortOption.LegacyNameAttrId);
-                if (nameEntry?.value != null)
-                {
-                    var (t, k) = so.displayName.GetLocalizedStringRef();
-                    bool targetEmpty = string.IsNullOrEmpty(so.displayName.GetTextValue())
-                                       && string.IsNullOrEmpty(t) && string.IsNullOrEmpty(k);
-                    if (targetEmpty)
-                    {
-                        var v = nameEntry.value;
-                        if (v.Type == EFieldType.Text)
-                        {
-                            so.displayName.SetTextValue(0, v.GetTextValue());
-                            var (vt, vk) = v.GetLocalizedStringRef();
-                            so.displayName.SetLocalizedStringRef(0, vt, vk);
-                        }
-                        else
-                        {
-                            so.displayName.SetTextValue(0, v.AsString ?? string.Empty);
-                        }
-                    }
-                }
-
-                // 忽略ID → ignoreIds（内置列表为空才迁移；跳过旧版默认的空占位串，使默认条目数为 0）
-                var ignoreEntry = so.GetEntry(SortOption.LegacyIgnoreAttrId);
-                if (ignoreEntry?.value?.StringArray != null
-                    && (so.ignoreIds == null || so.ignoreIds.Count == 0))
-                {
-                    if (so.ignoreIds == null) so.ignoreIds = new List<string>();
-                    foreach (var s in ignoreEntry.value.StringArray)
-                        if (!string.IsNullOrWhiteSpace(s))
-                            so.ignoreIds.Add(s);
-                }
-            }
-
-            // 移除保留定义，使其不再作为通用属性字段出现（下方同步会清掉各选项对应残留值）。
-            sortOptionAttributes.RemoveAll(d => d != null
-                && (d.id == SortOption.LegacyNameAttrId || d.id == SortOption.LegacyIgnoreAttrId));
+            // 通用同步（增删 / 重排 / 旧版内置字段迁移 / schema 属性值同步）下沉至 toolkit。
+            SortOptionSync.Rebuild(sortOptions, orderedFields, sortOptionAttributes);
         }
 
         #endregion
