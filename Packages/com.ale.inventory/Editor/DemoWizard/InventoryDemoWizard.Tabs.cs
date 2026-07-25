@@ -1,3 +1,4 @@
+using Ale.Toolkit.Runtime.UI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -27,7 +28,7 @@ namespace Ale.Inventory.Editor
         {
             string path = BeginPrefab(KPfInventoryTab);
 
-            // root: Button + Image + UiwInventoryTab
+            // root: Button + Image + UiwTabButton
             var root = NewGameObject(KPfInventoryTab);
             SetRectSize(root.AddComponent<RectTransform>(), 108, 36);
             var bgImg = root.AddComponent<Image>();
@@ -35,7 +36,7 @@ namespace Ale.Inventory.Editor
             var btn = root.AddComponent<Button>();
             btn.targetGraphic = bgImg;
             SetButtonColors(btn, Hex("2D3148"), Hex("3D4268"), Hex("22253A"));
-            var tab = root.AddComponent<UiwInventoryTab>();
+            var tab = root.AddComponent<UiwTabButton>();
 
             // Label
             var labelGo = ChildGameObject("Label", root.transform);

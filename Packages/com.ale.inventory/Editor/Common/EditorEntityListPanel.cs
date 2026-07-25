@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -96,11 +96,14 @@ namespace Ale.Inventory.Editor
         /// 绘制该行的列（表头行 + 值行）。基类已画好背景、句柄、色点与删除按钮，
         /// 子类只需从 <paramref name="contentX"/> 起向右排布自己的列。
         /// </summary>
+        /// <param name="keyRow">整行的 Rect。</param>
         /// <param name="contentX">内容区起始 X（已跳过句柄列与色点）。</param>
         /// <param name="contentRight">内容区右边界（已扣掉删除按钮列）；动态列布局据此决定放得下几列。</param>
         /// <param name="valY">值行中已垂直居中的 Y。</param>
         /// <param name="valH">值行控件高（单行高）。</param>
-        protected abstract void DrawRowColumns(InventoryDatabase db, TEntity e,
+        /// <param name="db">数据库实例。</param>
+        /// <param name="entity">当前行的实体。</param>
+        protected abstract void DrawRowColumns(InventoryDatabase db, TEntity entity,
             Rect keyRow, float contentX, float contentRight, float valY, float valH);
 
         /// <summary>「从模板添加」菜单在无可用模板时的提示。</summary>

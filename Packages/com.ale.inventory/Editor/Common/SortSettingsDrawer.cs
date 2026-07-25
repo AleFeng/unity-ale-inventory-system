@@ -3,7 +3,7 @@ using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -16,10 +16,10 @@ namespace Ale.Inventory.Editor
     {
         private class State
         {
-            public ReorderableList          List;
-            public string[]                 Displays;
-            public string[]                 Values;
-            public IInventoryEditorContext  Ctx;
+            public ReorderableList          list;
+            public string[]                 displays;
+            public string[]                 values;
+            public IInventoryEditorContext  ctx;
         }
 
         // 按 List 实例缓存 ReorderableList（绑定对象更换时自然换用新实例）。
@@ -51,13 +51,13 @@ namespace Ale.Inventory.Editor
             if (!Cache.TryGetValue(list, out var st))
             {
                 st = new State();
-                st.List = BuildList(st, list, header, undoLabel);
+                st.list = BuildList(st, list, header, undoLabel);
                 Cache[list] = st;
             }
-            st.Ctx      = ctx;
-            st.Displays = displays;
-            st.Values   = values;
-            st.List.DoLayoutList();
+            st.ctx      = ctx;
+            st.displays = displays;
+            st.values   = values;
+            st.list.DoLayoutList();
         }
 
         private static ReorderableList BuildList(State st, List<SortPriority> list,
@@ -70,7 +70,7 @@ namespace Ale.Inventory.Editor
             // header 为中文键；在回调内翻译，保证语言切换后缓存的 ReorderableList 也即时更新。
             rl.drawHeaderCallback = rect => EditorGUI.LabelField(rect, Tr(header));
 
-            rl.drawElementCallback = (rect, index, active, focused) =>
+            rl.drawElementCallback = (rect, index, _, _) =>
             {
                 if (index < 0 || index >= list.Count) return;
                 var sp  = list[index];
@@ -82,8 +82,8 @@ namespace Ale.Inventory.Editor
                 var ascRect   = new Rect(rect.xMax - ascW, rect.y, ascW,
                     EditorGUIUtility.singleLineHeight);
 
-                var displays = st.Displays ?? new[] { Tr("道具 ID") };
-                var values   = st.Values   ?? new[] { "__id__" };
+                var displays = st.displays ?? new[] { Tr("道具 ID") };
+                var values   = st.values   ?? new[] { "__id__" };
                 int curIdx   = FindOptionIndex(values, sp.field);
 
                 EditorGUI.BeginChangeCheck();
@@ -92,31 +92,31 @@ namespace Ale.Inventory.Editor
                     new GUIContent(sp.ascending ? Tr("升序") : Tr("降序")), sp.ascending);
                 if (EditorGUI.EndChangeCheck())
                 {
-                    st.Ctx.RecordUndo("修改" + undoLabel);
+                    st.ctx.RecordUndo("修改" + undoLabel);
                     sp.field     = values[picked];
                     sp.ascending = newAsc;
-                    st.Ctx.MarkDirty();
+                    st.ctx.MarkDirty();
                 }
             };
 
             rl.onAddCallback = _ =>
             {
-                st.Ctx.RecordUndo("添加" + undoLabel + "项");
+                st.ctx.RecordUndo("添加" + undoLabel + "项");
                 list.Add(new SortPriority("__id__"));
-                st.Ctx.MarkDirty();
+                st.ctx.MarkDirty();
             };
 
             rl.onRemoveCallback = l =>
             {
-                st.Ctx.RecordUndo("删除" + undoLabel + "项");
+                st.ctx.RecordUndo("删除" + undoLabel + "项");
                 list.RemoveAt(l.index);
-                st.Ctx.MarkDirty();
+                st.ctx.MarkDirty();
             };
 
             rl.onReorderCallback = _ =>
             {
-                st.Ctx.RecordUndo("调整" + undoLabel + "顺序");
-                st.Ctx.MarkDirty();
+                st.ctx.RecordUndo("调整" + undoLabel + "顺序");
+                st.ctx.MarkDirty();
             };
 
             return rl;

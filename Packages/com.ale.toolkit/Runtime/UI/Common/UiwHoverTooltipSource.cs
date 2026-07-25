@@ -33,10 +33,10 @@ namespace Ale.Toolkit.Runtime.UI
         /// <summary>当前是否已绑定可供弹窗显示的内容（未绑定则不弹）。</summary>
         protected abstract bool HasHoverTooltipPayload { get; }
 
-        /// <summary>在光标处显示本格的详情弹窗。调用时 <see cref="InventoryRuntimeManager.Instance"/> 保证非空。</summary>
+        /// <summary>在光标处显示本格的详情弹窗。</summary>
         protected abstract void ShowHoverTooltip(Vector2 screenPos);
 
-        /// <summary>隐藏详情弹窗。调用时 <see cref="InventoryRuntimeManager.Instance"/> 保证非空。</summary>
+        /// <summary>隐藏详情弹窗。</summary>
         protected abstract void HideHoverTooltip();
 
         #endregion
@@ -46,7 +46,7 @@ namespace Ale.Toolkit.Runtime.UI
         /// <summary>鼠标进入：启用弹窗且已绑定内容时，在光标处显示本格的详情弹窗。</summary>
         public virtual void OnPointerEnter(PointerEventData eventData)
         {
-            if (!HoverTooltipEnabled || !HasHoverTooltipPayload || !InventoryRuntimeManager.Instance) return;
+            if (!HoverTooltipEnabled || !HasHoverTooltipPayload) return;
             ShowHoverTooltip(eventData != null ? eventData.position : (Vector2)Input.mousePosition);
             _tooltipShown = true;
         }
@@ -56,7 +56,7 @@ namespace Ale.Toolkit.Runtime.UI
         {
             if (!HoverTooltipEnabled) return;
             _tooltipShown = false;
-            if (InventoryRuntimeManager.Instance) HideHoverTooltip();
+            HideHoverTooltip();
         }
 
         /// <summary>本物体被停用时关闭本格残留的弹窗（停用不派发 <see cref="OnPointerExit"/>）。</summary>
@@ -67,7 +67,7 @@ namespace Ale.Toolkit.Runtime.UI
         {
             if (!_tooltipShown) return;
             _tooltipShown = false;
-            if (InventoryRuntimeManager.Instance) HideHoverTooltip();
+            HideHoverTooltip();
         }
 
         #endregion

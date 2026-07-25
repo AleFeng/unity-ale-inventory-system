@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -51,7 +51,7 @@ namespace Ale.Inventory.Editor
 
         #region 行列布局
 
-        protected override void DrawRowColumns(InventoryDatabase db, Skill skill,
+        protected override void DrawRowColumns(InventoryDatabase db, Skill entity,
             Rect keyRow, float cx, float contentRight, float vy, float vh)
         {
             // ── 上行：列名表头 ──────────────────────────────────────────────────
@@ -63,20 +63,20 @@ namespace Ale.Inventory.Editor
 
             // ── 下行：值 ────────────────────────────────────────────────────────
             GUI.Label(new Rect(cx, vy, IdColW, vh),
-                string.IsNullOrWhiteSpace(skill.id) ? Tr("(空 ID)") : skill.id, IdStyle);
+                string.IsNullOrWhiteSpace(entity.id) ? Tr("(空 ID)") : entity.id, IdStyle);
             cx += IdColW + Pad;
 
-            string skillName = skill.displayText != null ? skill.displayText.GetTextValue(0) : null;
+            string skillName = entity.displayText != null ? entity.displayText.GetTextValue(0) : null;
             GUI.Label(new Rect(cx, vy, NameColW, vh),
                 string.IsNullOrEmpty(skillName) ? "—" : skillName, SubStyle);
             cx += NameColW + Pad;
 
-            string skillDesc = skill.descriptionText != null ? skill.descriptionText.GetTextValue(0) : null;
+            string skillDesc = entity.descriptionText != null ? entity.descriptionText.GetTextValue(0) : null;
             GUI.Label(new Rect(cx, vy, DescColW, vh),
                 string.IsNullOrEmpty(skillDesc) ? "—" : skillDesc, SubStyle);
             cx += DescColW + Pad;
 
-            var    groupObj  = db.GetSkillGroupTag(skill.primaryGroupTag);
+            var    groupObj  = db.GetSkillGroupTag(entity.primaryGroupTag);
             string groupName = groupObj != null ? groupObj.PlainName() : "—";
             GUI.Label(new Rect(cx, vy, GroupColW, vh), groupName, SubStyle);
         }

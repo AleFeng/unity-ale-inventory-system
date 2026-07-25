@@ -34,7 +34,7 @@ namespace Ale.Inventory.Editor
         private float _mouseY;        // 当前拖拽鼠标 Y（与行 Rect 同坐标系）
         private int   _ctrlId;        // 本帧拖拽控件 ID
 
-        private struct Row { public int Index; public Rect Rect; }
+        private struct Row { public int index; public Rect rect; }
         private readonly List<Row> _rows = new List<Row>();
 
         private static GUIStyle _handleStyle;
@@ -58,7 +58,7 @@ namespace Ale.Inventory.Editor
         }
 
         /// <summary>记录某条目的整行 Rect（用于计算插入槽位与指示线）。</summary>
-        public void RecordRow(int index, Rect fullRect) => _rows.Add(new Row { Index = index, Rect = fullRect });
+        public void RecordRow(int index, Rect fullRect) => _rows.Add(new Row { index = index, rect = fullRect });
 
         /// <summary>绘制某条目的 ≡ 拖拽句柄，并在其上按下时开始拖拽。</summary>
         public void DrawHandle(Rect handleRect, int index)
@@ -93,8 +93,11 @@ namespace Ale.Inventory.Editor
         /// 每帧结束：处理拖拽 / 落点、绘制蓝色插入指示线；落点有效时对 <paramref name="list"/>
         /// 执行带 Undo 的移动。须在与各行 Rect 相同的坐标系（同一滚动区）内、行循环之后调用。
         /// </summary>
+        /// <param name="undoLabel">用于 Undo 的操作名称。</param>
         /// <param name="lineInset">插入线相对整行左边缘的内缩（一般等于句柄列宽，让线从内容区起画）。</param>
         /// <param name="lineRightInset">插入线相对整行右边缘的内缩（一般等于右侧删除按钮宽度）。</param>
+        /// <param name="ctx"></param>
+        /// <param name="list"></param>
         /// <returns>本帧是否发生了重排。</returns>
         public bool EndFrame<T>(IInventoryEditorContext ctx, IList<T> list, string undoLabel,
             float lineInset = HandleWidth, float lineRightInset = 0f)
@@ -112,7 +115,7 @@ namespace Ale.Inventory.Editor
             {
                 int srcIdx = _srcIndex;
                 int slot   = ComputeInsertSlot(_mouseY);
-                int tgtIdx = slot >= _rows.Count ? list.Count : _rows[slot].Index;
+                int tgtIdx = slot >= _rows.Count ? list.Count : _rows[slot].index;
 
                 if (tgtIdx != srcIdx && tgtIdx != srcIdx + 1
                     && srcIdx >= 0 && srcIdx < list.Count)
@@ -137,21 +140,21 @@ namespace Ale.Inventory.Editor
                 int slot   = ComputeInsertSlot(_mouseY);
                 int srcVis = -1;
                 for (int k = 0; k < _rows.Count; k++)
-                    if (_rows[k].Index == _srcIndex) { srcVis = k; break; }
+                    if (_rows[k].index == _srcIndex) { srcVis = k; break; }
 
                 bool noOp = srcVis >= 0 && (slot == srcVis || slot == srcVis + 1);
                 if (!noOp)
                 {
                     float lineY;
                     if (slot <= 0)
-                        lineY = _rows[0].Rect.yMin;
+                        lineY = _rows[0].rect.yMin;
                     else if (slot >= _rows.Count)
-                        lineY = _rows[_rows.Count - 1].Rect.yMax - 1f;
+                        lineY = _rows[_rows.Count - 1].rect.yMax - 1f;
                     else
-                        lineY = (_rows[slot - 1].Rect.yMax + _rows[slot].Rect.yMin) * 0.5f;
+                        lineY = (_rows[slot - 1].rect.yMax + _rows[slot].rect.yMin) * 0.5f;
 
-                    float lx = _rows[0].Rect.xMin + lineInset;
-                    float lw = _rows[0].Rect.width - lineInset - lineRightInset;
+                    float lx = _rows[0].rect.xMin + lineInset;
+                    float lw = _rows[0].rect.width - lineInset - lineRightInset;
                     EditorGUI.DrawRect(new Rect(lx, lineY - 1f, lw, 2f), InsertLineColor);
                 }
             }
@@ -164,7 +167,7 @@ namespace Ale.Inventory.Editor
         {
             for (int i = 0; i < _rows.Count; i++)
             {
-                float midY = (_rows[i].Rect.yMin + _rows[i].Rect.yMax) * 0.5f;
+                float midY = (_rows[i].rect.yMin + _rows[i].rect.yMax) * 0.5f;
                 if (mouseY < midY) return i;
             }
             return _rows.Count;

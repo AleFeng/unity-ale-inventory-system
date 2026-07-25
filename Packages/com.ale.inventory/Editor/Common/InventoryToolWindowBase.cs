@@ -8,13 +8,13 @@ namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 库工具窗口基类：抽出「选数据库 + 逐帧时间预算步进 + 进度条 + 可选择日志 + 取消 + 完成收尾」等
-    /// 与具体操作无关的通用能力，供 <see cref="InventoryAddressableToolWindow"/>（资源引用迁移）与
+    /// 与具体操作无关的通用能力，供 InventoryAddressableToolWindow（资源引用迁移）与
     /// <c>InventoryLocalizationToolWindow</c>（本地化建表/生成 Key）等工具窗口复用。
     ///
     /// <para>子类只需：① 覆写 <see cref="DrawOperations"/> 画自己的操作按钮区，用 <see cref="RunSteps"/> 启动一批逐帧步骤；
     /// ② 覆写 <see cref="OnRunComplete"/>（保存/汇总日志）与 <see cref="OnRunFinished"/>（进度条满后弹完成窗）；
     /// ③ 可选覆写 <see cref="DrawHeader"/>（顶部说明）、<see cref="DoneVerb"/>（进度条动词）、
-    /// <see cref="OnRunCanceled"/>。每步返回一条日志（无变化返回 null），步内自增 <see cref="Changed"/>。</para>
+    /// <see cref="OnRunCanceled"/>。每步返回一条日志（无变化返回 null），步内自增 <see cref="changed"/>。</para>
     ///
     /// <para>本类仅依赖 <see cref="EditorWindow"/> 与 <see cref="InventoryDatabase"/>，无 Addressables/Localization 依赖，
     /// 故不受任何编译宏门控，可被受宏约束的子类程序集继承。</para>
@@ -56,7 +56,7 @@ namespace Ale.Inventory.Editor
         private bool _pendingFinishDialog;    // 已完成、待进度条重绘到 100% 后再弹信息窗
 
         /// <summary>本次运行的处理计数（子类步骤内自增；进度条与完成文案使用）。</summary>
-        protected int Changed;
+        protected int changed;
 
         /// <summary>是否正在逐帧运行。</summary>
         protected bool IsRunning => _running;
@@ -83,7 +83,7 @@ namespace Ale.Inventory.Editor
             if (_running || steps == null) return;
             _steps     = steps;
             _stepIndex = 0;
-            Changed    = 0;
+            changed    = 0;
             _running   = true;
             if (!string.IsNullOrEmpty(startLog)) Log(startLog);
             EditorApplication.update += Step;
@@ -157,7 +157,7 @@ namespace Ale.Inventory.Editor
         /// <summary>运行完成（步进结束、进度条尚未重绘到 100% 前）：子类在此 SetDirty/SaveAssets 并打印汇总日志。</summary>
         protected virtual void OnRunComplete() { }
 
-        /// <summary>运行完成信息窗（进度条重绘到 100% 后经 delayCall 调用）：子类在此弹 <see cref="EditorUtility.DisplayDialog"/>。</summary>
+        /// <summary>运行完成信息窗（进度条重绘到 100% 后经 delayCall 调用）：子类在此弹 EditorUtility.DisplayDialog"。</summary>
         protected virtual void OnRunFinished() { }
 
         /// <summary>运行被取消：子类可在此 SetDirty/SaveAssets 并打印日志。</summary>
@@ -179,14 +179,14 @@ namespace Ale.Inventory.Editor
             }
         }
 
-        /// <summary>进度条（<c>stepIndex/total</c> + <see cref="Changed"/> + <see cref="DoneVerb"/>）。</summary>
+        /// <summary>进度条（<c>stepIndex/total</c> + <see cref="changed"/> + <see cref="DoneVerb"/>）。</summary>
         protected void DrawProgressBar()
         {
             int   total    = _steps != null ? _steps.Count : 0;
             float progress = total > 0 ? (float)_stepIndex / total : 0f;
             var   barRect  = GUILayoutUtility.GetRect(1f, 20f, GUILayout.ExpandWidth(true));
             string barLabel = total > 0
-                ? $"{_stepIndex} / {total}  ({progress:P0})   {DoneVerb} {Changed} 处"
+                ? $"{_stepIndex} / {total}  ({progress:P0})   {DoneVerb} {changed} 处"
                 : (_running ? "准备中…" : "就绪");
             EditorGUI.ProgressBar(barRect, progress, barLabel);
         }

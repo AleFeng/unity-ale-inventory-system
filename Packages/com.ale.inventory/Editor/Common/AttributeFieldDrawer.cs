@@ -1,10 +1,9 @@
 using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
-using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -285,11 +284,11 @@ namespace Ale.Inventory.Editor
             else
             {
                 // 无结构变更时处理拖拽落点：把新顺序应用到属性值（EndFrame 已记录 Undo）。
-                _reorderProxy.Clear();
-                for (int i = 0; i < value.Count; i++) _reorderProxy.Add(i);
-                if (drag.EndFrame(ctx, _reorderProxy, "移动数组元素",
+                ReorderProxy.Clear();
+                for (int i = 0; i < value.Count; i++) ReorderProxy.Add(i);
+                if (drag.EndFrame(ctx, ReorderProxy, "移动数组元素",
                         EditorReorderableDrag.HandleWidth, 24f))
-                    value.ReorderElements(_reorderProxy);
+                    value.ReorderElements(ReorderProxy);
             }
 
             EditorGUILayout.EndVertical();
@@ -381,10 +380,10 @@ namespace Ale.Inventory.Editor
         /// <summary>
         /// 绘制带标签的单行字段（非数组场景）。
         /// <para>
-        /// 采用<b>手动分割</b>方式：先用 <see cref="EditorGUI.LabelField"/> 绘制标签，
-        /// 再把剩余宽度传给 <see cref="DrawFieldControlRect"/>（无标签版）。<br/>
-        /// 这样避免了 <see cref="EditorGUI.Vector2Field"/>/<see cref="EditorGUI.ObjectField"/> 等
-        /// 控件内部依赖 <c>EditorGUIUtility.labelWidth</c> 进行折行或布局分割时产生的
+        /// 采用<b>手动分割</b>方式：先用 EditorGUI.LabelField 绘制标签，
+        /// 再把剩余宽度传给 DrawFieldControlRect（无标签版）。<br/>
+        /// 这样避免了 EditorGUI.Vector2Field/EditorGUI.ObjectField 等
+        /// 控件内部依赖 EditorGUIUtility.labelWidth 进行折行或布局分割时产生的
         /// "挤到右侧" / "溢出到下方" 问题。
         /// </para>
         /// </summary>
@@ -667,8 +666,8 @@ namespace Ale.Inventory.Editor
 
         /// <summary>绘制指定元素索引的字段（无标签）。</summary>
         /// <summary>
-        /// Layout 路径的单元素绘制：取一个 <see cref="EditorGUILayout.GetControlRect(bool,float)"/> 矩形后
-        /// 转调 Rect 路径的 <see cref="DrawFieldControlRect"/>，使两条路径的字段外观完全一致。
+        /// Layout 路径的单元素绘制：取一个 EditorGUILayout.GetControlRect(bool,float) 矩形后
+        /// 转调 Rect 路径的 DrawFieldControlRect，使两条路径的字段外观完全一致。
         /// <para><b>1.6.0 起的显示行为对齐</b>（此前 Layout 版与 Rect 版分歧）：
         /// Vector4 不再多出一个空标签列；数组内 Sprite 采用与 Rect 版一致的正方形预览；
         /// VectorInt4 / StringIntPair 由纵向堆叠改为与 Rect 版一致的横向分栏；未知类型显示类型名。</para>
@@ -700,20 +699,20 @@ namespace Ale.Inventory.Editor
         private static void DrawTextRect(IInventoryEditorContext ctx, AttributeValue value, int index, string label, Rect rect)
         {
             float lh = EditorGUIUtility.singleLineHeight;
-            float sp = EditorGUIUtility.standardVerticalSpacing;
-            float y  = rect.y;
+            // float sp = EditorGUIUtility.standardVerticalSpacing;
+            float rectY  = rect.y;
 
             // 纯文本 fallback 行（手动分割 label / 输入框，避免窄宽下挤压）
             float lW = 0f;
             if (!string.IsNullOrEmpty(label))
             {
                 lW = Mathf.Max(Mathf.Min(EditorGUIUtility.labelWidth, rect.width * 0.4f), 0f);
-                EditorGUI.LabelField(new Rect(rect.x, y, lW, lh), label);
+                EditorGUI.LabelField(new Rect(rect.x, rectY, lW, lh), label);
             }
             EditorGUI.BeginChangeCheck();
-            string plain = EditorGUI.TextField(new Rect(rect.x + lW, y, rect.width - lW, lh), value.GetTextValue(index));
+            string plain = EditorGUI.TextField(new Rect(rect.x + lW, rectY, rect.width - lW, lh), value.GetTextValue(index));
             if (EditorGUI.EndChangeCheck()) Apply(ctx, () => value.SetTextValue(index, plain));
-            y += lh + sp;
+            // rectY += lh + sp;
 
 #if IS_LOCALIZATION
             float ph = GetLocalizedPropHeight(value, index);
@@ -874,19 +873,19 @@ namespace Ale.Inventory.Editor
         // ─── 数组拖拽重排 ────────────────────────────────────────────────────────
 
         /// <summary>每个数组型 AttributeValue 各持一份拖拽状态（弱引用，值被回收时自动清理）。</summary>
-        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<AttributeValue, EditorReorderableDrag> _arrayDrags
+        private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<AttributeValue, EditorReorderableDrag> ArrayDrags
             = new System.Runtime.CompilerServices.ConditionalWeakTable<AttributeValue, EditorReorderableDrag>();
 
         /// <summary>拖拽落点计算用的临时索引序列（每帧重建，复用以避免分配）。</summary>
-        private static readonly List<int> _reorderProxy = new List<int>();
+        private static readonly List<int> ReorderProxy = new List<int>();
 
         private static EditorReorderableDrag GetArrayDrag(AttributeValue value)
         {
-            if (!_arrayDrags.TryGetValue(value, out var drag))
+            if (!ArrayDrags.TryGetValue(value, out var drag))
             {
                 drag = new EditorReorderableDrag(
                     "attrArray:" + System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value));
-                _arrayDrags.Add(value, drag);
+                ArrayDrags.Add(value, drag);
             }
             return drag;
         }
@@ -899,8 +898,8 @@ namespace Ale.Inventory.Editor
         private static EnumType ResolveEnumType(IInventoryEditorContext ctx, AttributeValue value, EnumType enumType)
         {
             if (enumType != null || value == null) return enumType;
-            if (value.Type != EFieldType.Enum && value.Type != EFieldType.EnumIntPair) return enumType;
-            if (string.IsNullOrEmpty(value.EnumTypeRef)) return enumType;
+            if (value.Type != EFieldType.Enum && value.Type != EFieldType.EnumIntPair) return null;
+            if (string.IsNullOrEmpty(value.EnumTypeRef)) return null;
             return ctx?.Database?.GetEnumType(value.EnumTypeRef);
         }
 

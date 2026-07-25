@@ -3,6 +3,7 @@
     "rootNamespace": "Ale.Inventory.Runtime.UI",
     "references": [
         "Ale.Toolkit.Runtime",
+        "Ale.Toolkit.UI",
         "Ale.Inventory.Runtime",
         "Unity.TextMeshPro",
         "Unity.Localization"

@@ -1,3 +1,4 @@
+using Ale.Toolkit.Runtime.UI;
 using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
 using System.Linq;
@@ -165,7 +166,7 @@ namespace Ale.Inventory.Editor
 
         /// <summary>构建 PF_UiwCraftingView（制作主界面：模板页签 + 搜索/分组 + 排序/列表 + 详情）。</summary>
         static void BuildCraftingViewPrefab(GameObject listPrefab, UiwCraftingInputCell inputCellPrefab,
-            GameObject detailPrefab, UiwInventoryItemSimple simplePrefab, UiwInventoryTab tabPrefab, UiwFoldTab foldTabPrefab,
+            GameObject detailPrefab, UiwInventoryItemSimple simplePrefab, UiwTabButton tabPrefab, UiwFoldTab foldTabPrefab,
             UiwNumberCounter counterPrefab)
         {
             string path = BeginPrefab(KPfCraftingView);

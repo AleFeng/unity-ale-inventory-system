@@ -1,3 +1,4 @@
+using Ale.Toolkit.Runtime.UI;
 using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 #if  IS_TMP
 using TMPro;
@@ -58,9 +59,9 @@ namespace Ale.Inventory.Editor
         {
             get
             {
-                if (_items == null || _itemsLang != InventoryEditorL10n.Current)
+                if (_items == null || _itemsLang != InventoryEditorL10N.Current)
                 {
-                    _itemsLang = InventoryEditorL10n.Current;
+                    _itemsLang = InventoryEditorL10N.Current;
                     _items     = BuildItems();
                 }
                 return _items;
@@ -157,7 +158,7 @@ namespace Ale.Inventory.Editor
                     Build = () => BuildInventoryGridPrefab(LoadPrefabComp<UiwInventoryItemCell>(Pfb(KPfItemCell))) },
                 new GenItem { Category = CatInventory, Key = "Panel",    DisplayName = Fmt("仓库面板 {0}", KPfInventoryPanel),     AssetPath = Pfb(KPfInventoryPanel),     DepKeys = new[] { "Tab", "Filter", "Simple", "ListPanel", "Grid" },
                     Build = () => BuildInventoryPanelPrefab(
-                        LoadPrefabComp<UiwInventoryTab>(Pfb(KPfInventoryTab)),
+                        LoadPrefabComp<UiwTabButton>(Pfb(KPfInventoryTab)),
                         LoadPrefabComp<Button>(Pfb(KPfFilterButton)),
                         LoadPrefabComp<UiwInventoryItemSimple>(Pfb(KPfItemSimple)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfInventoryOrderList)),
@@ -189,7 +190,7 @@ namespace Ale.Inventory.Editor
                         LoadPrefabComp<UiwCraftingInputCell>(Pfb(KPfCraftingInputCell)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemDetail)),
                         LoadPrefabComp<UiwInventoryItemSimple>(Pfb(KPfItemSimple)),
-                        LoadPrefabComp<UiwInventoryTab>(Pfb(KPfInventoryTab)),
+                        LoadPrefabComp<UiwTabButton>(Pfb(KPfInventoryTab)),
                         LoadPrefabComp<UiwFoldTab>(Pfb(KPfFoldTab)),
                         LoadPrefabComp<UiwNumberCounter>(Pfb(KPfNumberCounter))) },
                 new GenItem { Category = CatEquipment, Key = "EquipSlot",     DisplayName = Fmt("装备槽 {0}", KPfEquipSlot),   AssetPath = Pfb(KPfEquipSlot),          DepKeys = new string[0],

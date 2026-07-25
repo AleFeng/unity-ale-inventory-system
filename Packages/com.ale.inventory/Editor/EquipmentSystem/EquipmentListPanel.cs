@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -50,7 +50,7 @@ namespace Ale.Inventory.Editor
 
         #region 行列布局
 
-        protected override void DrawRowColumns(InventoryDatabase db, EquipmentGroup g,
+        protected override void DrawRowColumns(InventoryDatabase db, EquipmentGroup entity,
             Rect keyRow, float cx, float contentRight, float vy, float vh)
         {
             // ── 上行：列名表头 ──────────────────────────────────────────────────
@@ -62,20 +62,20 @@ namespace Ale.Inventory.Editor
 
             // ── 下行：值 ────────────────────────────────────────────────────────
             GUI.Label(new Rect(cx, vy, IdColW, vh),
-                string.IsNullOrWhiteSpace(g.id) ? Tr("(空 ID)") : g.id, IdStyle);
+                string.IsNullOrWhiteSpace(entity.id) ? Tr("(空 ID)") : entity.id, IdStyle);
             cx += IdColW + Pad;
 
-            string gName = g.displayNameText != null ? g.displayNameText.GetTextValue(0) : null;
+            string gName = entity.displayNameText != null ? entity.displayNameText.GetTextValue(0) : null;
             GUI.Label(new Rect(cx, vy, NameColW, vh),
                 string.IsNullOrEmpty(gName) ? "—" : gName, SubStyle);
             cx += NameColW + Pad;
 
-            string gDesc = g.descriptionText != null ? g.descriptionText.GetTextValue(0) : null;
+            string gDesc = entity.descriptionText != null ? entity.descriptionText.GetTextValue(0) : null;
             GUI.Label(new Rect(cx, vy, DescColW, vh),
                 string.IsNullOrEmpty(gDesc) ? "—" : gDesc, SubStyle);
             cx += DescColW + Pad;
 
-            GUI.Label(new Rect(cx, vy, SlotColW, vh), g.slotLists.Count.ToString(), SubStyle);
+            GUI.Label(new Rect(cx, vy, SlotColW, vh), entity.slotLists.Count.ToString(), SubStyle);
         }
 
         #endregion

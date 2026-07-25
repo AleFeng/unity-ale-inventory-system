@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -51,7 +51,7 @@ namespace Ale.Inventory.Editor
 
         #region 行列布局
 
-        protected override void DrawRowColumns(InventoryDatabase db, Shop shop,
+        protected override void DrawRowColumns(InventoryDatabase db, Shop entity,
             Rect keyRow, float cx, float contentRight, float vy, float vh)
         {
             // ── 上行：列名表头 ──────────────────────────────────────────────────
@@ -64,23 +64,23 @@ namespace Ale.Inventory.Editor
 
             // ── 下行：值 ────────────────────────────────────────────────────────
             GUI.Label(new Rect(cx, vy, IdColW, vh),
-                string.IsNullOrWhiteSpace(shop.id) ? Tr("(空 ID)") : shop.id, IdStyle);
+                string.IsNullOrWhiteSpace(entity.id) ? Tr("(空 ID)") : entity.id, IdStyle);
             cx += IdColW + Pad;
 
-            string shopName = shop.displayNameText != null ? shop.displayNameText.GetTextValue() : null;
+            string shopName = entity.displayNameText != null ? entity.displayNameText.GetTextValue() : null;
             GUI.Label(new Rect(cx, vy, NameColW, vh),
                 string.IsNullOrEmpty(shopName) ? "—" : shopName, SubStyle);
             cx += NameColW + Pad;
 
-            string shopDesc = shop.descriptionText != null ? shop.descriptionText.GetTextValue() : null;
+            string shopDesc = entity.descriptionText != null ? entity.descriptionText.GetTextValue() : null;
             GUI.Label(new Rect(cx, vy, DescColW, vh),
                 string.IsNullOrEmpty(shopDesc) ? "—" : shopDesc, SubStyle);
             cx += DescColW + Pad;
 
-            GUI.Label(new Rect(cx, vy, TypeColW, vh), TrEnum(shop.shopType), SubStyle);
+            GUI.Label(new Rect(cx, vy, TypeColW, vh), TrEnum(entity.shopType), SubStyle);
             cx += TypeColW + Pad;
 
-            GUI.Label(new Rect(cx, vy, GrpColW, vh), shop.groups.Count.ToString(), SubStyle);
+            GUI.Label(new Rect(cx, vy, GrpColW, vh), entity.groups.Count.ToString(), SubStyle);
         }
 
         #endregion

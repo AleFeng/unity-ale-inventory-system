@@ -1,7 +1,7 @@
 namespace Ale.Inventory.Editor
 {
     /// <summary>装备系统面板与配置绘制器（<c>Editor/EquipmentSystem/*.cs</c>、<c>EquipmentConfigDrawer</c>）的英 / 日译表。</summary>
-    public static partial class InventoryEditorL10n
+    public static partial class InventoryEditorL10N
     {
         static partial void RegisterEquipment()
         {

@@ -1,7 +1,7 @@
 namespace Ale.Inventory.Editor
 {
     /// <summary>制作系统面板与配置绘制器（<c>Editor/CraftingSystem/*.cs</c>、<c>CraftingConfigDrawer</c>）的英 / 日译表。</summary>
-    public static partial class InventoryEditorL10n
+    public static partial class InventoryEditorL10N
     {
         static partial void RegisterCrafting()
         {

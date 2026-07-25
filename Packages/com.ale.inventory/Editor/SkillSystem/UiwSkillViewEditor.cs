@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {

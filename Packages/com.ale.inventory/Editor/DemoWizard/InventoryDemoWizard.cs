@@ -1,3 +1,4 @@
+using Ale.Toolkit.Runtime.UI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -22,7 +23,7 @@ namespace Ale.Inventory.Editor
     /// 一键生成（预制体统一命名 PF_(组件类名)，按类型放入 Demo/Assets/UI/Prefab 的子文件夹，
     /// 与 Runtime/UI 各组件所在子目录一致）：
     ///   · Demo/Data/InventoryDatabase.asset                       — 测试道具 + 背包仓库 + 示例商店
-    ///   · Demo/Assets/UI/Prefab/Tab/PF_UiwInventoryTab.prefab
+    ///   · Demo/Assets/UI/Prefab/Tab/PF_UiwTabButton.prefab
     ///   · Demo/Assets/UI/Prefab/Tab/PF_FilterTabBtn.prefab
     ///   · Demo/Assets/UI/Prefab/Tab/PF_UiwShopGroupTab.prefab
     ///   · Demo/Assets/UI/Prefab/Item/PF_UiwInventoryItemSimple.prefab
@@ -133,7 +134,7 @@ namespace Ale.Inventory.Editor
         private static string SpriteItemGoldCoin => DemoRoot + "/Assets/UI/Image/Item/T_Item_GoldCoin.png";
 
         // 预制体名称：统一采用 PF_(组件类名) 形式，便于识别与查找；子文件夹见 PrefabSubfolder()
-        private const string KPfInventoryTab       = "PF_UiwInventoryTab";          // 仓库页签 UiwInventoryTab          → Tab/
+        private const string KPfInventoryTab       = "PF_UiwTabButton";          // 仓库页签 UiwTabButton          → Tab/
         private const string KPfFilterButton       = "PF_FilterTabBtn";             // 过滤按钮（UiwFilterTabBar 的按钮）  → Tab/
         private const string KPfFoldTab            = "PF_UiwFoldTab";               // 折叠页签 UiwFoldTab（图标 + 文本）  → Tab/
         private const string KPfItemSimple         = "PF_UiwInventoryItemSimple";   // 简易格子 UiwInventoryItemSimple   → Item/

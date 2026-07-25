@@ -4,6 +4,7 @@ using InventoryText = TMPro.TMP_Text;
 using InventoryText = UnityEngine.UI.Text;
 #endif
 
+using Ale.Toolkit.Runtime.UI;
 using UnityEngine;
 
 namespace Ale.Inventory.Runtime.UI
@@ -11,7 +12,7 @@ namespace Ale.Inventory.Runtime.UI
     /// <summary>
     /// 商店商品组页签按钮（MonoBehaviour）。
     /// 显示商品组名称（含固定首位「全部」）并反映选中状态。
-    /// 由 <see cref="UiwShopViewBase"/> 统一创建和管理，结构与 <see cref="UiwInventoryTab"/> 对称。
+    /// 由 <see cref="UiwShopViewBase"/> 统一创建和管理，结构与 <see cref="UiwTabButton"/> 对称。
     /// </summary>
     public class UiwShopGroupTab : MonoBehaviour
     {

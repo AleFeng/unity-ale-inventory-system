@@ -4,6 +4,7 @@ using InventoryText = TMPro.TMP_Text;
 using InventoryText = UnityEngine.UI.Text;
 #endif
 
+using Ale.Toolkit.Runtime.UI;
 using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
 using UnityEngine;
@@ -228,11 +229,11 @@ namespace Ale.Inventory.Runtime.UI
         [Header("仓库页签")]
         [Tooltip("仓库页签容器（tabPrefab 于此下）。")]
         public Transform       tabContainer;
-        [Tooltip("仓库页签Prefab（UiwInventoryTab）。")]
-        public UiwInventoryTab tabPrefab;
+        [Tooltip("仓库页签Prefab（UiwTabButton）。")]
+        public UiwTabButton tabPrefab;
         
         // 仓库页签条（实例 / 取值 / 显示名 / 高亮由 UiwTabStrip 统一维护；下标与 inventoryIds 对应）
-        private readonly UiwTabStrip<UiwInventoryTab, string> _tabStrip = new UiwTabStrip<UiwInventoryTab, string>();
+        private readonly UiwTabStrip<UiwTabButton, string> _tabStrip = new UiwTabStrip<UiwTabButton, string>();
         private readonly List<string> _tabLabels = new List<string>();   // 复用的显示名缓冲，避免每次重建都分配
 
         [Header("仓库")]

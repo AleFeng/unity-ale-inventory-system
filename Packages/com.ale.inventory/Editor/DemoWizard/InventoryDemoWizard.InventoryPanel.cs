@@ -1,3 +1,4 @@
+using Ale.Toolkit.Runtime.UI;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -28,7 +29,7 @@ namespace Ale.Inventory.Editor
         /// </summary>
         /// <returns>已保存的 PF_InventoryPanel 预制体的资产路径。</returns>
         static void BuildInventoryPanelPrefab(
-            UiwInventoryTab        tabPrefab,
+            UiwTabButton        tabPrefab,
             Button                 filterBtnPrefab,
             UiwInventoryItemSimple itemSimplePrefab,
             GameObject             listPanelPrefab,

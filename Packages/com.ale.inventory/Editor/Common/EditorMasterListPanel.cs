@@ -3,7 +3,7 @@ using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -150,7 +150,7 @@ namespace Ale.Inventory.Editor
                         list.Add(created);
                         ctx.MarkDirty();
                         _selectedIndex    = list.Count - 1;
-                        _masterList.index = _selectedIndex;
+                        if (_masterList != null) _masterList.index = _selectedIndex;
                     }
                 }
                 EditorGUILayout.EndHorizontal();
@@ -169,20 +169,23 @@ namespace Ale.Inventory.Editor
                 return _selectedIndex;
             }
 
-            _masterList.DoLayoutList();
-
-            // 延迟删除：在 DoLayoutList 完成之后处理，避免在回调中修改其绑定的集合。
-            if (_pendingDeleteIndex >= 0)
+            if (_masterList != null)
             {
-                int di = _pendingDeleteIndex;
-                _pendingDeleteIndex = -1;
-                if (di < list.Count)
+                _masterList.DoLayoutList();
+
+                // 延迟删除：在 DoLayoutList 完成之后处理，避免在回调中修改其绑定的集合。
+                if (_pendingDeleteIndex >= 0)
                 {
-                    ctx.RecordUndo($"删除{Noun}");
-                    list.RemoveAt(di);
-                    ctx.MarkDirty();
-                    _selectedIndex    = Mathf.Clamp(_selectedIndex, -1, list.Count - 1);
-                    _masterList.index = _selectedIndex;
+                    int di = _pendingDeleteIndex;
+                    _pendingDeleteIndex = -1;
+                    if (di < list.Count)
+                    {
+                        ctx.RecordUndo($"删除{Noun}");
+                        list.RemoveAt(di);
+                        ctx.MarkDirty();
+                        _selectedIndex = Mathf.Clamp(_selectedIndex, -1, list.Count - 1);
+                        _masterList.index = _selectedIndex;
+                    }
                 }
             }
 
@@ -199,13 +202,13 @@ namespace Ale.Inventory.Editor
             _masterList.elementHeight = RowHeight;
             _masterList.index         = _selectedIndex;
 
-            _masterList.drawElementBackgroundCallback = (rect, index, active, focused) =>
+            _masterList.drawElementBackgroundCallback = (rect, _, active, _) =>
             {
                 if (active)
                     InventoryEditorStyles.DrawRowBackground(rect, InventoryEditorStyles.SelectedColor);
             };
 
-            _masterList.drawElementCallback = (rect, index, active, focused) =>
+            _masterList.drawElementCallback = (rect, index, _, _) =>
             {
                 if (index < 0 || index >= list.Count) return;
                 var   item = list[index];

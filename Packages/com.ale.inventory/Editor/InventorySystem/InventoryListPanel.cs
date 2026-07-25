@@ -1,9 +1,10 @@
+using Ale.Toolkit.Runtime.UI;
 using System;
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -70,13 +71,13 @@ namespace Ale.Inventory.Editor
 
         #region 行列布局
 
-        protected override void DrawRowColumns(InventoryDatabase db, Inventory inv,
+        protected override void DrawRowColumns(InventoryDatabase db, Inventory entity,
             Rect keyRow, float cx, float contentRight, float vy, float vh)
         {
             // 模板名列：跨整行高度垂直居中（本面板独有的一列，位于色点之后、ID 之前）
             float rowTop = keyRow.y;
             float rowH   = KeyRowH + ValRowH + EditorGUIUtility.standardVerticalSpacing;
-            string tmplText = string.IsNullOrEmpty(inv.templateRef) ? "—" : inv.templateRef;
+            string tmplText = string.IsNullOrEmpty(entity.templateRef) ? "—" : entity.templateRef;
             GUI.Label(new Rect(cx, rowTop, TmplColW, rowH), tmplText, TmplStyle);
             cx += TmplColW + Pad;
 
@@ -93,30 +94,30 @@ namespace Ale.Inventory.Editor
 
             // ── 下行：值 ────────────────────────────────────────────────────────
             GUI.Label(new Rect(cx, vy, IdColW, vh),
-                string.IsNullOrWhiteSpace(inv.id) ? Tr("(空 ID)") : inv.id, IdStyle);
+                string.IsNullOrWhiteSpace(entity.id) ? Tr("(空 ID)") : entity.id, IdStyle);
             cx += IdColW + Pad;
 
-            string invName = inv.displayNameText != null ? inv.displayNameText.GetTextValue(0) : null;
+            string invName = entity.displayNameText != null ? entity.displayNameText.GetTextValue(0) : null;
             GUI.Label(new Rect(cx, vy, NameColW, vh),
                 string.IsNullOrEmpty(invName) ? "—" : invName, SubStyle);
             cx += NameColW + Pad;
 
-            string invDesc = inv.descriptionText != null ? inv.descriptionText.GetTextValue(0) : null;
+            string invDesc = entity.descriptionText != null ? entity.descriptionText.GetTextValue(0) : null;
             GUI.Label(new Rect(cx, vy, DescColW, vh),
                 string.IsNullOrEmpty(invDesc) ? "—" : invDesc, SubStyle);
             cx += DescColW + Pad;
 
             GUI.Label(new Rect(cx, vy, CapColW, vh),
-                inv.capacity <= 0 ? "∞" : inv.capacity.ToString(), SubStyle);
+                entity.capacity <= 0 ? "∞" : entity.capacity.ToString(), SubStyle);
             cx += CapColW + Pad;
 
             GUI.Label(new Rect(cx, vy, WtColW, vh),
-                inv.weightLimit <= 0f ? "∞" : inv.weightLimit.ToString("F1"), SubStyle);
+                entity.weightLimit <= 0f ? "∞" : entity.weightLimit.ToString("F1"), SubStyle);
             cx += WtColW + Pad;
 
-            GUI.Label(new Rect(cx, vy, TagColW, vh), TagsToString(inv.allowPutTagRefs),     SubStyle); cx += TagColW + Pad;
-            GUI.Label(new Rect(cx, vy, TagColW, vh), TagsToString(inv.allowTakeTagRefs),    SubStyle); cx += TagColW + Pad;
-            GUI.Label(new Rect(cx, vy, TagColW, vh), TagsToString(inv.allowOperateTagRefs), SubStyle);
+            GUI.Label(new Rect(cx, vy, TagColW, vh), TagsToString(entity.allowPutTagRefs),     SubStyle); cx += TagColW + Pad;
+            GUI.Label(new Rect(cx, vy, TagColW, vh), TagsToString(entity.allowTakeTagRefs),    SubStyle); cx += TagColW + Pad;
+            GUI.Label(new Rect(cx, vy, TagColW, vh), TagsToString(entity.allowOperateTagRefs), SubStyle);
         }
 
         private static string TagsToString(List<string> tags)

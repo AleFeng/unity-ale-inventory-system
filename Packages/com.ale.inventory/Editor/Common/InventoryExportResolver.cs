@@ -1,5 +1,4 @@
 using System;
-using Ale.Inventory.Runtime.Serialization;
 using Ale.Toolkit.Runtime;
 using Ale.Toolkit.Editor;
 

@@ -1,6 +1,5 @@
 using Ale.Toolkit.Runtime;
 using System;
-using Ale.Inventory.Runtime;
 using UnityEngine;
 
 namespace Ale.Inventory.Editor
@@ -23,8 +22,12 @@ namespace Ale.Inventory.Editor
         /// <paramref name="value"/> 在 <paramref name="index"/> 处的授权地址（<see cref="AttributeValue.GetObjAddress"/>）。
         /// 用户改变选择时返回 <c>true</c>，并通过 <paramref name="newGuid"/> 输出新的 GUID（子资源为 <c>GUID[子名]</c>）。
         /// </summary>
+        /// <param name="index">字段索引（多行字段时使用）。</param>
         /// <param name="objectType">期望的资源类型（用于选择器过滤 / 校验）。</param>
         /// <param name="label">字段标签（可为 null / 空表示无标签）。</param>
+        /// <param name="rect">绘制区域的矩形。</param>
+        /// <param name="value">当前字段的值。</param>
+        /// <param name="newGuid">输出的新 GUID（子资源为 <c>GUID[子名]</c>）。</param>
         bool Draw(Rect rect, AttributeValue value, int index, Type objectType, string label, out string newGuid);
 
         /// <summary>

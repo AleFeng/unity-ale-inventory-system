@@ -1,7 +1,7 @@
 namespace Ale.Inventory.Editor
 {
     /// <summary>道具系统面板（<c>Editor/ItemSystem/*.cs</c>）的英 / 日译表。</summary>
-    public static partial class InventoryEditorL10n
+    public static partial class InventoryEditorL10N
     {
         static partial void RegisterItem()
         {

@@ -1,4 +1,3 @@
-using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Editor
 {
@@ -6,7 +5,7 @@ namespace Ale.Inventory.Editor
     /// 共享属性 / 杂项绘制器（<c>AttributeFieldDrawer</c>、<c>AttributeDefinition*Drawer</c>、
     /// <c>SortSettingsDrawer</c>、<c>NumberFormatConfigDrawer</c>、<c>InventoryRefListDrawer</c>）的英 / 日译表。
     /// </summary>
-    public static partial class InventoryEditorL10n
+    public static partial class InventoryEditorL10N
     {
         static partial void RegisterDrawers()
         {

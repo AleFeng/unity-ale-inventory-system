@@ -5,7 +5,7 @@ namespace Ale.Inventory.Editor
     /// <c>UiwSkillViewEditor</c>）的英 / 日译表。这些面板显示在 Unity 标准 Inspector 中，
     /// 不属于插件的两个编辑器窗口，故单列一张表。
     /// </summary>
-    public static partial class InventoryEditorL10n
+    public static partial class InventoryEditorL10N
     {
         static partial void RegisterComponentInspectors()
         {

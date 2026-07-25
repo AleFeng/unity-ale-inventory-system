@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -196,7 +196,7 @@ namespace Ale.Inventory.Editor
                 {
                     var    ft     = db.GetTag(tagId);
                     bool   exists = ft != null;
-                    string ftName = exists && ft.displayNameText != null ? ft.displayNameText.GetTextValue(0) : null;
+                    string ftName = exists && ft.displayNameText != null ? ft.displayNameText.GetTextValue() : null;
                     string label  = exists
                         ? (string.IsNullOrEmpty(ftName) ? ft.name : ftName)
                         : tagId + Tr("（已删除）");
@@ -215,7 +215,7 @@ namespace Ale.Inventory.Editor
                 if (string.IsNullOrEmpty(ft.name) || sl.requiredTags.Contains(ft.name)) continue;
                 any = true;
                 string name  = ft.name;
-                string ftName = ft.displayNameText != null ? ft.displayNameText.GetTextValue(0) : null;
+                string ftName = ft.displayNameText != null ? ft.displayNameText.GetTextValue() : null;
                 string label = string.IsNullOrEmpty(ftName) ? ft.name : ftName;
                 menu.AddItem(new GUIContent(label), false, () =>
                 {

@@ -4,7 +4,7 @@ namespace Ale.Inventory.Editor
     /// 技能系统面板与配置绘制器（<c>Editor/SkillSystem/*.cs</c>、<c>SkillConfigDrawer</c>）的英 / 日译表。
     /// 分组标签相关文案（主/副分组标签、（未添加）、（无可添加的分组标签）等）与制作系统共用，已在制作译表登记。
     /// </summary>
-    public static partial class InventoryEditorL10n
+    public static partial class InventoryEditorL10N
     {
         static partial void RegisterSkill()
         {

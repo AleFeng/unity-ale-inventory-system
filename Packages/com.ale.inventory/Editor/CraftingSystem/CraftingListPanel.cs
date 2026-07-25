@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -52,7 +52,7 @@ namespace Ale.Inventory.Editor
 
         #region 行列布局
 
-        protected override void DrawRowColumns(InventoryDatabase db, CraftingBlueprint bp,
+        protected override void DrawRowColumns(InventoryDatabase db, CraftingBlueprint entity,
             Rect keyRow, float cx, float contentRight, float vy, float vh)
         {
             // ── 上行：列名表头 ──────────────────────────────────────────────────
@@ -65,25 +65,25 @@ namespace Ale.Inventory.Editor
 
             // ── 下行：值 ────────────────────────────────────────────────────────
             GUI.Label(new Rect(cx, vy, IdColW, vh),
-                string.IsNullOrWhiteSpace(bp.id) ? Tr("(空 ID)") : bp.id, IdStyle);
+                string.IsNullOrWhiteSpace(entity.id) ? Tr("(空 ID)") : entity.id, IdStyle);
             cx += IdColW + Pad;
 
-            string bpName = bp.displayText != null ? bp.displayText.GetTextValue(0) : null;
+            string bpName = entity.displayText != null ? entity.displayText.GetTextValue(0) : null;
             GUI.Label(new Rect(cx, vy, NameColW, vh),
                 string.IsNullOrEmpty(bpName) ? "—" : bpName, SubStyle);
             cx += NameColW + Pad;
 
-            string bpDesc = bp.descriptionText != null ? bp.descriptionText.GetTextValue(0) : null;
+            string bpDesc = entity.descriptionText != null ? entity.descriptionText.GetTextValue(0) : null;
             GUI.Label(new Rect(cx, vy, DescColW, vh),
                 string.IsNullOrEmpty(bpDesc) ? "—" : bpDesc, SubStyle);
             cx += DescColW + Pad;
 
-            var    groupObj  = db.GetCraftingGroupTag(bp.primaryGroupTag);
+            var    groupObj  = db.GetCraftingGroupTag(entity.primaryGroupTag);
             string groupName = groupObj != null ? groupObj.PlainName() : "—";
             GUI.Label(new Rect(cx, vy, GroupColW, vh), groupName, SubStyle);
             cx += GroupColW + Pad;
 
-            GUI.Label(new Rect(cx, vy, OutColW, vh), bp.outputs.Count.ToString(), SubStyle);
+            GUI.Label(new Rect(cx, vy, OutColW, vh), entity.outputs.Count.ToString(), SubStyle);
         }
 
         #endregion

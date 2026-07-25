@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEditor;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 「功能标签多选勾选列表」共享绘制：遍历数据库全部功能标签，逐个 <c>ToggleLeft</c>，
-    /// 勾选状态变化时带 Undo 地增删 <paramref name="refs"/> 中的标签名。
+    /// 勾选状态变化时带 Undo 地增删 refs 中的标签名。
     ///
     /// <para>此前该 12 行循环在 7 处各写了一遍（仓库 Inspector ×2、仓库模板 ×2、道具模板、
     /// 商店配置 ×2），只差 Undo 文案与空态提示。标题 / 说明行仍由调用方在外层自行绘制，
@@ -24,6 +24,7 @@ namespace Ale.Inventory.Editor
         /// <summary>
         /// 绘制功能标签勾选列表（就地增删 <paramref name="refs"/>）。
         /// </summary>
+        /// <param name="ctx">编辑器上下文（承担 Undo / MarkDirty / Repaint / Database）。</param>
         /// <param name="refs">被勾选的功能标签名列表。</param>
         /// <param name="undoAddLabel">勾选时的 Undo 文案。</param>
         /// <param name="undoRemoveLabel">取消勾选时的 Undo 文案。</param>

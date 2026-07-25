@@ -1,10 +1,11 @@
+using Ale.Toolkit.Runtime.UI;
 using System.Collections.Generic;
 using System.IO;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.Serialization;
 using UnityEditor;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Editor

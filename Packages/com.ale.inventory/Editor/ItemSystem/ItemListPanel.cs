@@ -1,10 +1,11 @@
+using Ale.Toolkit.Runtime.UI;
 using Ale.Toolkit.Runtime;
 using System;
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -59,26 +60,26 @@ namespace Ale.Inventory.Editor
 
         #region 行列布局（动态属性列）
 
-        protected override void DrawRowColumns(InventoryDatabase db, Item item,
+        protected override void DrawRowColumns(InventoryDatabase db, Item entity,
             Rect keyRow, float cx, float contentRight, float vy, float vh)
         {
             // 模板名列：跨整行高度垂直居中
             float rowH = KeyRowH + ValRowH + EditorGUIUtility.standardVerticalSpacing;
-            string tmplText = string.IsNullOrEmpty(item.templateRef) ? "—" : item.templateRef;
+            string tmplText = string.IsNullOrEmpty(entity.templateRef) ? "—" : entity.templateRef;
             GUI.Label(new Rect(cx, keyRow.y, TmplW, rowH), tmplText, TmplStyle);
             cx += TmplW + Pad;
 
             // ID 列
             GUI.Label(new Rect(cx, keyRow.y + 1, IdColW, KeyRowH - 2), "ID", KeyStyle);
             GUI.Label(new Rect(cx, vy, IdColW, vh),
-                string.IsNullOrWhiteSpace(item.id) ? Tr("(空 ID)") : item.id, IdStyle);
+                string.IsNullOrWhiteSpace(entity.id) ? Tr("(空 ID)") : entity.id, IdStyle);
             cx += IdColW + Pad;
 
             // ── 动态属性列：逐个按列宽排布，放不下即停 ──────────────────────────
-            if (item.values.Count == 0) return;
+            if (entity.values.Count == 0) return;
 
-            var itemDefMap = ItemQueryUtil.BuildDefMap(db, item);
-            foreach (var entry in item.values)
+            var itemDefMap = ItemQueryUtil.BuildDefMap(db, entity);
+            foreach (var entry in entity.values)
             {
                 float cw = CalcColWidth(entry.id);
                 if (cx + cw > contentRight) break;

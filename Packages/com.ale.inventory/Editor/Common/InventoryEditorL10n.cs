@@ -1,4 +1,3 @@
-using Ale.Toolkit.Runtime;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
@@ -33,20 +32,20 @@ namespace Ale.Inventory.Editor
     /// <para>延迟初始化（首次访问时读取 <see cref="EditorPrefs"/> 并登记译表），
     /// 仿 <see cref="InventoryEditorStyles"/> 的风格，避免静态构造期或非 GUI 线程出错。</para>
     /// </summary>
-    public static partial class InventoryEditorL10n
+    public static partial class InventoryEditorL10N
     {
         private static bool _initialized;
         private static EditorLanguage _current;
         private static bool _translateEnums;
 
         // 中文原文 → 目标语言译文（仅登记与中文不同的条目）。
-        private static readonly Dictionary<string, string> _en = new Dictionary<string, string>();
-        private static readonly Dictionary<string, string> _ja = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> En = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> Ja = new Dictionary<string, string>();
 
         // 枚举显示名。键为 "类型名.值名"（如 "EFieldType.Sprite"）。中文缺条目时回退枚举原名。
-        private static readonly Dictionary<string, string> _enumZh = new Dictionary<string, string>();
-        private static readonly Dictionary<string, string> _enumEn = new Dictionary<string, string>();
-        private static readonly Dictionary<string, string> _enumJa = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> EnumZh = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> EnumEn = new Dictionary<string, string>();
+        private static readonly Dictionary<string, string> EnumJa = new Dictionary<string, string>();
 
         // ── 初始化与译表登记 ──────────────────────────────────────────────────────
 
@@ -95,20 +94,20 @@ namespace Ale.Inventory.Editor
         /// <summary>登记一条译文。<paramref name="en"/> / <paramref name="ja"/> 为空则该语言回退中文。</summary>
         private static void Add(string zh, string en, string ja)
         {
-            if (!string.IsNullOrEmpty(en)) _en[zh] = en;
-            if (!string.IsNullOrEmpty(ja)) _ja[zh] = ja;
+            if (!string.IsNullOrEmpty(en)) En[zh] = en;
+            if (!string.IsNullOrEmpty(ja)) Ja[zh] = ja;
         }
 
         /// <summary>登记一个枚举值的显示名。<paramref name="zh"/> 为空则中文回退枚举原名。</summary>
         private static void AddEnum(Enum value, string en, string ja, string zh = null)
         {
             string key = EnumKey(value);
-            if (!string.IsNullOrEmpty(zh)) _enumZh[key] = zh;
-            if (!string.IsNullOrEmpty(en)) _enumEn[key] = en;
-            if (!string.IsNullOrEmpty(ja)) _enumJa[key] = ja;
+            if (!string.IsNullOrEmpty(zh)) EnumZh[key] = zh;
+            if (!string.IsNullOrEmpty(en)) EnumEn[key] = en;
+            if (!string.IsNullOrEmpty(ja)) EnumJa[key] = ja;
         }
 
-        private static string EnumKey(Enum value) => value.GetType().Name + "." + value.ToString();
+        private static string EnumKey(Enum value) => value.GetType().Name + "." + value;
 
         // ── 当前语言与开关 ────────────────────────────────────────────────────────
 
@@ -152,8 +151,8 @@ namespace Ale.Inventory.Editor
             EnsureInit();
             switch (_current)
             {
-                case EditorLanguage.English:  return _en.TryGetValue(zh, out var e) ? e : zh;
-                case EditorLanguage.Japanese: return _ja.TryGetValue(zh, out var j) ? j : zh;
+                case EditorLanguage.English:  return En.TryGetValue(zh, out var e) ? e : zh;
+                case EditorLanguage.Japanese: return Ja.TryGetValue(zh, out var j) ? j : zh;
                 default:                      return zh;
             }
         }
@@ -177,9 +176,9 @@ namespace Ale.Inventory.Editor
             string key = EnumKey(value);
             switch (_current)
             {
-                case EditorLanguage.English:  return _enumEn.TryGetValue(key, out var e) ? e : value.ToString();
-                case EditorLanguage.Japanese: return _enumJa.TryGetValue(key, out var j) ? j : value.ToString();
-                default:                      return _enumZh.TryGetValue(key, out var z) ? z : value.ToString();
+                case EditorLanguage.English:  return EnumEn.TryGetValue(key, out var e) ? e : value.ToString();
+                case EditorLanguage.Japanese: return EnumJa.TryGetValue(key, out var j) ? j : value.ToString();
+                default:                      return EnumZh.TryGetValue(key, out var z) ? z : value.ToString();
             }
         }
 

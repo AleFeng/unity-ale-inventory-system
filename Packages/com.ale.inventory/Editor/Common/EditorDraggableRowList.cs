@@ -8,7 +8,7 @@ namespace Ale.Inventory.Editor
     /// <summary>
     /// 「可拖拽重排的单行列表」共享 IMGUI 绘制骨架：
     /// <c>BeginFrame</c> → 逐行（整行 Rect 记录 + 左侧句柄列 + <b>行内内容</b> + 右侧「✕」）→ <c>EndFrame</c>
-    /// → 延迟删除。行内内容由调用方经 <paramref name="drawContent"/> 提供，其余样板全部收口于此。
+    /// → 延迟删除。行内内容由调用方经 drawContent 提供，其余样板全部收口于此。
     ///
     /// <para>此前该骨架在 6 处各写了一遍（仓库引用 / 忽略ID / 副分组标签 ×2 / 功能标签 / 枚举约束 / 属性字段显示），
     /// 其中「句柄垂直居中」的三行 Rect 运算逐字相同 —— 现由 <see cref="CenteredHandleRect"/> 统一。</para>

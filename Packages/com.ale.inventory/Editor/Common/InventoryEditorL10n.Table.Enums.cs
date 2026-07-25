@@ -5,12 +5,12 @@ namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 枚举下拉显示名映射。**仅在「多语言设定 → 枚举值」勾选后生效**；
-    /// 未勾选时 <see cref="InventoryEditorL10n.TrEnum"/> 一律返回代码中的枚举原名。
+    /// 未勾选时 <see cref="InventoryEditorL10N.TrEnum"/> 一律返回代码中的枚举原名。
     ///
     /// <para>中文名取自各枚举自身的 <c>[InspectorName]</c> 与 XML 文档；英文沿用枚举标识符
     /// （必要处加空格），日文按包内既有日文文档术语。</para>
     /// </summary>
-    public static partial class InventoryEditorL10n
+    public static partial class InventoryEditorL10N
     {
         static partial void RegisterEnums()
         {

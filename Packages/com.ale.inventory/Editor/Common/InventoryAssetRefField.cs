@@ -20,8 +20,13 @@ namespace Ale.Inventory.Editor
         /// 变更时经 <paramref name="newLive"/> / <paramref name="newAddress"/> 输出新值（二者互斥，未选中方为 null）。
         /// 调用方据返回值自行 <c>RecordUndo</c> + 赋值 + <c>MarkDirty</c>。
         /// </summary>
+        /// <param name="label">字段标签（可为 null / 空表示无标签）。</param>
         /// <param name="cacheKey">holder 缓存键对象（通常传所属配置对象），配合 <paramref name="fieldKey"/> 唯一标识该字段。</param>
         /// <param name="fieldKey">字段标识（如 "skillIcon" / "tagBg"）。</param>
+        /// <param name="currentLive">当前硬引用的资源（未选中时为 null）。</param>
+        /// <param name="currentAddress">当前授权地址（未选中时为 null）。</param>
+        /// <param name="newLive">输出的新硬引用资源（未选中时为 null）。</param>
+        /// <param name="newAddress">输出的新授权地址（未选中时为 null）。</param>
         public static bool DrawSprite(string label, object cacheKey, string fieldKey,
             Sprite currentLive, string currentAddress, out Sprite newLive, out string newAddress)
         {

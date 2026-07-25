@@ -7,7 +7,7 @@ namespace Ale.Inventory.Editor
     /// <para>生成项显示名为「中文描述 + 预制体资产名」，故以 <c>"描述 {0}"</c> 为键、
     /// 资产名作参数——资产名恒为英文，不参与翻译。</para>
     /// </summary>
-    public static partial class InventoryEditorL10n
+    public static partial class InventoryEditorL10N
     {
         static partial void RegisterDemo()
         {

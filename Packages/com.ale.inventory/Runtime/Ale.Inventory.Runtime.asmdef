@@ -2,7 +2,8 @@
     "name": "Ale.Inventory.Runtime",
     "rootNamespace": "Ale.Inventory.Runtime",
     "references": [
-        "Ale.Toolkit.Runtime"
+        "Ale.Toolkit.Runtime",
+        "Ale.Toolkit.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

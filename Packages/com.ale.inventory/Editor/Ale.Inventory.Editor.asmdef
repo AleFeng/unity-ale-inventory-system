@@ -9,7 +9,8 @@
         "Unity.Localization",
         "Unity.Localization.Editor",
         "Ale.Toolkit.Runtime",
-        "Ale.Toolkit.Editor"
+        "Ale.Toolkit.Editor",
+        "Ale.Toolkit.UI"
     ],
     "includePlatforms": [
         "Editor"

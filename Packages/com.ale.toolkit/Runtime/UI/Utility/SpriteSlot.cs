@@ -36,7 +36,7 @@ namespace Ale.Toolkit.Runtime.UI
         public void Bind(Image image, AttributeValue value, int index = 0, bool toggleEnabled = true)
         {
             if (!BeginBind(image, toggleEnabled, value != null, out int gen)) return;
-            InventoryAssets.Bind<Sprite>(value, image.gameObject, s => Apply(image, s, gen, toggleEnabled), index);
+            ToolkitAssets.Bind<Sprite>(value, image.gameObject, s => Apply(image, s, gen, toggleEnabled), index);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Ale.Toolkit.Runtime.UI
         {
             bool hasSource = liveRef || !string.IsNullOrEmpty(address);
             if (!BeginBind(image, toggleEnabled, hasSource, out int gen)) return;
-            InventoryAssets.Bind<Sprite>(liveRef, address, image.gameObject,
+            ToolkitAssets.Bind<Sprite>(liveRef, address, image.gameObject,
                 s => Apply(image, s, gen, toggleEnabled));
         }
 
@@ -56,7 +56,7 @@ namespace Ale.Toolkit.Runtime.UI
         public void Clear(Image image, bool disable = true)
         {
             if (!image) { _gen++; return; }
-            InventoryAssets.Release(image.gameObject);
+            ToolkitAssets.Release(image.gameObject);
             _gen++;
             image.sprite = null;
             if (disable) image.enabled = false;
@@ -71,7 +71,7 @@ namespace Ale.Toolkit.Runtime.UI
             gen = 0;
             if (!image) return false;
 
-            InventoryAssets.Release(image.gameObject);
+            ToolkitAssets.Release(image.gameObject);
             gen = ++_gen;
 
             if (hasSource) return true;

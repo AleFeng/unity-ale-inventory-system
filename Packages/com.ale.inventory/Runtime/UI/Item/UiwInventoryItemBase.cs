@@ -4,6 +4,7 @@ using InventoryText = TMPro.TMP_Text;
 using InventoryText = UnityEngine.UI.Text;
 #endif
 
+using Ale.Toolkit.Runtime.UI;
 using Ale.Toolkit.Runtime;
 using UnityEngine;
 using UnityEngine.UI;

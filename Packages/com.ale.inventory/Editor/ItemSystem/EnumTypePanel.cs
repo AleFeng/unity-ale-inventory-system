@@ -1,10 +1,11 @@
+using Ale.Toolkit.Runtime.UI;
 using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEditorInternal;   // 枚举项列表仍自持一个 ReorderableList（主列表已下沉基类）
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {

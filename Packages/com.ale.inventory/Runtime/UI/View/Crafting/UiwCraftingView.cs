@@ -1,3 +1,4 @@
+using Ale.Toolkit.Runtime.UI;
 using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
 using UnityEngine;
@@ -104,16 +105,16 @@ namespace Ale.Inventory.Runtime.UI
         [Header("蓝图模板页签")]
         [Tooltip("模板页签容器。")]
         public Transform       templateTabContainer;
-        [Tooltip("模板页签 Prefab（复用 UiwInventoryTab）。")]
-        public UiwInventoryTab templateTabPrefab;
+        [Tooltip("模板页签 Prefab（复用 UiwTabButton）。")]
+        public UiwTabButton templateTabPrefab;
         [Tooltip("是否显示「全部」模板页签（显示所有蓝图）。")]
         public bool            showAllTemplateTab;
         [Tooltip("「全部」模板页签显示名。")]
         public string          allTemplateLabel = "全部";
 
         // 蓝图模板页签条（实例 / 取值 / 显示名 / 高亮由 UiwTabStrip 统一维护）
-        private readonly UiwTabStrip<UiwInventoryTab, string> _tabStrip
-            = new UiwTabStrip<UiwInventoryTab, string>();
+        private readonly UiwTabStrip<UiwTabButton, string> _tabStrip
+            = new UiwTabStrip<UiwTabButton, string>();
 
         private readonly List<string> _templateRefs  = new List<string>(); // null = 全部
         private readonly List<string> _templateNames = new List<string>(); // 与 _templateRefs 平行

@@ -1,10 +1,9 @@
 using Ale.Toolkit.Runtime;
 using System;
 using System.Collections.Generic;
-using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10n;
+using static Ale.Inventory.Editor.InventoryEditorL10N;
 
 namespace Ale.Inventory.Editor
 {
@@ -22,8 +21,11 @@ namespace Ale.Inventory.Editor
         /// ID 输入行：重复 / 空 ID 以红色输入框高亮，并在下方给出提示。
         /// 改动经 <paramref name="setId"/> 写回（内部已做 <c>RecordUndo</c> + <c>MarkDirty</c>）。
         /// </summary>
+        /// <param name="ctx">编辑器上下文（承担 Undo / MarkDirty / Repaint / Database）。</param>
         /// <param name="noun">实体名词，用于 Undo 文案「修改{noun} ID」。</param>
+        /// <param name="currentId">当前 ID 值。</param>
         /// <param name="duplicateIds">该系统的重复 ID 集合（空 ID 以 <see cref="string.Empty"/> 参与判定）。</param>
+        /// <param name="setId">ID 改动回调。</param>
         /// <param name="dupHint">重复时的提示文案；默认 <see cref="DefaultDuplicateHint"/>。</param>
         public static void DrawIdField(IInventoryEditorContext ctx, string noun,
             string currentId, ICollection<string> duplicateIds, Action<string> setId,
@@ -62,6 +64,7 @@ namespace Ale.Inventory.Editor
         /// <para>模板属性定义先建一次字典再查 —— 此前五处都是 <c>values × attributes</c> 的嵌套线性扫描，
         /// 且发生在**每帧** OnGUI 上。</para>
         /// </summary>
+        /// <param name="ctx">编辑器上下文（承担 Undo / MarkDirty / Repaint / Database）。</param>
         /// <param name="values">实体自身的属性值列表。</param>
         /// <param name="templateAttrs">来源模板的属性定义列表；可为 null（此时枚举类型解析不到，按无定义绘制）。</param>
         /// <param name="emptyHint">列表为空时的提示文案。</param>
