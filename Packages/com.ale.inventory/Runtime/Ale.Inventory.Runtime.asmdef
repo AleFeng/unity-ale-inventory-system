@@ -3,7 +3,7 @@
     "rootNamespace": "Ale.Inventory.Runtime",
     "references": [
         "Ale.Toolkit.Runtime",
-        "Ale.Toolkit.UI"
+        "Ale.Toolkit.Runtime.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

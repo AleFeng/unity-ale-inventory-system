@@ -1,5 +1,5 @@
 {
-    "name": "Ale.Toolkit.UI",
+    "name": "Ale.Toolkit.Runtime.UI",
     "rootNamespace": "Ale.Toolkit.Runtime.UI",
     "references": [
         "Ale.Toolkit.Runtime",

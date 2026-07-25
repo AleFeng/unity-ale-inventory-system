@@ -1,7 +1,5 @@
 using Ale.Toolkit.Runtime.UI;
 using System;
-using System.Collections.Generic;
-using Ale.Inventory.Runtime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
