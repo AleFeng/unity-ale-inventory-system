@@ -5,7 +5,7 @@ using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.Serialization;
 using UnityEditor;
 using UnityEngine;
-using static Ale.Inventory.Editor.InventoryEditorL10N;
+using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 using Ale.Toolkit.Runtime;
 
 namespace Ale.Inventory.Editor

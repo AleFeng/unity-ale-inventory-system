@@ -7,7 +7,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
-using static Ale.Inventory.Editor.InventoryEditorL10N;
+using Ale.Toolkit.Editor;
+using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
 #if  IS_TMP
 using TMPro;
@@ -59,9 +60,9 @@ namespace Ale.Inventory.Editor
         {
             get
             {
-                if (_items == null || _itemsLang != InventoryEditorL10N.Current)
+                if (_items == null || _itemsLang != ToolkitEditorL10n.Current)
                 {
-                    _itemsLang = InventoryEditorL10N.Current;
+                    _itemsLang = ToolkitEditorL10n.Current;
                     _items     = BuildItems();
                 }
                 return _items;

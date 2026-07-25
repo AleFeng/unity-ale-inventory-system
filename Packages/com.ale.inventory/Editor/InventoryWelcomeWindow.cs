@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Ale.Inventory.Runtime;
-using static Ale.Inventory.Editor.InventoryEditorL10N;
+using Ale.Toolkit.Editor;
+using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
 #if IS_TMP
 using TMPro;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>编辑器 UI 显示语言。</summary>
     public enum EditorLanguage
@@ -17,23 +17,27 @@ namespace Ale.Inventory.Editor
     }
 
     /// <summary>
-    /// 编辑器 UI 三语（中 / 英 / 日）本地化服务。仅作用于 <see cref="InventoryWelcomeWindow"/> 与
-    /// <see cref="InventoryEditorWindow"/> 等编辑器窗口的界面文本，与运行时内容本地化
-    /// （<c>IS_LOCALIZATION</c> / Unity Localization）完全无关。
+    /// 编辑器 UI 三语（中 / 英 / 日）本地化服务。仅作用于各编辑器窗口 / 绘制器 / 面板的界面文本，
+    /// 与运行时内容本地化（<c>IS_LOCALIZATION</c> / Unity Localization）完全无关。
     ///
     /// <para><b>以中文原文为键：</b>调用点直接传入中文字面量（如 <c>Tr("快捷操作")</c>）。
     /// 当前语言为中文时原样返回；英 / 日语言查各自译表，缺条目则回退中文——
     /// 缺翻译只会退化为中文显示，绝不报错或留空。</para>
     ///
-    /// <para><b>译表按区域分部：</b>各 <c>InventoryEditorL10n.Table.*.cs</c> 通过实现对应的
-    /// <c>RegisterXxx()</c> 分部方法登记本区域译文；未实现的分部方法在编译期被消除，
-    /// 因此可分步增量补充译表而无需改动本文件。</para>
+    /// <para><b>译表按区域分部：</b>toolkit 自身的通用译表（<c>Table.*.cs</c>）通过实现对应的
+    /// <c>RegisterXxx()</c> 分部方法登记（未实现者编译期消除，可增量补充）；宿主插件（如库存）的领域译表
+    /// 则在自己包内以 <c>[InitializeOnLoad]</c> 登记类调用本类的 <see cref="Add"/> / <see cref="AddEnum"/>
+    /// 写入同一张表——两条登记路径时序无关（<see cref="Add"/> 只写字典，<see cref="EnsureInit"/> 幂等且不清表）。</para>
     ///
-    /// <para>延迟初始化（首次访问时读取 <see cref="EditorPrefs"/> 并登记译表），
-    /// 仿 <see cref="InventoryEditorStyles"/> 的风格，避免静态构造期或非 GUI 线程出错。</para>
+    /// <para>延迟初始化（首次访问时读取 <see cref="EditorPrefs"/> 并登记 toolkit 自身译表），
+    /// 避免静态构造期或非 GUI 线程出错。</para>
     /// </summary>
-    public static partial class InventoryEditorL10N
+    public static partial class ToolkitEditorL10n
     {
+        // 编辑器语言 / 枚举翻译开关的持久化键。沿用 1.7.x 的键名，避免升级后丢失用户已选语言。
+        private const string PrefLanguageKey       = "InventorySystem.Editor.Language";
+        private const string PrefTranslateEnumsKey = "InventorySystem.Editor.TranslateEnums";
+
         private static bool _initialized;
         private static EditorLanguage _current;
         private static bool _translateEnums;
@@ -52,54 +56,37 @@ namespace Ale.Inventory.Editor
         private static void EnsureInit()
         {
             if (_initialized) return;
-            _initialized = true;
+            _initialized = true;   // 顶部即置位：RegisterTables 内若经 Add 反向触发也不递归
 
-            _current        = (EditorLanguage)EditorPrefs.GetInt(
-                                  InventoryEditorPrefs.EditorLanguage, (int)EditorLanguage.ChineseSimplified);
-            _translateEnums = EditorPrefs.GetBool(InventoryEditorPrefs.EditorTranslateEnums, false);
+            _current        = (EditorLanguage)EditorPrefs.GetInt(PrefLanguageKey, (int)EditorLanguage.ChineseSimplified);
+            _translateEnums = EditorPrefs.GetBool(PrefTranslateEnumsKey, false);
 
             RegisterTables();
         }
 
-        // 各区域译表在对应的分部文件中实现；未实现者编译期消除，可增量补充。
-        static partial void RegisterWelcome();
+        // toolkit 自身的通用译表在对应的分部文件中实现；未实现者编译期消除，可增量补充。
         static partial void RegisterFramework();
-        static partial void RegisterItem();
-        static partial void RegisterInventory();
-        static partial void RegisterShop();
-        static partial void RegisterCrafting();
-        static partial void RegisterEquipment();
-        static partial void RegisterSkill();
         static partial void RegisterDrawers();
-        static partial void RegisterEnums();
-        static partial void RegisterDemo();
-        static partial void RegisterComponentInspectors();
+        static partial void RegisterAttributes();
+        static partial void RegisterDefines();
 
         private static void RegisterTables()
         {
-            RegisterWelcome();
             RegisterFramework();
-            RegisterItem();
-            RegisterInventory();
-            RegisterShop();
-            RegisterCrafting();
-            RegisterEquipment();
-            RegisterSkill();
             RegisterDrawers();
-            RegisterEnums();
-            RegisterDemo();
-            RegisterComponentInspectors();
+            RegisterAttributes();
+            RegisterDefines();
         }
 
         /// <summary>登记一条译文。<paramref name="en"/> / <paramref name="ja"/> 为空则该语言回退中文。</summary>
-        private static void Add(string zh, string en, string ja)
+        public static void Add(string zh, string en, string ja)
         {
             if (!string.IsNullOrEmpty(en)) En[zh] = en;
             if (!string.IsNullOrEmpty(ja)) Ja[zh] = ja;
         }
 
         /// <summary>登记一个枚举值的显示名。<paramref name="zh"/> 为空则中文回退枚举原名。</summary>
-        private static void AddEnum(Enum value, string en, string ja, string zh = null)
+        public static void AddEnum(Enum value, string en, string ja, string zh = null)
         {
             string key = EnumKey(value);
             if (!string.IsNullOrEmpty(zh)) EnumZh[key] = zh;
@@ -120,7 +107,7 @@ namespace Ale.Inventory.Editor
                 EnsureInit();
                 if (_current == value) return;
                 _current = value;
-                EditorPrefs.SetInt(InventoryEditorPrefs.EditorLanguage, (int)value);
+                EditorPrefs.SetInt(PrefLanguageKey, (int)value);
                 RepaintAll();
             }
         }
@@ -137,7 +124,7 @@ namespace Ale.Inventory.Editor
                 EnsureInit();
                 if (_translateEnums == value) return;
                 _translateEnums = value;
-                EditorPrefs.SetBool(InventoryEditorPrefs.EditorTranslateEnums, value);
+                EditorPrefs.SetBool(PrefTranslateEnumsKey, value);
                 RepaintAll();
             }
         }
@@ -206,8 +193,7 @@ namespace Ale.Inventory.Editor
 
         /// <summary>
         /// 刷新所有已打开的编辑器窗口，使语言 / 开关变更即时可见。
-        /// <para>不止本插件的两个窗口：运行时组件的自定义 Inspector
-        /// （<c>UiwEquipmentGroupPanel</c> / <c>UiwEquipmentSlotList</c> / <c>UiwSkillView</c>）
+        /// <para>不止编辑器窗口：运行时组件的自定义 Inspector（如装备组 / 装备槽列表 / 技能视图面板）
         /// 同样显示已翻译文本，需连 Inspector 面板一起刷新。</para>
         /// </summary>
         public static void RepaintAll()

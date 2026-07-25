@@ -1,10 +1,12 @@
+using static Ale.Toolkit.Editor.ToolkitEditorL10n;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// <see cref="InventoryWelcomeWindow"/> 的英 / 日译表。中文为源语言，故此处只登记英、日两栏；
     /// 未登记的条目在对应语言下自动回退中文。
     /// </summary>
-    public static partial class InventoryEditorL10N
+    internal static partial class InventoryEditorL10nTables
     {
         static partial void RegisterWelcome()
         {

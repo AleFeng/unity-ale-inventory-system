@@ -1,10 +1,12 @@
+using static Ale.Toolkit.Editor.ToolkitEditorL10n;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// <see cref="InventoryEditorWindow"/> 外壳与三列通用框架基类（<c>Editor/Common/Editor*.cs</c>）的英 / 日译表。
     /// 术语与包内既有英 / 日文档一致：仓库 = Warehouse / 倉庫，蓝图 = Blueprint / ブループリント 等。
     /// </summary>
-    public static partial class InventoryEditorL10N
+    internal static partial class InventoryEditorL10nTables
     {
         static partial void RegisterFramework()
         {

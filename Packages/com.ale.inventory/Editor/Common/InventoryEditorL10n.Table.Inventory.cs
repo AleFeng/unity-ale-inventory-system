@@ -1,7 +1,9 @@
+using static Ale.Toolkit.Editor.ToolkitEditorL10n;
+
 namespace Ale.Inventory.Editor
 {
     /// <summary>仓库系统面板（<c>Editor/InventorySystem/*.cs</c>）的英 / 日译表。</summary>
-    public static partial class InventoryEditorL10N
+    internal static partial class InventoryEditorL10nTables
     {
         static partial void RegisterInventory()
         {
