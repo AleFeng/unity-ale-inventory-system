@@ -9,12 +9,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// 排序整理栏（MonoBehaviour）。封装 排序条件下拉 + 升降序切换 + 自动整理按钮 三个控件，
     /// 通过 <see cref="OnSortChanged"/> / <see cref="OnAutoSort"/> 通知宿主。与具体系统解耦：
-    /// 宿主传入排序项显示名、订阅事件后把下标映射回字段并执行排序。供 <see cref="UiwInventoryView"/> 等共用。
+    /// 宿主传入排序项显示名、订阅事件后把下标映射回字段并执行排序。供各系统列表视图共用。
     /// </summary>
     public class UiwSortToolbar : MonoBehaviour
     {
@@ -78,11 +78,13 @@ namespace Ale.Inventory.Runtime.UI
         }
 
         /// <summary>
-        /// 用一组排序条件（<see cref="SortPriority"/>）填充下拉项：显示名取自对应「整理选项」的内置
-        /// <see cref="SortOption.displayName"/>（<see cref="SortOption.ResolveDisplayName"/>，无则用字段名本身）。
-        /// 是 <see cref="SetOptions"/> 的便捷封装，把「排序条件 → 显示名」的解析收拢在本组件内。
+        /// 用一组排序条件（<see cref="SortPriority"/>）填充下拉项：显示名经 <paramref name="optionOf"/> 取对应
+        /// 「整理选项」的内置 <see cref="SortOption.displayName"/>（<see cref="SortOption.ResolveDisplayName"/>，
+        /// 无则用字段名本身）。是 <see cref="SetOptions"/> 的便捷封装，把「排序条件 → 显示名」的解析收拢在本组件内。
         /// </summary>
-        public void SetSortPriorities(IReadOnlyList<SortPriority> priorities, InventoryDatabase db)
+        /// <param name="priorities">排序条件列表。</param>
+        /// <param name="optionOf">字段 → 整理选项 的解析委托（由宿主提供，通常来自数据库）；为空则一律用字段名本身。</param>
+        public void SetSortPriorities(IReadOnlyList<SortPriority> priorities, Func<string, SortOption> optionOf)
         {
             if (priorities == null || priorities.Count == 0)
             {
@@ -94,9 +96,9 @@ namespace Ale.Inventory.Runtime.UI
             foreach (var sp in priorities)
             {
                 string displayName = sp.field;
-                if (db)
+                if (optionOf != null)
                 {
-                    string n = db.GetSortOption(sp.field)?.ResolveDisplayName(null);
+                    string n = optionOf(sp.field)?.ResolveDisplayName(null);
                     if (!string.IsNullOrEmpty(n)) displayName = n;
                 }
                 names.Add(displayName);

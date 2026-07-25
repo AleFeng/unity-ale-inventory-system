@@ -1,20 +1,19 @@
-using Ale.Toolkit.Runtime;
 using System;
 using System.Collections.Generic;
 
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
-    /// 整理选项。对应仓库模板中 <see cref="SortPriority.field"/> 的一个唯一值，
-    /// 由 <see cref="InventoryDatabase.RebuildSortOptions"/> 自动生成与同步，不可手动增删。
+    /// 整理选项。对应宿主中 <see cref="SortPriority.field"/> 的一个唯一值，
+    /// 由宿主（如 <c>InventoryDatabase.RebuildSortOptions</c>）自动生成与同步，不可手动增删。
     ///
     /// <para>持有两个内置专属字段：<see cref="displayName"/>（<see cref="EFieldType.Text"/>：排序下拉的显示名，
     /// 纯文本 fallback + 可选本地化引用）与 <see cref="ignoreIds"/>（排序时跳过的条目 ID 列表）。
     /// 二者由运行时排序 / 整理栏读取（见 <see cref="ResolveDisplayName"/> / <see cref="EffectiveIgnoreIds"/>）。</para>
     ///
-    /// <para>仍继承自 <see cref="AttributeOwner"/> 以承载可选的额外自定义属性（schema 定义在
-    /// <see cref="InventoryDatabase.SortOptionAttributes"/>），并用于把旧版把「名称」「忽略ID」
-    /// 存为通用属性值的数据迁移到上述内置字段（见 <see cref="InventoryDatabase.RebuildSortOptions"/>）。</para>
+    /// <para>仍继承自 <see cref="AttributeOwner"/> 以承载可选的额外自定义属性（schema 由宿主定义，
+    /// 如 <c>InventoryDatabase.SortOptionAttributes</c>），并用于把旧版把「名称」「忽略ID」
+    /// 存为通用属性值的数据迁移到上述内置字段。</para>
     /// </summary>
     [Serializable]
     public class SortOption : AttributeOwner
@@ -42,7 +41,7 @@ namespace Ale.Inventory.Runtime
         /// </summary>
         public List<string> ignoreIds = new List<string>();
 
-        /// <summary>该整理选项的（可选）额外属性值列表，schema 由 <see cref="InventoryDatabase.SortOptionAttributes"/> 定义。</summary>
+        /// <summary>该整理选项的（可选）额外属性值列表，schema 由宿主定义（如 <c>InventoryDatabase.SortOptionAttributes</c>）。</summary>
         public List<AttributeEntry> attributeValues = new List<AttributeEntry>();
 
         // 实现基类 AttributeOwner 的抽象属性。

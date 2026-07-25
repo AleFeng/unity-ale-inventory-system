@@ -277,7 +277,7 @@ namespace Ale.Inventory.Runtime.UI
         #endregion
 
         #region 过滤 / 排序（委托给商品列表组件）
-        // 过滤栏 / 排序栏引用已移到商品列表组件（UiwShopCommodityList 继承的 UiwInventoryListBase）上，
+        // 过滤栏 / 排序栏引用已移到商品列表组件（UiwShopCommodityList 继承的 UiwVirtualListBase）上，
         // 过滤 / 排序管线由列表基类内建；本视图只负责一次性把「数据源 + 差异回调」配置给列表。
 
         private InventoryDatabase _db;   // 当前商店所属数据库（排序属性比较 / 显示名解析用）

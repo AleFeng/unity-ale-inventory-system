@@ -17,7 +17,7 @@ namespace Ale.Inventory.Runtime.UI
         {
             if (groupFilter)  groupFilter.OnGroupChanged += OnGroupChanged;
             if (searchInput)  searchInput.onValueChanged.AddListener(OnSearchChanged);
-            // 排序栏事件已下沉到蓝图列表组件（UiwInventoryListBase）自管，此处不再订阅。
+            // 排序栏事件已下沉到蓝图列表组件（UiwVirtualListBase）自管，此处不再订阅。
             if (blueprintList) blueprintList.OnBlueprintSelected += OnBlueprintSelected;
         }
 
@@ -223,7 +223,7 @@ namespace Ale.Inventory.Runtime.UI
         #endregion
 
         #region 排序整理栏（委托给蓝图列表组件）
-        // 排序栏引用已移到蓝图列表组件（UiwCraftingBlueprintList 继承的 UiwInventoryListBase）上，
+        // 排序栏引用已移到蓝图列表组件（UiwCraftingBlueprintList 继承的 UiwVirtualListBase）上，
         // 排序管线由列表基类内建；本视图只在模板切换时把「排序键 + 排序条件」配置给列表。
 
         /// <summary>配置蓝图列表的显示排序：排序键取蓝图主产物道具 ID，条件来自所选模板的整理设置。</summary>

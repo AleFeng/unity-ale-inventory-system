@@ -1,13 +1,14 @@
+using Ale.Toolkit.Runtime.UI;
 using System.Collections.Generic;
 
 namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 技能<b>网格</b>列表（虚拟滚动，多列 / 多行）。以 <see cref="UiwSkillEntry"/> 为条目，
-    /// 在通用网格虚拟滚动列表 <see cref="UiwInventoryGridList{TData,TCell}"/> 之上，
+    /// 在通用网格虚拟滚动列表 <see cref="UiwVirtualGridList{TData,TCell}"/> 之上，
     /// 负责「把 <see cref="Skill"/> 显示到技能条目」。技能无堆叠 / 拖拽 / 容量概念，故只需绑定与清空。
     /// </summary>
-    public class UiwSkillGridList : UiwInventoryGridList<Skill, UiwSkillEntry>
+    public class UiwSkillGridList : UiwVirtualGridList<Skill, UiwSkillEntry>
     {
         /// <summary>设置要显示的技能列表（虚拟滚动池化复用条目）。</summary>
         public void SetSkills(IReadOnlyList<Skill> skills) => SetItems(skills);

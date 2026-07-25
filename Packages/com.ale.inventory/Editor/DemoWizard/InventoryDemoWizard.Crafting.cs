@@ -253,7 +253,7 @@ namespace Ale.Inventory.Editor
                 var listLe = listInst.GetComponent<LayoutElement>() ?? listInst.AddComponent<LayoutElement>();
                 listLe.flexibleHeight = 1f; listLe.preferredHeight = 9000f;
                 view.blueprintList = listInst.GetComponent<UiwCraftingBlueprintList>();
-                // 排序栏引用配置在蓝图列表组件上（排序管线由 UiwInventoryListBase 内建）。
+                // 排序栏引用配置在蓝图列表组件上（排序管线由 UiwVirtualListBase 内建）。
                 if (view.blueprintList) view.blueprintList.sortToolbar = sortTb;
             }
             else Debug.LogWarning("[InventoryDemoWizard] 缺少 PF_UiwCraftingBlueprintList。");

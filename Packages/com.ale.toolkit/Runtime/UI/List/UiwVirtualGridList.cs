@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
     /// 列表滚动方向。决定虚拟滚动的主轴与跨轴（跨轴数量按视口对应边自动计算）。
@@ -17,18 +17,17 @@ namespace Ale.Inventory.Runtime.UI
     }
 
     /// <summary>
-    /// 通用<b>网格</b>虚拟滚动列表（二维布局）。在 <see cref="UiwInventoryListBase{TData,TCell}"/>
+    /// 通用<b>网格</b>虚拟滚动列表（二维布局）。在 <see cref="UiwVirtualListBase{TData,TCell}"/>
     /// 的虚拟滚动引擎之上，提供"多列 / 多行"网格布局策略：手动定位固定尺寸格子（不用 GridLayoutGroup），
     /// 只实例化可见区域内的格子并循环复用。
     ///
     /// <para>滚动方向由 <see cref="scrollDirection"/> 切换：<b>纵向</b>滚动时列数按视口宽自动计算、逐行向下；
     /// <b>横向</b>滚动时行数按视口高自动计算、逐列向右。跨轴数量随视口尺寸变化自动重算并重排。</para>
     ///
-    /// <para>各系统按需继承本类、闭合泛型并实现 <see cref="UiwInventoryListBase{TData,TCell}.BindCell"/> /
-    /// <see cref="UiwInventoryListBase{TData,TCell}.ClearCell"/>（仓库网格见
-    /// <see cref="UiwInventoryItemGridList"/>）。</para>
+    /// <para>各系统按需继承本类、闭合泛型并实现 <see cref="UiwVirtualListBase{TData,TCell}.BindCell"/> /
+    /// <see cref="UiwVirtualListBase{TData,TCell}.ClearCell"/>（如仓库网格 <c>UiwInventoryItemGridList</c>）。</para>
     /// </summary>
-    public abstract class UiwInventoryGridList<TData, TCell> : UiwInventoryListBase<TData, TCell>
+    public abstract class UiwVirtualGridList<TData, TCell> : UiwVirtualListBase<TData, TCell>
         where TCell : Component
     {
         [Header("网格布局")]

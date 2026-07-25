@@ -1,3 +1,4 @@
+using Ale.Toolkit.Runtime.UI;
 using System;
 using System.Collections.Generic;
 
@@ -5,11 +6,11 @@ namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 制作蓝图列表（虚拟滚动，单列纵向）。以 <see cref="UiwCraftingBlueprintCell"/> 为条目，
-    /// 在通用顺序虚拟滚动列表 <see cref="UiwInventoryOrderList{TData,TCell}"/> 之上额外支持
+    /// 在通用顺序虚拟滚动列表 <see cref="UiwVirtualOrderList{TData,TCell}"/> 之上额外支持
     /// 「选中高亮 + 选中事件」。滚动引擎、对象池、视口监听等由基类统一提供，本类只负责
     /// 「把 <see cref="CraftingBlueprint"/> 显示到蓝图条目」并维护选中态。
     /// </summary>
-    public class UiwCraftingBlueprintList : UiwInventoryOrderList<CraftingBlueprint, UiwCraftingBlueprintCell>
+    public class UiwCraftingBlueprintList : UiwVirtualOrderList<CraftingBlueprint, UiwCraftingBlueprintCell>
     {
         /// <summary>蓝图被选中事件（点击或外部设置触发点击时）。</summary>
         public event Action<CraftingBlueprint> OnBlueprintSelected;

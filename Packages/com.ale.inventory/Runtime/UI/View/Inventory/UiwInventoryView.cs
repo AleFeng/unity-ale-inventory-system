@@ -389,7 +389,8 @@ namespace Ale.Inventory.Runtime.UI
                 ? InventoryDataManager.Instance.FindDatabaseForInventory(inventoryIds[_inventoryIdsActiveIndex])
                 : null;
 
-            sortToolbar.SetSortPriorities(_currentSortPriorities, db);
+            sortToolbar.SetSortPriorities(_currentSortPriorities,
+                db ? db.GetSortOption : (System.Func<string, SortOption>)null);
         }
 
         /// <summary>排序整理栏：排序条件 / 方向变化回调。</summary>
@@ -397,7 +398,7 @@ namespace Ale.Inventory.Runtime.UI
 
         /// <summary>
         /// 从 UI 当前状态构建排序优先级列表（主条件 + tiebreakers）。
-        /// 与 <see cref="UiwInventoryListBase{TData,TCell}.CurrentSortPriorities"/> 语义一致：
+        /// 与 <see cref="UiwVirtualListBase{TData,TCell}.CurrentSortPriorities"/> 语义一致：
         /// <b>有排序栏</b>时主条件取下拉选中项、全部使用排序栏当前方向；
         /// <b>无排序栏</b>（合法配置：不想要整理栏）时以第一条排序条件为默认，主条件与各 tiebreaker
         /// <b>各自沿用配置的升降序</b>——而非一律降序。

@@ -16,10 +16,10 @@ namespace Ale.Inventory.Runtime.UI
     /// 否则仅显示有道具的格子、不响应整理拖拽。</para>
     ///
     /// <para>虚拟滚动引擎与网格布局（纵向 / 横向、自动跨轴数量）由基类
-    /// <see cref="UiwInventoryGridList{TData,TCell}"/> 提供；本类只负责格子绑定、仓库上下文、数字格式与拖拽整理。
+    /// <see cref="UiwVirtualGridList{TData,TCell}"/> 提供；本类只负责格子绑定、仓库上下文、数字格式与拖拽整理。
     /// 由 <see cref="UiwInventoryView"/> 驱动。</para>
     /// </summary>
-    public class UiwInventoryItemGridList : UiwInventoryGridList<RuntimeItemSlot, UiwInventoryItemCell>
+    public class UiwInventoryItemGridList : UiwVirtualGridList<RuntimeItemSlot, UiwInventoryItemCell>
     {
         [Header("拖拽整理")]
         [Tooltip("拖拽中显示的幽灵图标：为 null 时退用复制源格子图标。")]

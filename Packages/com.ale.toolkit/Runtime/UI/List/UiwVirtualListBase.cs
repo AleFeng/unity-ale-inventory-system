@@ -1,19 +1,18 @@
-using Ale.Toolkit.Runtime.UI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
-    /// 虚拟滚动列表基类（轴无关引擎）。所有"以列表 / 网格显示大量条目"的仓库系统 UI 列表的共同基础：
+    /// 虚拟滚动列表基类（轴无关引擎）。所有"以列表 / 网格显示大量条目"的 UI 列表的共同基础：
     /// 仅为视口内可见的条目分配 <typeparamref name="TCell"/> 实例（上下 / 左右各 <see cref="bufferCount"/> 个缓冲），
     /// 滚动时只复用实例、更新数据与位置，不创建 / 销毁对象，保证大量条目下的滚动流畅度。
     ///
     /// <para>本基类只持有"虚拟滚动引擎"（对象池 + 视口尺寸监听 + 回收 / 复用循环），
     /// 具体的<b>布局策略</b>（一维纵向 / 二维网格、纵向 / 横向滚动、条目定位）由子类
-    /// <see cref="UiwInventoryOrderList{TData,TCell}"/> / <see cref="UiwInventoryGridList{TData,TCell}"/> 实现；
+    /// <see cref="UiwVirtualOrderList{TData,TCell}"/> / <see cref="UiwVirtualGridList{TData,TCell}"/> 实现；
     /// 具体的<b>格子绑定</b>（把某条数据显示到一个格子 / 清空格子）由各系统的叶子类实现。</para>
     ///
     /// <para>数据类型 <typeparamref name="TData"/> 与格子类型 <typeparamref name="TCell"/> 均为泛型，
@@ -21,7 +20,7 @@ namespace Ale.Inventory.Runtime.UI
     /// </summary>
     /// <typeparam name="TData">列表数据元素类型（如 <c>RuntimeItemSlot</c> / <c>Skill</c> / <c>CraftingBlueprint</c>）。</typeparam>
     /// <typeparam name="TCell">格子显示组件类型（如 <c>UiwInventoryItemCell</c> / <c>UiwSkillEntry</c>）。</typeparam>
-    public abstract class UiwInventoryListBase<TData, TCell> : MonoBehaviour where TCell : Component
+    public abstract class UiwVirtualListBase<TData, TCell> : MonoBehaviour where TCell : Component
     {
         #region Inspector 配置
 
@@ -248,14 +247,13 @@ namespace Ale.Inventory.Runtime.UI
         // 本列表持有工具栏引用并订阅其事件，维护一份「源数据全集」，经 过滤 → 排序 后显示。
         // 差异（过滤谓词 / 排序键 / 排序条件 / 是否写运行时）由视图通过下方 Configure* 注入的小回调提供。
         //
-        //   视图侧接入：ConfigureFilter(谓词, 主/副页签token) + ConfigureSort(取itemId, db, 排序条件…)
+        //   视图侧接入：ConfigureFilter(谓词, 主/副页签token) + ConfigureSort(排序上下文, 排序条件…)
         //              + 数据变化时 SetSourceItems(全集)；过滤 / 排序栏交互后由本列表自动重排显示。
 
         private List<TData> _sourceItems;                            // 未过滤未排序的源数据全集
         private Func<TData, string, string, bool> _filterPredicate;  // (data, 主token, 副token) → 保留？null=不按栏过滤
         private Func<TData, bool>                  _extraFilter;      // 搜索 / 其它过滤（视图自管状态）；AND 叠加；null=无
-        private Func<TData, string>                _sortKeySelector;  // data → 用于属性比较的 itemId；null=不排序
-        private InventoryDatabase                  _sortDatabase;
+        private ISortContext<TData>                _sortContext;      // 领域排序上下文（属性载体 / 定义 / 忽略列表 / 特殊字段）；null=不排序
         private List<SortPriority>                 _sortPriorities  = new List<SortPriority>();
         private List<SortPriority>                 _sortTiebreakers = new List<SortPriority>();
         private Action<List<SortPriority>>         _sortWriteHandler; // 非空 = 写运行时模式（背包）：排序事件回调它，基类不做显示排序
@@ -313,20 +311,21 @@ namespace Ale.Inventory.Runtime.UI
         }
 
         /// <summary>
-        /// 配置排序：绑定排序键（data → itemId）+ 数据库 + 排序条件，并填充排序栏下拉（不立即触发）。
-        /// <paramref name="writeRuntime"/> 非空 = 「写运行时」模式（背包）：排序事件回调它（由视图写入运行时并触发刷新），
-        /// 基类不做显示排序；为空 = 「显示排序」模式（商店 / 制作）：基类按排序键就地排序显示。
+        /// 配置排序：绑定领域排序上下文 <paramref name="ctx"/>（属性载体 / 字段定义 / 忽略列表 / 特殊字段）+ 排序条件，
+        /// 并填充排序栏下拉（不立即触发）。
+        /// <paramref name="writeRuntime"/> 非空 = 「写运行时」模式：排序事件回调它（由视图写入运行时并触发刷新），
+        /// 基类不做显示排序；为空 = 「显示排序」模式：基类经排序上下文就地排序显示。
         /// </summary>
-        public void ConfigureSort(Func<TData, string> sortKeySelector, InventoryDatabase db,
+        public void ConfigureSort(ISortContext<TData> ctx,
             IReadOnlyList<SortPriority> priorities, IReadOnlyList<SortPriority> tiebreakers,
             Action<List<SortPriority>> writeRuntime = null)
         {
-            _sortKeySelector  = sortKeySelector;
-            _sortDatabase     = db;
+            _sortContext      = ctx;
             _sortPriorities   = priorities  != null ? new List<SortPriority>(priorities)  : new List<SortPriority>();
             _sortTiebreakers  = tiebreakers != null ? new List<SortPriority>(tiebreakers) : new List<SortPriority>();
             _sortWriteHandler = writeRuntime;
-            if (sortToolbar) sortToolbar.SetSortPriorities(_sortPriorities, db);
+            if (sortToolbar) sortToolbar.SetSortPriorities(_sortPriorities,
+                ctx != null ? ctx.OptionOf : (Func<string, SortOption>)null);
         }
 
         /// <summary>当前排序 UI 选择对应的优先级（主条件 + tiebreakers，全部使用当前方向）。供「写运行时」视图取用。</summary>
@@ -389,13 +388,12 @@ namespace Ale.Inventory.Runtime.UI
                 list.RemoveAll(d => !_extraFilter(d));
 
             // 显示排序（「写运行时」模式不在此排序：源已是运行时顺序）。
-            // SortByItemId 整次排序只建一份字段查表、复用两个临时槽位——
-            // 旧写法在比较器里每次比较都要 new 两个 RuntimeItemSlot 并重复线性扫描数据库。
-            if (_sortWriteHandler == null && _sortKeySelector != null && _sortDatabase && list.Count > 1)
+            // 排序上下文在一次排序内复用其字段查表缓存，避免比较器里重复线性扫描。
+            if (_sortWriteHandler == null && _sortContext != null && list.Count > 1)
             {
                 var priorities = CurrentSortPriorities();
                 if (priorities.Count > 0)
-                    InventorySortService.SortByItemId(list, _sortKeySelector, priorities, _sortDatabase);
+                    AttributeSortService.Sort(list, priorities, _sortContext);
             }
 
             if (preserveScroll) RefreshItemsData(list);

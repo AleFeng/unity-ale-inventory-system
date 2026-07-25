@@ -1,4 +1,5 @@
 using Ale.Toolkit.Runtime;
+using Ale.Toolkit.Runtime.UI;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -49,11 +50,11 @@ namespace Ale.Inventory.Runtime.UI
 
     /// <summary>
     /// 商店商品列表（虚拟滚动，单列纵向）。以 <see cref="UiwShopItemDetail"/> 为条目，在通用顺序虚拟滚动列表
-    /// <see cref="UiwInventoryOrderList{TData,TCell}"/> 之上，负责「把 <see cref="ShopCommodityEntry"/> 显示到商品格子」。
+    /// <see cref="UiwVirtualOrderList{TData,TCell}"/> 之上，负责「把 <see cref="ShopCommodityEntry"/> 显示到商品格子」。
     /// 选中次数存于 <see cref="ShopCommodityEntry.times"/>（数据模型），格子仅显示 / 回写当前可见项的次数；
     /// 由 <see cref="UiwShopViewBase"/> 通过 <see cref="SetContext"/> + <see cref="SetCommodities"/> 驱动。
     /// </summary>
-    public class UiwShopCommodityList : UiwInventoryOrderList<ShopCommodityEntry, UiwShopItemDetail>
+    public class UiwShopCommodityList : UiwVirtualOrderList<ShopCommodityEntry, UiwShopItemDetail>
     {
         private UiwShopViewBase    _owner;
         private Shop               _shop;

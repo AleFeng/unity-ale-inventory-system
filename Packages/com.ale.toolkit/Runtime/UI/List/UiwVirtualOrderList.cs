@@ -1,17 +1,16 @@
 using UnityEngine;
 
-namespace Ale.Inventory.Runtime.UI
+namespace Ale.Toolkit.Runtime.UI
 {
     /// <summary>
-    /// 通用<b>顺序</b>虚拟滚动列表（一维纵向、单列）。在 <see cref="UiwInventoryListBase{TData,TCell}"/>
+    /// 通用<b>顺序</b>虚拟滚动列表（一维纵向、单列）。在 <see cref="UiwVirtualListBase{TData,TCell}"/>
     /// 的虚拟滚动引擎之上，提供"单列纵向"布局策略：Content 高度 = 条目数 × 行高；实例锚点顶部横向拉伸，
     /// 逐行向下排布，滚动时循环复用。
     ///
-    /// <para>各系统按需继承本类、闭合泛型并实现 <see cref="UiwInventoryListBase{TData,TCell}.BindCell"/> /
-    /// <see cref="UiwInventoryListBase{TData,TCell}.ClearCell"/>（仓库列表见
-    /// <see cref="UiwInventoryItemOrderList"/>）。</para>
+    /// <para>各系统按需继承本类、闭合泛型并实现 <see cref="UiwVirtualListBase{TData,TCell}.BindCell"/> /
+    /// <see cref="UiwVirtualListBase{TData,TCell}.ClearCell"/>（如仓库列表 <c>UiwInventoryItemOrderList</c>）。</para>
     /// </summary>
-    public abstract class UiwInventoryOrderList<TData, TCell> : UiwInventoryListBase<TData, TCell>
+    public abstract class UiwVirtualOrderList<TData, TCell> : UiwVirtualListBase<TData, TCell>
         where TCell : Component
     {
         // 行高（像素）。应与 cellPrefab 的 RectTransform 高度一致。

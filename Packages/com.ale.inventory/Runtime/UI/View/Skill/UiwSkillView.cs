@@ -67,7 +67,7 @@ namespace Ale.Inventory.Runtime.UI
         private void Start()
         {
             if (searchInput) searchInput.onValueChanged.AddListener(OnSearchChanged);
-            // 主 / 副分组页签栏事件由技能列表组件（UiwInventoryListBase）自管，此处不再订阅。
+            // 主 / 副分组页签栏事件由技能列表组件（UiwVirtualListBase）自管，此处不再订阅。
 
             // 视图模式（含无切换按钮时自动采用已配置的那个视图）由基类统一处理。
             SetupViewModeToggle(orderList, gridList);
@@ -222,7 +222,7 @@ namespace Ale.Inventory.Runtime.UI
         }
 
         /// <summary>当前激活的技能列表（网格 / 顺序），以基类类型返回以调用过滤 / 数据入口。</summary>
-        private UiwInventoryListBase<Skill, UiwSkillEntry> ActiveList()
+        private UiwVirtualListBase<Skill, UiwSkillEntry> ActiveList()
             => GridMode
                 ? (gridList  ? gridList  : orderList)
                 : (orderList ? orderList : gridList);

@@ -1,11 +1,10 @@
-using Ale.Toolkit.Runtime;
 using System;
 
-namespace Ale.Inventory.Runtime
+namespace Ale.Toolkit.Runtime
 {
     /// <summary>
-    /// 仓库自动整理的单条优先级规则。<see cref="field"/> 指定排序依据的字段 ID，
-    /// 特殊值 <c>"__id__"</c> 表示按道具 ID 排序；<see cref="ascending"/> 控制升/降序。
+    /// 列表整理排序的单条优先级规则。<see cref="field"/> 指定排序依据的字段 ID，
+    /// 特殊值 <c>"__id__"</c> 表示按宿主主键（如道具 ID）排序；<see cref="ascending"/> 控制升/降序。
     /// </summary>
     [Serializable]
     public class SortPriority

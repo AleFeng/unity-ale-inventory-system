@@ -1,4 +1,5 @@
 using Ale.Toolkit.Runtime;
+using Ale.Toolkit.Runtime.UI;
 using System.Collections.Generic;
 
 namespace Ale.Inventory.Runtime.UI
@@ -7,11 +8,11 @@ namespace Ale.Inventory.Runtime.UI
     /// 仓库<b>顺序</b>道具列表（虚拟滚动，单列纵向）。以 <see cref="UiwInventoryItemDetail"/> 为格子，
     /// 逐行显示仓库中"有道具"的槽位（空槽不显示）；大量道具时仅渲染可见行 + 缓冲，滚动循环复用。
     ///
-    /// <para>虚拟滚动引擎与单列纵向布局由基类 <see cref="UiwInventoryOrderList{TData,TCell}"/> 提供；
+    /// <para>虚拟滚动引擎与单列纵向布局由基类 <see cref="UiwVirtualOrderList{TData,TCell}"/> 提供；
     /// 本类只负责"把 <see cref="RuntimeItemSlot"/> 显示到 <see cref="UiwInventoryItemDetail"/> 格子"，
     /// 并对接仓库上下文（仓库 ID）与数字格式。由 <see cref="UiwInventoryView"/> 驱动。</para>
     /// </summary>
-    public class UiwInventoryItemOrderList : UiwInventoryOrderList<RuntimeItemSlot, UiwInventoryItemDetail>
+    public class UiwInventoryItemOrderList : UiwVirtualOrderList<RuntimeItemSlot, UiwInventoryItemDetail>
     {
         private string             _inventoryId;   // 当前所属仓库 ID
         private NumberFormatLocale _numberFormat;  // 数字显示格式（千分位 / 万分位）

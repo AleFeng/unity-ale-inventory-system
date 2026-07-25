@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
+using Ale.Toolkit.Runtime.UI;
 
 #if  IS_TMP
 using TMPro;
