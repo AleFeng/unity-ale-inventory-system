@@ -1,8 +1,7 @@
 using System;
 using Ale.Toolkit.Runtime;
-using Ale.Toolkit.Editor;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// 导出资源解析器选择钩子。core 编辑器程序集对 Addressables 零依赖：
@@ -10,7 +9,7 @@ namespace Ale.Inventory.Editor
     /// <see cref="AddressableProvider"/> 注入自己的解析器（导出时把资源登记进 Addressable 分组并返回地址作 key）；
     /// 未启用时回退到默认的 <see cref="EditorAssetGuidResolver"/>（GUID:localFileId）。
     /// </summary>
-    public static class InventoryExportResolver
+    public static class EditorExportResolver
     {
         /// <summary>
         /// 由 Addressable 编辑器程序集在 [InitializeOnLoad] 时赋值。
@@ -19,8 +18,8 @@ namespace Ale.Inventory.Editor
         public static Func<IAssetRefResolver> AddressableProvider;
 
         /// <summary>
-        /// 选择当前导出应使用的解析器。
-        /// <paramref name="addressableEnabled"/> 通常为 <see cref="InventoryEditorPrefs.IsAddressableEnabled"/>。
+        /// 选择当前导出应使用的解析器。<paramref name="addressableEnabled"/> 由宿主传入
+        /// （通常为「Addressable 是否启用」的编辑器偏好）。
         /// </summary>
         public static IAssetRefResolver Resolve(bool addressableEnabled)
         {

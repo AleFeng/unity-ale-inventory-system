@@ -33,7 +33,7 @@ namespace Ale.Inventory.Editor
         /// 打开「Addressable 资源引用迁移窗口」的注入钩子。由受 IS_ADDRESSABLE 约束的
         /// Addressable 编辑器程序集在 <c>[InitializeOnLoad]</c> 时赋值；为 null（宏未启用 / 包未装）
         /// 时对应按钮隐藏。core 编辑器程序集对 Addressables 零依赖，故不能直接引用迁移窗口类型，
-        /// 与 <see cref="InventoryExportResolver.AddressableProvider"/> 等钩子同构。
+        /// 与 <see cref="EditorExportResolver.AddressableProvider"/> 等钩子同构。
         /// </summary>
         public static Action OpenAddressableMigration;
 

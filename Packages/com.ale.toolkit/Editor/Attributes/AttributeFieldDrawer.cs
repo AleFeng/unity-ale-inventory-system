@@ -26,7 +26,7 @@ namespace Ale.Toolkit.Editor
         /// AssetReference 授权字段绘制器。由受 IS_ADDRESSABLE 约束的 Addressable 编辑器程序集在
         /// <c>[InitializeOnLoad]</c> 时注入；为 null（宏未启用 / 包未装）时对象字段回退为普通 ObjectField。
         /// core 编辑器程序集对 Addressables 零依赖——此处仅持有一个纯接口引用，与
-        /// <see cref="InventoryExportResolver.AddressableProvider"/> 同构。
+        /// <see cref="EditorExportResolver.AddressableProvider"/> 同构。
         /// </summary>
         public static IAddressableAssetFieldDrawer AddressableFieldDrawer;
 

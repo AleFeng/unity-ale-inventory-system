@@ -16,7 +16,7 @@ namespace Ale.Inventory.Editor
     /// 由用户自行在 Addressables Groups 窗口中管理，遇到未标记的资源仅打警告提醒。
     ///
     /// 仅在启用 IS_ADDRESSABLE 宏时编译；[InitializeOnLoad] 时把自己注入 core 的
-    /// <see cref="InventoryExportResolver.AddressableProvider"/> 钩子。
+    /// <see cref="EditorExportResolver.AddressableProvider"/> 钩子。
     /// </summary>
     [InitializeOnLoad]
     public sealed class AddressableAssetRefResolver : IAssetRefResolver
@@ -26,7 +26,7 @@ namespace Ale.Inventory.Editor
         static AddressableAssetRefResolver()
         {
             // 注入钩子：core 导出流程在 IS_ADDRESSABLE 启用时会取用此解析器。
-            InventoryExportResolver.AddressableProvider = () => Instance;
+            EditorExportResolver.AddressableProvider = () => Instance;
         }
 
         // ── 导出：Object → Addressable key（不改动 AddressableAssetSettings；未标记则警告）──────

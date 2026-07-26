@@ -10,7 +10,7 @@ namespace Ale.Toolkit.Editor
     /// 未注入（宏未启用 / 包未装）时，对象引用字段回退为普通 <c>ObjectField</c>。
     ///
     /// core 编辑器程序集对 Addressables <b>零依赖</b>，故此抽象只用 core / Unity 基础类型，
-    /// 具体的原生 AssetReference 选择器桥接由注入实现完成（参见 <c>InventoryExportResolver</c> 同构的注入模式）。
+    /// 具体的原生 AssetReference 选择器桥接由注入实现完成（参见 <c>EditorExportResolver</c> 同构的注入模式）。
     /// </summary>
     public interface IAddressableAssetFieldDrawer
     {
