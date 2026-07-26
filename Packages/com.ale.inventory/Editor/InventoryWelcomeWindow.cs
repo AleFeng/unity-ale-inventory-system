@@ -189,9 +189,9 @@ namespace Ale.Inventory.Editor
                 OpenAddressableMigration();
 
 #if ATK_LOCALIZATION
-            // 仅在启用 ATK_LOCALIZATION 时显示（本地化工具窗口同在本程序集，可直接调用）。
+            // 仅在启用 ATK_LOCALIZATION 时显示；打开 toolkit 通用本地化窗口（拖入本库的 InventoryDatabase 使用）。
             if (GUILayout.Button(Tr("打开 本地化工具窗口"), GUILayout.Height(28)))
-                InventoryLocalizationToolWindow.Open();
+                ToolkitLocalizationToolWindow.Open();
 #endif
 
             if (GUILayout.Button(Tr("查看文档"), GUILayout.Height(28)))

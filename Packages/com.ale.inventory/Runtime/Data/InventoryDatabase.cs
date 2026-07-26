@@ -34,10 +34,6 @@ namespace Ale.Inventory.Runtime
         [SerializeField] private List<SkillTemplate>             skillTemplates             = new List<SkillTemplate>();
         [SerializeField] private List<Skill>                     skills                     = new List<Skill>();
 
-        // 本数据库关联的 Unity Localization String Table 集合的 SharedTableData GUID（1:1）。
-        // 由本地化工具窗口写入/读取，用于稳定定位所属表集合（表可改名，GUID 不变）。core 仅存字符串、不依赖 Localization 包。
-        [SerializeField] private string localizationTableCollectionGuid;
-
         #region 访问器
         /// <summary>
         /// 枚举类型 列表
@@ -141,16 +137,6 @@ namespace Ale.Inventory.Runtime
         /// 技能 列表
         /// </summary>
         public List<Skill> Skills => skills;
-
-        /// <summary>
-        /// 关联的 Localization String Table 集合的 SharedTableData GUID（1:1；空 = 未关联）。
-        /// 仅由本地化工具窗口读写。
-        /// </summary>
-        public string LocalizationTableCollectionGuid
-        {
-            get => localizationTableCollectionGuid;
-            set => localizationTableCollectionGuid = value;
-        }
 
         #endregion
 

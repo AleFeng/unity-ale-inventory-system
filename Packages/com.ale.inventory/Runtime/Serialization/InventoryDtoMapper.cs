@@ -26,9 +26,10 @@ namespace Ale.Inventory.Runtime.Serialization
         ///   <item>v6：导出补齐——<b>数据库的全部 20 个列表均已纳入</b>（新增 仓库 / 整理选项 / 数字格式 /
         ///         商店 / 制作 / 装备 / 技能），并补上道具系统此前静默丢弃的字段（模板色点、
         ///         weight / stackLimit / hideInInventory、功能标签的 UI 显示配置）。</item>
+        ///   <item>v7：移除数据库级 localizationTableCollectionGuid（本地化表绑定已回归到各 Text 属性值的 tableRef）。</item>
         /// </list>
         /// </summary>
-        public const int Version = 6;
+        public const int Version = 7;
 
         /// <summary>首个包含仓库 / 商店 / 制作 / 装备 / 技能等扩展数据块的格式版本（二进制读取按此做向后兼容判断）。</summary>
         internal const int VersionWithAllSystems = 6;
@@ -66,9 +67,7 @@ namespace Ale.Inventory.Runtime.Serialization
 
                 skillGroupTags = ToArray(db.SkillGroupTags, t => ToDto(t, resolver)),
                 skillTemplates = ToArray(db.SkillTemplates, t => ToDto(t, resolver)),
-                skills         = ToArray(db.Skills, s => ToDto(s, resolver)),
-
-                localizationTableCollectionGuid = db.LocalizationTableCollectionGuid
+                skills         = ToArray(db.Skills, s => ToDto(s, resolver))
             };
         }
 
@@ -161,7 +160,6 @@ namespace Ale.Inventory.Runtime.Serialization
             target.SkillGroupTags.Clear();
             target.SkillTemplates.Clear();
             target.Skills.Clear();
-            target.LocalizationTableCollectionGuid = null;
 
             if (dto == null) return;
 
@@ -210,8 +208,6 @@ namespace Ale.Inventory.Runtime.Serialization
                 foreach (var t in dto.skillTemplates) target.SkillTemplates.Add(FromDto(t, resolver));
             if (dto.skills != null)
                 foreach (var s in dto.skills) target.Skills.Add(FromDto(s, resolver));
-
-            target.LocalizationTableCollectionGuid = dto.localizationTableCollectionGuid;
         }
 
         private static EnumType FromDto(EnumTypeDto dto, IAssetRefResolver resolver)

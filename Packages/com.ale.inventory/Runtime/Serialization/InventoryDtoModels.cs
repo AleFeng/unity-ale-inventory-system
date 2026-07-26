@@ -50,9 +50,6 @@ namespace Ale.Inventory.Runtime.Serialization
         public GroupTagDto[]     skillGroupTags;
         public SkillTemplateDto[] skillTemplates;
         public SkillDto[]        skills;
-
-        /// <summary>关联的 Localization String Table 集合的 SharedTableData GUID（v6 新增；空 = 未关联）。</summary>
-        public string localizationTableCollectionGuid;
     }
 
     #region 道具系统

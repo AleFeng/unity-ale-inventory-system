@@ -44,13 +44,12 @@ namespace Ale.Inventory.Runtime.Serialization
                 WriteArray(w, dto.itemTemplates, WriteItemTemplate);
                 WriteArray(w, dto.items, WriteItem);
 
-                // v6 追加：其余五个系统的数据块 + 本地化表集合 GUID
+                // v6 追加：其余五个系统的数据块
                 WriteInventoryBlock(w, dto);
                 WriteShopBlock(w, dto);
                 WriteCraftingBlock(w, dto);
                 WriteEquipmentBlock(w, dto);
                 WriteSkillBlock(w, dto);
-                WriteStr(w, dto.localizationTableCollectionGuid);
             }
             return stream.ToArray();
         }
@@ -144,7 +143,7 @@ namespace Ale.Inventory.Runtime.Serialization
                 ReadCraftingBlock(r, dto);
                 ReadEquipmentBlock(r, dto);
                 ReadSkillBlock(r, dto);
-                dto.localizationTableCollectionGuid = ReadStr(r);
+                // v7 起不再写数据库级本地化表 GUID；旧版本(v6)该字段在此块末尾，未读的尾部字节被忽略、向后兼容。
             }
 
             InventoryDtoMapper.FromDto(dto, target, resolver);
