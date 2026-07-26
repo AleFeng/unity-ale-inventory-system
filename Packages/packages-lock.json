@@ -7,9 +7,9 @@
       "dependencies": {}
     },
     "com.ale.toolkit": {
-      "version": "file:com.ale.toolkit",
+      "version": "file:../../unity-ale-toolkit/Packages/com.ale.toolkit",
       "depth": 0,
-      "source": "embedded",
+      "source": "local",
       "dependencies": {}
     },
     "com.unity.addressables": {
