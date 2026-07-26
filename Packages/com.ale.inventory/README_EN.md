@@ -135,6 +135,8 @@ Expand the "**Test Tools – Prefab Generation**" foldout:
 
 Once you designate an `InventoryDatabase` as a template, "Create New Data File" deep-copies all its data (enums / tags / templates / items…); leaving it empty creates default empty data. The panel shows the number of enum types / function tags / item templates / items the template contains.
 
+> Since 1.10.0 this template choice is stored in the project-level `ProjectSettings/AleInventorySettings.asset` (a `ScriptableSingleton`, committed with the repo, referenced by GUID, shared across the team; a setting saved by an older version in EditorPrefs is migrated in automatically the first time you open the window). Per-user preferences such as "auto-show on startup" remain in EditorPrefs.
+
 ### Wizard Fonts (when `ATK_TMP` is enabled)
 
 Font settings used by the "Test Tools – Prefab Generation" wizard (inventory-domain config, hence kept in this window):

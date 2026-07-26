@@ -134,6 +134,8 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 
 指定一个 `InventoryDatabase` 作为模板后，「创建新数据文件」会从该模板深拷贝全部数据（枚举 / 标签 / 模板 / 道具…）；留空则新建为默认空数据。面板会显示模板包含的枚举类型 / 功能标签 / 道具模板 / 道具数量。
 
+> 自 1.10.0 起，该模板选择存于项目级 `ProjectSettings/AleInventorySettings.asset`（`ScriptableSingleton`，随仓库入库、按 GUID 引用、团队共享；旧版本存于 EditorPrefs 的设置在首次打开时自动迁入）。「启动时自动显示」等每人偏好仍存 EditorPrefs。
+
 ### 向导字体（启用 `ATK_TMP` 时）
 
 供「测试工具-预制体生成」向导使用的字体设置（属库存领域配置，故保留在本窗口）：

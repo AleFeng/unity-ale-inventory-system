@@ -8,7 +8,7 @@
 
 ## [1.10.0] - 2026-07-26
 
-配合 `com.ale.toolkit` 1.2.0：把「界面语言」与「可选依赖宏」下沉到 toolkit 欢迎窗口、菜单收拢到 `Tools > Ale Toolkit` 下，并把两个库存专用工具窗口（本地化 / Addressable）整合进 toolkit 的**通用工具窗口**（图标字段并入属性系统后即可通用）。**全局设定 / 菜单部分为纯结构调整；图标整合涉及一次性资产迁移（见「整合」），导出 DTO 表示不变但格式版本号 6 → 7。**
+配合 `com.ale.toolkit` 1.2.0：把「界面语言」与「可选依赖宏」下沉到 toolkit 欢迎窗口、菜单收拢到 `Tools > Ale Toolkit` 下，并把两个库存专用工具窗口（本地化 / Addressable）整合进 toolkit 的**通用工具窗口**（图标字段并入属性系统后即可通用）。**全局设定 / 菜单部分为纯结构调整；图标整合涉及一次性资产迁移（见「整合」），导出 DTO 表示不变但格式版本号 6 → 7。** 另把**数据模板**等项目级设定改存 `ProjectSettings`（入库共享，旧 EditorPrefs 设置自动迁移）。
 
 ### 变更
 
@@ -16,6 +16,7 @@
 - **⚠️ 可选依赖宏随 toolkit 改名**：`IS_TMP` / `IS_LOCALIZATION` / `IS_ADDRESSABLE` → `ATK_TMP` / `ATK_LOCALIZATION` / `ATK_ADDRESSABLE`。老项目已设的旧宏由 toolkit 的 `ToolkitDefineChecker` 加载时自动迁移，无需手改。
 - **全局设定下沉 toolkit**：欢迎窗口移除界面语言按钮与插件宏开关区，改为「打开 Ale Toolkit 设置（语言 / 插件宏）」跳转按钮（语言 / 枚举翻译 / 宏开关统一在 toolkit 欢迎窗口配置）；`InventoryEditorPrefs` / `InventoryDefineChecker` 移除已下沉的宏常量 / 检测 / 一致性检查；向导 TMP / 本地化字体设置从宏区迁为独立「向导字体」区。
 - **菜单收拢**：库存四个菜单项由 `Tools > Inventory System > *` 收入 `Tools > Ale Toolkit > Inventory System > *`（欢迎窗口 / Inventory Editor / 本地化工具窗口 / Addressable 工具窗口）。`Assets > Create > Inventory System > Inventory Database` 不变。
+- **欢迎窗口可手动调整高宽**：移除 `min==max` 尺寸锁、改为只设缩放下限（初始仍 520×600 居中），窗口可自由拉伸；「预制体生成」滚动列表高度由 200 下调至 130。
 
 ### 整合（删除库存专用工具窗口，改用 toolkit 通用工具）
 
@@ -23,9 +24,15 @@
 - **图标并入属性系统**：`Skill` / `SkillTemplate` 的 `icon` + `iconAddress` → `iconValue`（`AttributeValue` Sprite）；功能标签背景图同理（toolkit `Tag.backgroundSpriteValue`）。UI / DTO 导出 / 编辑器绘制 / 标签面板全部改读新字段，`ISkillConfig.Icon` 代理到 `iconValue`。**升级须知**：本版提供一次性迁移菜单 `Tools > Ale Toolkit > Inventory System > 迁移 > 图标字段迁移到属性系统`——升级后请**先运行它**把旧图标搬入新字段并保存。
 - **移除 `InventoryDatabase.LocalizationTableCollectionGuid`**：本地化表绑定已回归到各 Text 属性值的 `tableRef`（由 toolkit 通用窗口反推）。含数据模型 + DTO + JSON + 二进制四处；`InventoryDtoMapper.Version` 6 → 7（该字段位于二进制末尾，删除**向后兼容**——旧存档可读，末尾多余字节忽略）。
 
+### 项目级设置（改存 ProjectSettings，版本控制友好）
+
+- **数据模板改存项目级设置**：「创建新数据文件」使用的模板数据库由 EditorPrefs 改存 `ScriptableSingleton` → `ProjectSettings/AleInventorySettings.asset`（**随仓库入库、按 GUID 引用、团队共享**）。新增 `InventoryProjectSettings`，`InventoryEditorPrefs.Load/SaveTemplateDatabase` 转为其门面（4 处调用方无感）；`LoadTemplateDatabase` 首次调用时把旧 EditorPrefs 路径**一次性迁入**新文件并清除旧键。启动自动显示、上次打开的数据库路径仍为每人偏好（EditorPrefs）。
+- **向导字体随 toolkit 改存 ProjectSettings**：预制体向导的默认 / 本地化字体现由 toolkit 存入 `ProjectSettings/AleToolkitSettings.asset`（见 toolkit 1.2.0）；本插件 `AttachFontEvent` 改用 `LocalizedReference.SetReference` 复制本地化字体引用（弃 `JsonUtility` 往复，避免嵌套回调丢失致引用变空）。
+
 ### 文档
 
 - 三语 `README` / `Docs~` 同步：宏名 `ATK_*`、新菜单路径、全局设定改在 toolkit 欢迎窗口配置、toolkit 通用工具窗口替代库存专用工具、图标字段并入属性系统。
+- 三语 `README` 补充：数据模板 / 向导字体改存 `ProjectSettings`（入库、团队共享，旧 EditorPrefs 设置自动迁移）。
 
 ## [1.9.0] - 2026-07-26
 
