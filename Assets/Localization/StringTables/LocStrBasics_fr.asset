@@ -1,0 +1,256 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: LocStrBasics_fr
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: fr
+  m_SharedData: {fileID: 11400000, guid: 8d9b4bf902c022949a3fc3af5942423d, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 3540734735042216033
+  m_TableData:
+  - m_Id: 1362278555648
+    m_Localized: orange
+    m_Metadata:
+      m_Items: []
+  - m_Id: 364705606606848
+    m_Localized: Bouton
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4207350456320
+    m_Localized: Nouveau jeu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4410660954112
+    m_Localized: Continuer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5953393074176
+    m_Localized: Charger
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4484254212096
+    m_Localized: "Param\xE8tres"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4536355856384
+    m_Localized: Quitter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1707980175253504
+    m_Localized: Langue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1710314108297216
+    m_Localized: Audio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1711080734793728
+    m_Localized: Graphismes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1713211260870656
+    m_Localized: Global
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1714939532222464
+    m_Localized: Musique
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1715333549334528
+    m_Localized: Effets Sonores
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1716210456666112
+    m_Localized: Effets Sonores d'Interface
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1716537775955968
+    m_Localized: Voix
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1716685503537152
+    m_Localized: Ambiance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1717122076057600
+    m_Localized: "R\xE9solution"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1717355430354944
+    m_Localized: Mode d'Affichage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1717769697566720
+    m_Localized: "Qualit\xE9"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1718350528978944
+    m_Localized: VSync
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1718763051360256
+    m_Localized: Retour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1720490714537984
+    m_Localized: Localisation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1723827736354816
+    m_Localized: Titre
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1758167895711744
+    m_Localized: Menu Principal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1760202359644160
+    m_Localized: Sauvegarde Rapide
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1760307389210624
+    m_Localized: Chargement Rapide
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1760747522695168
+    m_Localized: Le {global.gamestatus_day}/{global.gamestatus_month}/{global.gamestatus_year}
+      {global.gamestatus_week} {global.gamestatus_hour}:{global.gamestatus_minute}:{global.gamestatus_second}
+    m_Metadata:
+      m_Items:
+      - rid: 3540734735042216033
+  - m_Id: 1780448852254720
+    m_Localized: Dimanche
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780478686339072
+    m_Localized: Lundi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780485116207104
+    m_Localized: Mardi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780492393324544
+    m_Localized: Mercredi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780497669758976
+    m_Localized: Jeudi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780516279885824
+    m_Localized: Vendredi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780508084215808
+    m_Localized: Samedi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1825225194938368
+    m_Localized: Oui
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1825273769172992
+    m_Localized: Non
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1825294392565760
+    m_Localized: Confirmer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2126960710983680
+    m_Localized: Appliquer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4287683683753984
+    m_Localized: Sauvegarder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4297441773953024
+    m_Localized: Sauvegarder la Partie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4297535566979072
+    m_Localized: Charger la Partie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4299453680918528
+    m_Localized: Nouvelle Sauvegarde
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43855765888376832
+    m_Localized: "\xC9crans"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68815484965765120
+    m_Localized: /
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68815489730494464
+    m_Localized: /
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68818983594115072
+    m_Localized: h
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68819017173712896
+    m_Localized: m
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68819107032481792
+    m_Localized: s
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890623824773120
+    m_Localized: Petit matin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890718943199232
+    m_Localized: Matin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890743878336512
+    m_Localized: Midi
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890771887898624
+    m_Localized: "Apr\xE8s-midi"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890777344688128
+    m_Localized: "Soir\xE9e"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890782587568128
+    m_Localized: Nuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890800379805696
+    m_Localized: Au milieu de la nuit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890808424480768
+    m_Localized: Point du jour
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 3540734735042216033
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 1760747522695168

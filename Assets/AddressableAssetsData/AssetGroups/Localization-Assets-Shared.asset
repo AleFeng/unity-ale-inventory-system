@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-Assets-Shared
+  m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
+  m_GroupName: Localization-Assets-Shared
+  m_GUID: 04e1b908b450c6e4d81472036334c6d7
+  m_SerializeEntries:
+  - m_GUID: 8d9b4bf902c022949a3fc3af5942423d
+    m_Address: Assets/Localization/StringTables/LocStrBasics Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ab2ea891866ea8844b4bf5c4b0334771
+    m_Address: Assets/Localization/AssetTables/LocAssBasics Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c0beeb4f7a1bdb7459cb933dbd73d360
+    m_Address: Assets/Localization/StringTables/Dialog/LocStrDialog Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: 50ef0c01b7b31c847aa5d1fddf6b9aa7, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: cf814d77d7ba4864abb6c82b4048e6cb, type: 2}
+    - {fileID: 11400000, guid: e1335ac5de879c84db3b7b9db72a68a0, type: 2}

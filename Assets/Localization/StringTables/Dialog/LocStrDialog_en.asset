@@ -1,0 +1,115 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: LocStrDialog_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: c0beeb4f7a1bdb7459cb933dbd73d360, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 3540734751379554393
+  m_TableData:
+  - m_Id: 408984559616
+    m_Localized: Return to Main Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1156300480512
+    m_Localized: Are you sure you want to return to the main menu? Unsaved progress
+      will be lost.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5079971209216
+    m_Localized: Overwrite Save Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5175483899904
+    m_Localized: Are you sure you want to start a new game? You will overwrite the
+      old save file.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4763020238848
+    m_Localized: Delete Save Slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704604401664
+    m_Localized: Exit Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3851623145472
+    m_Localized: Are you sure you want to exit the game?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4804455768064
+    m_Localized: Are you sure you want to delete the save slot '{0}'? This action
+      cannot be undone.
+    m_Metadata:
+      m_Items:
+      - rid: 3540734751379554393
+  - m_Id: 4116040458240
+    m_Localized: Delete All Save Files
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4281837101056
+    m_Localized: Are you sure you want to delete all save files? This action cannot
+      be undone.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 291857743552512
+    m_Localized: Apply Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 292269712285696
+    m_Localized: Apply changes before exiting?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2366591834595328
+    m_Localized: Start a new game?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2366557479051264
+    m_Localized: New Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2449756796297216
+    m_Localized: Overwrite Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2449763888865280
+    m_Localized: Are you sure you want to overwrite this save?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2459966013251584
+    m_Localized: Load Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2459971834945536
+    m_Localized: Are you sure you want to load this save?
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2479333014839296
+    m_Localized: Delete Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2479344163299328
+    m_Localized: Are you sure you want to delete this save?
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 3540734751379554393
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 4804455768064

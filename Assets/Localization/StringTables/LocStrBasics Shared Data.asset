@@ -1,0 +1,258 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: LocStrBasics Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: LocStrBasics
+  m_TableCollectionNameGuidString: 8d9b4bf902c022949a3fc3af5942423d
+  m_Entries:
+  - m_Id: 1362278555648
+    m_Key: orange
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1718763051360256
+    m_Key: ui_common_back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2126960710983680
+    m_Key: ui_common_apply
+    m_Metadata:
+      m_Items: []
+  - m_Id: 364705606606848
+    m_Key: ui_common_btn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1720490714537984
+    m_Key: ui_common_localize
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1723827736354816
+    m_Key: ui_common_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4536355856384
+    m_Key: ui_common_exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4484254212096
+    m_Key: ui_common_gamesettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1825225194938368
+    m_Key: ui_common_yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1825273769172992
+    m_Key: ui_common_no
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1825294392565760
+    m_Key: ui_common_confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5953393074176
+    m_Key: ui_common_load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4207350456320
+    m_Key: ui_main_newgame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4410660954112
+    m_Key: ui_main_continuegame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1707980175253504
+    m_Key: ui_gamesettings_language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1710314108297216
+    m_Key: ui_gamesettings_audio
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1713211260870656
+    m_Key: ui_gamesettings_global
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1714939532222464
+    m_Key: ui_gamesettings_music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1715333549334528
+    m_Key: ui_gamesettings_sfx
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1716210456666112
+    m_Key: ui_gamesettings_uisfx
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1716537775955968
+    m_Key: ui_gamesettings_voice
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1716685503537152
+    m_Key: ui_gamesettings_ambient
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1711080734793728
+    m_Key: ui_gamesettings_graphic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1717122076057600
+    m_Key: ui_gamesettings_resolution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1717355430354944
+    m_Key: ui_gamesettings_screenmode
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1717769697566720
+    m_Key: ui_gamesettings_quality
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1718350528978944
+    m_Key: ui_gamesettings_vsync
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1758167895711744
+    m_Key: ui_gamepause_mainmenu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4287683683753984
+    m_Key: ui_gamepause_save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1760202359644160
+    m_Key: ui_gamestatus_quicksave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1760307389210624
+    m_Key: ui_gamestatus_quickload
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1760747522695168
+    m_Key: ui_gamestatus_data
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68815464833105920
+    m_Key: ui_gamestatus_year
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68815484965765120
+    m_Key: ui_gamestatus_month
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68815489730494464
+    m_Key: ui_gamestatus_day
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68818983594115072
+    m_Key: ui_gamestatus_Hour
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68819017173712896
+    m_Key: ui_gamestatus_Minute
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68819107032481792
+    m_Key: ui_gamestatus_Second
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780448852254720
+    m_Key: ui_gamestatus_week0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780478686339072
+    m_Key: ui_gamestatus_week1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780485116207104
+    m_Key: ui_gamestatus_week2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780492393324544
+    m_Key: ui_gamestatus_week3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780497669758976
+    m_Key: ui_gamestatus_week4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780516279885824
+    m_Key: ui_gamestatus_week5
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1780508084215808
+    m_Key: ui_gamestatus_week6
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4297441773953024
+    m_Key: ui_gamesave_title_save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4297535566979072
+    m_Key: ui_gamesave_title_load
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4299453680918528
+    m_Key: ui_gamesave_newsave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43855765888376832
+    m_Key: ui_gamesettings_displays
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890623824773120
+    m_Key: ui_gamestatus_timePeriod_EarlyMorning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890718943199232
+    m_Key: ui_gamestatus_timePeriod_Morning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890743878336512
+    m_Key: ui_gamestatus_timePeriod_Noon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890771887898624
+    m_Key: ui_gamestatus_timePeriod_Afternoon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890777344688128
+    m_Key: ui_gamestatus_timePeriod_Dusk
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890782587568128
+    m_Key: ui_gamestatus_timePeriod_Evening
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890800379805696
+    m_Key: ui_gamestatus_timePeriod_LateNight
+    m_Metadata:
+      m_Items: []
+  - m_Id: 68890808424480768
+    m_Key: 'ui_gamestatus_timePeriod_Midnight
+
+'
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3540734624805683224
+  references:
+    version: 2
+    RefIds:
+    - rid: 3540734624805683224
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1763470480230

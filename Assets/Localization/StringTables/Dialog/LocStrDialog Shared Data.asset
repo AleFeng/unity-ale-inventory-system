@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: LocStrDialog Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: LocStrDialog
+  m_TableCollectionNameGuidString: c0beeb4f7a1bdb7459cb933dbd73d360
+  m_Entries:
+  - m_Id: 408984559616
+    m_Key: return_to_mainmenu_t
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1156300480512
+    m_Key: return_to_mainmenu_c
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3704604401664
+    m_Key: exit_game_t
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3851623145472
+    m_Key: exit_game_c
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4116040458240
+    m_Key: delete_all_savefiles_t
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4281837101056
+    m_Key: delete_all_savefiles_c
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4763020238848
+    m_Key: delete_saveslot_t
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4804455768064
+    m_Key: delete_saveslot_c
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5079971209216
+    m_Key: overwrite_savegame_t
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5175483899904
+    m_Key: overwrite_savegame_c
+    m_Metadata:
+      m_Items: []
+  - m_Id: 291857743552512
+    m_Key: apply_settings_t
+    m_Metadata:
+      m_Items: []
+  - m_Id: 292269712285696
+    m_Key: apply_settings_c
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2366557479051264
+    m_Key: newgame_t
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2366591834595328
+    m_Key: newgame_c
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2449756796297216
+    m_Key: gamesave_manual_cover_t
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2449763888865280
+    m_Key: gamesave_manual_cover_c
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2459966013251584
+    m_Key: gamesave_load_t
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2459971834945536
+    m_Key: gamesave_load_c
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2479333014839296
+    m_Key: gamesave_deleteslot_t
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2479344163299328
+    m_Key: gamesave_deleteslot_c
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 3540734735042216073
+  references:
+    version: 2
+    RefIds:
+    - rid: 3540734735042216073
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1763909507847
