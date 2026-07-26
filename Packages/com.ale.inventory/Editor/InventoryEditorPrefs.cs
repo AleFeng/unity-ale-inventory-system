@@ -44,27 +44,5 @@ namespace Ale.Inventory.Editor
         }
 
         #endregion
-
-        #region 向导 TMP 默认字体
-
-        /// <summary>向导生成 Prefab 时使用的默认 TMP 字体资产路径（EditorPrefs 键）。</summary>
-        public const string WizardDefaultTmpFontPath = "IS_WizardDefaultTmpFontPath";
-
-        /// <summary>保存向导默认 TMP 字体到 EditorPrefs。</summary>
-        public static void SaveWizardDefaultTmpFont(TMPro.TMP_FontAsset font)
-        {
-            string path = font ? AssetDatabase.GetAssetPath(font) : string.Empty;
-            EditorPrefs.SetString(WizardDefaultTmpFontPath, path);
-        }
-
-        /// <summary>从 EditorPrefs 加载向导默认 TMP 字体，未设置或已删除时返回 null。</summary>
-        public static TMPro.TMP_FontAsset LoadWizardDefaultTmpFont()
-        {
-            string path = EditorPrefs.GetString(WizardDefaultTmpFontPath, string.Empty);
-            if (string.IsNullOrEmpty(path)) return null;
-            return AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>(path);
-        }
-
-        #endregion
     }
 }

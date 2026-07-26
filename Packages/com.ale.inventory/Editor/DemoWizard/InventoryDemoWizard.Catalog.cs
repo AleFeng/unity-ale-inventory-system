@@ -335,8 +335,8 @@ namespace Ale.Inventory.Editor
         private static void BuildSubset(IList<GenItem> toGen)
         {
 #if ATK_TMP
-            // AddText 已下沉 toolkit；生成前向 UiTextBuilder 注入向导默认字体（字体来源仍是本包偏好）。
-            UiTextBuilder.DefaultTmpFont = InventoryEditorPrefs.LoadWizardDefaultTmpFont;
+            // AddText 已下沉 toolkit；生成前向 UiTextBuilder 注入向导默认字体（字体为 toolkit 全局设定）。
+            UiTextBuilder.DefaultTmpFont = () => ToolkitPrefabFonts.DefaultTmpFont;
 #endif
             try
             {

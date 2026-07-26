@@ -48,20 +48,6 @@ namespace Ale.Inventory.Editor
                 "  Contains: {0} enum types  |  {1} function tags  |  {2} item templates  |  {3} items",
                 "  内容：{0} 列挙型  |  {1} 機能タグ  |  {2} アイテムテンプレート  |  {3} アイテム");
 
-            // ── 宏开关：字体折叠栏 ────────────────────────────────────────────────
-            Add("TextMeshPro 设置", "TextMeshPro Settings", "TextMeshPro 設定");
-            Add("默认字体", "Default Font", "デフォルトフォント");
-            Add("生成测试 Prefab 时将此字体应用于所有 TMP 文本节点（留空则使用 TMP 默认字体）。",
-                "Applies this font to all TMP text nodes when generating test prefabs (leave empty to use the TMP default font).",
-                "テスト用 Prefab の生成時に、このフォントをすべての TMP テキストノードに適用します（空欄で TMP のデフォルトフォントを使用）。");
-            Add("Unity Localization 设置", "Unity Localization Settings", "Unity Localization 設定");
-            Add("生成测试 Prefab 时赋给 LocalizedFontEvent 组件的本地化字体资源。" +
-                "需同时启用 ATK_TMP 才生效。",
-                "The localized font asset assigned to the LocalizedFontEvent component when generating test prefabs. " +
-                "Requires ATK_TMP to also be enabled.",
-                "テスト用 Prefab の生成時に LocalizedFontEvent コンポーネントへ割り当てるローカライズフォントアセット。" +
-                "ATK_TMP も有効な場合にのみ機能します。");
-
             // ── 文档 ──────────────────────────────────────────────────────────────
             Add("文档未找到", "Documentation Not Found", "ドキュメントが見つかりません");
             Add("未能找到文档文件：\nPackages/com.ale.inventory/README.md",

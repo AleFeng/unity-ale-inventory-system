@@ -38,12 +38,12 @@ namespace Ale.Inventory.Editor
         {
             var fontEvent = root.AddComponent<LocalizedFontEvent>();
 
-            // 将 WelcomeWindow 中配置的本地化字体引用写入 LocalizedAssetEvent 基类的
+            // 将 Ale Toolkit 欢迎窗口全局配置的本地化字体引用写入 LocalizedAssetEvent 基类的
             // AssetReference（即 m_AssetReference），这才是基类实际用于驱动本地化的字段。
             // JsonUtility roundtrip 可正确复制 LocalizedReference 内已标 [SerializeField] 的
             // m_TableCollectionName / m_TableCollectionNameGuid / m_TableEntryReference 等字段，
             // 并触发 ISerializationCallbackReceiver.OnAfterDeserialize 完成内部状态同步。
-            var localizedFont = InventoryWelcomeWindow.WizardLocalizedFont;
+            var localizedFont = Ale.Toolkit.Editor.ToolkitPrefabFonts.LocalizedFont;
             if (localizedFont != null && !localizedFont.IsEmpty)
             {
                 string json = JsonUtility.ToJson(localizedFont);

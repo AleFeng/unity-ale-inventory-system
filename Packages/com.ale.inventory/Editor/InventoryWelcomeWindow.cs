@@ -8,14 +8,6 @@ using Ale.Inventory.Runtime;
 using Ale.Toolkit.Editor;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
-#if ATK_TMP
-using TMPro;
-#endif
-
-#if ATK_TMP && ATK_LOCALIZATION
-using Ale.Inventory.Runtime.UI;
-#endif
-
 namespace Ale.Inventory.Editor
 {
     /// <summary>
@@ -51,24 +43,6 @@ namespace Ale.Inventory.Editor
         private Vector2 _genListScroll;
         // 预制体生成列表内：各子系统分类的折叠状态（默认折叠，按 InventoryDemoWizard.Categories 分组）
         private readonly Dictionary<string, bool> _genCategoryFoldouts = new Dictionary<string, bool>();
-
-        // ── 向导字体设置 ──────────────────────────────────────────────────────────
-
-#if ATK_TMP
-        /// <summary>向导生成 Prefab 时应用于所有 TMP 文本节点的默认字体（EditorPrefs 持久化）。</summary>
-        private TMP_FontAsset _wizardDefaultTmpFont;
-        private bool _wizardFontFoldout;
-#endif
-
-#if ATK_TMP && ATK_LOCALIZATION
-        /// <summary>向导生成 Prefab 时赋给 LocalizedFontEvent 的本地化字体引用。</summary>
-        [SerializeField] private LocalizedTmpFont wizardLocalizedFont = new LocalizedTmpFont();
-        private bool _wizardLocalizedFontFoldout;
-
-        /// <summary>供 InventoryDemoWizard 读取当前窗口中配置的本地化字体引用。</summary>
-        internal static LocalizedTmpFont WizardLocalizedFont => _active?.wizardLocalizedFont;
-        private static InventoryWelcomeWindow _active;
-#endif
 
         #region 打开窗口
 
@@ -106,9 +80,6 @@ namespace Ale.Inventory.Editor
             _initialized = false;
             _logoTexture = null;
             _logoLoadAttempted = false;
-#if ATK_TMP && ATK_LOCALIZATION
-            _active = this;
-#endif
         }
 
         private void OnDisable()
@@ -118,9 +89,6 @@ namespace Ale.Inventory.Editor
                 DestroyImmediate(_logoTexture);
                 _logoTexture = null;
             }
-#if ATK_TMP && ATK_LOCALIZATION
-            if (_active == this) _active = null;
-#endif
         }
 
         private void LoadPrefs()
@@ -130,10 +98,6 @@ namespace Ale.Inventory.Editor
 
             _templateDb = InventoryEditorPrefs.LoadTemplateDatabase();
             _autoShow   = EditorPrefs.GetBool(InventoryEditorPrefs.WelcomeAutoShow, true);
-
-#if ATK_TMP
-            _wizardDefaultTmpFont = InventoryEditorPrefs.LoadWizardDefaultTmpFont();
-#endif
         }
 
         #endregion
@@ -155,12 +119,6 @@ namespace Ale.Inventory.Editor
             DrawSeparator();
 
             DrawTemplateSection();
-
-#if ATK_TMP
-            DrawSeparator();
-            DrawWizardFontSection();
-#endif
-
             DrawSeparator();
 
             DrawFooter();
@@ -310,69 +268,6 @@ namespace Ale.Inventory.Editor
                         db.EnumTypes.Count, db.FunctionTags.Count, db.ItemTemplates.Count, db.Items.Count),
                     EditorStyles.miniLabel);
             }
-        }
-
-#if ATK_TMP
-        /// <summary>
-        /// 向导字体设置（仅 ATK_TMP 编译）。原挂在插件宏区域下方，宏开关下沉 toolkit 后独立成区。
-        /// 这些是 <see cref="InventoryDemoWizard"/> 生成测试 Prefab 时使用的字体，属库存领域配置，故保留在本窗口。
-        /// </summary>
-        private void DrawWizardFontSection()
-        {
-            EditorGUILayout.LabelField(Tr("向导字体"), EditorStyles.boldLabel);
-            DrawTmpFontFoldout();
-            DrawLocalizationFontFoldout();
-        }
-#endif
-
-        /// <summary>TMP 宏区域底部的"向导字体设置"折叠栏。</summary>
-        private void DrawTmpFontFoldout()
-        {
-#if ATK_TMP
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            _wizardFontFoldout = EditorGUILayout.Foldout(_wizardFontFoldout, Tr("TextMeshPro 设置"), true);
-            if (_wizardFontFoldout)
-            {
-                EditorGUI.BeginChangeCheck();
-                var newFont = (TMP_FontAsset)EditorGUILayout.ObjectField(
-                    Tr("默认字体"), _wizardDefaultTmpFont, typeof(TMP_FontAsset), false);
-                if (EditorGUI.EndChangeCheck())
-                {
-                    _wizardDefaultTmpFont = newFont;
-                    InventoryEditorPrefs.SaveWizardDefaultTmpFont(newFont);
-                }
-                EditorGUILayout.LabelField(
-                    Tr("生成测试 Prefab 时将此字体应用于所有 TMP 文本节点（留空则使用 TMP 默认字体）。"),
-                    EditorStyles.wordWrappedMiniLabel);
-            }
-            EditorGUILayout.EndVertical();
-#endif
-        }
-        
-        /// <summary>Localization 宏区域底部的"向导本地化字体设置"折叠栏。</summary>
-        private void DrawLocalizationFontFoldout()
-        {
-#if ATK_TMP && ATK_LOCALIZATION
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            _wizardLocalizedFontFoldout = EditorGUILayout.Foldout(
-                _wizardLocalizedFontFoldout, Tr("Unity Localization 设置"), true);
-            if (_wizardLocalizedFontFoldout)
-            {
-                // 使用 Unity.Localization 的内置 PropertyField 绘制表/条目选择器
-                var so   = new SerializedObject(this);
-                var prop = so.FindProperty("wizardLocalizedFont");
-                if (prop != null)
-                {
-                    EditorGUILayout.PropertyField(prop, new GUIContent("Localized Asset Reference"));
-                    so.ApplyModifiedProperties();
-                }
-                EditorGUILayout.LabelField(
-                    Tr("生成测试 Prefab 时赋给 LocalizedFontEvent 组件的本地化字体资源。" +
-                       "需同时启用 ATK_TMP 才生效。"),
-                    EditorStyles.wordWrappedMiniLabel);
-            }
-            EditorGUILayout.EndVertical();
-#endif
         }
 
         private void DrawFooter()
