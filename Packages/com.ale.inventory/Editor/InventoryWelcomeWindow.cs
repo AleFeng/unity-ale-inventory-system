@@ -462,7 +462,7 @@ namespace Ale.Inventory.Editor
         }
 
         /// <summary>
-        /// 通用的插件宏开关绘制。Toggle 操作 PlayerSettings 宏（经 ScriptingDefineSymbolsUtils.ApplyDefine），
+        /// 通用的插件宏开关绘制。Toggle 操作 PlayerSettings 宏（经 DefineUtils.ApplyDefine），
         /// 包未安装时勾选弹确认对话框。
         /// </summary>
         private void DrawMacroToggle(string titleName, string define, string package,
@@ -487,7 +487,7 @@ namespace Ale.Inventory.Editor
                 if (newEnabled != enabled)
                 {
                     enabled = newEnabled;
-                    InventoryDefineUtils.ApplyDefine(enabled, define);
+                    DefineUtils.ApplyDefine(enabled, define);
                     _pendingRecompile = true;
                 }
             }

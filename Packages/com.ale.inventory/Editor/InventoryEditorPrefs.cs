@@ -1,4 +1,5 @@
 using Ale.Inventory.Runtime;
+using Ale.Toolkit.Editor;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEngine;
@@ -132,7 +133,7 @@ namespace Ale.Inventory.Editor
         /// </summary>
         public static bool IsLocalizationPackageInstalled()
         {
-            return InventoryDefineUtils.HasNamespace("UnityEngine.Localization");
+            return DefineUtils.HasNamespace("UnityEngine.Localization");
         }
 
         /// <summary>
@@ -140,7 +141,7 @@ namespace Ale.Inventory.Editor
         /// </summary>
         public static bool IsAddressablePackageInstalled()
         {
-            return InventoryDefineUtils.HasNamespace("UnityEngine.AddressableAssets");
+            return DefineUtils.HasNamespace("UnityEngine.AddressableAssets");
         }
 
         /// <summary>
@@ -149,7 +150,7 @@ namespace Ale.Inventory.Editor
         /// </summary>
         public static bool IsTmpPackageInstalled()
         {
-            return InventoryDefineUtils.HasNamespace("TMPro");
+            return DefineUtils.HasNamespace("TMPro");
         }
 
         #endregion
