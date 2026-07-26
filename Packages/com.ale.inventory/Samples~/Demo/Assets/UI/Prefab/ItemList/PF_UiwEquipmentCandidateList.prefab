@@ -93,6 +93,9 @@ MonoBehaviour:
   content: {fileID: 6443277175688356292}
   bufferCount: 1
   spawnPerSecond: 40
+  filterBar: {fileID: 0}
+  secondaryFilterBar: {fileID: 0}
+  sortToolbar: {fileID: 0}
   scrollDirection: 0
   spacing: {x: 6, y: 6}
   padding: {x: 6, y: 6}

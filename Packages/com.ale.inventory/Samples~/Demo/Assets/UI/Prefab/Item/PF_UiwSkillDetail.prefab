@@ -390,6 +390,7 @@ GameObject:
   - component: {fileID: 6318337456061541877}
   - component: {fileID: 762399237141193768}
   - component: {fileID: 3757837984755756680}
+  - component: {fileID: 6739818459037620874}
   m_Layer: 0
   m_Name: PF_UiwSkillDetail
   m_TagString: Untagged
@@ -525,6 +526,41 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &6739818459037620874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6604077348867777007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b70b13b28634234f9734ffa4ebd582e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedFontEvent
+  m_LocalizedAssetReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+  m_UpdateAsset:
+    m_PersistentCalls:
+      m_Calls: []
+  texts:
+  - {fileID: 8222821769847338198}
+  - {fileID: 3908038821368291686}
+  textEvents: []
+  fontMaterial:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
 --- !u!1 &6705752658505433398
 GameObject:
   m_ObjectHideFlags: 0

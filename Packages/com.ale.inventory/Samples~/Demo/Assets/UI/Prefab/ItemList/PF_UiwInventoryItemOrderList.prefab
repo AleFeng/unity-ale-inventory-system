@@ -525,6 +525,9 @@ MonoBehaviour:
   content: {fileID: 8247860469818209645}
   bufferCount: 1
   spawnPerSecond: 20
+  filterBar: {fileID: 0}
+  secondaryFilterBar: {fileID: 0}
+  sortToolbar: {fileID: 0}
 --- !u!114 &6203851043601203888
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -389,6 +389,7 @@ GameObject:
   - component: {fileID: 1852119719254459987}
   - component: {fileID: 4106713627939323581}
   - component: {fileID: 8246502411786845251}
+  - component: {fileID: -2823165310004713400}
   m_Layer: 0
   m_Name: PF_UiwShopItemDetail
   m_TagString: Untagged
@@ -446,15 +447,29 @@ MonoBehaviour:
     rules:
     - threshold: 1000000
       divisor: 1000000
-      suffix: M
-      suffixLocalizedTableRef: 
-      suffixLocalizedEntryKey: 
+      suffixText:
+        type: 10
+        isArray: 0
+        enumTypeRef: 
+        ints: 
+        floats: []
+        strings: []
+        objRefs: []
+        curves: []
+        objAddresses: []
       decimalPlaces: 1
     - threshold: 1000
       divisor: 1000
-      suffix: K
-      suffixLocalizedTableRef: 
-      suffixLocalizedEntryKey: 
+      suffixText:
+        type: 10
+        isArray: 0
+        enumTypeRef: 
+        ints: 
+        floats: []
+        strings: []
+        objRefs: []
+        curves: []
+        objAddresses: []
       decimalPlaces: 1
   remainingText: {fileID: 8967895423000653169}
   subtotalText: {fileID: 0}
@@ -564,6 +579,45 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &-2823165310004713400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5468304110192963506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b70b13b28634234f9734ffa4ebd582e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedFontEvent
+  m_LocalizedAssetReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+  m_UpdateAsset:
+    m_PersistentCalls:
+      m_Calls: []
+  texts:
+  - {fileID: 6244958640964751542}
+  - {fileID: 1392033884117486456}
+  - {fileID: 8967895423000653169}
+  - {fileID: 8285827155483903857}
+  - {fileID: 8346598332022982726}
+  - {fileID: 5395999077133596207}
+  textEvents: []
+  fontMaterial:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
 --- !u!1 &7069310130270738027
 GameObject:
   m_ObjectHideFlags: 0
@@ -1123,6 +1177,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7654659420560591023, guid: 612a43ed9e960b34d8f8f92e9452029e, type: 3}
   m_PrefabInstance: {fileID: 6332612849023699056}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5395999077133596207 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2090661196025036383, guid: 612a43ed9e960b34d8f8f92e9452029e, type: 3}
+  m_PrefabInstance: {fileID: 6332612849023699056}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &5509030776392549228 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1987767043661974300, guid: 612a43ed9e960b34d8f8f92e9452029e, type: 3}
@@ -1134,3 +1199,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f424c00cec261e6419204dd896466564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: InventorySystem.UI::InventorySystem.Runtime.UI.UiwNumberCounter
+--- !u!114 &8285827155483903857 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2674256578483752705, guid: 612a43ed9e960b34d8f8f92e9452029e, type: 3}
+  m_PrefabInstance: {fileID: 6332612849023699056}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &8346598332022982726 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2608964210142003254, guid: 612a43ed9e960b34d8f8f92e9452029e, type: 3}
+  m_PrefabInstance: {fileID: 6332612849023699056}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 306879916228110543}
   - component: {fileID: 1199505923954084786}
   - component: {fileID: 4727600878471609119}
+  - component: {fileID: -5619831519816122078}
   m_Layer: 0
   m_Name: PF_UiwEquipmentBonusPanel
   m_TagString: Untagged
@@ -56,6 +57,8 @@ MonoBehaviour:
   entryPrefab: {fileID: 8026805043604154637, guid: fd6116922508e504aa779f1f5ddb4806, type: 3}
   entryContainer: {fileID: 2998488443167974429}
   groupHeaderPrefab: {fileID: 8026805043604154637, guid: e6f687b801846e5408e32c6dc6251dfc, type: 3}
+  emptyText: "\u65E0\u5C5E\u6027\u52A0\u6210"
+  emptyTextLocalized: {fileID: 0}
 --- !u!222 &306879916228110543
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -120,6 +123,40 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &-5619831519816122078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2317234689494748654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b70b13b28634234f9734ffa4ebd582e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedFontEvent
+  m_LocalizedAssetReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+  m_UpdateAsset:
+    m_PersistentCalls:
+      m_Calls: []
+  texts:
+  - {fileID: 2065783290957851559}
+  textEvents: []
+  fontMaterial:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
 --- !u!1 &3690415019866324665
 GameObject:
   m_ObjectHideFlags: 0

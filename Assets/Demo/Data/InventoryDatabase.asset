@@ -2323,8 +2323,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    backgroundSprite: {fileID: 0}
-    backgroundSpriteAddress: 
     backgroundSpriteValue:
       type: 9
       isArray: 0
@@ -2442,8 +2440,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    backgroundSprite: {fileID: 0}
-    backgroundSpriteAddress: 
     backgroundSpriteValue:
       type: 9
       isArray: 0
@@ -2498,8 +2494,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    backgroundSprite: {fileID: 0}
-    backgroundSpriteAddress: 
     backgroundSpriteValue:
       type: 9
       isArray: 0
@@ -2554,8 +2548,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    backgroundSprite: {fileID: 0}
-    backgroundSpriteAddress: 
     backgroundSpriteValue:
       type: 9
       isArray: 0
@@ -2610,8 +2602,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    backgroundSprite: {fileID: 0}
-    backgroundSpriteAddress: 
     backgroundSpriteValue:
       type: 9
       isArray: 0
@@ -2694,8 +2684,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    backgroundSprite: {fileID: 0}
-    backgroundSpriteAddress: 
     backgroundSpriteValue:
       type: 9
       isArray: 0
@@ -2792,8 +2780,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    backgroundSprite: {fileID: 0}
-    backgroundSpriteAddress: 
     backgroundSpriteValue:
       type: 9
       isArray: 0
@@ -2849,8 +2835,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    backgroundSprite: {fileID: 0}
-    backgroundSpriteAddress: 
     backgroundSpriteValue:
       type: 9
       isArray: 0
@@ -3003,7 +2987,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'd15abe5e13ce21b4b999bb1208146c98[T_Item_Bread]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -3095,7 +3080,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'ee6abbff820e673479299c71604d819c[T_Item_Potion]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -3187,7 +3173,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'ee6abbff820e673479299c71604d819c[T_Item_Potion]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -3279,7 +3266,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'ee6abbff820e673479299c71604d819c[T_Item_Potion]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -3371,7 +3359,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'ee6abbff820e673479299c71604d819c[T_Item_Potion]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -3463,7 +3452,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'ee6abbff820e673479299c71604d819c[T_Item_Potion]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -3554,7 +3544,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'ee6abbff820e673479299c71604d819c[T_Item_Potion]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -3645,7 +3636,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'ee6abbff820e673479299c71604d819c[T_Item_Potion]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -3736,7 +3728,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '47599a25d78b2c846821c9850981ddb4[T_Item_ClothHat]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -3850,7 +3843,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '47599a25d78b2c846821c9850981ddb4[T_Item_ClothHat]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -3964,7 +3958,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'e9bbae1c441fa1f49ad73be5c7b3a1c4[T_Item_Default]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -4078,7 +4073,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '5cb5c133975277443b51148cbc4edfb9[T_Item_Necklace]'
     - id: "\u4EFB\u52A1ID"
       value:
         type: 2
@@ -4159,7 +4155,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'e9bbae1c441fa1f49ad73be5c7b3a1c4[T_Item_Default]'
     - id: "\u4EFB\u52A1ID"
       value:
         type: 2
@@ -4240,7 +4237,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'a3e9b0b6beaea604eb5066378b8a5aac[T_Item_GoldCoin]'
     - id: "\u8D27\u5E01ID:\u6C47\u7387"
       value:
         type: 22
@@ -4320,7 +4318,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '02ba50bc56e8eee4f9a869dcf0b685ba[T_Item_Diamond]'
     - id: "\u8D27\u5E01ID:\u6C47\u7387"
       value:
         type: 22
@@ -4401,7 +4400,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '5b111bb9c88808b4492a43a8c7b69f9a[T_Item_GodsCrystal]'
     - id: "\u8D27\u5E01ID:\u6C47\u7387"
       value:
         type: 22
@@ -4482,7 +4482,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'eab260ecbff9a004fbbf546f4db1644f[T_Item_IronMine]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -4574,7 +4575,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '3b6f308189919be4ca1166a80fd9239b[T_Item_Herbs]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -4666,7 +4668,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'eab260ecbff9a004fbbf546f4db1644f[T_Item_IronMine]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -4758,7 +4761,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '05ab19adb4cb64c48acfab7195db1579[T_Item_IronIngot]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -4850,7 +4854,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '05ab19adb4cb64c48acfab7195db1579[T_Item_IronIngot]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -4942,7 +4947,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '05ab19adb4cb64c48acfab7195db1579[T_Item_IronIngot]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -5034,7 +5040,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '05ab19adb4cb64c48acfab7195db1579[T_Item_IronIngot]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -5126,7 +5133,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '05ab19adb4cb64c48acfab7195db1579[T_Item_IronIngot]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -5218,7 +5226,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '05ab19adb4cb64c48acfab7195db1579[T_Item_IronIngot]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -5310,7 +5319,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'b0e4e66c8ce7d4d498492c8cdbce3af5[T_Item_WoodSword]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -5435,7 +5445,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'b0e4e66c8ce7d4d498492c8cdbce3af5[T_Item_WoodSword]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -5560,7 +5571,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'b0e4e66c8ce7d4d498492c8cdbce3af5[T_Item_WoodSword]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -5685,7 +5697,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'e7ffc477324e5ec408d5f3f6e954a3b5[T_Item_WoodStaff]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -5810,7 +5823,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'e9bbae1c441fa1f49ad73be5c7b3a1c4[T_Item_Default]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -5935,7 +5949,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'eca5c479d843cfa4390f2ae392e670b0[T_Item_Ring_1]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -6049,7 +6064,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - '5c7977fa97c684647b2a9103e1bfb03b[T_Item_Ring_2]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -6163,7 +6179,8 @@ MonoBehaviour:
         objRefs:
         - {fileID: 0}
         curves: []
-        objAddresses: []
+        objAddresses:
+        - 'e75f727f59915e040b65aea9d290e92b[T_Item_Ring_3]'
     - id: "\u8D27\u5E01ID:\u4EF7\u683C"
       value:
         type: 22
@@ -9598,8 +9615,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
     iconValue:
       type: 9
       isArray: 0
@@ -9656,8 +9671,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '56b433935163ec949bad2114e1733312[T_Skill_Healing]'
     iconValue:
       type: 9
       isArray: 0
@@ -9714,8 +9727,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     iconValue:
       type: 9
       isArray: 0
@@ -9772,8 +9783,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     iconValue:
       type: 9
       isArray: 0
@@ -9830,8 +9839,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     iconValue:
       type: 9
       isArray: 0
@@ -9873,8 +9880,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
     iconValue:
       type: 9
       isArray: 0
@@ -9929,8 +9934,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     iconValue:
       type: 9
       isArray: 0
@@ -9985,8 +9988,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     iconValue:
       type: 9
       isArray: 0
@@ -10041,8 +10042,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     iconValue:
       type: 9
       isArray: 0
@@ -10097,8 +10096,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: 'c73c0b67d8deb2b489af5463b6ae89f5[T_Skill_Fire_FireBolt]'
     iconValue:
       type: 9
       isArray: 0
@@ -10153,8 +10150,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: 'f47f7d68136610543b4207c7a0b87d1d[T_Skill_Fire_FireBall]'
     iconValue:
       type: 9
       isArray: 0
@@ -10209,8 +10204,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '68f2a95375f8d8c469f156350f8b7550[T_Skill_Fire_FireCannon]'
     iconValue:
       type: 9
       isArray: 0
@@ -10265,8 +10258,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: 'a22b83357f259f3408e89ee817cc118a[T_Skill_Fire_Pyroblast]'
     iconValue:
       type: 9
       isArray: 0
@@ -10321,8 +10312,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '0e341243841712e4ba9ef6428b9b0370[T_Skill_Fire_Flamestrike]'
     iconValue:
       type: 9
       isArray: 0
@@ -10377,8 +10366,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '10f5993454ccba14a99fa9ad5de7c8cb[T_Skill_Fire_MeteorFall]'
     iconValue:
       type: 9
       isArray: 0
@@ -10433,8 +10420,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: 'af74fcd4edc7b214a890e38c9ad3bc6f[T_Skill_Fire_Ragnarok]'
     iconValue:
       type: 9
       isArray: 0
@@ -10489,8 +10474,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     iconValue:
       type: 9
       isArray: 0
@@ -10545,8 +10528,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     iconValue:
       type: 9
       isArray: 0
@@ -10601,8 +10582,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     iconValue:
       type: 9
       isArray: 0
@@ -10657,8 +10636,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     iconValue:
       type: 9
       isArray: 0
@@ -10713,8 +10690,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
     iconValue:
       type: 9
       isArray: 0
@@ -10769,8 +10744,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '56b433935163ec949bad2114e1733312[T_Skill_Healing]'
     iconValue:
       type: 9
       isArray: 0
@@ -10825,8 +10798,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     iconValue:
       type: 9
       isArray: 0
@@ -10881,8 +10852,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     iconValue:
       type: 9
       isArray: 0
@@ -10937,8 +10906,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     iconValue:
       type: 9
       isArray: 0
@@ -10993,8 +10960,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
     iconValue:
       type: 9
       isArray: 0
@@ -11049,8 +11014,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     iconValue:
       type: 9
       isArray: 0
@@ -11105,8 +11068,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     iconValue:
       type: 9
       isArray: 0
@@ -11161,8 +11122,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     iconValue:
       type: 9
       isArray: 0
@@ -11217,8 +11176,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
     iconValue:
       type: 9
       isArray: 0
@@ -11273,8 +11230,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     iconValue:
       type: 9
       isArray: 0
@@ -11329,8 +11284,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     iconValue:
       type: 9
       isArray: 0
@@ -11385,8 +11338,6 @@ MonoBehaviour:
       objRefs: []
       curves: []
       objAddresses: []
-    icon: {fileID: 0}
-    iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     iconValue:
       type: 9
       isArray: 0

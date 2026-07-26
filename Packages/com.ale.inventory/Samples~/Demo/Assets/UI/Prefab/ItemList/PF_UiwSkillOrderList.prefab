@@ -381,6 +381,9 @@ MonoBehaviour:
   content: {fileID: 7705865071758737829}
   bufferCount: 1
   spawnPerSecond: 20
+  filterBar: {fileID: 0}
+  secondaryFilterBar: {fileID: 0}
+  sortToolbar: {fileID: 0}
 --- !u!1 &6715193325223771209
 GameObject:
   m_ObjectHideFlags: 0

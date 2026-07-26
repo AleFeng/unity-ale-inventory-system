@@ -1398,6 +1398,7 @@ GameObject:
   - component: {fileID: 1048446149611608473}
   - component: {fileID: 1024169442799126856}
   - component: {fileID: 8871909195486409091}
+  - component: {fileID: 6857982864949408963}
   m_Layer: 0
   m_Name: PF_UiwRecycleShopView
   m_TagString: Untagged
@@ -1445,7 +1446,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: InventorySystem.UI::InventorySystem.Runtime.UI.UiwRecycleShopView
   titleLabel: {fileID: 5029356480962389867}
-  titleAttributeId: "\u540D\u79F0"
+  viewModeToggleButton: {fileID: 0}
+  viewModeToggleLabel: {fileID: 0}
+  orderModeLabel: "\u5217\u8868"
+  gridModeLabel: "\u7F51\u683C"
   shopId: "\u56DE\u6536\u5546\u5E97"
   groupTabContainer: {fileID: 1522623156848424257}
   groupTabPrefab: {fileID: 5428466835472638510, guid: 06dbd3ac88b3a204ca2a8f13411da4f9, type: 3}
@@ -1525,6 +1529,45 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &6857982864949408963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6931569450832524801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b70b13b28634234f9734ffa4ebd582e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedFontEvent
+  m_LocalizedAssetReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+  m_UpdateAsset:
+    m_PersistentCalls:
+      m_Calls: []
+  texts:
+  - {fileID: 5029356480962389867}
+  - {fileID: 2190680171054498379}
+  - {fileID: 4749931402583614744}
+  - {fileID: 6146770178331965442}
+  - {fileID: 5662108249242633069}
+  - {fileID: 7506905087114507140}
+  textEvents: []
+  fontMaterial:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
 --- !u!1 &8072195492423739221
 GameObject:
   m_ObjectHideFlags: 0
@@ -2066,6 +2109,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: af667e80e04e8784285d5ac95ca26c40, type: 3}
+--- !u!114 &2190680171054498379 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2334310105839956398, guid: af667e80e04e8784285d5ac95ca26c40, type: 3}
+  m_PrefabInstance: {fileID: 4468695279264330725}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &3944576799099986248 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 629955417050043053, guid: af667e80e04e8784285d5ac95ca26c40, type: 3}
@@ -2077,6 +2131,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa3a267b8f459894e879badd368e1077, type: 3}
   m_Name: 
   m_EditorClassIdentifier: InventorySystem.UI::InventorySystem.Runtime.UI.UiwSortToolbar
+--- !u!114 &4749931402583614744 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9216858392205448957, guid: af667e80e04e8784285d5ac95ca26c40, type: 3}
+  m_PrefabInstance: {fileID: 4468695279264330725}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!224 &5624973269084688509 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8073852201860047768, guid: af667e80e04e8784285d5ac95ca26c40, type: 3}

@@ -437,6 +437,7 @@ GameObject:
   - component: {fileID: 1844145279215653182}
   - component: {fileID: 1225302771703100723}
   - component: {fileID: 2727835583130978470}
+  - component: {fileID: 1541147026686806330}
   m_Layer: 0
   m_Name: PF_UiwSkillTooltip
   m_TagString: Untagged
@@ -478,6 +479,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37519edab20441b40bd0eb0807cc2ab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: InventorySystem.UI::InventorySystem.Runtime.UI.UiwSkillTooltip
+  panel: {fileID: 1620374537470952594}
+  canvasGroup: {fileID: 1225302771703100723}
+  cursorOffset: {x: 16, y: -16}
+  fadeDuration: 0.12
   iconImage: {fileID: 3088275002355882156}
   nameText: {fileID: 3775295378737118743}
   descText: {fileID: 3098196891332751320}
@@ -487,10 +492,6 @@ MonoBehaviour:
   customFieldKeys: []
   customFieldContainer: {fileID: 2333126143067612006}
   customFieldLinePrefab: {fileID: 0}
-  panel: {fileID: 1620374537470952594}
-  canvasGroup: {fileID: 1225302771703100723}
-  cursorOffset: {x: 16, y: -16}
-  fadeDuration: 0.12
 --- !u!222 &295409696849361480
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -567,6 +568,42 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1541147026686806330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5373138738588705772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b70b13b28634234f9734ffa4ebd582e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedFontEvent
+  m_LocalizedAssetReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+  m_UpdateAsset:
+    m_PersistentCalls:
+      m_Calls: []
+  texts:
+  - {fileID: 3775295378737118743}
+  - {fileID: 7890236823356840347}
+  - {fileID: 3098196891332751320}
+  textEvents: []
+  fontMaterial:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
 --- !u!1 &5874975052455470635
 GameObject:
   m_ObjectHideFlags: 0

@@ -155,6 +155,7 @@ GameObject:
   - component: {fileID: 3671235815326393543}
   - component: {fileID: 4149849626720267686}
   - component: {fileID: 281534542099031050}
+  - component: {fileID: 1555371495487118682}
   m_Layer: 0
   m_Name: PF_UiwSkillView
   m_TagString: Untagged
@@ -199,7 +200,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: InventorySystem.UI::InventorySystem.Runtime.UI.UiwSkillView
   titleLabel: {fileID: 201369527040316957}
-  titleAttributeId: "\u540D\u79F0"
+  viewModeToggleButton: {fileID: 331746453690160485}
+  viewModeToggleLabel: {fileID: 5210696036303829698}
+  orderModeLabel: "\u5217\u8868"
+  gridModeLabel: "\u7F51\u683C"
   source: 0
   equipmentGroupId: 
   inventoryId: 
@@ -208,11 +212,8 @@ MonoBehaviour:
   titleText: "\u6280\u80FD"
   orderList: {fileID: 4080917192756405818}
   gridList: {fileID: 2606764556082242984}
-  viewModeToggleButton: {fileID: 331746453690160485}
-  viewModeToggleLabel: {fileID: 5210696036303829698}
   showAllTab: 1
   searchInput: {fileID: 687620766805421}
-  openOnStart: 1
 --- !u!222 &3671235815326393543
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -277,6 +278,41 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1555371495487118682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 263366012649742457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b70b13b28634234f9734ffa4ebd582e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedFontEvent
+  m_LocalizedAssetReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+  m_UpdateAsset:
+    m_PersistentCalls:
+      m_Calls: []
+  texts:
+  - {fileID: 201369527040316957}
+  - {fileID: 5210696036303829698}
+  textEvents: []
+  fontMaterial:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
 --- !u!1 &2708409733730624132
 GameObject:
   m_ObjectHideFlags: 0
@@ -1420,7 +1456,7 @@ PrefabInstance:
       objectReference: {fileID: 2212043345226407556}
     - target: {fileID: 7705865071758737829, guid: 787f0dd4d68a7fd479f49bffe17518c2, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0005493164
+      value: 0.00074768066
       objectReference: {fileID: 0}
     - target: {fileID: 8673425895660174707, guid: 787f0dd4d68a7fd479f49bffe17518c2, type: 3}
       propertyPath: m_AnchorMax.x
@@ -1432,7 +1468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8848958176256856244, guid: 787f0dd4d68a7fd479f49bffe17518c2, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.99999183
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1465,7 +1501,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1040957707343760766, guid: 1776bbabb81ce45488bcab04c4833f42, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.0004272461
+      value: 0.000579834
       objectReference: {fileID: 0}
     - target: {fileID: 1830318916461544911, guid: 1776bbabb81ce45488bcab04c4833f42, type: 3}
       propertyPath: m_Name
@@ -1473,7 +1509,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3025958439874759657, guid: 1776bbabb81ce45488bcab04c4833f42, type: 3}
       propertyPath: m_Size
-      value: 1
+      value: 0.9999939
       objectReference: {fileID: 0}
     - target: {fileID: 3529014831173660742, guid: 1776bbabb81ce45488bcab04c4833f42, type: 3}
       propertyPath: m_AnchorMax.x

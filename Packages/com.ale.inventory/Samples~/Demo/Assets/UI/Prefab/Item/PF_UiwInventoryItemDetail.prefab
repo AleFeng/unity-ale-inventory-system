@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4225505339468992377}
   - component: {fileID: 4411479634613395373}
   - component: {fileID: 6293675582235247057}
+  - component: {fileID: 6463698782849892852}
   m_Layer: 0
   m_Name: PF_UiwInventoryItemDetail
   m_TagString: Untagged
@@ -58,20 +59,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9ea0a4c282c62e40b3c2dc91c8abe97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: InventorySystem.UI::InventorySystem.Runtime.UI.UiwInventoryItemDetail
-  iconAttrId: "\u56FE\u6807"
+  nameText: {fileID: 6533378740565922604}
   iconImage: {fileID: 7692258624663891192}
+  qualityBackground: {fileID: 5750249337079041712}
   countText: {fileID: 6680969552322038274}
+  nameAttrId: "\u540D\u79F0"
+  iconAttrId: "\u56FE\u6807"
+  qualityAttrId: "\u54C1\u8D28"
+  qualityBackgroundAttrId: "\u80CC\u666F\u6846"
+  showDetailTooltip: 0
   numberFormat:
     languageCode: 
     rules: []
-  nameAttrId: "\u540D\u79F0"
-  qualityAttrId: "\u54C1\u8D28"
-  qualityBackgroundAttrId: "\u80CC\u666F\u6846"
-  showName: 1
-  showQuality: 1
-  showCount: 1
-  nameText: {fileID: 6533378740565922604}
-  qualityBackground: {fileID: 5750249337079041712}
   hoverBorder: {fileID: 6087855359198914042}
   hoverFadeDuration: 0.12
   stackFullIcon: {fileID: 127596046177578497}
@@ -81,15 +80,11 @@ MonoBehaviour:
   descAttrId: "\u63CF\u8FF0"
   priceAttrId: "\u8D27\u5E01ID:\u4EF7\u683C"
   purchaseCountAttrId: 
-  showDesc: 1
-  showPrice: 1
-  showPurchaseCount: 0
   descText: {fileID: 7636014225026471057}
   textTagsPrefab: {fileID: 0}
   itemTagsContainer: {fileID: 7088351455504879394}
   priceCurrencyPrefab: {fileID: 6214160156125110114, guid: 25489c051023e2443ab8df3e3f6d3b97, type: 3}
   priceContainer: {fileID: 5716976178293831452}
-  purchaseCountText: {fileID: 0}
 --- !u!222 &4411479634613395373
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -128,6 +123,43 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6463698782849892852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144748246264567679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b70b13b28634234f9734ffa4ebd582e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedFontEvent
+  m_LocalizedAssetReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+  m_UpdateAsset:
+    m_PersistentCalls:
+      m_Calls: []
+  texts:
+  - {fileID: 4379257930495767040}
+  - {fileID: 6533378740565922604}
+  - {fileID: 7636014225026471057}
+  - {fileID: 6680969552322038274}
+  textEvents: []
+  fontMaterial:
+    m_TableReference:
+      m_TableCollectionName: GUID:ab2ea891866ea8844b4bf5c4b0334771
+    m_TableEntryReference:
+      m_KeyId: 7149264896
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
 --- !u!1 &1849258656118298654
 GameObject:
   m_ObjectHideFlags: 0
