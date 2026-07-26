@@ -49,7 +49,7 @@ All the following types can be set to an **array form** (checking "array" allows
 | Int | integer | IntField |
 | Float | float | FloatField |
 | String | string | TextField |
-| **Text** | when `IS_LOCALIZATION` is enabled, includes a localization reference: table + entry (the string field serves as fallback) | localization entry selector + text box |
+| **Text** | when `ATK_LOCALIZATION` is enabled, includes a localization reference: table + entry (the string field serves as fallback) | localization entry selector + text box |
 | Vector2 / 3 / 4 | 2 / 3 / 4 floats | multi-column FloatField |
 | VectorInt2 / 3 / 4 | 2 / 3 / 4 integers | multi-column IntField |
 | Color | 4 floats (RGBA) | ColorField |
@@ -103,10 +103,10 @@ InventoryAssets.Bind<Sprite>(item, "icon", image.gameObject, s => { image.sprite
 InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 ```
 
-- **`IS_ADDRESSABLE` disabled (direct mode)**: attribute fields directly hold Unity asset references (`objRefs`), and assets are loaded into memory along with the config data; the facade returns that live reference synchronously (the editor control is an `ObjectField`).
-- **`IS_ADDRESSABLE` enabled (authorized mode)**: object fields in the editor switch to the native **AssetReference** searchable selector, the config stores only the GUID (no hard reference, so loading the database no longer loads assets into memory too); at runtime it **loads asynchronously** on demand via Addressables, reference-counted by address, and **auto-unloads** when the host is destroyed. On export, referenced assets are automatically registered into the `InventorySystem` Addressable group.
+- **`ATK_ADDRESSABLE` disabled (direct mode)**: attribute fields directly hold Unity asset references (`objRefs`), and assets are loaded into memory along with the config data; the facade returns that live reference synchronously (the editor control is an `ObjectField`).
+- **`ATK_ADDRESSABLE` enabled (authorized mode)**: object fields in the editor switch to the native **AssetReference** searchable selector, the config stores only the GUID (no hard reference, so loading the database no longer loads assets into memory too); at runtime it **loads asynchronously** on demand via Addressables, reference-counted by address, and **auto-unloads** when the host is destroyed. On export, referenced assets are automatically registered into the `InventorySystem` Addressable group.
 
-> The two storage forms have different on-disk formats and can't be shared automatically via same-named fields. After switching macros, use the menu **Tools/Inventory System/Addressables** to convert all asset fields of a database between "Object reference ↔ AssetReference(GUID)" in one click.
+> The two storage forms have different on-disk formats and can't be shared automatically via same-named fields. After switching macros, use the menu **Tools/Ale Toolkit/Inventory System/Addressables** to convert all asset fields of a database between "Object reference ↔ AssetReference(GUID)" in one click.
 >
 > Underlying: the authorized GUID / runtime address is stored in `AttributeValue` in parallel with the live reference (address list vs `objRefs`); the facade prefers the live reference, falling back to async address loading if absent. The core assembly has zero dependency on Addressables; the native selector is injected via the constrained Addressable editor assembly (the same injection pattern as `EditorExportResolver`).
 >
@@ -128,7 +128,7 @@ The editor draws Text uniformly via `AttributeFieldDrawer` (plain text box + nat
 
 ## Localization Tool Window
 
-`Tools > Inventory System > Localization > Localization Tool Window` (`IS_LOCALIZATION` only; also has an entry button in the Welcome Window). Integrates Unity Localization for one `InventoryDatabase` in one place:
+`Tools > Ale Toolkit > Inventory System > Localization > Localization Tool Window` (`ATK_LOCALIZATION` only; also has an entry button in the Welcome Window). Integrates Unity Localization for one `InventoryDatabase` in one place:
 
 1. **Generate / link localization tables**: generates a String Table collection per the current Locale (table name `{prefix}_{database name}`, prefix / output folder configurable and remembered), and records its `SharedTableData` GUID onto the database (1:1, field `InventoryDatabase.LocalizationTableCollectionGuid`). "Link localization table" also lets you manually create a String Table Collection and drag it in; the "Edit" button opens that table's Table Editor.
 2. **Generate localization keys**: iterates over **all** Text fields in the library, generating a unique **Chinese key** frame by frame (`ItemSystem-{category}-{instance id}-{field}[-{element}]`, e.g. `ItemSystem-item entry-{item id}-name`, `ItemSystem-enum type-{enum name}-{enum item name}-{attr id}`), writing back the field's table / entry reference and creating a Key→Value entry in the table. Only fields with plain-text content are processed; duplicate keys append `#n` for deduplication.

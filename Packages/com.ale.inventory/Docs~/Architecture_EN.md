@@ -45,7 +45,7 @@ Uses a **tagged union (variant) + array combination**, rather than `[SerializeRe
 
 A scalar stores element `[0]`, an array stores `[0..n]` (flattened when step > 1).
 
-Object-type fields have a string address list `_objAddresses` parallel to `objRefs` (carrying the Addressable address / AssetReference authorized GUID): with `IS_ADDRESSABLE` enabled, the editor authorizes via the native AssetReference selector (storing only the GUID, leaving the objRefs slot empty, so loading the database no longer loads the assets too); at runtime, via the `InventoryAssets` facade, "prefer the live reference, otherwise load the address asynchronously", auto-unloading when the host is destroyed. See [Attribute System – Asset Field Loading](AttributeSystem_EN.md#asset-field-loading-addressables) for details.
+Object-type fields have a string address list `_objAddresses` parallel to `objRefs` (carrying the Addressable address / AssetReference authorized GUID): with `ATK_ADDRESSABLE` enabled, the editor authorizes via the native AssetReference selector (storing only the GUID, leaving the objRefs slot empty, so loading the database no longer loads the assets too); at runtime, via the `InventoryAssets` facade, "prefer the live reference, otherwise load the address asynchronously", auto-unloading when the host is destroyed. See [Attribute System – Asset Field Loading](AttributeSystem_EN.md#asset-field-loading-addressables) for details.
 
 **Why not `[SerializeReference]`**: a tagged union serializes natively in SO, natively supports Undo/Redo, and needs no polymorphic PropertyDrawer; `[SerializeReference]` has risks of managed-reference/Undo corruption. The cost (a few empty lists per value) is negligible for config-time data.
 
@@ -238,7 +238,7 @@ This plugin depends on the standalone foundation package `com.ale.toolkit` (`Ale
 | `Ale.Inventory.Runtime` | Data models, managers, serialization (runtime core) |
 | `Ale.Inventory.Runtime.UI` | Runtime UI components (warehouse / shop / crafting / skill views); references Runtime, `Ale.Toolkit.Runtime.UI` and TextMeshPro |
 | `Ale.Inventory.Editor` | Editor windows and panels |
-| `Ale.Inventory.Addressables.Editor` | Addressables editor tooling (constrained by `IS_ADDRESSABLE`) |
+| `Ale.Inventory.Addressables.Editor` | Addressables editor tooling (constrained by `ATK_ADDRESSABLE`) |
 
 **Foundation (`com.ale.toolkit`)**
 
@@ -246,10 +246,10 @@ This plugin depends on the standalone foundation package `com.ale.toolkit` (`Ale
 |--------|------|
 | `Ale.Toolkit.Runtime` | Attribute system, sorting, tagging, shared serialization, asset-loading abstraction |
 | `Ale.Toolkit.Runtime.UI` | Virtual scrolling lists and general UI widgets |
-| `Ale.Toolkit.UI.Localization` | TMP text / font localization events (constrained by `IS_LOCALIZATION`) |
-| `Ale.Toolkit.Addressables.Runtime` | Addressables loading and handle management (constrained by `IS_ADDRESSABLE`) |
+| `Ale.Toolkit.UI.Localization` | TMP text / font localization events (constrained by `ATK_LOCALIZATION`) |
+| `Ale.Toolkit.Addressables.Runtime` | Addressables loading and handle management (constrained by `ATK_ADDRESSABLE`) |
 | `Ale.Toolkit.Editor` | Editor three-column framework, attribute drawers, localization service |
-| `Ale.Toolkit.Addressables.Editor` | Addressables editor tooling (constrained by `IS_ADDRESSABLE`) |
+| `Ale.Toolkit.Addressables.Editor` | Addressables editor tooling (constrained by `ATK_ADDRESSABLE`) |
 
 ---
 

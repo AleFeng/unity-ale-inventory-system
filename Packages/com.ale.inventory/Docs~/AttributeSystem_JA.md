@@ -49,7 +49,7 @@
 | Int | 整数 | IntField |
 | Float | 浮動小数点 | FloatField |
 | String | 文字列 | TextField |
-| **Text** | `IS_LOCALIZATION` 有効時はローカライズ参照を含む：テーブル + エントリ（string フィールドがフォールバック） | ローカライズエントリセレクター + テキストボックス |
+| **Text** | `ATK_LOCALIZATION` 有効時はローカライズ参照を含む：テーブル + エントリ（string フィールドがフォールバック） | ローカライズエントリセレクター + テキストボックス |
 | Vector2 / 3 / 4 | 2 / 3 / 4 個の浮動小数点 | 複数列 FloatField |
 | VectorInt2 / 3 / 4 | 2 / 3 / 4 個の整数 | 複数列 IntField |
 | Color | 4 個の浮動小数点（RGBA） | ColorField |
@@ -103,10 +103,10 @@ InventoryAssets.Bind<Sprite>(item, "アイコン", image.gameObject, s => { imag
 InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 ```
 
-- **`IS_ADDRESSABLE` 無効（直接モード）**：属性フィールドは Unity のリソース参照（`objRefs`）を直接保持し、設定データの読み込み時にリソースもメモリに読み込まれます。ファサードはその実時参照を同期的に返します（エディタコントロールは `ObjectField`）。
-- **`IS_ADDRESSABLE` 有効（授権モード）**：エディタのオブジェクトフィールドはネイティブの **AssetReference** 検索可能セレクターに切り替わり、設定は GUID のみ格納します（ハード参照せず、データベース読み込みでリソースも一緒にメモリへ載せない）。ランタイムでは Addressables 経由でオンデマンドに**非同期読み込み**し、アドレスで参照カウントし、ホスト破棄時に**自動アンロード**します。エクスポート時に参照されたリソースは `InventorySystem` Addressable グループに自動登録されます。
+- **`ATK_ADDRESSABLE` 無効（直接モード）**：属性フィールドは Unity のリソース参照（`objRefs`）を直接保持し、設定データの読み込み時にリソースもメモリに読み込まれます。ファサードはその実時参照を同期的に返します（エディタコントロールは `ObjectField`）。
+- **`ATK_ADDRESSABLE` 有効（授権モード）**：エディタのオブジェクトフィールドはネイティブの **AssetReference** 検索可能セレクターに切り替わり、設定は GUID のみ格納します（ハード参照せず、データベース読み込みでリソースも一緒にメモリへ載せない）。ランタイムでは Addressables 経由でオンデマンドに**非同期読み込み**し、アドレスで参照カウントし、ホスト破棄時に**自動アンロード**します。エクスポート時に参照されたリソースは `InventorySystem` Addressable グループに自動登録されます。
 
-> 2 つの格納形式はディスク上のフォーマットが異なり、同名フィールドで自動共有はできません。マクロ切り替え後、メニュー **Tools/Inventory System/Addressables** で、あるデータベースの全リソースフィールドを「Object 参照 ↔ AssetReference(GUID)」間でワンクリック相互変換できます。
+> 2 つの格納形式はディスク上のフォーマットが異なり、同名フィールドで自動共有はできません。マクロ切り替え後、メニュー **Tools/Ale Toolkit/Inventory System/Addressables** で、あるデータベースの全リソースフィールドを「Object 参照 ↔ AssetReference(GUID)」間でワンクリック相互変換できます。
 >
 > 内部：授権 GUID / ランタイムアドレスは実時参照と並行して `AttributeValue` に格納されます（アドレスリスト vs `objRefs`）。ファサードは実時参照を優先し、なければアドレスの非同期読み込みに退避します。core アセンブリは Addressables にゼロ依存で、ネイティブセレクターは制約付きの Addressable エディタアセンブリから注入されます（`EditorExportResolver` と同じ注入パターン）。
 >
@@ -128,7 +128,7 @@ InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 
 ## ローカライズツールウィンドウ
 
-`Tools > Inventory System > Localization > ローカライズツールウィンドウ`（`IS_LOCALIZATION` のみ。ウェルカムウィンドウにも入口ボタンあり）。1 つの `InventoryDatabase` に Unity Localization をワンストップで接続します：
+`Tools > Ale Toolkit > Inventory System > Localization > ローカライズツールウィンドウ`（`ATK_LOCALIZATION` のみ。ウェルカムウィンドウにも入口ボタンあり）。1 つの `InventoryDatabase` に Unity Localization をワンストップで接続します：
 
 1. **多言語テーブルの生成 / 関連付け**：現在の Locale に基づき String Table 集合を生成し（テーブル名 `{接頭辞}_{データベース名}`、接頭辞 / 生成フォルダは設定・記憶可能）、その `SharedTableData` の GUID をデータベースに記録（1:1、フィールド `InventoryDatabase.LocalizationTableCollectionGuid`）。「多言語テーブルを関連付け」では手動で String Table Collection を新規作成してドラッグ挂载することもできます。「編集」ボタンでそのテーブルの Table Editor を開きます。
 2. **多言語キーの生成**：ライブラリ内の**すべての** Text フィールドを走査し、フレームごとに一意の**中国語キー**（`道具系统-{カテゴリ}-{インスタンスid}-{フィールド}[-{要素}]`、例：`道具系统-道具条目-{道具id}-名称`、`道具系统-枚举类型-{枚举名}-{枚举项名}-{属性id}`）を生成し、フィールドのテーブル / エントリ参照を書き戻し、テーブルに Key→Value エントリを作成します。プレーンテキスト内容のあるフィールドのみ処理し、同名キーは `#n` を付けて重複排除します。

@@ -45,7 +45,7 @@
 
 标量存元素 `[0]`，数组存 `[0..n]`（步长 > 1 时压平存储）。
 
-对象类字段另有一个与 `objRefs` 平行的字符串地址列表 `_objAddresses`（承载 Addressable 地址 / AssetReference 授权 GUID）：启用 `IS_ADDRESSABLE` 时编辑器以原生 AssetReference 选择器授权（仅存 GUID、objRefs 槽置空，加载数据库不再一并载入资源）；运行时经 `InventoryAssets` 门面「优先实时引用、否则地址异步加载」，宿主销毁自动卸载。详见 [属性系统 - 资源字段的加载](AttributeSystem.md#资源字段的加载addressables)。
+对象类字段另有一个与 `objRefs` 平行的字符串地址列表 `_objAddresses`（承载 Addressable 地址 / AssetReference 授权 GUID）：启用 `ATK_ADDRESSABLE` 时编辑器以原生 AssetReference 选择器授权（仅存 GUID、objRefs 槽置空，加载数据库不再一并载入资源）；运行时经 `InventoryAssets` 门面「优先实时引用、否则地址异步加载」，宿主销毁自动卸载。详见 [属性系统 - 资源字段的加载](AttributeSystem.md#资源字段的加载addressables)。
 
 **为什么不用 `[SerializeReference]`**：标签联合在 SO 中原生序列化、原生支持 Undo/Redo，无需多态 PropertyDrawer；`[SerializeReference]` 有托管引用/Undo 损坏隐患。代价（每个值几个空列表）对配置期数据可忽略。
 
@@ -229,7 +229,7 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 | `Ale.Inventory.Runtime` | 数据模型、管理器、序列化（运行时核心） |
 | `Ale.Inventory.Runtime.UI` | 运行时 UI 组件（仓库 / 商店 / 制作 / 技能视图）；引用 Runtime、`Ale.Toolkit.Runtime.UI` 与 TextMeshPro |
 | `Ale.Inventory.Editor` | 编辑器窗口与面板 |
-| `Ale.Inventory.Addressables.Editor` | Addressable 编辑器工具（受 `IS_ADDRESSABLE` 约束） |
+| `Ale.Inventory.Addressables.Editor` | Addressable 编辑器工具（受 `ATK_ADDRESSABLE` 约束） |
 
 **通用底层（`com.ale.toolkit`）**
 
@@ -237,10 +237,10 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 |--------|------|
 | `Ale.Toolkit.Runtime` | 属性系统、排序、标签、通用序列化、资源加载抽象 |
 | `Ale.Toolkit.Runtime.UI` | 虚拟滚动列表与通用 UI 控件 |
-| `Ale.Toolkit.UI.Localization` | TMP 文本 / 字体本地化事件（受 `IS_LOCALIZATION` 约束） |
-| `Ale.Toolkit.Addressables.Runtime` | Addressable 资源加载与句柄管理（受 `IS_ADDRESSABLE` 约束） |
+| `Ale.Toolkit.UI.Localization` | TMP 文本 / 字体本地化事件（受 `ATK_LOCALIZATION` 约束） |
+| `Ale.Toolkit.Addressables.Runtime` | Addressable 资源加载与句柄管理（受 `ATK_ADDRESSABLE` 约束） |
 | `Ale.Toolkit.Editor` | 编辑器三列框架、属性绘制器、多语言服务 |
-| `Ale.Toolkit.Addressables.Editor` | Addressable 编辑器工具（受 `IS_ADDRESSABLE` 约束） |
+| `Ale.Toolkit.Addressables.Editor` | Addressable 编辑器工具（受 `ATK_ADDRESSABLE` 约束） |
 
 ---
 

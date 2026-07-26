@@ -66,14 +66,14 @@ Runtime/UI/
 
 ### TextMeshPro マクロ
 
-すべてのテキストコンポーネントはコンパイルマクロ `IS_TMP` で切り替わります：
+すべてのテキストコンポーネントはコンパイルマクロ `ATK_TMP` で切り替わります：
 
 | マクロの状態 | テキストコンポーネント型 |
 |--------|------------|
-| **定義済み** `IS_TMP` | `TMPro.TMP_Text` |
+| **定義済み** `ATK_TMP` | `TMPro.TMP_Text` |
 | **未定義**（既定） | `UnityEngine.UI.Text` |
 
-**TMP を有効化**：`Project Settings > Player > Scripting Define Symbols` に `IS_TMP` を追加し、プロジェクトに TextMeshPro パッケージが導入済みであることを確認します。
+**TMP を有効化**：`Project Settings > Player > Scripting Define Symbols` に `ATK_TMP` を追加し、プロジェクトに TextMeshPro パッケージが導入済みであることを確認します。
 
 > マクロを切り替えた後は再コンパイルが必要で、テキストコンポーネントを使うすべてのプレハブの参照フィールドは、対応する型のコンポーネントに再割り当てが必要です。
 
@@ -670,7 +670,7 @@ public class InventoryUIController : MonoBehaviour
 
 ### 10.5 すべてのプレハブをワンクリック生成（Demo ウィザード）
 
-**ウェルカムウィンドウ**（`Tools > Inventory System > Welcome Window`）を開く → 「テストツール-プレハブ生成」を展開：
+**ウェルカムウィンドウ**（`Tools > Ale Toolkit > Inventory System > Welcome Window`）を開く → 「テストツール-プレハブ生成」を展開：
 
 - 「すべて生成（データベース + 全 Prefab）」でサンプルデータベース + 全 UI プレハブ + バックパック / ショップ / クラフト / 装備パネル + マネージャーをワンクリック生成（装備パネルは「キャラクター装備」を自動で開き、バックパック右クリック装備のブリッジをアタッチ）。
 - 一覧では個別のプレハブを生成可能（依存するプレハブを生成する際は子プレハブも一緒に生成するか確認し、既存アセットの上書き前にも確認）。
@@ -683,7 +683,7 @@ public class InventoryUIController : MonoBehaviour
 > **Demo アイテムのランダム属性は再現可能です（1.6.0 より）**：品質 / 攻撃力などはアイテム ID 由来の固定シードから
 > 生成されるため、同じ ID なら毎回同じ値になります。
 
-> ウェルカムウィンドウの「プラグインサポート」領域では、`IS_TMP` / `IS_LOCALIZATION` / `IS_ADDRESSABLE` の 3 マクロをワンクリックで切り替え、ウィザードが Prefab 生成時に使う既定の TMP フォントも設定できます。
+> ウェルカムウィンドウの「プラグインサポート」領域では、`ATK_TMP` / `ATK_LOCALIZATION` / `ATK_ADDRESSABLE` の 3 マクロをワンクリックで切り替え、ウィザードが Prefab 生成時に使う既定の TMP フォントも設定できます。
 
 ---
 
@@ -748,7 +748,7 @@ A：`qualitySprites` 配列の**インデックス**は列挙整数値に対応�
 **Q：ソートドロップダウンに選択肢が出ない？**  
 A：倉庫定義（`Inventory`）の `sortPriorities` リストが空です。倉庫 Inspector で少なくとも 1 つのソートルールを追加してください。
 
-**Q：`IS_TMP` マクロ切り替え後、プレハブのテキスト参照が失われた？**  
+**Q：`ATK_TMP` マクロ切り替え後、プレハブのテキスト参照が失われた？**  
 A：マクロ切り替えでフィールド型が変わるため、プレハブ Inspector で `label`、`nameText` などのフィールドに `TMP_Text` コンポーネントを手動で再ドラッグする必要があります。テキスト方針を決めたらマクロを固定し、頻繁に切り替えないことを推奨します。
 
 **Q：仮想リストのスクロール時に空白セルが出る？**  

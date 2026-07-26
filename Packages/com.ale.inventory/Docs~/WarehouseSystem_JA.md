@@ -140,7 +140,7 @@ Hierarchy
 - **`testItems`**：「アイテム ID + 数量」を 1 件ずつ指定するリスト。
 - **`addAllConfiguredItems` + `addAllItemCount`**：さらに、すべてのデータベース（`databases`）で設定されたアイテムを、それぞれ `addAllItemCount` の数量でテスト倉庫に補充します。`testItems` で既に設定済みのアイテムはスキップされ（指定数量を保持し、重複して追加しない）、同一アイテム ID は複数の DB をまたいでも 1 回だけ追加されます。これもマスター切り替え `autoPopulateOnStart` に従います。
 
-> この領域は Demo ウィザード（`Tools > Inventory System`）が例の値を自動で書き込めます。
+> この領域は Demo ウィザード（`Tools > Ale Toolkit > Inventory System`）が例の値を自動で書き込めます。
 
 # ランタイム API
 

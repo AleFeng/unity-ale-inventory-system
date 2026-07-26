@@ -140,7 +140,7 @@ Hierarchy
 - **`testItems`**：逐条指定「道具 ID + 数量」的列表。
 - **`addAllConfiguredItems` + `addAllItemCount`**：额外把所有数据库（`databases`）中配置的道具，各按 `addAllItemCount` 的数量补充到测试仓库；已在 `testItems` 中配置的道具会跳过（保留其指定数量、不重复添加），同一道具 ID 跨多个库仅添加一次。同样受主开关 `autoPopulateOnStart` 约束。
 
-> 该区可由 Demo 向导（`Tools > Inventory System`）自动写入示例值。
+> 该区可由 Demo 向导（`Tools > Ale Toolkit > Inventory System`）自动写入示例值。
 
 # 运行时 API
 

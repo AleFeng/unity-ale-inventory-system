@@ -6,6 +6,21 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.10.0] - 2026-07-26
+
+配合 `com.ale.toolkit` 1.2.0，把「界面语言」与「可选依赖宏」这两项项目级全局设定下沉到 toolkit 欢迎窗口，并把菜单统一收拢到 `Tools > Ale Toolkit` 下。**纯结构 / 文档调整，功能与数据零变化，旧数据与旧存档完全兼容。**
+
+### 变更
+
+- **依赖 `com.ale.toolkit` 1.2.0**（安装顺序不变：先 `com.ale.toolkit`、再本插件）。
+- **⚠️ 可选依赖宏随 toolkit 改名**：`IS_TMP` / `IS_LOCALIZATION` / `IS_ADDRESSABLE` → `ATK_TMP` / `ATK_LOCALIZATION` / `ATK_ADDRESSABLE`。老项目已设的旧宏由 toolkit 的 `ToolkitDefineChecker` 加载时自动迁移，无需手改。
+- **全局设定下沉 toolkit**：欢迎窗口移除界面语言按钮与插件宏开关区，改为「打开 Ale Toolkit 设置（语言 / 插件宏）」跳转按钮（语言 / 枚举翻译 / 宏开关统一在 toolkit 欢迎窗口配置）；`InventoryEditorPrefs` / `InventoryDefineChecker` 移除已下沉的宏常量 / 检测 / 一致性检查；向导 TMP / 本地化字体设置从宏区迁为独立「向导字体」区。
+- **菜单收拢**：库存四个菜单项由 `Tools > Inventory System > *` 收入 `Tools > Ale Toolkit > Inventory System > *`（欢迎窗口 / Inventory Editor / 本地化工具窗口 / Addressable 工具窗口）。`Assets > Create > Inventory System > Inventory Database` 不变。
+
+### 文档
+
+- 三语 `README` / `Docs~` 同步：宏名 `ATK_*`、新菜单路径、全局设定改在 toolkit 欢迎窗口配置、toolkit 新增通用工具窗口。
+
 ## [1.9.0] - 2026-07-26
 
 配合 `com.ale.toolkit` 1.1.0 的完整性补齐所做的跟随式清理与文档同步。**纯结构 / 文档调整，功能与数据零变化，旧数据与旧存档完全兼容。**

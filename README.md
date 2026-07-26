@@ -74,10 +74,10 @@ Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件
 | 统一虚拟滚动 UI | 网格与顺序列表均为虚拟滚动（对象池 + 仅渲染可见区）；增量差异刷新、生成限速（`spawnPerSecond`）、逐格浮现，海量条目不卡顿。 |
 | 运行时管理器 | `InventoryDataManager`（查询）+ 仓库 / 商店 / 制作 / 装备 / 技能各自的运行时管理器，装备 / 技能状态与商店进度均可存档。 |
 | 单向导出 | `InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部配置数据**（六大子系统 20 个列表）；对象引用以 AssetGUID 承载，可选经 Addressable 异步加载。 |
-| 三个可选宏 | TextMeshPro（`IS_TMP`）/ Unity Localization（`IS_LOCALIZATION`）/ Unity Addressables（`IS_ADDRESSABLE`），欢迎窗口一键开关并检测对应包是否安装，插件包本身零硬依赖。 |
+| 三个可选宏 | TextMeshPro（`ATK_TMP`）/ Unity Localization（`ATK_LOCALIZATION`）/ Unity Addressables（`ATK_ADDRESSABLE`），在 **Ale Toolkit 欢迎窗口**一键开关并检测对应包是否安装（宏为项目级全局设定，已下沉 toolkit）；插件包本身零硬依赖。 |
 | 本地化工具 | 一键为 `InventoryDatabase` 生成 / 关联多语言表，遍历全库 `Text` 字段自动生成中文 Key 并回填条目（进度条 + 日志 + 取消）。 |
-| 欢迎窗口向导 | 统一入口：创建数据、打开编辑器 / 工具窗口、宏开关、以及「一键生成完整可运行示例」（数据库 + 全部 UI 预制体 + 管理器）。 |
-| 编辑器界面三语 | 欢迎窗口一键切换 **中文 / English / 日本語**，欢迎窗口与 `Inventory Editor` 配置编辑器（六大系统全部面板）整体切换；选择持久化保存，与运行时内容本地化互不相关。 |
+| 欢迎窗口向导 | 统一入口：创建数据、打开编辑器 / 工具窗口、生成示例预制体，以及「一键生成完整可运行示例」（数据库 + 全部 UI 预制体 + 管理器）；界面语言与插件宏等全局设定跳转到 Ale Toolkit 欢迎窗口。 |
+| 编辑器界面三语 | 在 **Ale Toolkit 欢迎窗口**一键切换 **中文 / English / 日本語**，`Inventory Editor` 配置编辑器（六大系统全部面板）整体切换；选择持久化保存，与运行时内容本地化互不相关。 |
 
 ### 六大子系统
 | 子系统 | 配置内容 | 运行时管理器 |
@@ -94,11 +94,11 @@ Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件
 ## 💻 环境要求
 - `Unity 2022.3` 或更新版本（`package.json` 声明的最低版本；本仓库基于 `Unity 6000.3` 开发与维护）。
 - 核心插件为纯 C#，**不引入任何硬依赖**——TextMeshPro / Unity Localization / Unity Addressables 均通过编译宏**可选**启用（见[可选宏开关](#-可选宏开关)）。
-- 未启用 `IS_TMP` 时，UI 文本组件回退到 `UnityEngine.UI.Text`，插件照常工作。
+- 未启用 `ATK_TMP` 时，UI 文本组件回退到 `UnityEngine.UI.Text`，插件照常工作。
 
 ## 📦 安装
 
-> ⚠️ **本插件依赖通用底层包 [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit)，必须先装它、再装本插件。** 自 1.8.0 起本插件依赖它；Unity Package Manager 不支持在 `package.json` 的 `dependencies` 里写 git URL，无法自动拉取，故**顺序不能颠倒**。用与下方相同的方式先安装 toolkit：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.1.0`。漏装或颠倒会报 `找不到 Ale.Toolkit.*` 一类编译错——补装 toolkit 并等重新编译即可，无需重装本插件。
+> ⚠️ **本插件依赖通用底层包 [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit)，必须先装它、再装本插件。** 自 1.8.0 起本插件依赖它；Unity Package Manager 不支持在 `package.json` 的 `dependencies` 里写 git URL，无法自动拉取，故**顺序不能颠倒**。用与下方相同的方式先安装 toolkit：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.2.0`。漏装或颠倒会报 `找不到 Ale.Toolkit.*` 一类编译错——补装 toolkit 并等重新编译即可，无需重装本插件。
 
 ### 使用 UPM（推荐）
 `Window > Package Manager` → 左上角 `+` → `Install package from git URL...` → 粘贴：
@@ -110,7 +110,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 这样装的是 `main` 的最新提交。**要固定版本，把 `#<tag>` 加在整条 URL 的最末尾**（必须在 `?path=` 之后）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.9.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.10.0
 ```
 
 可用的 tag 见 [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases)。
@@ -133,7 +133,7 @@ Project 面板右键 > Create > Inventory System > Inventory Database
 （或在欢迎窗口点击「创建新数据文件」；可先在欢迎窗口配置「数据模板」，新建时从模板深拷贝全部数据。）
 
 ### 2. 打开编辑器并配置
-- 选中 `.asset`，在 Inspector 顶部点击「在 Inventory Editor 中编辑」；或菜单 `Tools > Inventory System > Inventory Editor`。
+- 选中 `.asset`，在 Inspector 顶部点击「在 Inventory Editor 中编辑」；或菜单 `Tools > Ale Toolkit > Inventory System > Inventory Editor`。
 - 编辑器为**顶部系统页签 + 三列布局**（左：定义配置 / 中：条目列表 / 右：详细 Inspector）。依次在「道具 / 仓库 / 商店 / 制作 / 装备 / 技能」页签中配置。中间条目列表支持模板过滤、搜索、拖拽重排、↑ / ↓ 键盘导航。
 
 ### 3. 导出（可选）
@@ -166,26 +166,26 @@ InventoryRuntimeManager.Instance.ResetAll();
 在**欢迎窗口**展开「测试工具-预制体生成 → 生成全部」，一键生成完整可运行示例（数据库 + 全部 UI 预制体 + 背包 / 商店 / 制作 / 装备 / 技能面板 + 管理器）。
 
 ## 🖥️ 欢迎窗口
-插件的统一入口面板，集中了「创建数据 / 打开编辑器 / 查看文档 / 生成示例 / 插件宏开关」等常用操作。每次 Unity 会话首次会自动弹出一次，也可随时手动打开：
+插件的统一入口面板，集中了「创建数据 / 打开编辑器 / 查看文档 / 生成示例」等库存领域操作。每次 Unity 会话首次会自动弹出一次，也可随时手动打开：
 
 ```
-Tools > Inventory System > Welcome Window
+Tools > Ale Toolkit > Inventory System > Welcome Window
 ```
 
 ![alt text](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
 
-窗口页眉的副标题下方居中排列「**中文 / English / 日本語**」三个按钮，可切换**欢迎窗口与 `Inventory Editor` 配置编辑器**的界面语言（选择经 `EditorPrefs` 持久化，跨会话保留；仅影响编辑器界面文案，与运行时内容本地化无关）。
+> **界面语言、枚举翻译、可选依赖宏均为项目级全局设定，自 1.10.0 起已下沉到 Ale Toolkit 欢迎窗口（`Tools > Ale Toolkit > Welcome`）统一配置。** 本窗口顶部提供「打开 Ale Toolkit 设置」按钮一键跳转；语言切换后 `Inventory Editor`（六大系统全部面板）随之刷新，仅影响编辑器界面文案，与运行时内容本地化无关。
 
-页眉之下自上而下分为五个区域：**多语言设定**（「枚举值」勾选项：是否让枚举下拉的显示名也随语言切换，默认不勾）、**快捷操作**（创建数据 / 打开各编辑器与工具窗口 / 一键生成示例预制体）、**数据模板**（指定一个 `InventoryDatabase` 作为新建蓝本）、**插件支持**（三个可选宏一键开关，见下）、**启动时自动显示**（是否每次会话自动弹窗）。
+页眉之下自上而下：**「打开 Ale Toolkit 设置」跳转**、**快捷操作**（创建数据 / 打开各编辑器与工具窗口 / 一键生成示例预制体）、**数据模板**（指定一个 `InventoryDatabase` 作为新建蓝本）、**向导字体**（启用 `ATK_TMP` 时，供向导生成 Prefab）、**启动时自动显示**。
 
 ## 🧩 可选宏开关
-三个宏均可在**欢迎窗口**的「插件支持」区一键开关，并实时检测对应 Package 是否已安装（未安装时勾选会弹确认对话框）：
+三个宏均在 **Ale Toolkit 欢迎窗口**（`Tools > Ale Toolkit > Welcome`）的「插件支持（编译宏）」区一键开关，并实时检测对应 Package 是否已安装（未安装时勾选会弹确认对话框）；库存欢迎窗口提供跳转按钮：
 
 | 开关 | 宏 | 作用 |
 | --- | --- | --- |
-| TextMeshPro | `IS_TMP` | 开启后 UI 文本组件使用 `TMP_Text`，否则用 `UnityEngine.UI.Text`；可配「默认字体」应用到向导生成的 Prefab。 |
-| Unity Localization | `IS_LOCALIZATION` | 开启后 `Text` 字段可挂本地化引用（表 + 条目）；配合「本地化工具窗口」一键建表 / 生成中文 Key，支持多语言。 |
-| Unity Addressables | `IS_ADDRESSABLE` | 开启后运行时资源经 Addressable 按需异步加载、引用计数自动卸载；导出时自动登记被引用资源。 |
+| TextMeshPro | `ATK_TMP` | 开启后 UI 文本组件使用 `TMP_Text`，否则用 `UnityEngine.UI.Text`；可配「默认字体」应用到向导生成的 Prefab。 |
+| Unity Localization | `ATK_LOCALIZATION` | 开启后 `Text` 字段可挂本地化引用（表 + 条目）；配合「本地化工具窗口」一键建表 / 生成中文 Key，支持多语言。 |
+| Unity Addressables | `ATK_ADDRESSABLE` | 开启后运行时资源经 Addressable 按需异步加载、引用计数自动卸载；导出时自动登记被引用资源。 |
 
 > 切换宏后需等待 Unity 重新编译生效。
 

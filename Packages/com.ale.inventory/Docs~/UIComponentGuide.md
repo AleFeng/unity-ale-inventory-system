@@ -66,14 +66,14 @@ Runtime/UI/
 
 ### TextMeshPro 宏开关
 
-所有文本组件通过编译宏 `IS_TMP` 切换：
+所有文本组件通过编译宏 `ATK_TMP` 切换：
 
 | 宏状态 | 文本组件类型 |
 |--------|------------|
-| **已定义** `IS_TMP` | `TMPro.TMP_Text` |
+| **已定义** `ATK_TMP` | `TMPro.TMP_Text` |
 | **未定义**（默认） | `UnityEngine.UI.Text` |
 
-**启用 TMP**：在 `Project Settings > Player > Scripting Define Symbols` 中添加 `IS_TMP`，并确保项目已导入 TextMeshPro 包。
+**启用 TMP**：在 `Project Settings > Player > Scripting Define Symbols` 中添加 `ATK_TMP`，并确保项目已导入 TextMeshPro 包。
 
 > 切换宏后需重新编译，所有使用文本组件的 Prefab 中的引用字段需重新赋值为对应类型的组件。
 
@@ -670,7 +670,7 @@ public class InventoryUIController : MonoBehaviour
 
 ### 10.5 一键生成全部预制体（Demo 向导）
 
-打开 **欢迎窗口**（`Tools > Inventory System > Welcome Window`）→ 展开「测试工具-预制体生成」：
+打开 **欢迎窗口**（`Tools > Ale Toolkit > Inventory System > Welcome Window`）→ 展开「测试工具-预制体生成」：
 
 - 「生成全部（数据库 + 全部 Prefab）」一键生成示例数据库 + 全部 UI 预制体 + 背包 / 商店 / 制作 / 装备面板 + 管理器（装备面板自动打开「角色装备」、并挂背包右键装备桥接）；
 - 列表中可逐项生成单个预制体（生成依赖型预制体时会询问是否一并生成子预制体，已存在资产覆盖前确认）。
@@ -681,7 +681,7 @@ public class InventoryUIController : MonoBehaviour
 >
 > **Demo 道具的随机属性可复现（1.6.0 起）**：品质 / 攻击力等由道具 ID 派生固定种子，同一 ID 每次生成结果一致。
 
-> 欢迎窗口的「插件支持」区还可一键开关 `IS_TMP` / `IS_LOCALIZATION` / `IS_ADDRESSABLE` 三个宏，并配置向导生成 Prefab 时使用的默认 TMP 字体。
+> 欢迎窗口的「插件支持」区还可一键开关 `ATK_TMP` / `ATK_LOCALIZATION` / `ATK_ADDRESSABLE` 三个宏，并配置向导生成 Prefab 时使用的默认 TMP 字体。
 
 ---
 
@@ -743,7 +743,7 @@ A：`qualitySprites` 数组的**下标**必须与枚举整数值对应；若品�
 **Q：排序下拉框不出现选项？**  
 A：仓库定义（`Inventory`）中的 `sortPriorities` 列表为空；在仓库 Inspector 中添加至少一条排序规则。
 
-**Q：`IS_TMP` 宏切换后 Prefab 中文本引用丢失？**  
+**Q：`ATK_TMP` 宏切换后 Prefab 中文本引用丢失？**  
 A：宏切换导致字段类型变化，需在 Prefab Inspector 中手动将 `label`、`nameText` 等字段重新拖入 `TMP_Text` 组件。建议确定文本方案后固定宏，不频繁切换。
 
 **Q：虚拟列表滚动时出现空白格？**  

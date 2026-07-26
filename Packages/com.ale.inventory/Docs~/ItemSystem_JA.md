@@ -30,7 +30,7 @@
 # エディタを開く
 
 1. **データファイルを作成**：`Project パネルで右クリック > Create > Inventory System > Inventory Database`（またはウェルカムウィンドウの「新規データファイルを作成」）。
-2. **エディタを開く**：`.asset` を選択して Inspector で「Inventory Editor で編集」をクリック、またはメニューの `Tools > Inventory System > Inventory Editor`。
+2. **エディタを開く**：`.asset` を選択して Inspector で「Inventory Editor で編集」をクリック、またはメニューの `Tools > Ale Toolkit > Inventory System > Inventory Editor`。
 3. 上部の「**アイテムシステム**」タブをクリック。
 
 エディタは 3 カラムレイアウトです：**左カラム**（定義設定）| **中央カラム**（アイテム一覧）| **右カラム**（アイテム Inspector）。

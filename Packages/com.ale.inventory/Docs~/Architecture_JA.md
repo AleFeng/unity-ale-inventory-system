@@ -45,7 +45,7 @@
 
 スカラーは要素 `[0]` を格納、配列は `[0..n]` を格納（ステップ > 1 のとき平坦化して格納）。
 
-オブジェクト系フィールドには `objRefs` と並行する文字列アドレスリスト `_objAddresses`（Addressable アドレス / AssetReference 授権 GUID を保持）があります：`IS_ADDRESSABLE` 有効時、エディタはネイティブの AssetReference セレクターで授権し（GUID のみ格納、objRefs スロットは空、データベース読み込みでリソースも一緒に載せない）、ランタイムでは `InventoryAssets` ファサードを通じて「実時参照を優先、なければアドレスの非同期読み込み」、ホスト破棄時に自動アンロードします。詳細は [属性システム - リソースフィールドの読み込み](AttributeSystem_JA.md#リソースフィールドの読み込みaddressables) を参照してください。
+オブジェクト系フィールドには `objRefs` と並行する文字列アドレスリスト `_objAddresses`（Addressable アドレス / AssetReference 授権 GUID を保持）があります：`ATK_ADDRESSABLE` 有効時、エディタはネイティブの AssetReference セレクターで授権し（GUID のみ格納、objRefs スロットは空、データベース読み込みでリソースも一緒に載せない）、ランタイムでは `InventoryAssets` ファサードを通じて「実時参照を優先、なければアドレスの非同期読み込み」、ホスト破棄時に自動アンロードします。詳細は [属性システム - リソースフィールドの読み込み](AttributeSystem_JA.md#リソースフィールドの読み込みaddressables) を参照してください。
 
 **なぜ `[SerializeReference]` を使わないか**：タグ付き共用体は SO でネイティブにシリアライズされ、Undo/Redo をネイティブに対応し、多態的な PropertyDrawer が不要です。`[SerializeReference]` にはマネージド参照/Undo の破損リスクがあります。コスト（値ごとにいくつかの空リスト）は設定期のデータでは無視できます。
 
@@ -236,7 +236,7 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 | `Ale.Inventory.Runtime` | データモデル、マネージャー、シリアライズ（ランタイムコア） |
 | `Ale.Inventory.Runtime.UI` | ランタイム UI コンポーネント（倉庫 / ショップ / クラフト / スキルビュー）。Runtime、`Ale.Toolkit.Runtime.UI`、TextMeshPro を参照 |
 | `Ale.Inventory.Editor` | エディタウィンドウとパネル |
-| `Ale.Inventory.Addressables.Editor` | Addressables エディタツール（`IS_ADDRESSABLE` 制約） |
+| `Ale.Inventory.Addressables.Editor` | Addressables エディタツール（`ATK_ADDRESSABLE` 制約） |
 
 **基盤（`com.ale.toolkit`）**
 
@@ -244,10 +244,10 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 |--------|------|
 | `Ale.Toolkit.Runtime` | 属性システム、ソート、タグ、共通シリアライズ、アセット読み込み抽象 |
 | `Ale.Toolkit.Runtime.UI` | バーチャルスクロールリストと汎用 UI コントロール |
-| `Ale.Toolkit.UI.Localization` | TMP テキスト / フォントのローカライズイベント（`IS_LOCALIZATION` 制約） |
-| `Ale.Toolkit.Addressables.Runtime` | Addressables 読み込みとハンドル管理（`IS_ADDRESSABLE` 制約） |
+| `Ale.Toolkit.UI.Localization` | TMP テキスト / フォントのローカライズイベント（`ATK_LOCALIZATION` 制約） |
+| `Ale.Toolkit.Addressables.Runtime` | Addressables 読み込みとハンドル管理（`ATK_ADDRESSABLE` 制約） |
 | `Ale.Toolkit.Editor` | エディタ三列フレームワーク、属性ドロワー、多言語サービス |
-| `Ale.Toolkit.Addressables.Editor` | Addressables エディタツール（`IS_ADDRESSABLE` 制約） |
+| `Ale.Toolkit.Addressables.Editor` | Addressables エディタツール（`ATK_ADDRESSABLE` 制約） |
 
 ---
 

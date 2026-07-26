@@ -49,7 +49,7 @@
 | Int | 整数 | IntField |
 | Float | 浮点 | FloatField |
 | String | 字符串 | TextField |
-| **Text** | 启用 `IS_LOCALIZATION` 时 含本地化引用：表+条目（string字段作为fallback）| 本地化条目选择器 + 文本框 |
+| **Text** | 启用 `ATK_LOCALIZATION` 时 含本地化引用：表+条目（string字段作为fallback）| 本地化条目选择器 + 文本框 |
 | Vector2 / 3 / 4 | 2 / 3 / 4 个浮点 | 多列 FloatField |
 | VectorInt2 / 3 / 4 | 2 / 3 / 4 个整数 | 多列 IntField |
 | Color | 4 个浮点（RGBA） | ColorField |
@@ -103,10 +103,10 @@ InventoryAssets.Bind<Sprite>(item, "图标", image.gameObject, s => { image.spri
 InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 ```
 
-- **未启用 `IS_ADDRESSABLE`（直接模式）**：属性字段直接挂载 Unity 资源引用（`objRefs`），加载配置数据时资源随之载入内存；门面同步返回该实时引用（编辑器控件为 `ObjectField`）。
-- **启用 `IS_ADDRESSABLE`（授权模式）**：编辑器中对象字段改用原生 **AssetReference** 可搜索选择器，配置只存 GUID（不硬引用，加载数据库不再把资源一并载入内存）；运行时经 Addressable 按需**异步加载**、按地址引用计数，宿主销毁时**自动卸载**。导出时被引用资源自动登记进 `InventorySystem` Addressable 分组。
+- **未启用 `ATK_ADDRESSABLE`（直接模式）**：属性字段直接挂载 Unity 资源引用（`objRefs`），加载配置数据时资源随之载入内存；门面同步返回该实时引用（编辑器控件为 `ObjectField`）。
+- **启用 `ATK_ADDRESSABLE`（授权模式）**：编辑器中对象字段改用原生 **AssetReference** 可搜索选择器，配置只存 GUID（不硬引用，加载数据库不再把资源一并载入内存）；运行时经 Addressable 按需**异步加载**、按地址引用计数，宿主销毁时**自动卸载**。导出时被引用资源自动登记进 `InventorySystem` Addressable 分组。
 
-> 两种存储的磁盘格式不同、无法靠同名字段自动共用。切换宏后用菜单 **Tools/Inventory System/Addressables** 在「Object 引用 ↔ AssetReference(GUID)」间一键互转某个数据库的全部资源字段。
+> 两种存储的磁盘格式不同、无法靠同名字段自动共用。切换宏后用菜单 **Tools/Ale Toolkit/Inventory System/Addressables** 在「Object 引用 ↔ AssetReference(GUID)」间一键互转某个数据库的全部资源字段。
 >
 > 底层：授权 GUID / 运行时地址与实时引用平行存于 `AttributeValue`（地址列表 vs `objRefs`）；门面优先用实时引用，无则回退地址异步加载。core 程序集对 Addressables 零依赖，原生选择器经受约束的 Addressable 编辑器程序集注入（同 `EditorExportResolver` 的注入模式）。
 >
@@ -128,7 +128,7 @@ InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 
 ## 本地化工具窗口
 
-`Tools > Inventory System > Localization > 本地化工具窗口`（仅 `IS_LOCALIZATION`；欢迎窗口亦有入口按钮）。为一个 `InventoryDatabase` 一站式接入 Unity Localization：
+`Tools > Ale Toolkit > Inventory System > Localization > 本地化工具窗口`（仅 `ATK_LOCALIZATION`；欢迎窗口亦有入口按钮）。为一个 `InventoryDatabase` 一站式接入 Unity Localization：
 
 1. **生成 / 关联多语言表**：按当前 Locale 生成一个 String Table 集合（表名 `{前缀}_{数据库名}`，前缀 / 生成文件夹可配并记忆），并把其 `SharedTableData` 的 GUID 记录到数据库（1:1，字段 `InventoryDatabase.LocalizationTableCollectionGuid`）。「关联多语言表」也可手动新建 String Table Collection 后拖入挂载；「编辑」按钮打开该表的 Table Editor。
 2. **生成 多语言Key**：遍历库内**所有** Text 字段，逐帧生成唯一**中文 Key**（`道具系统-{类别}-{实例id}-{字段}[-{元素}]`，如 `道具系统-道具条目-{道具id}-名称`、`道具系统-枚举类型-{枚举名}-{枚举项名}-{属性id}`），写回字段的表 / 条目引用，并在表中建 Key→Value 条目。仅处理有纯文本内容的字段，同名 Key 追加 `#n` 去重。

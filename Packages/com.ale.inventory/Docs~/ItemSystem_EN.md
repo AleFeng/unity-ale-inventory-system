@@ -30,7 +30,7 @@ The Item System is the foundation of the whole plugin: it defines every item in 
 # Open the Editor
 
 1. **Create a data file**: `Right-click in the Project panel > Create > Inventory System > Inventory Database` (or "Create New Data File" in the Welcome Window).
-2. **Open the editor**: select the `.asset` and click "Edit in Inventory Editor" in the Inspector, or use the menu `Tools > Inventory System > Inventory Editor`.
+2. **Open the editor**: select the `.asset` and click "Edit in Inventory Editor" in the Inspector, or use the menu `Tools > Ale Toolkit > Inventory System > Inventory Editor`.
 3. Click the "**Item System**" tab at the top.
 
 The editor uses a three-column layout: **left column** (definitions) | **middle column** (item list) | **right column** (item Inspector).

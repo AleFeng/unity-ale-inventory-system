@@ -66,14 +66,14 @@ Runtime/UI/
 
 ### TextMeshPro Macro
 
-All text components switch via the compile macro `IS_TMP`:
+All text components switch via the compile macro `ATK_TMP`:
 
 | Macro state | Text component type |
 |--------|------------|
-| **Defined** `IS_TMP` | `TMPro.TMP_Text` |
+| **Defined** `ATK_TMP` | `TMPro.TMP_Text` |
 | **Undefined** (default) | `UnityEngine.UI.Text` |
 
-**Enable TMP**: add `IS_TMP` in `Project Settings > Player > Scripting Define Symbols`, and make sure the TextMeshPro package is imported.
+**Enable TMP**: add `ATK_TMP` in `Project Settings > Player > Scripting Define Symbols`, and make sure the TextMeshPro package is imported.
 
 > After switching the macro, a recompile is needed, and the reference fields in all prefabs using text components must be reassigned to the corresponding component type.
 
@@ -670,7 +670,7 @@ Behavior (equip / unequip / swap, item limits, attribute bonuses, save) — see 
 
 ### 10.5 One-Click Generate All Prefabs (Demo Wizard)
 
-Open the **Welcome Window** (`Tools > Inventory System > Welcome Window`) → expand "Test Tools – Prefab Generation":
+Open the **Welcome Window** (`Tools > Ale Toolkit > Inventory System > Welcome Window`) → expand "Test Tools – Prefab Generation":
 
 - "Generate All (Database + All Prefabs)" generates the sample database + all UI prefabs + inventory / shop / crafting / equipment panels + managers in one click (the equipment panel auto-opens "Character Equipment" and attaches the backpack right-click equip bridge);
 - The list lets you generate individual prefabs (when generating a dependent prefab it asks whether to generate child prefabs as well, and confirms before overwriting an existing asset).
@@ -684,7 +684,7 @@ Open the **Welcome Window** (`Tools > Inventory System > Welcome Window`) → ex
 > **Demo items' random attributes are reproducible (since 1.6.0)**: quality / attack and friends are derived from a
 > fixed seed based on the item ID, so the same ID yields the same values every time.
 
-> The Welcome Window's "Plugin Support" area can also toggle the three macros `IS_TMP` / `IS_LOCALIZATION` / `IS_ADDRESSABLE` in one click, and configure the default TMP font used by the wizard when generating prefabs.
+> The Welcome Window's "Plugin Support" area can also toggle the three macros `ATK_TMP` / `ATK_LOCALIZATION` / `ATK_ADDRESSABLE` in one click, and configure the default TMP font used by the wizard when generating prefabs.
 
 ---
 
@@ -751,7 +751,7 @@ A: The `qualitySprites` array's **index** must correspond to the enum integer va
 **Q: The sort dropdown has no options?**  
 A: The `sortPriorities` list in the warehouse definition (`Inventory`) is empty; add at least one sort rule in the warehouse Inspector.
 
-**Q: Text references are lost in prefabs after switching the `IS_TMP` macro?**  
+**Q: Text references are lost in prefabs after switching the `ATK_TMP` macro?**  
 A: Switching the macro changes the field type, so you need to manually re-drag the `TMP_Text` component into fields like `label`, `nameText` in the Prefab Inspector. It's recommended to fix the macro once you've decided on a text approach, and not switch frequently.
 
 **Q: Blank cells appear while scrolling the virtual list?**  

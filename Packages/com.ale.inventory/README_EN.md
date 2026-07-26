@@ -103,25 +103,19 @@ Located under `Runtime/UI/`, assembly `Ale.Inventory.Runtime.UI`, namespace `Ale
 
 ![alt text](Docs~/Images/image-1.png)
 
-The plugin's unified entry panel, gathering common actions such as "create data / open editors / view docs / generate samples / toggle feature macros". It pops up automatically the first time each Unity session, and can be opened manually at any time:
+The plugin's unified entry panel, gathering common inventory-domain actions such as "create data / open editors / view docs / generate samples". It pops up automatically the first time each Unity session, and can be opened manually at any time:
 
 ```
-Tools > Inventory System > Welcome Window
+Tools > Ale Toolkit > Inventory System > Welcome Window
 ```
 
-Top to bottom, the window consists of a **header** (title / version / language buttons) plus five areas.
+> **Editor UI language, enum translation, and the optional feature macros (`ATK_TMP` / `ATK_LOCALIZATION` / `ATK_ADDRESSABLE`) are all project-level global settings; since 1.10.0 they live in the [Ale Toolkit Welcome Window](../com.ale.toolkit) (`Tools > Ale Toolkit > Welcome`).** This window offers an "Open Ale Toolkit Settings (Language / Macros)" button at the top for quick access.
 
-### Language (editor UI)
+Top to bottom: a **header** (title / version) + the "Open Ale Toolkit Settings" button + inventory-domain areas.
 
-Centered beneath the header subtitle are three buttons — **中文 / English / 日本語** — with the current language highlighted. Clicking one switches the UI language of **this Welcome Window and the `Inventory Editor` configuration window** (including every panel and config drawer across all six subsystem tabs). The choice is persisted via `EditorPrefs` and kept across Unity sessions; if both windows are open, both refresh at once.
+### Editor Language & Macros (global → Ale Toolkit)
 
-> This affects **editor UI text only**, and is unrelated to runtime content localization (`IS_LOCALIZATION` / Unity Localization).
-
-### Language Settings
-
-| Option | Default | Description |
-|------|------|------|
-| Enum Values | Unchecked | When checked, the display names of **enum dropdowns** — attribute field type (`EFieldType`), shop type, refresh cycle, refresh time type — also switch language. When unchecked, they always show the original English enum identifiers from code. |
+UI language switching (中 / English / 日本語), the "Enum Values" translation toggle, and the three optional feature-macro toggles are all configured in the **Ale Toolkit Welcome Window** (`Tools > Ale Toolkit > Welcome`) — click the "Open Ale Toolkit Settings" button in this window to jump there. The language choice is persisted via `EditorPrefs` and kept across sessions; switching it refreshes the `Inventory Editor` (all six subsystem panels and config drawers). This affects **editor UI text only**, and is unrelated to runtime content localization (`ATK_LOCALIZATION` / Unity Localization). See the [Ale Toolkit docs](../com.ale.toolkit).
 
 ### Quick Actions
 
@@ -129,8 +123,8 @@ Centered beneath the header subtitle are three buttons — **中文 / English / 
 |------|------|
 | Create New Data File | Creates a new `InventoryDatabase` asset (deep-copied from a "Data Template" if one is configured below) |
 | Open Inventory Editor | Opens the main configuration editor window |
-| Open Addressable Tool Window | (When `IS_ADDRESSABLE` is enabled) Batch conversion between Object ↔ AssetReference(GUID) asset references |
-| Open Localization Tool Window | (When `IS_LOCALIZATION` is enabled) Generate / link localization tables, and one-click generate keys for all Text fields |
+| Open Addressable Tool Window | (When `ATK_ADDRESSABLE` is enabled) Batch conversion between Object ↔ AssetReference(GUID) asset references |
+| Open Localization Tool Window | (When `ATK_LOCALIZATION` is enabled) Generate / link localization tables, and one-click generate keys for all Text fields |
 | View Documentation | Opens this README with the system default application |
 
 Expand the "**Test Tools – Prefab Generation**" foldout:
@@ -142,19 +136,14 @@ Expand the "**Test Tools – Prefab Generation**" foldout:
 
 Once you designate an `InventoryDatabase` as a template, "Create New Data File" deep-copies all its data (enums / tags / templates / items…); leaving it empty creates default empty data. The panel shows the number of enum types / function tags / item templates / items the template contains.
 
-### Plugin Support (compile-time macros)
+### Wizard Fonts (when `ATK_TMP` is enabled)
 
-Toggle three optional macros individually, with real-time detection of whether the corresponding package is installed (checking one whose package is missing pops up a confirmation dialog):
+Font settings used by the "Test Tools – Prefab Generation" wizard (inventory-domain config, hence kept in this window):
 
-| Toggle | Macro | Effect |
-|------|----|------|
-| TextMeshPro | `IS_TMP` | When on, UI text components use `TMP_Text`; otherwise `UnityEngine.UI.Text` |
-| Unity Localization | `IS_LOCALIZATION` | When on, `Text` fields can carry a localization reference (table + entry); combined with the "Localization Tool Window" for one-click table creation / key generation, enabling multi-language support |
-| Unity Addressable | `IS_ADDRESSABLE` | When on, runtime assets are loaded asynchronously on demand via Addressables, with reference-counted auto-unloading; referenced assets are registered automatically on export |
+- **Default font**: applied to all TMP text nodes when the wizard generates prefabs (leave empty to use the TMP default font).
+- **Localization font** (when `ATK_LOCALIZATION` is also enabled): assigned to `LocalizedFontEvent` when the wizard generates prefabs.
 
-- Under the **TextMeshPro** toggle you can set a "default font": applied to all TMP text nodes when the wizard generates prefabs (leave empty to use the TMP default font).
-- Under the **Unity Localization** toggle you can set a "localization font": assigned to `LocalizedFontEvent` when the wizard generates prefabs (requires `IS_TMP` also enabled).
-- After toggling a macro, wait for Unity to recompile for it to take effect.
+> The three optional feature-macro toggles themselves have moved to the Ale Toolkit Welcome Window — see "Editor Language & Macros" above. After toggling a macro, wait for Unity to recompile for it to take effect.
 
 ### Show on Startup
 
@@ -168,11 +157,11 @@ The "Show on Startup" toggle at the bottom of the window controls whether this w
 
 - **`com.ale.toolkit` (required, install first)** — the shared foundation this plugin builds on (attribute system, virtual-scroll lists, the three-column editor framework, trilingual editor UI, sorting engine, tag system, etc.).
 - Unity 2022.3+ (the minimum declared in `package.json`; this plugin is developed and maintained on `Unity 6000.3`)
-- TextMeshPro (optional, `IS_TMP` macro)
-- Unity Localization (optional, `IS_LOCALIZATION` macro)
-- Unity Addressables (optional, `IS_ADDRESSABLE` macro)
+- TextMeshPro (optional, `ATK_TMP` macro)
+- Unity Localization (optional, `ATK_LOCALIZATION` macro)
+- Unity Addressables (optional, `ATK_ADDRESSABLE` macro)
 
-> All three macros can be toggled with one click in the "Plugin Support" area of the **Welcome Window** (`Tools > Inventory System > Welcome Window`), which also detects whether the corresponding package is installed.
+> All three macros are toggled with one click in the "Plugin Support (Defines)" area of the **Ale Toolkit Welcome Window** (`Tools > Ale Toolkit > Welcome`), which also detects whether the corresponding package is installed; the inventory Welcome Window provides a jump button.
 
 ---
 
@@ -189,7 +178,7 @@ Right-click in the Project panel > Create > Inventory System > Inventory Databas
 ### 2. Open the Editor
 
 - Select the `.asset` and click "Edit in Inventory Editor" at the top of the Inspector; or
-- Menu `Tools > Inventory System > Inventory Editor`.
+- Menu `Tools > Ale Toolkit > Inventory System > Inventory Editor`.
 
 The editor is top system tabs + a three-column layout (left: definitions / middle: entry list / right: detail Inspector). The middle entry list uses a "column header + value" two-row layout, supporting template filtering / search, drag-to-reorder, and ↑ / ↓ keyboard navigation to switch selection after selecting (auto-scrolling when out of view).
 

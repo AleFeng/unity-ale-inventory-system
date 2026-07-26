@@ -30,7 +30,7 @@
 # 打开编辑器
 
 1. **创建数据文件**：`Project 面板右键 > Create > Inventory System > Inventory Database`（或欢迎窗口「创建新数据文件」）。
-2. **打开编辑器**：选中 `.asset` 在 Inspector 点「在 Inventory Editor 中编辑」，或菜单 `Tools > Inventory System > Inventory Editor`。
+2. **打开编辑器**：选中 `.asset` 在 Inspector 点「在 Inventory Editor 中编辑」，或菜单 `Tools > Ale Toolkit > Inventory System > Inventory Editor`。
 3. 顶部点击「**道具系统**」页签。
 
 编辑器为三列布局：**左列**（定义配置）| **中列**（道具列表）| **右列**（道具 Inspector）。

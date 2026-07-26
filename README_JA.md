@@ -76,10 +76,10 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
 | 統一された仮想スクロール UI | グリッドも順序リストも仮想スクロール（オブジェクトプール + 可視セルのみ描画）。差分による増分リフレッシュ、生成レート制限（`spawnPerSecond`）、セルごとのフェードインで大量のエントリでも快適です。 |
 | ランタイムマネージャー | `InventoryDataManager`（クエリ）に加え、倉庫 / ショップ / クラフト / 装備 / スキルそれぞれの専用ランタイムマネージャー。装備・スキルの状態やショップの進捗はいずれもセーブ可能です。 |
 | 一方向エクスポート | `InventoryDtoMapper` → JSON / バイナリ。**データベースの設定データを全て網羅**（6 サブシステムの 20 リスト）。オブジェクト参照は AssetGUID として保持され、Addressables 経由で非同期読み込みも可能です。 |
-| 3 つのオプションマクロ | TextMeshPro（`IS_TMP`）/ Unity Localization（`IS_LOCALIZATION`）/ Unity Addressables（`IS_ADDRESSABLE`）。いずれもウェルカムウィンドウからワンクリックで切り替え可能（対応パッケージの導入有無も検出）。パッケージ本体はハード依存ゼロ。 |
+| 3 つのオプションマクロ | TextMeshPro（`ATK_TMP`）/ Unity Localization（`ATK_LOCALIZATION`）/ Unity Addressables（`ATK_ADDRESSABLE`）。いずれも **Ale Toolkit ウェルカムウィンドウ**からワンクリックで切り替え可能（プロジェクト単位のグローバル設定で toolkit に集約。対応パッケージの導入有無も検出）。パッケージ本体はハード依存ゼロ。 |
 | ローカライズツール | `InventoryDatabase` 向けの多言語テーブルをワンクリックで生成 / 関連付けし、データベース内のすべての `Text` フィールドを走査してキーを自動生成、エントリへ書き戻します（プログレスバー + ログ + キャンセル対応）。 |
-| ウェルカムウィンドウのウィザード | データ作成、エディタ / ツールウィンドウの起動、マクロ切り替え、そして「完全に動作するサンプルをワンクリック生成」（データベース + 全 UI プレハブ + マネージャー）を一箇所にまとめた入口です。 |
-| エディタ UI の 3 言語対応 | ウェルカムウィンドウから **中文 / English / 日本語** をワンクリックで切り替え。ウェルカムウィンドウと `Inventory Editor` 設定エディタ（6 サブシステムの全パネル）が一括で切り替わります。選択は永続化され、ランタイムのコンテンツローカライズとは無関係です。 |
+| ウェルカムウィンドウのウィザード | データ作成、エディタ / ツールウィンドウの起動、サンプルプレハブ生成、そして「完全に動作するサンプルをワンクリック生成」（データベース + 全 UI プレハブ + マネージャー）を一箇所にまとめた入口です。エディタ言語やマクロなどのグローバル設定は Ale Toolkit ウェルカムウィンドウへ移動します。 |
+| エディタ UI の 3 言語対応 | **Ale Toolkit ウェルカムウィンドウ**から **中文 / English / 日本語** をワンクリックで切り替え。`Inventory Editor` 設定エディタ（6 サブシステムの全パネル）が一括で切り替わります。選択は永続化され、ランタイムのコンテンツローカライズとは無関係です。 |
 
 ### 6 つのサブシステム
 | サブシステム | 設定する内容 | ランタイムマネージャー |
@@ -96,11 +96,11 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
 ## 💻 動作環境
 - `Unity 2022.3` 以降（`package.json` が宣言する最低バージョン。本リポジトリは `Unity 6000.3` で開発・保守しています）。
 - コアプラグインは純粋な C# で、**ハード依存を一切持ち込みません**。TextMeshPro / Unity Localization / Unity Addressables はすべてコンパイルマクロで**任意**に有効化できます（[オプションのマクロ](#-オプションのマクロ)を参照）。
-- `IS_TMP` が無効の場合、UI のテキストコンポーネントは `UnityEngine.UI.Text` にフォールバックし、プラグインは通常どおり動作します。
+- `ATK_TMP` が無効の場合、UI のテキストコンポーネントは `UnityEngine.UI.Text` にフォールバックし、プラグインは通常どおり動作します。
 
 ## 📦 インストール
 
-> ⚠️ **本プラグインは共通基盤パッケージ [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) に依存します。先に toolkit を、その後に本プラグインをインストールしてください。** 1.8.0 以降これに依存します。Unity の Package Manager は `package.json` の `dependencies` での git URL を自動取得できないため、**順序を逆にしないでください**。下と同じ方法でまず toolkit をインストール：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.1.0`。未インストールや順序が逆だと `Ale.Toolkit.* が見つかりません` といったコンパイルエラーになります。toolkit を追加インストールして再コンパイルを待つだけでよく、本プラグインの再インストールは不要です。
+> ⚠️ **本プラグインは共通基盤パッケージ [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) に依存します。先に toolkit を、その後に本プラグインをインストールしてください。** 1.8.0 以降これに依存します。Unity の Package Manager は `package.json` の `dependencies` での git URL を自動取得できないため、**順序を逆にしないでください**。下と同じ方法でまず toolkit をインストール：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.2.0`。未インストールや順序が逆だと `Ale.Toolkit.* が見つかりません` といったコンパイルエラーになります。toolkit を追加インストールして再コンパイルを待つだけでよく、本プラグインの再インストールは不要です。
 
 ### UPM を使う（推奨）
 `Window > Package Manager` → 左上の `+` → `Install package from git URL...` → 次を貼り付け：
@@ -112,7 +112,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 これで `main` の最新コミットが入ります。**バージョンを固定するには、URL の末尾に `#<tag>` を付けます**（必ず `?path=` の後ろに）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.9.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.10.0
 ```
 
 利用可能なタグは [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) を参照してください。
@@ -135,7 +135,7 @@ Project パネルで右クリック > Create > Inventory System > Inventory Data
 （またはウェルカムウィンドウの「新規データファイルを作成」から。先にウェルカムウィンドウで「データテンプレート」を設定しておくと、作成時にそこから全データをディープコピーできます。）
 
 ### 2. エディタを開いて設定
-- `.asset` を選択し、Inspector 上部の「Inventory Editor で編集」をクリック。または、メニューの `Tools > Inventory System > Inventory Editor`。
+- `.asset` を選択し、Inspector 上部の「Inventory Editor で編集」をクリック。または、メニューの `Tools > Ale Toolkit > Inventory System > Inventory Editor`。
 - エディタは**上部のシステムタブ + 3 カラムレイアウト**（左：定義設定 / 中：エントリ一覧 / 右：詳細 Inspector）です。「アイテム / 倉庫 / ショップ / クラフト / 装備 / スキル」の各タブを順に設定します。中央のエントリ一覧はテンプレートフィルタ、検索、ドラッグ並べ替え、↑ / ↓ キーボード操作に対応します。
 
 ### 3. エクスポート（任意）
@@ -168,26 +168,26 @@ InventoryRuntimeManager.Instance.ResetAll();
 **ウェルカムウィンドウ**で「テストツール-プレハブ生成 → すべて生成」を展開すると、完全に動作するサンプルをワンクリックで生成できます（データベース + 全 UI プレハブ + バックパック / ショップ / クラフト / 装備 / スキル画面 + マネージャー）。
 
 ## 🖥️ ウェルカムウィンドウ
-プラグインの統一入口パネルで、「データ作成 / エディタ起動 / ドキュメント表示 / サンプル生成 / マクロ切り替え」といったよく使う操作を集約しています。Unity セッションで最初の一度は自動的に表示され、いつでも手動で開けます：
+プラグインの統一入口パネルで、「データ作成 / エディタ起動 / ドキュメント表示 / サンプル生成」といったインベントリ領域のよく使う操作を集約しています。Unity セッションで最初の一度は自動的に表示され、いつでも手動で開けます：
 
 ```
-Tools > Inventory System > Welcome Window
+Tools > Ale Toolkit > Inventory System > Welcome Window
 ```
 
 ![スクリーンショット](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
 
-ヘッダーのサブタイトル下に「**中文 / English / 日本語**」の 3 ボタンが中央揃えで並び、**ウェルカムウィンドウと `Inventory Editor` 設定エディタ**の UI 言語を切り替えられます（選択は `EditorPrefs` で永続化されセッションをまたいで保持。エディタ UI の文言のみに影響し、ランタイムのコンテンツローカライズとは無関係です）。
+> **エディタ UI 言語、列挙翻訳、オプション機能マクロはいずれもプロジェクト単位のグローバル設定で、1.10.0 以降は Ale Toolkit ウェルカムウィンドウ（`Tools > Ale Toolkit > Welcome`）に集約されています。** 本ウィンドウ上部の「Ale Toolkit 設定を開く」ボタンから移動でき、言語を切り替えると `Inventory Editor`（6 サブシステムの全パネル）も更新されます。エディタ UI の文言のみに影響し、ランタイムのコンテンツローカライズとは無関係です。
 
-ヘッダーの下は上から順に 5 つの領域に分かれています：**多言語設定**（「列挙値」チェック：列挙ドロップダウンの表示名も言語に合わせて切り替えるか。既定は未チェック）、**クイック操作**（データ作成 / 各エディタ・ツールウィンドウの起動 / サンプルプレハブのワンクリック生成）、**データテンプレート**（新規作成のひな型となる `InventoryDatabase` を指定）、**プラグインサポート**（下記 3 つのオプションマクロをワンクリックで切り替え）、**起動時に自動表示**（セッションごとに自動で開くかどうか）。
+ヘッダーの下は上から順に：**「Ale Toolkit 設定を開く」への移動**、**クイック操作**（データ作成 / 各エディタ・ツールウィンドウの起動 / サンプルプレハブのワンクリック生成）、**データテンプレート**（新規作成のひな型となる `InventoryDatabase` を指定）、**ウィザードフォント**（`ATK_TMP` 有効時、ウィザードの Prefab 生成用）、**起動時に自動表示**。
 
 ## 🧩 オプションのマクロ
-3 つのマクロはいずれも**ウェルカムウィンドウ**の「プラグインサポート」領域からワンクリックで切り替えでき、対応パッケージの導入有無もリアルタイムに検出します（未導入のマクロにチェックを入れると確認ダイアログが表示されます）：
+3 つのマクロはいずれも **Ale Toolkit ウェルカムウィンドウ**（`Tools > Ale Toolkit > Welcome`）の「プラグインサポート（マクロ）」領域からワンクリックで切り替えでき、対応パッケージの導入有無もリアルタイムに検出します（未導入のマクロにチェックを入れると確認ダイアログが表示されます）。インベントリのウェルカムウィンドウには移動ボタンがあります：
 
 | 切り替え | マクロ | 効果 |
 | --- | --- | --- |
-| TextMeshPro | `IS_TMP` | 有効にすると UI テキストコンポーネントが `TMP_Text` を使用し、無効時は `UnityEngine.UI.Text` を使用。「デフォルトフォント」を設定してウィザード生成プレハブに適用できます。 |
-| Unity Localization | `IS_LOCALIZATION` | 有効にすると `Text` フィールドにローカライズ参照（テーブル + エントリ）を持たせられます。「ローカライズツールウィンドウ」と組み合わせてテーブル作成 / キー生成をワンクリックで行い、多言語に対応します。 |
-| Unity Addressables | `IS_ADDRESSABLE` | 有効にするとランタイムアセットが Addressables 経由でオンデマンドに非同期読み込みされ、参照カウントで自動アンロード。エクスポート時には参照されたアセットが自動で登録されます。 |
+| TextMeshPro | `ATK_TMP` | 有効にすると UI テキストコンポーネントが `TMP_Text` を使用し、無効時は `UnityEngine.UI.Text` を使用。「デフォルトフォント」を設定してウィザード生成プレハブに適用できます。 |
+| Unity Localization | `ATK_LOCALIZATION` | 有効にすると `Text` フィールドにローカライズ参照（テーブル + エントリ）を持たせられます。「ローカライズツールウィンドウ」と組み合わせてテーブル作成 / キー生成をワンクリックで行い、多言語に対応します。 |
+| Unity Addressables | `ATK_ADDRESSABLE` | 有効にするとランタイムアセットが Addressables 経由でオンデマンドに非同期読み込みされ、参照カウントで自動アンロード。エクスポート時には参照されたアセットが自動で登録されます。 |
 
 > マクロを切り替えたら、反映のために Unity の再コンパイルを待ってください。
 

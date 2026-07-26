@@ -76,10 +76,10 @@ Almost every game needs an "items + inventory + shop + crafting + equipment + sk
 | Unified virtual-scroll UI | Both grid and ordered lists are virtual-scrolling (object pooling + only visible cells rendered); incremental diff refresh, spawn rate limiting (`spawnPerSecond`), and per-cell fade-in keep huge lists smooth. |
 | Runtime managers | `InventoryDataManager` (queries) plus dedicated runtime managers for Warehouse / Shop / Crafting / Equipment / Skill — equipment & skill state and shop progress can all be saved. |
 | One-way export | `InventoryDtoMapper` → JSON / binary, **covering every piece of database config** (all 20 lists across the six subsystems); object references are carried as AssetGUIDs and can be loaded asynchronously via Addressables. |
-| Three optional macros | TextMeshPro (`IS_TMP`) / Unity Localization (`IS_LOCALIZATION`) / Unity Addressables (`IS_ADDRESSABLE`), each toggled from the Welcome Window (which also detects whether the corresponding package is installed); the package itself has zero hard dependencies. |
+| Three optional macros | TextMeshPro (`ATK_TMP`) / Unity Localization (`ATK_LOCALIZATION`) / Unity Addressables (`ATK_ADDRESSABLE`), toggled in the **Ale Toolkit Welcome Window** (project-level global settings, sunk to toolkit; it also detects whether the corresponding package is installed); the package itself has zero hard dependencies. |
 | Localization tooling | One click to generate / link localization tables for an `InventoryDatabase`, then walk every `Text` field in the database to auto-generate keys and write them back to entries (progress bar + log + cancel). |
-| Welcome Window wizard | A single entry point: create data, open the editor / tool windows, toggle macros, and "generate a complete runnable sample in one click" (database + all UI prefabs + managers). |
-| Trilingual editor UI | Switch between **中文 / English / 日本語** from the Welcome Window; both the Welcome Window and the `Inventory Editor` configuration window (every panel across all six subsystems) switch together. The choice is persisted, and it is unrelated to runtime content localization. |
+| Welcome Window wizard | A single entry point: create data, open the editor / tool windows, generate sample prefabs, and "generate a complete runnable sample in one click" (database + all UI prefabs + managers); global settings such as editor language and feature macros jump to the Ale Toolkit Welcome Window. |
+| Trilingual editor UI | Switch between **中文 / English / 日本語** in the **Ale Toolkit Welcome Window**; the `Inventory Editor` configuration window (every panel across all six subsystems) switches together. The choice is persisted, and it is unrelated to runtime content localization. |
 
 ### The Six Subsystems
 | Subsystem | What you configure | Runtime manager |
@@ -96,11 +96,11 @@ Almost every game needs an "items + inventory + shop + crafting + equipment + sk
 ## 💻 Requirements
 - `Unity 2022.3` or newer (the minimum declared in `package.json`; this repository is developed and maintained on `Unity 6000.3`).
 - The core plugin is pure C# and **introduces no hard dependencies** — TextMeshPro / Unity Localization / Unity Addressables are all **optional** via compile-time macros (see [Optional Feature Macros](#-optional-feature-macros)).
-- With `IS_TMP` disabled, UI text components fall back to `UnityEngine.UI.Text` and the plugin works as usual.
+- With `ATK_TMP` disabled, UI text components fall back to `UnityEngine.UI.Text` and the plugin works as usual.
 
 ## 📦 Installation
 
-> ⚠️ **This plugin depends on the shared foundation package [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) — install it first, then this plugin.** It has depended on it since 1.8.0; Unity's Package Manager cannot auto-pull git-URL `dependencies`, so **the order must not be reversed**. Install toolkit the same way as below first: `https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.1.0`. If it is missing or the order is reversed you will get `Ale.Toolkit.* not found` compile errors — just install toolkit and wait for the recompile, no need to reinstall this plugin.
+> ⚠️ **This plugin depends on the shared foundation package [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) — install it first, then this plugin.** It has depended on it since 1.8.0; Unity's Package Manager cannot auto-pull git-URL `dependencies`, so **the order must not be reversed**. Install toolkit the same way as below first: `https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.2.0`. If it is missing or the order is reversed you will get `Ale.Toolkit.* not found` compile errors — just install toolkit and wait for the recompile, no need to reinstall this plugin.
 
 ### Install via UPM (Recommended)
 `Window > Package Manager` → the `+` in the top-left → `Install package from git URL...` → paste:
@@ -112,7 +112,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 This installs the latest commit on `main`. **To pin a version, append `#<tag>` to the very end of the URL** (it must come after `?path=`):
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.9.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.10.0
 ```
 
 See [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) for available tags.
@@ -135,7 +135,7 @@ Right-click in the Project panel > Create > Inventory System > Inventory Databas
 (Or click "Create New Data File" in the Welcome Window; you can set a "Data Template" there first to deep-copy all data from it when creating.)
 
 ### 2. Open the Editor and Configure
-- Select the `.asset` and click "Edit in Inventory Editor" at the top of the Inspector; or use the menu `Tools > Inventory System > Inventory Editor`.
+- Select the `.asset` and click "Edit in Inventory Editor" at the top of the Inspector; or use the menu `Tools > Ale Toolkit > Inventory System > Inventory Editor`.
 - The editor uses **top system tabs + a three-column layout** (left: definitions / middle: entry list / right: detail Inspector). Configure each of the "Item / Warehouse / Shop / Crafting / Equipment / Skill" tabs in turn. The middle entry list supports template filtering, search, drag-to-reorder, and ↑ / ↓ keyboard navigation.
 
 ### 3. Export (Optional)
@@ -168,26 +168,26 @@ InventoryRuntimeManager.Instance.ResetAll();
 In the **Welcome Window**, expand "Test Tools – Prefab Generation → Generate All" to produce a complete runnable sample in one click (database + all UI prefabs + inventory / shop / crafting / equipment / skill screens + managers).
 
 ## 🖥️ Welcome Window
-The plugin's unified entry panel, gathering common actions such as "create data / open editors / view docs / generate samples / toggle feature macros". It pops up automatically the first time each Unity session, and can be opened manually at any time:
+The plugin's unified entry panel, gathering common inventory-domain actions such as "create data / open editors / view docs / generate samples". It pops up automatically the first time each Unity session, and can be opened manually at any time:
 
 ```
-Tools > Inventory System > Welcome Window
+Tools > Ale Toolkit > Inventory System > Welcome Window
 ```
 
 ![screenshot](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
 
-Centered beneath the header subtitle are three buttons — **中文 / English / 日本語** — which switch the UI language of **the Welcome Window and the `Inventory Editor` configuration window** (persisted via `EditorPrefs` and kept across sessions; it affects editor UI text only and is unrelated to runtime content localization).
+> **Editor UI language, enum translation, and the optional feature macros are all project-level global settings; since 1.10.0 they live in the Ale Toolkit Welcome Window (`Tools > Ale Toolkit > Welcome`).** This window offers an "Open Ale Toolkit Settings" button at the top for quick access; switching the language refreshes the `Inventory Editor` (all six subsystem panels). It affects editor UI text only and is unrelated to runtime content localization.
 
-Below the header, top to bottom, the window is divided into five areas: **Language Settings** (an "Enum Values" checkbox — whether enum dropdown display names also switch language; unchecked by default), **Quick Actions** (create data / open the various editor and tool windows / generate sample prefabs in one click), **Data Template** (pick an `InventoryDatabase` as the blueprint for new files), **Plugin Support** (one-click toggles for the three optional macros, below), and **Show on Startup** (whether to auto-open the window each session).
+Below the header, top to bottom: the **"Open Ale Toolkit Settings" jump**, **Quick Actions** (create data / open the various editor and tool windows / generate sample prefabs in one click), **Data Template** (pick an `InventoryDatabase` as the blueprint for new files), **Wizard Fonts** (when `ATK_TMP` is enabled; for wizard-generated prefabs), and **Show on Startup**.
 
 ## 🧩 Optional Feature Macros
-All three macros can be toggled from the "Plugin Support" area of the **Welcome Window**, which also detects in real time whether the corresponding package is installed (checking a macro whose package is missing pops up a confirmation dialog):
+All three macros are toggled in the "Plugin Support (Defines)" area of the **Ale Toolkit Welcome Window** (`Tools > Ale Toolkit > Welcome`), which also detects in real time whether the corresponding package is installed (checking a macro whose package is missing pops up a confirmation dialog); the inventory Welcome Window provides a jump button:
 
 | Toggle | Macro | Effect |
 | --- | --- | --- |
-| TextMeshPro | `IS_TMP` | When on, UI text components use `TMP_Text`; otherwise `UnityEngine.UI.Text`. A "default font" can be configured and applied to wizard-generated prefabs. |
-| Unity Localization | `IS_LOCALIZATION` | When on, `Text` fields can carry a localization reference (table + entry); combined with the "Localization Tool Window" for one-click table creation / key generation, enabling multi-language support. |
-| Unity Addressables | `IS_ADDRESSABLE` | When on, runtime assets are loaded asynchronously on demand via Addressables with reference-counted auto-unloading; referenced assets are registered automatically on export. |
+| TextMeshPro | `ATK_TMP` | When on, UI text components use `TMP_Text`; otherwise `UnityEngine.UI.Text`. A "default font" can be configured and applied to wizard-generated prefabs. |
+| Unity Localization | `ATK_LOCALIZATION` | When on, `Text` fields can carry a localization reference (table + entry); combined with the "Localization Tool Window" for one-click table creation / key generation, enabling multi-language support. |
+| Unity Addressables | `ATK_ADDRESSABLE` | When on, runtime assets are loaded asynchronously on demand via Addressables with reference-counted auto-unloading; referenced assets are registered automatically on export. |
 
 > After toggling a macro, wait for Unity to recompile for it to take effect.
 

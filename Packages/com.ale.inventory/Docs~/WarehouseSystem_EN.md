@@ -140,7 +140,7 @@ The "Test Features" area of `InventoryRuntimeManager` can automatically fill ite
 - **`testItems`**: a list specifying "item ID + count" entry by entry.
 - **`addAllConfiguredItems` + `addAllItemCount`**: additionally tops up the test warehouse with every item configured across all databases (`databases`), each at the `addAllItemCount` quantity; items already configured in `testItems` are skipped (their specified quantity is kept, not added again), and the same item ID across multiple databases is added only once. This is also gated by the master toggle `autoPopulateOnStart`.
 
-> This area can be auto-filled with example values by the Demo wizard (`Tools > Inventory System`).
+> This area can be auto-filled with example values by the Demo wizard (`Tools > Ale Toolkit > Inventory System`).
 
 # Runtime API
 

@@ -102,25 +102,19 @@
 
 ![alt text](Docs~/Images/image-1.png)
 
-插件的统一入口面板，集中了「创建数据 / 打开编辑器 / 查看文档 / 生成示例 / 插件宏开关」等常用操作。每次 Unity 会话首次会自动弹出一次，也可随时手动打开：
+插件的统一入口面板，集中了「创建数据 / 打开编辑器 / 查看文档 / 生成示例」等库存领域操作。每次 Unity 会话首次会自动弹出一次，也可随时手动打开：
 
 ```
-Tools > Inventory System > Welcome Window
+Tools > Ale Toolkit > Inventory System > Welcome Window
 ```
 
-窗口自上而下分为：**页眉**（标题 / 版本 / 语言切换按钮）+ 五个区域。
+> **界面语言、枚举翻译、可选依赖宏（`ATK_TMP` / `ATK_LOCALIZATION` / `ATK_ADDRESSABLE`）均为项目级全局设定，自 1.10.0 起已下沉到 [Ale Toolkit 欢迎窗口](../com.ale.toolkit)（`Tools > Ale Toolkit > Welcome`）统一配置。** 本窗口顶部提供「打开 Ale Toolkit 设置（语言 / 插件宏）」按钮一键跳转。
 
-### 多语言（界面语言切换）
+窗口自上而下：**页眉**（标题 / 版本）+「打开 Ale Toolkit 设置」跳转按钮 + 库存领域区域。
 
-页眉副标题下方居中排列「**中文 / English / 日本語**」三个按钮，当前语言高亮。点击即可切换 **本欢迎窗口与 `Inventory Editor` 配置编辑器**（含六大系统页签的全部面板与配置绘制器）的界面语言；选择经 `EditorPrefs` 持久化，跨 Unity 会话保留，两个窗口同时打开时会一起刷新。
+### 界面语言与插件宏（全局设定 → Ale Toolkit）
 
-> 该功能仅影响**编辑器界面文案**，与运行时内容本地化（`IS_LOCALIZATION` / Unity Localization）互不相关。
-
-### 多语言设定
-
-| 选项 | 默认 | 说明 |
-|------|------|------|
-| 枚举值 | 不勾选 | 勾选后，属性字段类型（`EFieldType`）、商店类型、刷新周期、刷新时间类型等**枚举下拉的显示名**也随语言切换；不勾选则一律显示代码中的英文枚举原名。 |
+界面语言（中 / English / 日本語）切换、「枚举值」翻译开关、以及三个可选依赖宏开关，均在 **Ale Toolkit 欢迎窗口**（`Tools > Ale Toolkit > Welcome`）中配置——点本窗口的「打开 Ale Toolkit 设置」按钮即可跳转。语言选择经 `EditorPrefs` 持久化、跨会话保留，切换后 `Inventory Editor`（含六大系统全部面板与配置绘制器）随之刷新；该设定仅影响**编辑器界面文案**，与运行时内容本地化（`ATK_LOCALIZATION` / Unity Localization）无关。详见 [Ale Toolkit 文档](../com.ale.toolkit)。
 
 ### 快捷操作
 
@@ -128,8 +122,8 @@ Tools > Inventory System > Welcome Window
 |------|------|
 | 创建新数据文件 | 新建 `InventoryDatabase` 资产（若配置了下方「数据模板」则从模板深拷贝） |
 | 打开 Inventory Editor | 打开配置编辑器主窗口 |
-| 打开 Addressable工具窗口 | （启用 `IS_ADDRESSABLE` 时）资源引用 Object ↔ AssetReference(GUID) 批量互转 |
-| 打开 本地化工具窗口 | （启用 `IS_LOCALIZATION` 时）生成 / 关联多语言表、为所有 Text 字段一键生成中文 Key |
+| 打开 Addressable工具窗口 | （启用 `ATK_ADDRESSABLE` 时）资源引用 Object ↔ AssetReference(GUID) 批量互转 |
+| 打开 本地化工具窗口 | （启用 `ATK_LOCALIZATION` 时）生成 / 关联多语言表、为所有 Text 字段一键生成中文 Key |
 | 查看文档 | 用系统默认程序打开本 README |
 
 展开「**测试工具-预制体生成**」折叠栏：
@@ -141,19 +135,14 @@ Tools > Inventory System > Welcome Window
 
 指定一个 `InventoryDatabase` 作为模板后，「创建新数据文件」会从该模板深拷贝全部数据（枚举 / 标签 / 模板 / 道具…）；留空则新建为默认空数据。面板会显示模板包含的枚举类型 / 功能标签 / 道具模板 / 道具数量。
 
-### 插件支持（编译宏开关）
+### 向导字体（启用 `ATK_TMP` 时）
 
-逐项开关三个可选宏，并实时检测对应 Package 是否已安装（未安装时勾选会弹确认对话框）：
+供「测试工具-预制体生成」向导使用的字体设置（属库存领域配置，故保留在本窗口）：
 
-| 开关 | 宏 | 作用 |
-|------|----|------|
-| TextMeshPro | `IS_TMP` | 开启后 UI 文本组件使用 `TMP_Text`，否则用 `UnityEngine.UI.Text` |
-| Unity Localization | `IS_LOCALIZATION` | 开启后 `Text` 字段可挂本地化引用（表 + 条目）；配合「本地化工具窗口」一键建表 / 生成中文 Key，支持多语言 |
-| Unity Addressable | `IS_ADDRESSABLE` | 开启后运行时资源经 Addressable 按需异步加载、引用计数自动卸载；导出时自动登记被引用资源 |
+- **默认字体**：向导生成 Prefab 时应用于所有 TMP 文本节点（留空用 TMP 默认字体）。
+- **本地化字体**（同时启用 `ATK_LOCALIZATION` 时）：向导生成 Prefab 时赋给 `LocalizedFontEvent`。
 
-- **TextMeshPro** 开关下可设「默认字体」：向导生成 Prefab 时应用于所有 TMP 文本节点（留空用 TMP 默认字体）。
-- **Unity Localization** 开关下可设「本地化字体」：向导生成 Prefab 时赋给 `LocalizedFontEvent`（需同时启用 `IS_TMP`）。
-- 切换宏后需等待 Unity 重新编译生效。
+> 三个可选依赖宏（`ATK_TMP` / `ATK_LOCALIZATION` / `ATK_ADDRESSABLE`）的开关本身已下沉到 Ale Toolkit 欢迎窗口，见上方「界面语言与插件宏」。切换宏后需等待 Unity 重新编译生效。
 
 ### 启动时自动显示
 
@@ -167,11 +156,11 @@ Tools > Inventory System > Welcome Window
 
 - **`com.ale.toolkit`（必需，先安装）** —— 本插件的通用底层（属性系统、虚拟滚动列表、编辑器三列框架、编辑器界面三语、排序引擎、标签系统等）。
 - Unity 2022.3+（`package.json` 声明的最低版本；本插件基于 `Unity 6000.3` 开发与维护）
-- TextMeshPro（可选，`IS_TMP` 宏）
-- Unity Localization（可选，`IS_LOCALIZATION` 宏）
-- Unity Addressables（可选，`IS_ADDRESSABLE` 宏）
+- TextMeshPro（可选，`ATK_TMP` 宏）
+- Unity Localization（可选，`ATK_LOCALIZATION` 宏）
+- Unity Addressables（可选，`ATK_ADDRESSABLE` 宏）
 
-> 三个宏均可在 **欢迎窗口**（`Tools > Inventory System > Welcome Window`）的「插件支持」区一键开关，并检测对应包是否已安装。
+> 三个宏均在 **Ale Toolkit 欢迎窗口**（`Tools > Ale Toolkit > Welcome`）的「插件支持（编译宏）」区一键开关，并检测对应包是否已安装；库存欢迎窗口提供跳转按钮。
 
 ---
 
@@ -188,7 +177,7 @@ Project 面板右键 > Create > Inventory System > Inventory Database
 ### 2. 打开编辑器
 
 - 选中 `.asset`，在 Inspector 顶部点击「在 Inventory Editor 中编辑」；或
-- 菜单 `Tools > Inventory System > Inventory Editor`。
+- 菜单 `Tools > Ale Toolkit > Inventory System > Inventory Editor`。
 
 编辑器为顶部系统页签 + 三列布局（左：定义配置 / 中：条目列表 / 右：详细 Inspector）。中间条目列表统一为「列名表头 + 值」两行布局，支持模板过滤 / 搜索、拖拽重排，以及选中后用 ↑ / ↓ 方向键逐行切换选中（越界自动滚动）。
 
