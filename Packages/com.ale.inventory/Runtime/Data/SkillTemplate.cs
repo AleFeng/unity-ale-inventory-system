@@ -29,6 +29,12 @@ namespace Ale.Inventory.Runtime
         /// <summary>默认图标的 Addressable 授权 GUID（启用 ATK_ADDRESSABLE 且以 AssetReference 授权时用；否则空，走 <see cref="icon"/> 直接引用）。</summary>
         public string iconAddress;
 
+        /// <summary>
+        /// 默认图标（<see cref="EFieldType.Sprite"/> 对象类属性值）。纳入属性系统后由通用 Addressable 工具统一迁移；
+        /// 将逐步取代上面的 <see cref="icon"/> / <see cref="iconAddress"/>。
+        /// </summary>
+        public AttributeValue iconValue = new AttributeValue(EFieldType.Sprite);
+
         /// <summary>默认主分组标签 ID。</summary>
         public string primaryGroupTag;
 
@@ -60,6 +66,7 @@ namespace Ale.Inventory.Runtime
                 descriptionText    = descriptionText != null ? descriptionText.Clone() : new AttributeValue(EFieldType.Text),
                 icon               = icon,
                 iconAddress        = iconAddress,
+                iconValue          = iconValue != null ? iconValue.Clone() : new AttributeValue(EFieldType.Sprite),
                 primaryGroupTag    = primaryGroupTag,
                 secondaryGroupTags = new List<string>(secondaryGroupTags),
             };
