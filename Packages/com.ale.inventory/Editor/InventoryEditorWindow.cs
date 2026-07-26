@@ -143,7 +143,7 @@ namespace Ale.Inventory.Editor
         public InventoryDatabase Database => _db;
         public SerializedObject Serialized => _serialized;
         public IAssetRefResolver Resolver =>
-            EditorExportResolver.Resolve(InventoryEditorPrefs.IsAddressableEnabled());
+            EditorExportResolver.Resolve(ToolkitDefines.IsAddressableEnabled());
         public HashSet<string> DuplicateIdsOf(EInventoryEntityKind kind) => _duplicateIds[kind];
 
         public void RecordUndo(string actionName)

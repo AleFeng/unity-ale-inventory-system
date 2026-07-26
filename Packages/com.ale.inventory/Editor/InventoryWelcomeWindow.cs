@@ -39,24 +39,12 @@ namespace Ale.Inventory.Editor
 
         // 内部 UI 状态
         private InventoryDatabase _templateDb;
-        private bool _localizationEnabled;
-        private bool _localizationPackageInstalled;
-        private bool _addressableEnabled;
-        private bool _addressablePackageInstalled;
-        private bool _tmpEnabled;
-        private bool _tmpPackageInstalled;
         private bool _autoShow;
         private bool _initialized;
-
-        // 是否已提示过宏变更重编译
-        private bool _pendingRecompile;
 
         // Logo 纹理缓存（从磁盘加载，FilterMode.Point 保持像素锐利）
         private Texture2D _logoTexture;
         private bool _logoLoadAttempted;
-
-        // "插件支持" 区域的滚动位置
-        private Vector2 _macroScrollPos;
 
         // 测试工具：预制体生成列表 折叠状态（默认折叠）与滚动位置
         private bool    _genFoldout;
@@ -140,14 +128,8 @@ namespace Ale.Inventory.Editor
             if (_initialized) return;
             _initialized = true;
 
-            _templateDb                   = InventoryEditorPrefs.LoadTemplateDatabase();
-            _localizationEnabled          = InventoryEditorPrefs.IsLocalizationEnabled();
-            _localizationPackageInstalled = InventoryEditorPrefs.IsLocalizationPackageInstalled();
-            _addressableEnabled           = InventoryEditorPrefs.IsAddressableEnabled();
-            _addressablePackageInstalled  = InventoryEditorPrefs.IsAddressablePackageInstalled();
-            _tmpEnabled                   = InventoryEditorPrefs.IsTmpEnabled();
-            _tmpPackageInstalled          = InventoryEditorPrefs.IsTmpPackageInstalled();
-            _autoShow                     = EditorPrefs.GetBool(InventoryEditorPrefs.WelcomeAutoShow, true);
+            _templateDb = InventoryEditorPrefs.LoadTemplateDatabase();
+            _autoShow   = EditorPrefs.GetBool(InventoryEditorPrefs.WelcomeAutoShow, true);
 
 #if ATK_TMP
             _wizardDefaultTmpFont = InventoryEditorPrefs.LoadWizardDefaultTmpFont();
@@ -166,16 +148,19 @@ namespace Ale.Inventory.Editor
             DrawHeader();
             EditorGUILayout.Space(8);
 
-            DrawLanguageSettings();
+            DrawGlobalSettingsLink();
             DrawSeparator();
 
             DrawQuickActions();
             DrawSeparator();
 
             DrawTemplateSection();
-            DrawSeparator();
 
-            DrawMacroSection();
+#if ATK_TMP
+            DrawSeparator();
+            DrawWizardFontSection();
+#endif
+
             DrawSeparator();
 
             DrawFooter();
@@ -215,47 +200,18 @@ namespace Ale.Inventory.Editor
 
             EditorGUILayout.LabelField($"Inventory System  v{Version}", headerStyle);
             EditorGUILayout.LabelField(Tr("面向设计师的 道具与仓库 配置工具"), subStyle);
-            EditorGUILayout.Space(6);
-            DrawLanguageButtons();
             GUILayout.FlexibleSpace();
             EditorGUILayout.EndVertical();
         }
 
-        /// <summary>页眉底部居中的「中文 / English / 日本語」语言切换按钮，当前语言高亮。</summary>
-        private void DrawLanguageButtons()
+        /// <summary>
+        /// 跳转到 Ale Toolkit 欢迎 / 全局设置窗口。界面语言、枚举翻译、插件宏（TMP / Localization / Addressables）
+        /// 均为<b>项目级全局设定</b>，已统一下沉到 toolkit，在那里配置。
+        /// </summary>
+        private static void DrawGlobalSettingsLink()
         {
-            EditorGUILayout.BeginHorizontal();
-            GUILayout.FlexibleSpace();
-            DrawLangButton("中文",    EditorLanguage.ChineseSimplified);
-            DrawLangButton("English", EditorLanguage.English);
-            DrawLangButton("日本語",  EditorLanguage.Japanese);
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.EndHorizontal();
-        }
-
-        private static void DrawLangButton(string label, EditorLanguage lang)
-        {
-            bool active = Current == lang;
-            var prevBg = GUI.backgroundColor;
-            if (active) GUI.backgroundColor = new Color(0.35f, 0.55f, 0.95f);
-            // 当前语言用按下态 + 蓝色底色区分；点击非当前语言时切换。
-            if (GUILayout.Toggle(active, label, EditorStyles.miniButton,
-                    GUILayout.Width(72), GUILayout.Height(22)) && !active)
-                Current = lang;
-            GUI.backgroundColor = prevBg;
-        }
-
-        /// <summary>「多语言设定」区：枚举值是否随语言切换的勾选项（默认关，关时枚举显示代码原名）。</summary>
-        private void DrawLanguageSettings()
-        {
-            EditorGUILayout.LabelField(Tr("多语言设定"), EditorStyles.boldLabel);
-            EditorGUI.BeginChangeCheck();
-            bool newEnum = EditorGUILayout.ToggleLeft(
-                new GUIContent(Tr("枚举值"),
-                    Tr("勾选后，类型下拉等枚举值也随语言切换；不勾选则保持代码中的英文原名。")),
-                TranslateEnums);
-            if (EditorGUI.EndChangeCheck())
-                TranslateEnums = newEnum;
+            if (GUILayout.Button(Tr("打开 Ale Toolkit 设置（语言 / 插件宏）"), GUILayout.Height(24)))
+                ToolkitWelcomeWindow.Open();
         }
 
         private void DrawQuickActions()
@@ -356,61 +312,19 @@ namespace Ale.Inventory.Editor
             }
         }
 
-        private void DrawMacroSection()
+#if ATK_TMP
+        /// <summary>
+        /// 向导字体设置（仅 ATK_TMP 编译）。原挂在插件宏区域下方，宏开关下沉 toolkit 后独立成区。
+        /// 这些是 <see cref="InventoryDemoWizard"/> 生成测试 Prefab 时使用的字体，属库存领域配置，故保留在本窗口。
+        /// </summary>
+        private void DrawWizardFontSection()
         {
-            EditorGUILayout.LabelField(Tr("插件支持"), EditorStyles.boldLabel);
-
-            _macroScrollPos = EditorGUILayout.BeginScrollView(
-                _macroScrollPos, GUILayout.ExpandHeight(true));
-
-            DrawMacroToggle(
-                "TextMeshPro",
-                InventoryEditorPrefs.Define_IsTmp,
-                InventoryEditorPrefs.Package_Tmp,
-                ref _tmpEnabled,
-                _tmpPackageInstalled,
-                Tr("启用后，道具 UI 脚本（Uiw 开头）的文本组件使用 TMP_Text；" +
-                   "未启用时使用 UnityEngine.UI.Text。Unity 2021+ 已内置 TextMeshPro，通常可直接启用。"),
-                Tr("TMPro 命名空间未检测到。\n" +
-                   "请确认 TextMeshPro 已通过 Package Manager 安装。\n\n" +
-                   "确定要继续启用吗？"),
-                DrawTmpFontFoldout);
-
-            EditorGUILayout.Space(2);
-
-            DrawMacroToggle(
-                "Unity Localization",
-                InventoryEditorPrefs.Define_IsLocalization,
-                InventoryEditorPrefs.Package_Localization,
-                ref _localizationEnabled,
-                _localizationPackageInstalled,
-                Tr("启用后，属性字段类型可选择 LocalizedString，支持 Unity Localization 多语言配置。"),
-                Tr("com.unity.localization 包尚未安装。\n" +
-                   "启用宏后，LocalizedString 字段将出现在编辑器中，但运行时无法解析。\n\n" +
-                   "确定要继续启用吗？"),
-                DrawLocalizationFontFoldout);
-            
-            EditorGUILayout.Space(2);
-
-            DrawMacroToggle(
-                "Unity Addressable",
-                InventoryEditorPrefs.Define_IsAddressable,
-                InventoryEditorPrefs.Package_Addressables,
-                ref _addressableEnabled,
-                _addressablePackageInstalled,
-                Tr("启用后，属性系统的资源字段（Sprite/Prefab 等）在编辑器改用原生 AssetReference 选择器授权（仅存 GUID，" +
-                   "不硬引用、加载数据库不再一并载入资源）；运行时经 Addressable 按需异步加载、引用计数随宿主销毁自动卸载。" +
-                   "导出时自动把被引用资源登记进默认 Addressable 分组。" +
-                   "已有数据可用菜单 Tools/Inventory System/Addressables/资源引用迁移工具（带进度条与实时日志）在「Object 引用 ↔ AssetReference(GUID)」间批量互转。"),
-                Tr("com.unity.addressables 包尚未安装。\n" +
-                   "启用宏后，运行时无法通过 Addressable 加载资源。\n\n" +
-                   "确定要继续启用吗？"));
-
-            EditorGUILayout.Space(2);
-
-            EditorGUILayout.EndScrollView();
+            EditorGUILayout.LabelField(Tr("向导字体"), EditorStyles.boldLabel);
+            DrawTmpFontFoldout();
+            DrawLocalizationFontFoldout();
         }
-        
+#endif
+
         /// <summary>TMP 宏区域底部的"向导字体设置"折叠栏。</summary>
         private void DrawTmpFontFoldout()
         {
@@ -459,75 +373,6 @@ namespace Ale.Inventory.Editor
             }
             EditorGUILayout.EndVertical();
 #endif
-        }
-
-        /// <summary>
-        /// 通用的插件宏开关绘制。Toggle 操作 PlayerSettings 宏（经 DefineUtils.ApplyDefine），
-        /// 包未安装时勾选弹确认对话框。
-        /// </summary>
-        private void DrawMacroToggle(string titleName, string define, string package,
-            ref bool enabled, bool packageInstalled, string description, string warnDialog,
-            Action drawAdditionalFields = null)
-        {
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-
-            // 标题行：Toggle + 宏名称
-            EditorGUILayout.BeginHorizontal();
-            EditorGUI.BeginChangeCheck();
-            bool newEnabled = EditorGUILayout.ToggleLeft(
-                $"{titleName}  ({define})", enabled, EditorStyles.boldLabel);
-            if (EditorGUI.EndChangeCheck())
-            {
-                if (newEnabled && !packageInstalled)
-                {
-                    if (!EditorUtility.DisplayDialog(Tr("警告"), warnDialog, Tr("确定"), Tr("取消")))
-                        newEnabled = false;
-                }
-
-                if (newEnabled != enabled)
-                {
-                    enabled = newEnabled;
-                    DefineUtils.ApplyDefine(enabled, define);
-                    _pendingRecompile = true;
-                }
-            }
-            EditorGUILayout.EndHorizontal();
-
-            // 包状态行
-            if (packageInstalled)
-            {
-                var checkStyle = new GUIStyle(EditorStyles.miniLabel)
-                    { normal = { textColor = new Color(0.3f, 0.8f, 0.3f) } };
-                EditorGUILayout.LabelField(Fmt("  ✓ {0} 已安装", package), checkStyle);
-            }
-            else
-            {
-                var warnStyle = new GUIStyle(EditorStyles.miniLabel)
-                    { normal = { textColor = new Color(0.9f, 0.7f, 0.2f) } };
-                EditorGUILayout.LabelField(Fmt("  ⚠ {0} 未安装（需通过 Package Manager 安装）", package), warnStyle);
-            }
-
-            // 说明文字
-            EditorGUILayout.LabelField(description, EditorStyles.wordWrappedMiniLabel);
-
-            // 等待重编译提示
-            if (_pendingRecompile)
-            {
-                var recompileStyle = new GUIStyle(EditorStyles.miniLabel)
-                    { normal = { textColor = new Color(0.9f, 0.7f, 0.2f) } };
-                EditorGUILayout.LabelField(Tr("  ⏳ 宏定义已更改，等待 Unity 重新编译…"), recompileStyle);
-                if (!EditorApplication.isCompiling)
-                    _pendingRecompile = false;
-            }
-            
-            // 自定义 额外设置
-            if (enabled && drawAdditionalFields != null)
-            {
-                EditorGUILayout.Space(4);
-                drawAdditionalFields.Invoke();
-            }
-            
-            EditorGUILayout.EndVertical();
         }
 
         private void DrawFooter()

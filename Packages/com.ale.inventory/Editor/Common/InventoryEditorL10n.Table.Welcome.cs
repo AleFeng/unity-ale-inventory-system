@@ -27,6 +27,9 @@ namespace Ale.Inventory.Editor
             Add("打开 Addressable工具窗口", "Open Addressable Tool", "Addressable ツールを開く");
             Add("打开 本地化工具窗口",   "Open Localization Tool",  "ローカライズツールを開く");
             Add("查看文档",              "View Docs",               "ドキュメントを見る");
+            Add("打开 Ale Toolkit 设置（语言 / 插件宏）",
+                "Open Ale Toolkit Settings (Language / Defines)",
+                "Ale Toolkit 設定を開く（言語 / マクロ）");
 
             // ── 预制体生成 ────────────────────────────────────────────────────────
             Add("预制体生成",            "Prefab Generation",       "プレハブ生成");
