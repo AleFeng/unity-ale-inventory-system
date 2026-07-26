@@ -113,11 +113,11 @@ namespace Ale.Inventory.Editor
                 "テスト用 Prefab の生成時に、このフォントをすべての TMP テキストノードに適用します（空欄で TMP のデフォルトフォントを使用）。");
             Add("Unity Localization 设置", "Unity Localization Settings", "Unity Localization 設定");
             Add("生成测试 Prefab 时赋给 LocalizedFontEvent 组件的本地化字体资源。" +
-                "需同时启用 IS_TMP 才生效。",
+                "需同时启用 ATK_TMP 才生效。",
                 "The localized font asset assigned to the LocalizedFontEvent component when generating test prefabs. " +
-                "Requires IS_TMP to also be enabled.",
+                "Requires ATK_TMP to also be enabled.",
                 "テスト用 Prefab の生成時に LocalizedFontEvent コンポーネントへ割り当てるローカライズフォントアセット。" +
-                "IS_TMP も有効な場合にのみ機能します。");
+                "ATK_TMP も有効な場合にのみ機能します。");
 
             // ── 文档 ──────────────────────────────────────────────────────────────
             Add("文档未找到", "Documentation Not Found", "ドキュメントが見つかりません");

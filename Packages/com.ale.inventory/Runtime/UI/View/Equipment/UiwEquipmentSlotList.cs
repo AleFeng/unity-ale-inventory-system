@@ -1,4 +1,4 @@
-#if IS_TMP
+#if ATK_TMP
 using InventoryText = TMPro.TMP_Text;
 #else
 using InventoryText = UnityEngine.UI.Text;

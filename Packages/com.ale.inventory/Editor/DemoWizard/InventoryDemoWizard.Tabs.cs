@@ -9,7 +9,7 @@ using Ale.Inventory.Runtime.UI;
 using static Ale.Toolkit.Editor.UiPrefabBuilder;
 using static Ale.Toolkit.Editor.UiTextBuilder;
 
-#if  IS_TMP
+#if  ATK_TMP
 using TMPro;
 #endif
 
@@ -44,7 +44,7 @@ namespace Ale.Inventory.Editor
             var labelGo = ChildGameObject("Label", root.transform);
             Stretch(labelGo.AddComponent<RectTransform>());
             var labelTxt = AddText(labelGo, "仓库", 14, Color.white);
-            SetSerializedRef(tab, "label", labelTxt);   // 兼容 IS_TMP 时改类型
+            SetSerializedRef(tab, "label", labelTxt);   // 兼容 ATK_TMP 时改类型
 
             // SelectedIndicator (底部高亮横条，默认隐藏)
             var selGo = ChildGameObject("SelectedIndicator", root.transform);

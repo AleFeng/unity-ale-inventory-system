@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
 
-#if  IS_TMP
+#if  ATK_TMP
 using TMPro;
 #endif
 

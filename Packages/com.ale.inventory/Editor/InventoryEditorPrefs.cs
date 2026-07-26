@@ -26,15 +26,15 @@ namespace Ale.Inventory.Editor
         /// <summary>是否翻译枚举下拉值（默认关）。持久化经 <c>ToolkitEditorL10n</c>。</summary>
         public const string EditorTranslateEnums  = "InventorySystem.Editor.TranslateEnums";
 
-        // ── IS_LOCALIZATION 宏定义名 ──────────────────────────────────────────
-        public const string Define_IsLocalization = "IS_LOCALIZATION";
+        // ── ATK_LOCALIZATION 宏定义名 ──────────────────────────────────────────
+        public const string Define_IsLocalization = "ATK_LOCALIZATION";
 
-        // ── IS_ADDRESSABLE 宏定义名 ───────────────────────────────────────────
-        public const string Define_IsAddressable = "IS_ADDRESSABLE";
+        // ── ATK_ADDRESSABLE 宏定义名 ───────────────────────────────────────────
+        public const string Define_IsAddressable = "ATK_ADDRESSABLE";
 
-        // ── IS_TMP 宏定义名 ───────────────────────────────────────────────────
+        // ── ATK_TMP 宏定义名 ───────────────────────────────────────────────────
         /// <summary>启用后，道具 UI 文本组件使用 TMP_Text；未启用时使用 UnityEngine.UI.Text。</summary>
-        public const string Define_IsTmp = "IS_TMP";
+        public const string Define_IsTmp = "ATK_TMP";
 
         // ── 包名（用于检测是否已安装）──────────────────────────────────────────
         public const string Package_Localization = "com.unity.localization";
@@ -83,21 +83,21 @@ namespace Ale.Inventory.Editor
 
         #endregion
 
-        #region IS_LOCALIZATION 宏状态
+        #region ATK_LOCALIZATION 宏状态
 
-        /// <summary>当前是否在 PlayerSettings 中启用了 IS_LOCALIZATION 宏。</summary>
+        /// <summary>当前是否在 PlayerSettings 中启用了 ATK_LOCALIZATION 宏。</summary>
         public static bool IsLocalizationEnabled()
         {
             return IsDefineEnabled(Define_IsLocalization);
         }
 
-        /// <summary>当前是否在 PlayerSettings 中启用了 IS_ADDRESSABLE 宏。</summary>
+        /// <summary>当前是否在 PlayerSettings 中启用了 ATK_ADDRESSABLE 宏。</summary>
         public static bool IsAddressableEnabled()
         {
             return IsDefineEnabled(Define_IsAddressable);
         }
 
-        /// <summary>当前是否在 PlayerSettings 中启用了 IS_TMP 宏。</summary>
+        /// <summary>当前是否在 PlayerSettings 中启用了 ATK_TMP 宏。</summary>
         public static bool IsTmpEnabled()
         {
             return IsDefineEnabled(Define_IsTmp);

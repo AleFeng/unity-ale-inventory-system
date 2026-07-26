@@ -20,7 +20,7 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [
-        "IS_ADDRESSABLE"
+        "ATK_ADDRESSABLE"
     ],
     "versionDefines": [],
     "noEngineReferences": false

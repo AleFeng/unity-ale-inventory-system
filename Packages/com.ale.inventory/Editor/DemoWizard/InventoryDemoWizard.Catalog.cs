@@ -11,7 +11,7 @@ using static Ale.Toolkit.Editor.UiPrefabBuilder;
 using Ale.Toolkit.Editor;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
-#if  IS_TMP
+#if  ATK_TMP
 using TMPro;
 #endif
 
@@ -334,7 +334,7 @@ namespace Ale.Inventory.Editor
         /// <summary>按给定顺序构建（带进度条），末尾保存刷新。</summary>
         private static void BuildSubset(IList<GenItem> toGen)
         {
-#if IS_TMP
+#if ATK_TMP
             // AddText 已下沉 toolkit；生成前向 UiTextBuilder 注入向导默认字体（字体来源仍是本包偏好）。
             UiTextBuilder.DefaultTmpFont = InventoryEditorPrefs.LoadWizardDefaultTmpFont;
 #endif

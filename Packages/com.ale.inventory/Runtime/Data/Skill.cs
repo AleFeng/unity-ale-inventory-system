@@ -28,7 +28,7 @@ namespace Ale.Inventory.Runtime
         /// <summary>技能图标（直接引用；导出时按与属性值对象槽相同的约定转为 GUID / Addressable 地址）。</summary>
         public Sprite icon;
 
-        /// <summary>图标的 Addressable 授权 GUID（启用 IS_ADDRESSABLE 且以 AssetReference 授权时用；否则空，走 <see cref="icon"/> 直接引用）。</summary>
+        /// <summary>图标的 Addressable 授权 GUID（启用 ATK_ADDRESSABLE 且以 AssetReference 授权时用；否则空，走 <see cref="icon"/> 直接引用）。</summary>
         public string iconAddress;
 
         /// <summary>来源技能模板名称（可为空）。</summary>

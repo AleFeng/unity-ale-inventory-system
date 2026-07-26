@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
 
-#if  IS_TMP
+#if  ATK_TMP
 using TMPro;
 #endif
 
@@ -42,8 +42,8 @@ namespace Ale.Inventory.Editor
     ///
     /// 用法：将 InventoryManager.prefab 拖入场景，点击 Play 即自动填入道具并打开背包 UI。
     ///
-    /// IS_TMP 宏支持：
-    ///   启用 IS_TMP 时，所有文本节点使用 TMPro.TextMeshProUGUI；
+    /// ATK_TMP 宏支持：
+    ///   启用 ATK_TMP 时，所有文本节点使用 TMPro.TextMeshProUGUI；
     ///   未启用时使用 UnityEngine.UI.Text。
     /// </summary>
     public static partial class InventoryDemoWizard

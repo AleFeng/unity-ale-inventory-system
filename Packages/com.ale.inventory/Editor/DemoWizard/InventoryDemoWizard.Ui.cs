@@ -8,7 +8,7 @@ using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
 using static Ale.Toolkit.Editor.UiPrefabBuilder;
 
-#if  IS_TMP
+#if  ATK_TMP
 using TMPro;
 #endif
 
@@ -62,7 +62,7 @@ namespace Ale.Inventory.Editor
         /// </summary>
         static void SavePrefab(GameObject root, string path)
         {
-#if IS_TMP && IS_LOCALIZATION
+#if ATK_TMP && ATK_LOCALIZATION
             // 双宏下统一在保存前挂本地化字体事件（此前各 builder 尾部各写一遍；装备类曾漏挂，
             // 收口到此处后自动补齐）。AttachFontEvent 会扫描全部子节点建立字体绑定，故须在层级搭好后调用。
             AttachFontEvent(root);

@@ -10,7 +10,7 @@ using Ale.Inventory.Runtime.UI;
 using static Ale.Toolkit.Editor.UiPrefabBuilder;
 using static Ale.Toolkit.Editor.UiTextBuilder;
 
-#if  IS_TMP
+#if  ATK_TMP
 using TMPro;
 #endif
 

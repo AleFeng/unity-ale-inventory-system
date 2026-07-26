@@ -1,4 +1,4 @@
-#if IS_LOCALIZATION
+#if ATK_LOCALIZATION
 using System.Collections.Generic;
 using Ale.Inventory.Runtime;
 using Ale.Toolkit.Editor;
@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Ale.Inventory.Editor
 {
     /// <summary>
-    /// 本地化工具窗口（库存闭合，仅 IS_LOCALIZATION 编译）。建表 / Key 生成机制全部下沉至
+    /// 本地化工具窗口（库存闭合，仅 ATK_LOCALIZATION 编译）。建表 / Key 生成机制全部下沉至
     /// <see cref="EditorLocalizationToolWindow{TDb}"/>；本类只提供菜单入口、本库表集合 GUID 存取、Text 字段来源
     /// （<see cref="InventoryTextFieldCollector"/>），及库存专属的 EditorPrefs 键 / 默认值。
     /// </summary>

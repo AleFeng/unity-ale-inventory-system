@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-#if IS_LOCALIZATION
+#if ATK_LOCALIZATION
 using UnityEngine.Localization;
 using UnityEngine.Localization.Components;
 #endif
@@ -30,7 +30,7 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("无任何属性加成时，用 entryPrefab 显示一条提示；为空则空状态下什么都不显示。")]
         public string emptyText = "无属性加成";
         
-#if IS_LOCALIZATION
+#if ATK_LOCALIZATION
         [SerializeField] private LocalizeStringEvent emptyTextLocalized;
 #endif
 
@@ -113,7 +113,7 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>解析空状态提示文本：启用本地化且引用完整时取当前语言文本，否则回退 <see cref="emptyText"/>。</summary>
         private string ResolveEmptyText()
         {
-#if IS_LOCALIZATION
+#if ATK_LOCALIZATION
             if (emptyTextLocalized && emptyTextLocalized.StringReference != null)
             {
                 var resolved = emptyTextLocalized.StringReference.GetLocalizedString();

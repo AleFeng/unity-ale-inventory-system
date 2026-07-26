@@ -8,11 +8,11 @@ using Ale.Inventory.Runtime;
 using Ale.Toolkit.Editor;
 using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 
-#if IS_TMP
+#if ATK_TMP
 using TMPro;
 #endif
 
-#if IS_TMP && IS_LOCALIZATION
+#if ATK_TMP && ATK_LOCALIZATION
 using Ale.Inventory.Runtime.UI;
 #endif
 
@@ -30,7 +30,7 @@ namespace Ale.Inventory.Editor
         private static readonly Vector2 WindowSize = new Vector2(520f, 800f);
 
         /// <summary>
-        /// 打开「Addressable 资源引用迁移窗口」的注入钩子。由受 IS_ADDRESSABLE 约束的
+        /// 打开「Addressable 资源引用迁移窗口」的注入钩子。由受 ATK_ADDRESSABLE 约束的
         /// Addressable 编辑器程序集在 <c>[InitializeOnLoad]</c> 时赋值；为 null（宏未启用 / 包未装）
         /// 时对应按钮隐藏。core 编辑器程序集对 Addressables 零依赖，故不能直接引用迁移窗口类型，
         /// 与 <see cref="EditorExportResolver.AddressableProvider"/> 等钩子同构。
@@ -66,13 +66,13 @@ namespace Ale.Inventory.Editor
 
         // ── 向导字体设置 ──────────────────────────────────────────────────────────
 
-#if IS_TMP
+#if ATK_TMP
         /// <summary>向导生成 Prefab 时应用于所有 TMP 文本节点的默认字体（EditorPrefs 持久化）。</summary>
         private TMP_FontAsset _wizardDefaultTmpFont;
         private bool _wizardFontFoldout;
 #endif
 
-#if IS_TMP && IS_LOCALIZATION
+#if ATK_TMP && ATK_LOCALIZATION
         /// <summary>向导生成 Prefab 时赋给 LocalizedFontEvent 的本地化字体引用。</summary>
         [SerializeField] private LocalizedTmpFont wizardLocalizedFont = new LocalizedTmpFont();
         private bool _wizardLocalizedFontFoldout;
@@ -118,7 +118,7 @@ namespace Ale.Inventory.Editor
             _initialized = false;
             _logoTexture = null;
             _logoLoadAttempted = false;
-#if IS_TMP && IS_LOCALIZATION
+#if ATK_TMP && ATK_LOCALIZATION
             _active = this;
 #endif
         }
@@ -130,7 +130,7 @@ namespace Ale.Inventory.Editor
                 DestroyImmediate(_logoTexture);
                 _logoTexture = null;
             }
-#if IS_TMP && IS_LOCALIZATION
+#if ATK_TMP && ATK_LOCALIZATION
             if (_active == this) _active = null;
 #endif
         }
@@ -149,7 +149,7 @@ namespace Ale.Inventory.Editor
             _tmpPackageInstalled          = InventoryEditorPrefs.IsTmpPackageInstalled();
             _autoShow                     = EditorPrefs.GetBool(InventoryEditorPrefs.WelcomeAutoShow, true);
 
-#if IS_TMP
+#if ATK_TMP
             _wizardDefaultTmpFont = InventoryEditorPrefs.LoadWizardDefaultTmpFont();
 #endif
         }
@@ -269,13 +269,13 @@ namespace Ale.Inventory.Editor
             if (GUILayout.Button(Tr("打开 Inventory Editor"), GUILayout.Height(28)))
                 InventoryEditorWindow.Open();
 
-            // 仅在启用 IS_ADDRESSABLE（迁移窗口已注入钩子）时显示。
+            // 仅在启用 ATK_ADDRESSABLE（迁移窗口已注入钩子）时显示。
             if (OpenAddressableMigration != null
                 && GUILayout.Button(Tr("打开 Addressable工具窗口"), GUILayout.Height(28)))
                 OpenAddressableMigration();
 
-#if IS_LOCALIZATION
-            // 仅在启用 IS_LOCALIZATION 时显示（本地化工具窗口同在本程序集，可直接调用）。
+#if ATK_LOCALIZATION
+            // 仅在启用 ATK_LOCALIZATION 时显示（本地化工具窗口同在本程序集，可直接调用）。
             if (GUILayout.Button(Tr("打开 本地化工具窗口"), GUILayout.Height(28)))
                 InventoryLocalizationToolWindow.Open();
 #endif
@@ -414,7 +414,7 @@ namespace Ale.Inventory.Editor
         /// <summary>TMP 宏区域底部的"向导字体设置"折叠栏。</summary>
         private void DrawTmpFontFoldout()
         {
-#if IS_TMP
+#if ATK_TMP
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             _wizardFontFoldout = EditorGUILayout.Foldout(_wizardFontFoldout, Tr("TextMeshPro 设置"), true);
             if (_wizardFontFoldout)
@@ -438,7 +438,7 @@ namespace Ale.Inventory.Editor
         /// <summary>Localization 宏区域底部的"向导本地化字体设置"折叠栏。</summary>
         private void DrawLocalizationFontFoldout()
         {
-#if IS_TMP && IS_LOCALIZATION
+#if ATK_TMP && ATK_LOCALIZATION
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             _wizardLocalizedFontFoldout = EditorGUILayout.Foldout(
                 _wizardLocalizedFontFoldout, Tr("Unity Localization 设置"), true);
@@ -454,7 +454,7 @@ namespace Ale.Inventory.Editor
                 }
                 EditorGUILayout.LabelField(
                     Tr("生成测试 Prefab 时赋给 LocalizedFontEvent 组件的本地化字体资源。" +
-                       "需同时启用 IS_TMP 才生效。"),
+                       "需同时启用 ATK_TMP 才生效。"),
                     EditorStyles.wordWrappedMiniLabel);
             }
             EditorGUILayout.EndVertical();

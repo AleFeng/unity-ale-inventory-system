@@ -7,7 +7,7 @@ using Ale.Inventory.Runtime;
 using Ale.Inventory.Runtime.UI;
 using Ale.Toolkit.Runtime.UI;
 
-#if  IS_TMP
+#if  ATK_TMP
 using TMPro;
 #endif
 
@@ -17,15 +17,15 @@ namespace Ale.Inventory.Editor
     using Inventory = global::Ale.Inventory.Runtime.Inventory;
 
     /// <summary>
-    /// 向导专属的本地化字体事件挂载（IS_TMP &amp;&amp; IS_LOCALIZATION）：把欢迎窗中配置的本地化字体引用
-    /// 写入根节点的 <see cref="LocalizedFontEvent"/>。IS_TMP 感知的文本 / 按钮构建已下沉至
+    /// 向导专属的本地化字体事件挂载（ATK_TMP &amp;&amp; ATK_LOCALIZATION）：把欢迎窗中配置的本地化字体引用
+    /// 写入根节点的 <see cref="LocalizedFontEvent"/>。ATK_TMP 感知的文本 / 按钮构建已下沉至
     /// <see cref="Ale.Toolkit.Editor.UiTextBuilder"/>。
     /// </summary>
     public static partial class InventoryDemoWizard
     {
-        #region IS_TMP && IS_LOCALIZATION 字体事件辅助
+        #region ATK_TMP && ATK_LOCALIZATION 字体事件辅助
 
-#if IS_TMP && IS_LOCALIZATION
+#if ATK_TMP && ATK_LOCALIZATION
         /// <summary>
         /// 在 <paramref name="root"/> 上挂载 <see cref="LocalizedFontEvent"/>，
         /// 将 WelcomeWindow 中配置的本地化字体引用通过 JsonUtility roundtrip 写入组件，

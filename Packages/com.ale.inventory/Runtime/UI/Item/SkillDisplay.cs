@@ -4,7 +4,7 @@ namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 技能显示文本解析（名称 / 描述 / 自定义属性字段），供技能条目与技能 Tooltip 共用。
-    /// 名称 / 描述优先取本地化（IS_LOCALIZATION 且引用非空），否则取原始字符串；自定义字段兼容 String / Text / 其它类型。
+    /// 名称 / 描述优先取本地化（ATK_LOCALIZATION 且引用非空），否则取原始字符串；自定义字段兼容 String / Text / 其它类型。
     /// </summary>
     public static class UiwSkillText
     {
@@ -42,7 +42,7 @@ namespace Ale.Inventory.Runtime.UI
             }
             if (av.Type == EFieldType.Text)
             {
-#if IS_LOCALIZATION
+#if ATK_LOCALIZATION
                 var (tableRef, entryKey) = av.GetLocalizedStringRef(0);
                 string loc = ResolveLocalized(tableRef, entryKey);
                 if (!string.IsNullOrEmpty(loc)) return loc;
@@ -54,7 +54,7 @@ namespace Ale.Inventory.Runtime.UI
             return av.ToDisplayString();
         }
 
-#if IS_LOCALIZATION
+#if ATK_LOCALIZATION
         /// <summary>
         /// 解析 <see cref="EFieldType.Text"/> 的本地化引用（表 + 条目）当前语言文本。
         /// 供自定义字段用；固定字段（名称 / 描述）已改用 <see cref="AttributeValue.ResolveText"/>。

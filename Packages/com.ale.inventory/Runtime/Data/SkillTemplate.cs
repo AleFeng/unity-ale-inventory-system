@@ -26,7 +26,7 @@ namespace Ale.Inventory.Runtime
         /// <summary>默认图标。</summary>
         public Sprite icon;
 
-        /// <summary>默认图标的 Addressable 授权 GUID（启用 IS_ADDRESSABLE 且以 AssetReference 授权时用；否则空，走 <see cref="icon"/> 直接引用）。</summary>
+        /// <summary>默认图标的 Addressable 授权 GUID（启用 ATK_ADDRESSABLE 且以 AssetReference 授权时用；否则空，走 <see cref="icon"/> 直接引用）。</summary>
         public string iconAddress;
 
         /// <summary>默认主分组标签 ID。</summary>

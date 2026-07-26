@@ -7,7 +7,7 @@ namespace Ale.Inventory.Editor
     /// 仓库系统编辑器加载检查器。
     /// 每次 Unity 启动/域重载时执行，负责：
     /// 1. 若本会话尚未显示过欢迎窗口且未禁用自动显示，则自动弹出欢迎窗口。
-    /// 2. 检测 com.unity.localization 包是否存在，与 IS_LOCALIZATION 宏状态对比，
+    /// 2. 检测 com.unity.localization 包是否存在，与 ATK_LOCALIZATION 宏状态对比，
     ///    若两者不一致则在 Console 输出提示（不强制修改，保持手动控制优先）。
     /// </summary>
     [InitializeOnLoad]
@@ -55,7 +55,7 @@ namespace Ale.Inventory.Editor
             if (!packageInstalled && macroEnabled)
             {
                 Debug.LogWarning(
-                    "[InventorySystem] IS_LOCALIZATION 宏已启用，但 com.unity.localization 包未安装。\n" +
+                    "[InventorySystem] ATK_LOCALIZATION 宏已启用，但 com.unity.localization 包未安装。\n" +
                     "LocalizedString 字段在运行时将无法解析。建议安装包或在欢迎窗口中关闭宏。\n" +
                     "（Tools > InventorySystem > Welcome）");
             }

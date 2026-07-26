@@ -23,7 +23,7 @@ namespace Ale.Inventory.Runtime
         /// <summary>图标（直接引用；直接模式 / 编辑器预览）。</summary>
         Sprite Icon { get; set; }
 
-        /// <summary>图标的 Addressable 授权 GUID（启用 IS_ADDRESSABLE 且以 AssetReference 授权时用；否则空，走 <see cref="Icon"/> 直接引用）。</summary>
+        /// <summary>图标的 Addressable 授权 GUID（启用 ATK_ADDRESSABLE 且以 AssetReference 授权时用；否则空，走 <see cref="Icon"/> 直接引用）。</summary>
         string IconAddress { get; set; }
 
         /// <summary>主分组标签 ID（单选）。</summary>
