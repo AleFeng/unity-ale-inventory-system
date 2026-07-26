@@ -17,7 +17,10 @@ namespace Ale.Inventory.Editor
         public const string WelcomeAutoShow       = "IS_WelcomeAutoShow";
         /// <summary>欢迎窗口本会话是否已显示过（SessionState 键，非 EditorPrefs）。</summary>
         public const string WelcomeShownThisSession = "IS_WelcomeShownThisSession";
-        /// <summary>创建新数据文件时使用的模板资产路径。</summary>
+        /// <summary>
+        /// 旧版本：创建新数据文件时使用的模板资产路径（EditorPrefs 键）。
+        /// 模板已改存项目级 <see cref="InventoryProjectSettings"/>（随仓库入库）；此键仅用于一次性迁移旧设置。
+        /// </summary>
         public const string TemplateDatabasePath  = "IS_TemplateDatabasePath";
         /// <summary>上次打开的 InventoryDatabase 资产路径。</summary>
         public const string LastDatabasePath      = "InventorySystem.DatabasePath";
@@ -28,19 +31,36 @@ namespace Ale.Inventory.Editor
 
         #region 模板数据库
 
-        /// <summary>保存模板数据库路径到 EditorPrefs。</summary>
+        /// <summary>保存模板数据库到项目级设置（<see cref="InventoryProjectSettings"/>，随仓库入库）。</summary>
         public static void SaveTemplateDatabase(InventoryDatabase db)
         {
-            string path = db ? AssetDatabase.GetAssetPath(db) : string.Empty;
-            EditorPrefs.SetString(TemplateDatabasePath, path);
+            var s = InventoryProjectSettings.instance;
+            if (s.templateDatabase == db) return;
+            s.templateDatabase = db;
+            s.SaveSettings();
         }
 
-        /// <summary>从 EditorPrefs 加载模板数据库，未设置或已删除时返回 null。</summary>
+        /// <summary>
+        /// 从项目级设置加载模板数据库，未设置或已删除时返回 null。
+        /// 首次调用时若项目级设置为空、而旧 EditorPrefs 键仍存路径，则一次性迁入并清除旧键。
+        /// </summary>
         public static InventoryDatabase LoadTemplateDatabase()
         {
-            string path = EditorPrefs.GetString(TemplateDatabasePath, string.Empty);
-            if (string.IsNullOrEmpty(path)) return null;
-            return AssetDatabase.LoadAssetAtPath<InventoryDatabase>(path);
+            var s = InventoryProjectSettings.instance;
+            if (s.templateDatabase) return s.templateDatabase;
+
+            // 一次性迁移旧设置：EditorPrefs 路径 → 项目级设置。
+            string legacyPath = EditorPrefs.GetString(TemplateDatabasePath, string.Empty);
+            if (string.IsNullOrEmpty(legacyPath)) return null;
+
+            var db = AssetDatabase.LoadAssetAtPath<InventoryDatabase>(legacyPath);
+            if (db)
+            {
+                s.templateDatabase = db;
+                s.SaveSettings();
+                EditorPrefs.DeleteKey(TemplateDatabasePath);
+            }
+            return db;
         }
 
         #endregion
