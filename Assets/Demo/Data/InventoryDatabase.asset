@@ -57,7 +57,8 @@ MonoBehaviour:
           objRefs:
           - {fileID: 0}
           curves: []
-          objAddresses: []
+          objAddresses:
+          - '30f88aa7a52b64f45b8c567d63d62b01[T_Quality_Frame_Poor]'
     - name: "\u666E\u901A"
       value: 1
       attributeValues:
@@ -100,7 +101,8 @@ MonoBehaviour:
           objRefs:
           - {fileID: 0}
           curves: []
-          objAddresses: []
+          objAddresses:
+          - '0abd3a6ee336ae144a47b12b50e68d49[T_Quality_Frame_Common]'
     - name: "\u4F18\u79C0"
       value: 2
       attributeValues:
@@ -143,7 +145,8 @@ MonoBehaviour:
           objRefs:
           - {fileID: 0}
           curves: []
-          objAddresses: []
+          objAddresses:
+          - '3283108b306f3d84b90d36bc846f0675[T_Quality_Frame_Uncommon]'
     - name: "\u7A00\u6709"
       value: 3
       attributeValues:
@@ -186,7 +189,8 @@ MonoBehaviour:
           objRefs:
           - {fileID: 0}
           curves: []
-          objAddresses: []
+          objAddresses:
+          - '3eab096c48c919943a0d5cacb00ca84f[T_Quality_Frame_Rare]'
     - name: "\u53F2\u8BD7"
       value: 4
       attributeValues:
@@ -229,7 +233,8 @@ MonoBehaviour:
           objRefs:
           - {fileID: 0}
           curves: []
-          objAddresses: []
+          objAddresses:
+          - 'b165232a97a4a64408c1d4dfa30b7d62[T_Quality_Frame_Epic]'
     - name: "\u4F20\u8BF4"
       value: 5
       attributeValues:
@@ -272,7 +277,8 @@ MonoBehaviour:
           objRefs:
           - {fileID: 0}
           curves: []
-          objAddresses: []
+          objAddresses:
+          - 'dec70115fa10a534b952aa5289a898d2[T_Quality_Frame_Legendary]'
     - name: "\u795E\u8BDD"
       value: 6
       attributeValues:
@@ -315,7 +321,8 @@ MonoBehaviour:
           objRefs:
           - {fileID: 0}
           curves: []
-          objAddresses: []
+          objAddresses:
+          - 'ef9f4c9a445adef4b8f8b1537bab5dc7[T_Quality_Frame_Mythic]'
     nextValue: 7
     attributes:
     - id: "\u540D\u79F0"
@@ -2318,6 +2325,16 @@ MonoBehaviour:
       objAddresses: []
     backgroundSprite: {fileID: 0}
     backgroundSpriteAddress: 
+    backgroundSpriteValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses: []
     backgroundColor: {r: 0, g: 0, b: 0, a: 0.39215687}
     hideInUI: 1
     attributes:
@@ -2427,6 +2444,16 @@ MonoBehaviour:
       objAddresses: []
     backgroundSprite: {fileID: 0}
     backgroundSpriteAddress: 
+    backgroundSpriteValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses: []
     backgroundColor: {r: 0, g: 0, b: 0, a: 0.39215687}
     hideInUI: 1
     attributes:
@@ -2473,6 +2500,16 @@ MonoBehaviour:
       objAddresses: []
     backgroundSprite: {fileID: 0}
     backgroundSpriteAddress: 
+    backgroundSpriteValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses: []
     backgroundColor: {r: 1, g: 0.5019608, b: 0, a: 0.39215687}
     hideInUI: 0
     attributes:
@@ -2519,6 +2556,16 @@ MonoBehaviour:
       objAddresses: []
     backgroundSprite: {fileID: 0}
     backgroundSpriteAddress: 
+    backgroundSpriteValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses: []
     backgroundColor: {r: 0, g: 1, b: 0.019607844, a: 0.39215687}
     hideInUI: 0
     attributes:
@@ -2565,6 +2612,16 @@ MonoBehaviour:
       objAddresses: []
     backgroundSprite: {fileID: 0}
     backgroundSpriteAddress: 
+    backgroundSpriteValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses: []
     backgroundColor: {r: 0, g: 0.85490197, b: 1, a: 0.39215687}
     hideInUI: 0
     attributes:
@@ -2639,6 +2696,16 @@ MonoBehaviour:
       objAddresses: []
     backgroundSprite: {fileID: 0}
     backgroundSpriteAddress: 
+    backgroundSpriteValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses: []
     backgroundColor: {r: 1, g: 0.27058825, b: 0.28235295, a: 0.39215687}
     hideInUI: 0
     attributes:
@@ -2727,6 +2794,16 @@ MonoBehaviour:
       objAddresses: []
     backgroundSprite: {fileID: 0}
     backgroundSpriteAddress: 
+    backgroundSpriteValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses: []
     backgroundColor: {r: 1, g: 0.23921569, b: 0.89411765, a: 0.39215687}
     hideInUI: 0
     attributes:
@@ -2774,6 +2851,16 @@ MonoBehaviour:
       objAddresses: []
     backgroundSprite: {fileID: 0}
     backgroundSpriteAddress: 
+    backgroundSpriteValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses: []
     backgroundColor: {r: 1, g: 0.79607844, b: 0, a: 0.39215687}
     hideInUI: 0
     attributes:
@@ -9513,6 +9600,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
     primaryGroupTag: "\u653B\u51FB"
     secondaryGroupTags: []
   - name: "\u6CBB\u7597"
@@ -9560,6 +9658,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '56b433935163ec949bad2114e1733312[T_Skill_Healing]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '56b433935163ec949bad2114e1733312[T_Skill_Healing]'
     primaryGroupTag: "\u6CBB\u7597"
     secondaryGroupTags: []
   - name: "\u5F3A\u5316"
@@ -9607,6 +9716,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     primaryGroupTag: "\u5F3A\u5316"
     secondaryGroupTags: []
   - name: "\u5F31\u5316"
@@ -9654,6 +9774,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     primaryGroupTag: "\u5F31\u5316"
     secondaryGroupTags: []
   - name: "\u8F85\u52A9"
@@ -9701,6 +9832,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     primaryGroupTag: "\u8F85\u52A9"
     secondaryGroupTags: []
   skills:
@@ -9733,6 +9875,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
     templateRef: "\u653B\u51FB"
     primaryGroupTag: "\u6218\u58EB"
     secondaryGroupTags:
@@ -9778,6 +9931,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     templateRef: "\u5F3A\u5316"
     primaryGroupTag: "\u6218\u58EB"
     secondaryGroupTags:
@@ -9823,6 +9987,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     templateRef: "\u5F31\u5316"
     primaryGroupTag: "\u6218\u58EB"
     secondaryGroupTags:
@@ -9868,6 +10043,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     templateRef: "\u8F85\u52A9"
     primaryGroupTag: "\u6218\u58EB"
     secondaryGroupTags:
@@ -9913,6 +10099,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: 'c73c0b67d8deb2b489af5463b6ae89f5[T_Skill_Fire_FireBolt]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - 'c73c0b67d8deb2b489af5463b6ae89f5[T_Skill_Fire_FireBolt]'
     templateRef: "\u653B\u51FB"
     primaryGroupTag: "\u6CD5\u5E08"
     secondaryGroupTags:
@@ -9958,6 +10155,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: 'f47f7d68136610543b4207c7a0b87d1d[T_Skill_Fire_FireBall]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - 'f47f7d68136610543b4207c7a0b87d1d[T_Skill_Fire_FireBall]'
     templateRef: "\u653B\u51FB"
     primaryGroupTag: "\u6CD5\u5E08"
     secondaryGroupTags:
@@ -10003,6 +10211,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '68f2a95375f8d8c469f156350f8b7550[T_Skill_Fire_FireCannon]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '68f2a95375f8d8c469f156350f8b7550[T_Skill_Fire_FireCannon]'
     templateRef: "\u653B\u51FB"
     primaryGroupTag: "\u6CD5\u5E08"
     secondaryGroupTags:
@@ -10048,6 +10267,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: 'a22b83357f259f3408e89ee817cc118a[T_Skill_Fire_Pyroblast]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - 'a22b83357f259f3408e89ee817cc118a[T_Skill_Fire_Pyroblast]'
     templateRef: "\u653B\u51FB"
     primaryGroupTag: "\u6CD5\u5E08"
     secondaryGroupTags:
@@ -10093,6 +10323,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '0e341243841712e4ba9ef6428b9b0370[T_Skill_Fire_Flamestrike]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '0e341243841712e4ba9ef6428b9b0370[T_Skill_Fire_Flamestrike]'
     templateRef: "\u653B\u51FB"
     primaryGroupTag: "\u6CD5\u5E08"
     secondaryGroupTags:
@@ -10138,6 +10379,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '10f5993454ccba14a99fa9ad5de7c8cb[T_Skill_Fire_MeteorFall]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '10f5993454ccba14a99fa9ad5de7c8cb[T_Skill_Fire_MeteorFall]'
     templateRef: "\u653B\u51FB"
     primaryGroupTag: "\u6CD5\u5E08"
     secondaryGroupTags:
@@ -10183,6 +10435,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: 'af74fcd4edc7b214a890e38c9ad3bc6f[T_Skill_Fire_Ragnarok]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - 'af74fcd4edc7b214a890e38c9ad3bc6f[T_Skill_Fire_Ragnarok]'
     templateRef: "\u653B\u51FB"
     primaryGroupTag: "\u6CD5\u5E08"
     secondaryGroupTags:
@@ -10228,6 +10491,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     templateRef: "\u5F3A\u5316"
     primaryGroupTag: "\u6CD5\u5E08"
     secondaryGroupTags:
@@ -10273,6 +10547,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     templateRef: "\u5F31\u5316"
     primaryGroupTag: "\u6CD5\u5E08"
     secondaryGroupTags:
@@ -10318,6 +10603,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     templateRef: "\u5F31\u5316"
     primaryGroupTag: "\u6CD5\u5E08"
     secondaryGroupTags:
@@ -10363,6 +10659,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     templateRef: "\u8F85\u52A9"
     primaryGroupTag: "\u6CD5\u5E08"
     secondaryGroupTags:
@@ -10408,6 +10715,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
     templateRef: "\u653B\u51FB"
     primaryGroupTag: "\u7267\u5E08"
     secondaryGroupTags:
@@ -10453,6 +10771,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '56b433935163ec949bad2114e1733312[T_Skill_Healing]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '56b433935163ec949bad2114e1733312[T_Skill_Healing]'
     templateRef: "\u6CBB\u7597"
     primaryGroupTag: "\u7267\u5E08"
     secondaryGroupTags:
@@ -10498,6 +10827,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     templateRef: "\u5F3A\u5316"
     primaryGroupTag: "\u7267\u5E08"
     secondaryGroupTags:
@@ -10543,6 +10883,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     templateRef: "\u5F31\u5316"
     primaryGroupTag: "\u7267\u5E08"
     secondaryGroupTags:
@@ -10588,6 +10939,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     templateRef: "\u8F85\u52A9"
     primaryGroupTag: "\u7267\u5E08"
     secondaryGroupTags:
@@ -10633,6 +10995,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
     templateRef: "\u653B\u51FB"
     primaryGroupTag: "\u730E\u4EBA"
     secondaryGroupTags:
@@ -10678,6 +11051,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     templateRef: "\u5F3A\u5316"
     primaryGroupTag: "\u730E\u4EBA"
     secondaryGroupTags:
@@ -10723,6 +11107,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     templateRef: "\u5F31\u5316"
     primaryGroupTag: "\u730E\u4EBA"
     secondaryGroupTags:
@@ -10768,6 +11163,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     templateRef: "\u8F85\u52A9"
     primaryGroupTag: "\u730E\u4EBA"
     secondaryGroupTags:
@@ -10813,6 +11219,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '3e31b9fdb695d7248a67344e6613b1f8[T_Skill_Attack]'
     templateRef: "\u653B\u51FB"
     primaryGroupTag: "\u76D7\u8D3C"
     secondaryGroupTags:
@@ -10858,6 +11275,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '70a42b5f72e932d448a5fed68befdf07[T_Skill_Buff]'
     templateRef: "\u5F3A\u5316"
     primaryGroupTag: "\u76D7\u8D3C"
     secondaryGroupTags:
@@ -10903,6 +11331,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - '4f38ed690f4d1324f87750dd24d2bd32[T_Skill_Debuff]'
     templateRef: "\u5F31\u5316"
     primaryGroupTag: "\u76D7\u8D3C"
     secondaryGroupTags:
@@ -10948,6 +11387,17 @@ MonoBehaviour:
       objAddresses: []
     icon: {fileID: 0}
     iconAddress: 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
+    iconValue:
+      type: 9
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses:
+      - 'fe3d30e84e6817a488c88f946440832e[T_Skill_Utility]'
     templateRef: "\u8F85\u52A9"
     primaryGroupTag: "\u76D7\u8D3C"
     secondaryGroupTags:
@@ -10964,4 +11414,3 @@ MonoBehaviour:
         objRefs: []
         curves: []
         objAddresses: []
-  localizationTableCollectionGuid: 8b788ff8e7368fb4fa5759063edbb327

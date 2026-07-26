@@ -21,14 +21,6 @@ namespace Ale.Inventory.Editor
 
         private static readonly Vector2 WindowSize = new Vector2(520f, 800f);
 
-        /// <summary>
-        /// 打开「Addressable 资源引用迁移窗口」的注入钩子。由受 ATK_ADDRESSABLE 约束的
-        /// Addressable 编辑器程序集在 <c>[InitializeOnLoad]</c> 时赋值；为 null（宏未启用 / 包未装）
-        /// 时对应按钮隐藏。core 编辑器程序集对 Addressables 零依赖，故不能直接引用迁移窗口类型，
-        /// 与 <see cref="EditorExportResolver.AddressableProvider"/> 等钩子同构。
-        /// </summary>
-        public static Action OpenAddressableMigration;
-
         // 内部 UI 状态
         private InventoryDatabase _templateDb;
         private bool _autoShow;
@@ -182,11 +174,6 @@ namespace Ale.Inventory.Editor
 
             if (GUILayout.Button(Tr("打开 Inventory Editor"), GUILayout.Height(28)))
                 InventoryEditorWindow.Open();
-
-            // 仅在启用 ATK_ADDRESSABLE（迁移窗口已注入钩子）时显示。
-            if (OpenAddressableMigration != null
-                && GUILayout.Button(Tr("打开 Addressable工具窗口"), GUILayout.Height(28)))
-                OpenAddressableMigration();
 
 #if ATK_LOCALIZATION
             // 仅在启用 ATK_LOCALIZATION 时显示；打开 toolkit 通用本地化窗口（拖入本库的 InventoryDatabase 使用）。

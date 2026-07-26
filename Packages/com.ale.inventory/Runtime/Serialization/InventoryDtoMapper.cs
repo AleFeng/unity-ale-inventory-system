@@ -99,7 +99,7 @@ namespace Ale.Inventory.Runtime.Serialization
 
                 displayNameText = ToDto(t.displayNameText, resolver),
                 descriptionText = ToDto(t.descriptionText, resolver),
-                backgroundSpriteGuid = ObjToGuid(t.backgroundSprite, t.backgroundSpriteAddress, resolver),
+                backgroundSpriteGuid = SpriteValueToGuid(t.backgroundSpriteValue, resolver),
                 backgroundColor = ToDto(t.backgroundColor),
                 hideInUI        = t.hideInUI
             };
@@ -233,8 +233,7 @@ namespace Ale.Inventory.Runtime.Serialization
             if (dto.descriptionText != null) t.descriptionText = FromDto(dto.descriptionText, resolver);
             t.displayNameText = TextFromDto(dto.displayNameText, resolver);
 
-            t.backgroundSpriteAddress = dto.backgroundSpriteGuid;
-            t.backgroundSprite        = resolver.FromGuid(dto.backgroundSpriteGuid) as Sprite;
+            t.backgroundSpriteValue   = SpriteValueFromGuid(dto.backgroundSpriteGuid, resolver);
             t.backgroundColor         = FromDto(dto.backgroundColor, Color.white);
             t.hideInUI                = dto.hideInUI;
 
@@ -331,6 +330,19 @@ namespace Ale.Inventory.Runtime.Serialization
 
         private static string ObjToGuid(Object obj, string address, IAssetRefResolver resolver)
             => ToolkitDtoMapper.ObjToGuid(obj, address, resolver);
+
+        /// <summary>把一个 Sprite 属性值导出为 GUID（与旧 icon/iconAddress 同约定：直接引用 → 授权 GUID）。</summary>
+        private static string SpriteValueToGuid(AttributeValue v, IAssetRefResolver resolver)
+            => ObjToGuid(v != null ? v.GetObject(0) : null, v != null ? v.GetObjAddress(0) : null, resolver);
+
+        /// <summary>从导出的 GUID 构建一个 Sprite 属性值（直接引用 + 授权地址，与旧 icon/iconAddress 同约定）。</summary>
+        private static AttributeValue SpriteValueFromGuid(string guid, IAssetRefResolver resolver)
+        {
+            var v = new AttributeValue(EFieldType.Sprite);
+            v.SetObject(0, resolver.FromGuid(guid) as Sprite);
+            v.SetObjAddress(0, guid);
+            return v;
+        }
 
         private static SortPriorityDto[] ToDto(List<SortPriority> source)
             => ToolkitDtoMapper.ToDto(source);

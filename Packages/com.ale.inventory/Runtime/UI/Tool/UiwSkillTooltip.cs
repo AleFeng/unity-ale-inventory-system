@@ -65,7 +65,7 @@ namespace Ale.Inventory.Runtime.UI
 
         protected override void ApplyContent(Skill skill)
         {
-            _iconSlot.Bind(iconImage, skill.icon, skill.iconAddress);
+            _iconSlot.Bind(iconImage, skill.iconValue);
             if (nameText)  nameText.text = UiwSkillText.ResolveName(skill, true);
             if (descText)  descText.text = UiwSkillText.ResolveDescription(skill);
 

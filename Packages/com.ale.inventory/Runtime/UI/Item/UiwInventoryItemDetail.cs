@@ -194,9 +194,9 @@ namespace Ale.Inventory.Runtime.UI
                 if (!label) break;
                 InventoryAssets.Release(label.gameObject);
                 // 先按直接引用设背景 + 色 + 文本（直接模式即正确）；授权模式 backgroundSprite 为空，随后异步回填。
-                label.Setup(functionTag.backgroundSprite, functionTag.backgroundColor, text);
+                label.Setup(functionTag.backgroundSpriteValue.GetObject(0) as Sprite, functionTag.backgroundColor, text);
                 var ft = functionTag;
-                InventoryAssets.Bind<Sprite>(ft.backgroundSprite, ft.backgroundSpriteAddress, label.gameObject, s =>
+                InventoryAssets.Bind<Sprite>(ft.backgroundSpriteValue, label.gameObject, s =>
                 {
                     if (gen != _tagGen || !label || !s) return;   // 过期 / 空结果丢弃（保留 Setup 已设的底图）
                     label.SetBackgroundSprite(s);

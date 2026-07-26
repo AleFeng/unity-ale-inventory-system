@@ -19,7 +19,7 @@ namespace Ale.Inventory.Runtime.Serialization
             {
                 displayText     = ToDto(t.displayText, resolver),
                 descriptionText = ToDto(t.descriptionText, resolver),
-                iconGuid        = ObjToGuid(t.icon, t.iconAddress, resolver),
+                iconGuid        = SpriteValueToGuid(t.iconValue, resolver),
                 primaryGroupTag    = t.primaryGroupTag,
                 secondaryGroupTags = ToArray(t.secondaryGroupTags)
             };
@@ -35,7 +35,7 @@ namespace Ale.Inventory.Runtime.Serialization
                 templateRef     = s.templateRef,
                 displayText     = ToDto(s.displayText, resolver),
                 descriptionText = ToDto(s.descriptionText, resolver),
-                iconGuid        = ObjToGuid(s.icon, s.iconAddress, resolver),
+                iconGuid        = SpriteValueToGuid(s.iconValue, resolver),
                 primaryGroupTag    = s.primaryGroupTag,
                 secondaryGroupTags = ToArray(s.secondaryGroupTags),
                 values             = ToDto(s.values, resolver)
@@ -52,8 +52,7 @@ namespace Ale.Inventory.Runtime.Serialization
             {
                 displayText     = TextFromDto(dto.displayText, resolver),
                 descriptionText = TextFromDto(dto.descriptionText, resolver),
-                icon            = resolver.FromGuid(dto.iconGuid) as Sprite,
-                iconAddress     = dto.iconGuid,
+                iconValue       = SpriteValueFromGuid(dto.iconGuid, resolver),
                 primaryGroupTag    = dto.primaryGroupTag,
                 secondaryGroupTags = FromDto(dto.secondaryGroupTags)
             };
@@ -67,8 +66,7 @@ namespace Ale.Inventory.Runtime.Serialization
             {
                 displayText     = TextFromDto(dto.displayText, resolver),
                 descriptionText = TextFromDto(dto.descriptionText, resolver),
-                icon            = resolver.FromGuid(dto.iconGuid) as Sprite,
-                iconAddress     = dto.iconGuid,
+                iconValue       = SpriteValueFromGuid(dto.iconGuid, resolver),
                 primaryGroupTag    = dto.primaryGroupTag,
                 secondaryGroupTags = FromDto(dto.secondaryGroupTags)
             };

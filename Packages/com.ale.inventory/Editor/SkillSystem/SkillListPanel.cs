@@ -98,8 +98,7 @@ namespace Ale.Inventory.Editor
             {
                 skill.displayText     = tmpl.displayText     != null ? tmpl.displayText.Clone()     : new AttributeValue(EFieldType.Text);
                 skill.descriptionText = tmpl.descriptionText != null ? tmpl.descriptionText.Clone() : new AttributeValue(EFieldType.Text);
-                skill.icon               = tmpl.icon;
-                skill.iconAddress        = tmpl.iconAddress;
+                skill.iconValue          = tmpl.iconValue != null ? tmpl.iconValue.Clone() : new AttributeValue(EFieldType.Sprite);
                 skill.primaryGroupTag    = tmpl.primaryGroupTag;
                 skill.secondaryGroupTags = new List<string>(tmpl.secondaryGroupTags);
             }

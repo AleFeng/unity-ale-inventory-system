@@ -75,7 +75,7 @@ namespace Ale.Inventory.Runtime.UI
             gameObject.SetActive(true);
             if (skill == null) { Clear(); return; }
 
-            _iconSlot.Bind(iconImage, skill.icon, skill.iconAddress);
+            _iconSlot.Bind(iconImage, skill.iconValue);
             if (nameText)  nameText.text = UiwSkillText.ResolveName(skill, fallbackToId);
             if (descText)  descText.text = UiwSkillText.ResolveDescription(skill);
             ApplyRankBackground(skill);

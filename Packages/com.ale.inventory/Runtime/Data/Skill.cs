@@ -55,8 +55,8 @@ namespace Ale.Inventory.Runtime
         // ── ISkillConfig（映射到上述序列化字段，供编辑器共享绘制与「从模板复制」）────────────
         AttributeValue ISkillConfig.DisplayName => displayText;
         AttributeValue ISkillConfig.Description => descriptionText;
-        Sprite ISkillConfig.Icon                     { get => icon;            set => icon = value; }
-        string ISkillConfig.IconAddress              { get => iconAddress;     set => iconAddress = value; }
+        Sprite ISkillConfig.Icon                     { get => iconValue.GetObject(0) as Sprite; set => iconValue.SetObject(0, value); }
+        string ISkillConfig.IconAddress              { get => iconValue.GetObjAddress(0);       set => iconValue.SetObjAddress(0, value); }
         string ISkillConfig.PrimaryGroupTag          { get => primaryGroupTag; set => primaryGroupTag = value; }
         List<string> ISkillConfig.SecondaryGroupTags => secondaryGroupTags;
 
