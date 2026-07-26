@@ -23,15 +23,9 @@ namespace Ale.Inventory.Runtime
         /// <summary>默认描述（<see cref="EFieldType.Text"/>：纯文本 fallback + 可选本地化引用）。</summary>
         public AttributeValue descriptionText = new AttributeValue(EFieldType.Text);
 
-        /// <summary>默认图标。</summary>
-        public Sprite icon;
-
-        /// <summary>默认图标的 Addressable 授权 GUID（启用 ATK_ADDRESSABLE 且以 AssetReference 授权时用；否则空，走 <see cref="icon"/> 直接引用）。</summary>
-        public string iconAddress;
-
         /// <summary>
-        /// 默认图标（<see cref="EFieldType.Sprite"/> 对象类属性值）。纳入属性系统后由通用 Addressable 工具统一迁移；
-        /// 将逐步取代上面的 <see cref="icon"/> / <see cref="iconAddress"/>。
+        /// 默认图标（<see cref="EFieldType.Sprite"/> 对象类属性值：直接引用或 Addressable 授权 GUID）。
+        /// 由通用 Addressable 工具统一做 Object ↔ GUID/Addressable 迁移。
         /// </summary>
         public AttributeValue iconValue = new AttributeValue(EFieldType.Sprite);
 
@@ -64,8 +58,6 @@ namespace Ale.Inventory.Runtime
             {
                 displayText        = displayText     != null ? displayText.Clone()     : new AttributeValue(EFieldType.Text),
                 descriptionText    = descriptionText != null ? descriptionText.Clone() : new AttributeValue(EFieldType.Text),
-                icon               = icon,
-                iconAddress        = iconAddress,
                 iconValue          = iconValue != null ? iconValue.Clone() : new AttributeValue(EFieldType.Sprite),
                 primaryGroupTag    = primaryGroupTag,
                 secondaryGroupTags = new List<string>(secondaryGroupTags),
