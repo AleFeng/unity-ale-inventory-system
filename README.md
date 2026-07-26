@@ -97,6 +97,9 @@ Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件
 - 未启用 `IS_TMP` 时，UI 文本组件回退到 `UnityEngine.UI.Text`，插件照常工作。
 
 ## 📦 安装
+
+> ⚠️ **本插件依赖通用底层包 [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit)，必须先装它、再装本插件。** 自 1.8.0 起本插件依赖它；Unity Package Manager 不支持在 `package.json` 的 `dependencies` 里写 git URL，无法自动拉取，故**顺序不能颠倒**。用与下方相同的方式先安装 toolkit：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.1.0`。漏装或颠倒会报 `找不到 Ale.Toolkit.*` 一类编译错——补装 toolkit 并等重新编译即可，无需重装本插件。
+
 ### 使用 UPM（推荐）
 `Window > Package Manager` → 左上角 `+` → `Install package from git URL...` → 粘贴：
 
@@ -107,7 +110,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 这样装的是 `main` 的最新提交。**要固定版本，把 `#<tag>` 加在整条 URL 的最末尾**（必须在 `?path=` 之后）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.7.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.9.0
 ```
 
 可用的 tag 见 [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases)。

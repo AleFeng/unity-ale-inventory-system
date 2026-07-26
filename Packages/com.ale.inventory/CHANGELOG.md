@@ -6,6 +6,33 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.9.0] - 2026-07-26
+
+配合 `com.ale.toolkit` 1.1.0 的完整性补齐所做的跟随式清理与文档同步。**纯结构 / 文档调整，功能与数据零变化，旧数据与旧存档完全兼容。**
+
+### 变更
+
+- **依赖 `com.ale.toolkit` 1.1.0**（安装顺序不变：先 `com.ale.toolkit`、再本插件）。
+- **Addressables 运行时层迁往 toolkit**：`AddressableAssetLoader` / `InventoryAddressableManager` / `InventoryAssetOwnerTracker` 三个零领域耦合的运行时件下沉为 `Ale.Toolkit.Runtime.AddressableSupport` 下的 `AddressableAssetLoader` / `AddressableManager` / `AssetOwnerTracker`；空的 `Ale.Inventory.Addressables.Runtime` 程序集随之移除（编辑器工具程序集 `Ale.Inventory.Addressables.Editor` 保留）。
+- **宏开关工具改用 toolkit**：`InventoryDefineUtils` → toolkit `DefineUtils`（`InventoryDefineChecker` 因耦合欢迎窗口 / 库存偏好，仍留本插件）。
+- **编辑器多语言表精简**：由 toolkit 组件渲染的通用键（三列框架按钮、属性绘制器标签、搜索 / 页签、标签面板等）上移至 toolkit 登记，本插件译表移除对应重复项——同一张共享字典，界面显示不变。
+
+### 移除
+
+- 删除空的 `Ale.Inventory.UI.Localization` 程序集（本地化组件 1.8.0 已迁入 toolkit）。
+
+### 修复
+
+- `Ale.Inventory.UI.Localization` asmdef 悬空引用：`Ale.Inventory.UI` → `Ale.Inventory.Runtime.UI`（`IS_LOCALIZATION` 门控）。
+
+### 文档
+
+- 三语 `README` / `Docs~` 同步为**双包**结构：程序集表区分本插件与 `Ale.Toolkit.*`；抽取后类名更新（`UiwInventoryTab` → `UiwTabButton`、虚拟列表基类 → `UiwVirtual*`、`InventoryExportResolver` → `EditorExportResolver`、`InventoryAssetRefField` → `EditorAssetRefField`、`InventoryTmpFontEvent` → `LocalizedFontEvent`、程序集 `Ale.Inventory.UI` → `Ale.Inventory.Runtime.UI` 等）。
+
+### 兼容性
+
+- **数据无需迁移**：`InventoryDatabase` 资产、导出的 JSON / 二进制、运行时存档格式均不变；旧存档与旧资产完全兼容。
+
 ## [1.8.0] - 2026-07-26
 
 **纯结构重整，功能零变化。** 把原先埋在本插件里、与库存业务无关的通用能力抽成独立包 [`com.ale.toolkit`](../com.ale.toolkit)（自定义属性系统、虚拟滚动列表、编辑器三列框架、编辑器界面三语、排序引擎、标签系统，及 TMP / Localization / Addressables 支持层），本插件反过来依赖它。**导出格式与序列化结构完全不变，旧数据与旧存档完全兼容。**

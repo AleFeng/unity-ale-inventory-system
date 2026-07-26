@@ -99,6 +99,9 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
 - `IS_TMP` が無効の場合、UI のテキストコンポーネントは `UnityEngine.UI.Text` にフォールバックし、プラグインは通常どおり動作します。
 
 ## 📦 インストール
+
+> ⚠️ **本プラグインは共通基盤パッケージ [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) に依存します。先に toolkit を、その後に本プラグインをインストールしてください。** 1.8.0 以降これに依存します。Unity の Package Manager は `package.json` の `dependencies` での git URL を自動取得できないため、**順序を逆にしないでください**。下と同じ方法でまず toolkit をインストール：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.1.0`。未インストールや順序が逆だと `Ale.Toolkit.* が見つかりません` といったコンパイルエラーになります。toolkit を追加インストールして再コンパイルを待つだけでよく、本プラグインの再インストールは不要です。
+
 ### UPM を使う（推奨）
 `Window > Package Manager` → 左上の `+` → `Install package from git URL...` → 次を貼り付け：
 
@@ -109,7 +112,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 これで `main` の最新コミットが入ります。**バージョンを固定するには、URL の末尾に `#<tag>` を付けます**（必ず `?path=` の後ろに）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.7.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.9.0
 ```
 
 利用可能なタグは [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) を参照してください。

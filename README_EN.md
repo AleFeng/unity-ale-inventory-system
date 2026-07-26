@@ -99,6 +99,9 @@ Almost every game needs an "items + inventory + shop + crafting + equipment + sk
 - With `IS_TMP` disabled, UI text components fall back to `UnityEngine.UI.Text` and the plugin works as usual.
 
 ## 📦 Installation
+
+> ⚠️ **This plugin depends on the shared foundation package [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) — install it first, then this plugin.** It has depended on it since 1.8.0; Unity's Package Manager cannot auto-pull git-URL `dependencies`, so **the order must not be reversed**. Install toolkit the same way as below first: `https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.1.0`. If it is missing or the order is reversed you will get `Ale.Toolkit.* not found` compile errors — just install toolkit and wait for the recompile, no need to reinstall this plugin.
+
 ### Install via UPM (Recommended)
 `Window > Package Manager` → the `+` in the top-left → `Install package from git URL...` → paste:
 
@@ -109,7 +112,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 This installs the latest commit on `main`. **To pin a version, append `#<tag>` to the very end of the URL** (it must come after `?path=`):
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.7.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.9.0
 ```
 
 See [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) for available tags.
