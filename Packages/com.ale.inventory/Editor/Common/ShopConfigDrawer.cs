@@ -164,7 +164,7 @@ namespace Ale.Inventory.Editor
                 cfg.NumberFormatRef, v => cfg.NumberFormatRef = v);
 
             // 价格属性来源：枚举所有 StringIntPair 属性 id
-            var attrIds  = BuildStringIntPairAttrOptions(ctx.Database);
+            var attrIds  = InventoryAttrOptionUtil.CollectAttrIds(ctx.Database, d => d.type == EFieldType.StringIntPair);
             var displays = new string[attrIds.Count + 1];
             displays[0]  = Tr("（无）");
             int curIdx   = 0;
@@ -184,24 +184,6 @@ namespace Ale.Inventory.Editor
             }
             EditorGUILayout.LabelField(
                 Tr("（道具上 StringIntPair 类型属性：货币ID→价格）"), EditorStyles.miniLabel);
-        }
-
-        /// <summary>收集数据库中所有 StringIntPair 类型属性字段 id（来自道具模板与功能标签，去重保序）。</summary>
-        private static List<string> BuildStringIntPairAttrOptions(InventoryDatabase db)
-        {
-            var ids  = new List<string>();
-            var seen = new HashSet<string>();
-            void Collect(List<AttributeDefinition> defs)
-            {
-                if (defs == null) return;
-                foreach (var def in defs)
-                    if (def.type == EFieldType.StringIntPair
-                        && !string.IsNullOrEmpty(def.id) && seen.Add(def.id))
-                        ids.Add(def.id);
-            }
-            foreach (var tmpl in db.ItemTemplates) Collect(tmpl.attributes);
-            foreach (var tag in db.FunctionTags)   Collect(tag.attributes);
-            return ids;
         }
 
         // ── 商品组 ──────────────────────────────────────────────────────────────────

@@ -132,17 +132,9 @@ namespace Ale.Inventory.Editor
         {
             var dList = new List<string> { Tr("道具 ID") };
             var vList = new List<string> { "__id__" };
-            var seen  = new HashSet<string>();
 
-            foreach (var tmpl in db.ItemTemplates)
-                foreach (var def in tmpl.attributes)
-                    if (!string.IsNullOrEmpty(def.id) && seen.Add(def.id))
-                    { dList.Add(Tr("属性") + "/" + def.id); vList.Add(def.id); }
-
-            foreach (var tag in db.FunctionTags)
-                foreach (var def in tag.attributes)
-                    if (!string.IsNullOrEmpty(def.id) && seen.Add(def.id))
-                    { dList.Add(Tr("属性") + "/" + def.id); vList.Add(def.id); }
+            foreach (var id in InventoryAttrOptionUtil.CollectAttrIds(db))
+            { dList.Add(Tr("属性") + "/" + id); vList.Add(id); }
 
             if (db.FunctionTags.Count > 0)
             { dList.Add(Tr("功能标签")); vList.Add("__tagOrder__"); }

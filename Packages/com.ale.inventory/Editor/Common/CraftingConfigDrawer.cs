@@ -118,7 +118,7 @@ namespace Ale.Inventory.Editor
             EditorGUILayout.LabelField(Tr("在蓝图条目 / 详情上显示主产出道具的属性值（形如「Label 值」）。"),
                 EditorStyles.miniLabel);
 
-            var attrIds  = BuildAttrIdOptions(ctx.Database);
+            var attrIds  = InventoryAttrOptionUtil.CollectAttrIds(ctx.Database);
             var displays = new string[attrIds.Count + 1];
             displays[0]  = Tr("（无）");
             for (int i = 0; i < attrIds.Count; i++) displays[i + 1] = attrIds[i];
@@ -218,22 +218,6 @@ namespace Ale.Inventory.Editor
             }
         }
 
-        /// <summary>收集数据库中所有属性字段 id（来自道具模板与功能标签，去重保序）。</summary>
-        private static List<string> BuildAttrIdOptions(InventoryDatabase db)
-        {
-            var ids  = new List<string>();
-            var seen = new HashSet<string>();
-            void Collect(List<AttributeDefinition> defs)
-            {
-                if (defs == null) return;
-                foreach (var def in defs)
-                    if (!string.IsNullOrEmpty(def.id) && seen.Add(def.id))
-                        ids.Add(def.id);
-            }
-            foreach (var tmpl in db.ItemTemplates) Collect(tmpl.attributes);
-            foreach (var tag in db.FunctionTags)   Collect(tag.attributes);
-            return ids;
-        }
         #endregion
 
     }
