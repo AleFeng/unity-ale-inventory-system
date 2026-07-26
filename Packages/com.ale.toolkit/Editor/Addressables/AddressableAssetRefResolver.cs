@@ -1,13 +1,11 @@
-using Ale.Inventory.Runtime.Serialization;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Ale.Toolkit.Runtime;
-using Ale.Toolkit.Editor;
 
-namespace Ale.Inventory.Editor
+namespace Ale.Toolkit.Editor
 {
     /// <summary>
     /// Addressable 模式下的导出解析器。把被引用资源转为其 GUID 作为运行时加载键
@@ -56,12 +54,12 @@ namespace Ale.Inventory.Editor
                     // 不自动创建条目：仅检查资源是否已（显式或隐式）标记为 Addressable，未标记则警告提醒，
                     // 由用户自行在 Addressables Groups 窗口中添加（与「不自动建组」策略一致）。
                     if (settings.FindAssetEntry(guid, includeImplicit: true) == null)
-                        Debug.LogWarning($"[InventoryAddressables] 资源「{obj.name}」（GUID: {guid}）尚未标记为 Addressable，未自动登记。" +
+                        Debug.LogWarning($"[Ale Addressables] 资源「{obj.name}」（GUID: {guid}）尚未标记为 Addressable，未自动登记。" +
                                          "请在 Addressables Groups 窗口中手动添加为 Addressable，否则运行时无法按 GUID 加载。");
                 }
                 else
                 {
-                    Debug.LogWarning("[InventoryAddressables] 无法获取 AddressableAssetSettings：" + obj.name);
+                    Debug.LogWarning("[Ale Addressables] 无法获取 AddressableAssetSettings：" + obj.name);
                 }
             }
 

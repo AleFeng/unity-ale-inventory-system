@@ -8,7 +8,8 @@
         "Unity.Addressables.Editor",
         "Unity.ResourceManager",
         "Ale.Toolkit.Runtime",
-        "Ale.Toolkit.Editor"
+        "Ale.Toolkit.Editor",
+        "Ale.Toolkit.Addressables.Editor"
     ],
     "includePlatforms": [
         "Editor"
