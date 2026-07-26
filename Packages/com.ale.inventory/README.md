@@ -163,6 +163,9 @@ Tools > Inventory System > Welcome Window
 
 ## 依赖
 
+> ⚠️ **自 1.8.0 起本插件依赖 [`com.ale.toolkit`](../com.ale.toolkit)。** Unity Package Manager 不支持在 `package.json` 的 `dependencies` 里写 git URL，故 `dependencies` 留空——**必须手动先安装 `com.ale.toolkit`、再安装本插件**，否则会报大量类型缺失编译错。
+
+- **`com.ale.toolkit`（必需，先安装）** —— 本插件的通用底层（属性系统、虚拟滚动列表、编辑器三列框架、编辑器界面三语、排序引擎、标签系统等）。
 - Unity 2022.3+（`package.json` 声明的最低版本；本插件基于 `Unity 6000.3` 开发与维护）
 - TextMeshPro（可选，`IS_TMP` 宏）
 - Unity Localization（可选，`IS_LOCALIZATION` 宏）

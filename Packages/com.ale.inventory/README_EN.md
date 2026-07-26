@@ -164,6 +164,9 @@ The "Show on Startup" toggle at the bottom of the window controls whether this w
 
 ## Dependencies
 
+> ⚠️ **Since 1.8.0 this plugin depends on [`com.ale.toolkit`](../com.ale.toolkit).** Unity's Package Manager does not support git-URL entries in `package.json` `dependencies`, so `dependencies` is left empty — you **must install `com.ale.toolkit` first, then this plugin**, otherwise you will get many "type not found" compile errors.
+
+- **`com.ale.toolkit` (required, install first)** — the shared foundation this plugin builds on (attribute system, virtual-scroll lists, the three-column editor framework, trilingual editor UI, sorting engine, tag system, etc.).
 - Unity 2022.3+ (the minimum declared in `package.json`; this plugin is developed and maintained on `Unity 6000.3`)
 - TextMeshPro (optional, `IS_TMP` macro)
 - Unity Localization (optional, `IS_LOCALIZATION` macro)

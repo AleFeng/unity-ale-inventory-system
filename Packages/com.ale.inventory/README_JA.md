@@ -164,6 +164,9 @@ Tools > Inventory System > Welcome Window
 
 ## 依存関係
 
+> ⚠️ **1.8.0 以降、本プラグインは [`com.ale.toolkit`](../com.ale.toolkit) に依存します。** Unity の Package Manager は `package.json` の `dependencies` での git URL 指定に対応していないため `dependencies` は空にしてあります。**必ず先に `com.ale.toolkit` を、その後に本プラグインをインストール**してください。さもないと大量の「型が見つからない」コンパイルエラーになります。
+
+- **`com.ale.toolkit`（必須、先にインストール）** —— 本プラグインが依存する共通基盤（属性システム、仮想スクロールリスト、エディタ 3 カラムフレームワーク、エディタ UI の 3 言語対応、ソートエンジン、タグシステムなど）。
 - Unity 2022.3+（`package.json` が宣言する最低バージョン。本プラグインは `Unity 6000.3` で開発・保守しています）
 - TextMeshPro（任意、`IS_TMP` マクロ）
 - Unity Localization（任意、`IS_LOCALIZATION` マクロ）
