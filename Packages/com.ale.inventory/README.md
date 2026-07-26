@@ -122,8 +122,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 |------|------|
 | 创建新数据文件 | 新建 `InventoryDatabase` 资产（若配置了下方「数据模板」则从模板深拷贝） |
 | 打开 Inventory Editor | 打开配置编辑器主窗口 |
-| 打开 Addressable工具窗口 | （启用 `ATK_ADDRESSABLE` 时）资源引用 Object ↔ AssetReference(GUID) 批量互转 |
-| 打开 本地化工具窗口 | （启用 `ATK_LOCALIZATION` 时）生成 / 关联多语言表、为所有 Text 字段一键生成中文 Key |
+| 打开 本地化工具窗口 | （启用 `ATK_LOCALIZATION` 时）打开 toolkit 通用本地化窗口，为本库生成 / 关联多语言表、一键生成 Key |
 | 查看文档 | 用系统默认程序打开本 README |
 
 展开「**测试工具-预制体生成**」折叠栏：

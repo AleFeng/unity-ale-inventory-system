@@ -8,7 +8,7 @@
 
 ## [1.10.0] - 2026-07-26
 
-配合 `com.ale.toolkit` 1.2.0，把「界面语言」与「可选依赖宏」这两项项目级全局设定下沉到 toolkit 欢迎窗口，并把菜单统一收拢到 `Tools > Ale Toolkit` 下。**纯结构 / 文档调整，功能与数据零变化，旧数据与旧存档完全兼容。**
+配合 `com.ale.toolkit` 1.2.0：把「界面语言」与「可选依赖宏」下沉到 toolkit 欢迎窗口、菜单收拢到 `Tools > Ale Toolkit` 下，并把两个库存专用工具窗口（本地化 / Addressable）整合进 toolkit 的**通用工具窗口**（图标字段并入属性系统后即可通用）。**全局设定 / 菜单部分为纯结构调整；图标整合涉及一次性资产迁移（见「整合」），导出 DTO 表示不变但格式版本号 6 → 7。**
 
 ### 变更
 
@@ -17,9 +17,15 @@
 - **全局设定下沉 toolkit**：欢迎窗口移除界面语言按钮与插件宏开关区，改为「打开 Ale Toolkit 设置（语言 / 插件宏）」跳转按钮（语言 / 枚举翻译 / 宏开关统一在 toolkit 欢迎窗口配置）；`InventoryEditorPrefs` / `InventoryDefineChecker` 移除已下沉的宏常量 / 检测 / 一致性检查；向导 TMP / 本地化字体设置从宏区迁为独立「向导字体」区。
 - **菜单收拢**：库存四个菜单项由 `Tools > Inventory System > *` 收入 `Tools > Ale Toolkit > Inventory System > *`（欢迎窗口 / Inventory Editor / 本地化工具窗口 / Addressable 工具窗口）。`Assets > Create > Inventory System > Inventory Database` 不变。
 
+### 整合（删除库存专用工具窗口，改用 toolkit 通用工具）
+
+- **删除库存专用工具窗口**：`InventoryLocalizationToolWindow` + `InventoryTextFieldCollector`、`InventoryAddressableToolWindow` + 空的 `Ale.Inventory.Addressables.Editor` 程序集。欢迎窗口「本地化」按钮改开 toolkit 通用窗口；「Addressable」按钮与注入钩子移除（改从 `Tools > Ale Toolkit > Addressable` 打开）。
+- **图标并入属性系统**：`Skill` / `SkillTemplate` 的 `icon` + `iconAddress` → `iconValue`（`AttributeValue` Sprite）；功能标签背景图同理（toolkit `Tag.backgroundSpriteValue`）。UI / DTO 导出 / 编辑器绘制 / 标签面板全部改读新字段，`ISkillConfig.Icon` 代理到 `iconValue`。**升级须知**：本版提供一次性迁移菜单 `Tools > Ale Toolkit > Inventory System > 迁移 > 图标字段迁移到属性系统`——升级后请**先运行它**把旧图标搬入新字段并保存。
+- **移除 `InventoryDatabase.LocalizationTableCollectionGuid`**：本地化表绑定已回归到各 Text 属性值的 `tableRef`（由 toolkit 通用窗口反推）。含数据模型 + DTO + JSON + 二进制四处；`InventoryDtoMapper.Version` 6 → 7（该字段位于二进制末尾，删除**向后兼容**——旧存档可读，末尾多余字节忽略）。
+
 ### 文档
 
-- 三语 `README` / `Docs~` 同步：宏名 `ATK_*`、新菜单路径、全局设定改在 toolkit 欢迎窗口配置、toolkit 新增通用工具窗口。
+- 三语 `README` / `Docs~` 同步：宏名 `ATK_*`、新菜单路径、全局设定改在 toolkit 欢迎窗口配置、toolkit 通用工具窗口替代库存专用工具、图标字段并入属性系统。
 
 ## [1.9.0] - 2026-07-26
 

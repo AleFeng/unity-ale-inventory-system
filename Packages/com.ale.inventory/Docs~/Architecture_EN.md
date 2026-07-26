@@ -238,7 +238,6 @@ This plugin depends on the standalone foundation package `com.ale.toolkit` (`Ale
 | `Ale.Inventory.Runtime` | Data models, managers, serialization (runtime core) |
 | `Ale.Inventory.Runtime.UI` | Runtime UI components (warehouse / shop / crafting / skill views); references Runtime, `Ale.Toolkit.Runtime.UI` and TextMeshPro |
 | `Ale.Inventory.Editor` | Editor windows and panels |
-| `Ale.Inventory.Addressables.Editor` | Addressables editor tooling (constrained by `ATK_ADDRESSABLE`) |
 
 **Foundation (`com.ale.toolkit`)**
 

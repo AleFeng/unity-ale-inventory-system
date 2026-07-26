@@ -106,7 +106,7 @@ InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 - **未启用 `ATK_ADDRESSABLE`（直接模式）**：属性字段直接挂载 Unity 资源引用（`objRefs`），加载配置数据时资源随之载入内存；门面同步返回该实时引用（编辑器控件为 `ObjectField`）。
 - **启用 `ATK_ADDRESSABLE`（授权模式）**：编辑器中对象字段改用原生 **AssetReference** 可搜索选择器，配置只存 GUID（不硬引用，加载数据库不再把资源一并载入内存）；运行时经 Addressable 按需**异步加载**、按地址引用计数，宿主销毁时**自动卸载**。导出时被引用资源自动登记进 `InventorySystem` Addressable 分组。
 
-> 两种存储的磁盘格式不同、无法靠同名字段自动共用。切换宏后用菜单 **Tools/Ale Toolkit/Inventory System/Addressables** 在「Object 引用 ↔ AssetReference(GUID)」间一键互转某个数据库的全部资源字段。
+> 两种存储的磁盘格式不同、无法靠同名字段自动共用。切换宏后用通用工具菜单 **Tools > Ale Toolkit > Addressable**（拖入 `InventoryDatabase`）在「Object 引用 ↔ AssetReference(GUID)」间一键互转其全部资源属性值（含图标 / 背景图）。
 >
 > 底层：授权 GUID / 运行时地址与实时引用平行存于 `AttributeValue`（地址列表 vs `objRefs`）；门面优先用实时引用，无则回退地址异步加载。core 程序集对 Addressables 零依赖，原生选择器经受约束的 Addressable 编辑器程序集注入（同 `EditorExportResolver` 的注入模式）。
 >
@@ -126,17 +126,17 @@ InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 
 编辑器一律经 `AttributeFieldDrawer` 绘制 Text（纯文本框 + 原生可搜索的表 / 条目选择器）；运行时读取用 `ResolveText()`。
 
-## 本地化工具窗口
+## 本地化工具窗口（通用）
 
-`Tools > Ale Toolkit > Inventory System > Localization > 本地化工具窗口`（仅 `ATK_LOCALIZATION`；欢迎窗口亦有入口按钮）。为一个 `InventoryDatabase` 一站式接入 Unity Localization：
+`Tools > Ale Toolkit > Localization > 本地化工具窗口`（仅 `ATK_LOCALIZATION`；库存欢迎窗口亦有入口按钮）。**本插件不再自带本地化专用窗口，改用 toolkit 的通用窗口**——把本库的 `InventoryDatabase` 拖入即可，一站式接入 Unity Localization：
 
-1. **生成 / 关联多语言表**：按当前 Locale 生成一个 String Table 集合（表名 `{前缀}_{数据库名}`，前缀 / 生成文件夹可配并记忆），并把其 `SharedTableData` 的 GUID 记录到数据库（1:1，字段 `InventoryDatabase.LocalizationTableCollectionGuid`）。「关联多语言表」也可手动新建 String Table Collection 后拖入挂载；「编辑」按钮打开该表的 Table Editor。
-2. **生成 多语言Key**：遍历库内**所有** Text 字段，逐帧生成唯一**中文 Key**（`道具系统-{类别}-{实例id}-{字段}[-{元素}]`，如 `道具系统-道具条目-{道具id}-名称`、`道具系统-枚举类型-{枚举名}-{枚举项名}-{属性id}`），写回字段的表 / 条目引用，并在表中建 Key→Value 条目。仅处理有纯文本内容的字段，同名 Key 追加 `#n` 去重。
+1. **生成 / 关联多语言表**：按当前 Locale 生成一个 String Table 集合（表名 `{前缀}_{数据库名}`，前缀 / 生成文件夹可配并记忆）。关联关系**不再单独记录**在数据库字段上，而是随各 Text 属性值自身的 `tableRef` 保留、由窗口自动**反推**；首次生成前可在「关联多语言表」处手动新建 / 拖入集合，「编辑」按钮打开该表的 Table Editor。
+2. **生成 多语言Key**：反射遍历库内**所有** Text 型属性值，逐帧生成唯一 Key。Key 为**结构化路径**、以列表元素的 `id` / `name` 作稳定段（重排不失效），如 `{数据库名}-Items-{道具id}-displayText`、`{数据库名}-Skills-{技能id}-values-{属性id}`；写回字段的表 / 条目引用并建表条目。仅处理有纯文本内容的字段，同名 Key 追加 `#n` 去重。
 3. **两个勾选项**：
    - **覆盖 已存在多语言Key**：勾选后执行前弹确认；已配 Key 的字段改用自动生成的 Key（命名与现有相同则不动）。不勾选则跳过已配字段。
    - **填入 Text中的String文本**：勾选后把源 Text 的纯文本值作为初始值填入该 Key 在**所有语言表**的空条目（不覆盖已有译文）。
 
-> 中文 Key 完全可用：Unity Localization 支持 Unicode Key，运行时按 Key 解析，中英文性能无实质差异。本工具与 `InventoryAddressableToolWindow`（资源引用迁移）共享基类 `InventoryToolWindowBase`（逐帧步进 + 进度条 + 可选择日志）。
+> Unity Localization 支持 Unicode Key，运行时按 Key 解析。资源引用迁移同理下沉为通用工具（`Tools > Ale Toolkit > Addressable`）——拖入 `InventoryDatabase` 即可覆盖含技能 / 模板图标、功能标签背景图（均已并入属性系统）在内的全部资源属性值。
 
 # 显示字符串 ToDisplayString
 

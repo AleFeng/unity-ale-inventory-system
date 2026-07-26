@@ -123,8 +123,7 @@ UI language switching (中 / English / 日本語), the "Enum Values" translation
 |------|------|
 | Create New Data File | Creates a new `InventoryDatabase` asset (deep-copied from a "Data Template" if one is configured below) |
 | Open Inventory Editor | Opens the main configuration editor window |
-| Open Addressable Tool Window | (When `ATK_ADDRESSABLE` is enabled) Batch conversion between Object ↔ AssetReference(GUID) asset references |
-| Open Localization Tool Window | (When `ATK_LOCALIZATION` is enabled) Generate / link localization tables, and one-click generate keys for all Text fields |
+| Open Localization Tool Window | (When `ATK_LOCALIZATION` is enabled) Opens the toolkit's generic localization window to generate / link tables and keys for this library |
 | View Documentation | Opens this README with the system default application |
 
 Expand the "**Test Tools – Prefab Generation**" foldout:

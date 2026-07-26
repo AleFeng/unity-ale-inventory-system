@@ -236,7 +236,6 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 | `Ale.Inventory.Runtime` | データモデル、マネージャー、シリアライズ（ランタイムコア） |
 | `Ale.Inventory.Runtime.UI` | ランタイム UI コンポーネント（倉庫 / ショップ / クラフト / スキルビュー）。Runtime、`Ale.Toolkit.Runtime.UI`、TextMeshPro を参照 |
 | `Ale.Inventory.Editor` | エディタウィンドウとパネル |
-| `Ale.Inventory.Addressables.Editor` | Addressables エディタツール（`ATK_ADDRESSABLE` 制約） |
 
 **基盤（`com.ale.toolkit`）**
 

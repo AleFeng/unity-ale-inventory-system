@@ -229,7 +229,6 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 | `Ale.Inventory.Runtime` | 数据模型、管理器、序列化（运行时核心） |
 | `Ale.Inventory.Runtime.UI` | 运行时 UI 组件（仓库 / 商店 / 制作 / 技能视图）；引用 Runtime、`Ale.Toolkit.Runtime.UI` 与 TextMeshPro |
 | `Ale.Inventory.Editor` | 编辑器窗口与面板 |
-| `Ale.Inventory.Addressables.Editor` | Addressable 编辑器工具（受 `ATK_ADDRESSABLE` 约束） |
 
 **通用底层（`com.ale.toolkit`）**
 
