@@ -30,20 +30,10 @@ namespace Ale.Inventory.Editor
             Add("技能",   "Skill",           "スキル");
             Add("分组标签", "Group Tag",     "グループタグ");
 
-            // ── 三列框架：组合模板 ────────────────────────────────────────────────
-            Add("{0} Inspector", "{0} Inspector", "{0} インスペクター");
-            Add("删除{0}",       "Delete {0}",    "{0}を削除");
-            Add("（无可用{0}模板）",
-                "(No {0} templates available)",
-                "（利用可能な{0}テンプレートがありません）");
-
             // ── 工具栏 / 主列表 ───────────────────────────────────────────────────
             Add("数据文件",   "Data File",           "データファイル");
             Add("导出 JSON",  "Export JSON",         "JSON をエクスポート");
             Add("导出二进制", "Export Binary",       "バイナリをエクスポート");
-            Add("从模板添加", "Add from Template",   "テンプレートから追加");
-            Add("快速添加",   "Quick Add",           "クイック追加");
-            Add("全部",       "All",                 "すべて");
 
             // ── 无数据库占位 ──────────────────────────────────────────────────────
             Add("请创建或选择一个 InventoryDatabase 数据文件",
@@ -56,8 +46,6 @@ namespace Ale.Inventory.Editor
             Add("来源模板", "Source Template", "元テンプレート");
             Add("（无）",   "(None)",          "（なし）");
             Add("自定义属性", "Custom Attributes", "カスタム属性");
-            Add("名称", "Name",        "名称");
-            Add("描述", "Description",  "説明");
             Add("（暂无可用功能标签）",
                 "(No function tags available)",
                 "（利用可能な機能タグがありません）");

@@ -8,29 +8,11 @@ namespace Ale.Inventory.Editor
         static partial void RegisterItem()
         {
             // ── 左列子页签 / 主列表名词 ──────────────────────────────────────────
-            Add("枚举类型", "Enum Types",     "列挙型");
             Add("功能标签", "Function Tags",  "機能タグ");
             Add("道具模板", "Item Templates", "アイテムテンプレート");
 
             // ── 新建默认名 ────────────────────────────────────────────────────────
-            Add("新枚举", "New Enum",     "新規列挙型");
-            Add("新标签", "New Tag",      "新規タグ");
             Add("新模板", "New Template", "新規テンプレート");
-            Add("新项",   "New Item",     "新規項目");
-
-            // ── 功能标签面板 ──────────────────────────────────────────────────────
-            Add("请选择或新建一个功能标签。",
-                "Select or create a function tag.",
-                "機能タグを選択または新規作成してください。");
-            Add("标签ID",       "Tag ID",                "タグ ID");
-            Add("功能标签属性", "Function Tag Attributes", "機能タグの属性");
-            Add("背景图",       "Background Sprite",     "背景画像");
-            Add("背景颜色",     "Background Color",      "背景色");
-            Add("UI中隐藏",     "Hide in UI",            "UI で非表示");
-            Add("道具属性字段", "Item Attribute Fields", "アイテム属性フィールド");
-            Add("附加到道具后，会自动添加至道具的「属性字段」列表中",
-                "Once attached to an item, they are automatically added to the item's \"attribute fields\" list.",
-                "アイテムに付加すると、アイテムの「属性フィールド」一覧に自動追加されます。");
 
             // ── 道具模板面板 ──────────────────────────────────────────────────────
             Add("请选择或新建一个道具模板。",
@@ -45,7 +27,6 @@ namespace Ale.Inventory.Editor
             Add("重量",         "Weight",              "重量");
             Add("堆叠上限",     "Stack Limit",         "スタック上限");
             Add("仓库中隐藏",   "Hide in Warehouse",   "倉庫で非表示");
-            Add("属性字段",     "Attribute Fields",    "属性フィールド");
 
             // ── 道具列表（中列）──────────────────────────────────────────────────
             Add("（无可用模板）", "(No templates available)", "（利用可能なテンプレートがありません）");

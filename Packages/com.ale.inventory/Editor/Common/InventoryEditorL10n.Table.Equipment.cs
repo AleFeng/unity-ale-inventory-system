@@ -69,7 +69,6 @@ namespace Ale.Inventory.Editor
             Add("(标签)",   "(Tag)",      "（タグ）");
             Add("（枚举项名称）", "(Enum item name)", "（列挙項目名）");
             Add("字符串", "String", "文字列");
-            Add("文本",   "Text",   "テキスト");
             Add("{0}（已失效）", "{0} (invalid)", "{0}（無効）");
             Add("显示名来源（枚举字段）",
                 "Display-name source (enum field)",

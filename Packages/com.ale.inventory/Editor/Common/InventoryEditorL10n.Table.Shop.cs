@@ -21,7 +21,6 @@ namespace Ale.Inventory.Editor
                 "（このショップにはカスタム属性フィールドがありません。左の「ショップテンプレート」で追加できます）");
 
             // ── 商店列表列头 ──────────────────────────────────────────────────────
-            Add("类型",   "Type",           "タイプ");
             Add("商品组", "Product Groups", "商品グループ");
 
             // ── 商店配置绘制器 ────────────────────────────────────────────────────
@@ -56,8 +55,6 @@ namespace Ale.Inventory.Editor
             Add("组刷新计划",   "Group refresh schedule", "グループ更新スケジュール");
             Add("商品列表（{0}）", "Product list ({0})", "商品一覧（{0}）");
             Add("+ 添加商品",   "+ Add Product",       "+ 商品を追加");
-            Add("搜索",         "Search",              "検索");
-            Add("无匹配",       "No match",            "一致なし");
             Add("▶ 搜索匹配",   "▶ Search match",      "▶ 検索一致");
             Add("直接输入道具 ID，回车确认；右侧「选择」可按道具模板分组从道具列表快捷选择，写入此处。无对应道具时红色提示且无法导出。",
                 "Type the item ID directly and press Enter; \"Select\" on the right lets you pick from the item list grouped by item template and writes it here. Items with no match are highlighted red and cannot be exported.",
