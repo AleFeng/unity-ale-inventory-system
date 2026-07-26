@@ -6,6 +6,26 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.8.0] - 2026-07-26
+
+**纯结构重整，功能零变化。** 把原先埋在本插件里、与库存业务无关的通用能力抽成独立包 [`com.ale.toolkit`](../com.ale.toolkit)（自定义属性系统、虚拟滚动列表、编辑器三列框架、编辑器界面三语、排序引擎、标签系统，及 TMP / Localization / Addressables 支持层），本插件反过来依赖它。**导出格式与序列化结构完全不变，旧数据与旧存档完全兼容。**
+
+### ⚠ 安装顺序（重要）
+
+本版本起 `com.ale.inventory` **依赖 `com.ale.toolkit`**。Unity 的 Package Manager 不支持在 `package.json` 的 `dependencies` 里写 git URL，故 `dependencies` 留空，**必须手动先安装 `com.ale.toolkit`、再安装 `com.ale.inventory`**。详见 README 安装章节。
+
+### 变更
+
+- **通用能力下沉 toolkit**：属性系统（`AttributeValue` 全家、`EnumType`、`NumberFormatConfig`、`GroupTag`、`ConfigTemplateBase`）、排序（`SortPriority` / `SortOption` / `AttributeSortService` / `ISortContext<TData>`）、运行时基础（单例基类、资源加载抽象、存档契约）、UI 虚拟滚动引擎与通用控件、编辑器三列框架与属性 / 排序绘制器、编辑器界面三语服务、UGUI 预制体搭建工具箱、两个工具窗口（本地化 / Addressable）等，一律迁至 `Ale.Toolkit.*` 命名空间。六大子系统的领域模型与成品视图仍在 `Ale.Inventory.*`。
+- **标签类型通用化**：功能标签 `FunctionTag` 更名为通用的 `Ale.Toolkit.Runtime.Tag` 并迁入 toolkit（`InventoryDatabase.FunctionTags` 等对外 API 名称不变；序列化字段结构不变，**资产数据无损**）。
+- **本地化组件更名**：`InventoryTmpTextEvent` / `InventoryTmpFontEvent` → `LocalizedTextEvent` / `LocalizedFontEvent`（迁入 toolkit，**脚本 GUID 保留**，既有预制体引用不受影响）。
+- 依赖方向单向：`Ale.Inventory.* → Ale.Toolkit.*`，toolkit 绝不反向引用库存。
+
+### 兼容性
+
+- **数据无需迁移**：`InventoryDatabase` 资产、导出的 JSON / 二进制、运行时存档格式均不变；旧存档与旧资产完全兼容。
+- 项目层若直接 `using` 了被下沉的类型（如 `AttributeValue`、`SortPriority`、`EnumType`），需把命名空间由 `Ale.Inventory.*` 改为 `Ale.Toolkit.*`（**类型名不变**）。
+
 ## [1.7.0] - 2026-07-24
 
 编辑器 UI 支持**中文 / English / 日本語**三语切换。纯编辑器界面改动，**不涉及运行时、不改变任何数据结构与序列化格式**，旧数据与旧存档完全兼容。
