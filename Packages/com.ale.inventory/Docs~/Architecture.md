@@ -220,13 +220,27 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 
 ### 程序集划分
 
+本插件依赖独立的通用底层包 `com.ale.toolkit`（`Ale.Toolkit.*`），通用能力已下沉至该包；下表为两包的程序集划分。
+
+**本插件（`com.ale.inventory`）**
+
 | asmdef | 内容 |
 |--------|------|
 | `Ale.Inventory.Runtime` | 数据模型、管理器、序列化（运行时核心） |
-| `Ale.Inventory.UI` | 运行时 UI 组件；引用 Runtime 与 TextMeshPro |
+| `Ale.Inventory.Runtime.UI` | 运行时 UI 组件（仓库 / 商店 / 制作 / 技能视图）；引用 Runtime、`Ale.Toolkit.Runtime.UI` 与 TextMeshPro |
 | `Ale.Inventory.Editor` | 编辑器窗口与面板 |
-| `Ale.Inventory.Addressables.Runtime` / `.Editor` | Addressable 资源加载支持 |
-| `Ale.Inventory.UI.Localization` | TMP 文本 / 字体本地化事件 |
+| `Ale.Inventory.Addressables.Editor` | Addressable 编辑器工具（受 `IS_ADDRESSABLE` 约束） |
+
+**通用底层（`com.ale.toolkit`）**
+
+| asmdef | 内容 |
+|--------|------|
+| `Ale.Toolkit.Runtime` | 属性系统、排序、标签、通用序列化、资源加载抽象 |
+| `Ale.Toolkit.Runtime.UI` | 虚拟滚动列表与通用 UI 控件 |
+| `Ale.Toolkit.UI.Localization` | TMP 文本 / 字体本地化事件（受 `IS_LOCALIZATION` 约束） |
+| `Ale.Toolkit.Addressables.Runtime` | Addressable 资源加载与句柄管理（受 `IS_ADDRESSABLE` 约束） |
+| `Ale.Toolkit.Editor` | 编辑器三列框架、属性绘制器、多语言服务 |
+| `Ale.Toolkit.Addressables.Editor` | Addressable 编辑器工具（受 `IS_ADDRESSABLE` 约束） |
 
 ---
 

@@ -108,9 +108,9 @@ InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 
 > 两种存储的磁盘格式不同、无法靠同名字段自动共用。切换宏后用菜单 **Tools/Inventory System/Addressables** 在「Object 引用 ↔ AssetReference(GUID)」间一键互转某个数据库的全部资源字段。
 >
-> 底层：授权 GUID / 运行时地址与实时引用平行存于 `AttributeValue`（地址列表 vs `objRefs`）；门面优先用实时引用，无则回退地址异步加载。core 程序集对 Addressables 零依赖，原生选择器经受约束的 Addressable 编辑器程序集注入（同 `InventoryExportResolver` 的注入模式）。
+> 底层：授权 GUID / 运行时地址与实时引用平行存于 `AttributeValue`（地址列表 vs `objRefs`）；门面优先用实时引用，无则回退地址异步加载。core 程序集对 Addressables 零依赖，原生选择器经受约束的 Addressable 编辑器程序集注入（同 `EditorExportResolver` 的注入模式）。
 >
-> 配置类的**固定资源字段**（具名字段，如 `Skill.icon`、`SkillTemplate.icon`、`FunctionTag.backgroundSprite`）采用同一套机制：各带一个平行的 `xxxAddress` 纯字符串字段，编辑器经 `InventoryAssetRefField` 绘制（直接 `ObjectField` / 授权 AssetReference 选择器），运行时同样经 `InventoryAssets.Bind(liveRef, address, owner, set)` 异步取用。
+> 配置类的**固定资源字段**（具名字段，如 `Skill.icon`、`SkillTemplate.icon`、`Tag.backgroundSprite`）采用同一套机制：各带一个平行的 `xxxAddress` 纯字符串字段，编辑器经 `EditorAssetRefField` 绘制（直接 `ObjectField` / 授权 AssetReference 选择器），运行时同样经 `InventoryAssets.Bind(liveRef, address, owner, set)` 异步取用。
 
 # 本地化（固定 Text 字段与工具）
 

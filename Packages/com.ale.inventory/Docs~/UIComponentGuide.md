@@ -9,7 +9,7 @@
 
 - 返回 [说明文档](../README.md)
 
-本文档说明 `Ale.Inventory.UI` 程序集中各 UI 组件的功能、Inspector 参数及预制体制作方法。覆盖背包、商店、制作、装备四套界面与可复用的通用组件。
+本文档说明 `Ale.Inventory.Runtime.UI` 程序集中各 UI 组件的功能、Inspector 参数及预制体制作方法。覆盖背包、商店、制作、装备四套界面与可复用的通用组件。
 
 > **命名空间**：所有 UI 脚本声明在 `Ale.Inventory.Runtime.UI`，引用时 `using Ale.Inventory.Runtime.UI;`。
 
@@ -19,7 +19,7 @@
 
 1. [概述与程序集配置](#1-概述与程序集配置)
 2. [NumberFormatConfig — 数字格式化配置](#2-numberformatconfig--数字格式化配置数据库内置)
-3. [UiwInventoryTab — 仓库页签按钮](#3-uiwinventorytab--仓库页签按钮)
+3. [UiwTabButton — 仓库页签按钮](#3-uiwtabbutton--仓库页签按钮)
 4. [UiwInventoryItemSimple — 简版道具格子](#4-uiwinventoryitemsimple--简版道具格子)
 5. [UiwInventoryItemDetail — 完整道具格子](#5-uiwinventoryitemdetail--完整道具格子)
 6. [虚拟滚动列表 — 基类 + 网格 / 顺序](#6-虚拟滚动列表--基类--网格--顺序)
@@ -40,8 +40,8 @@
 ```
 Runtime/UI/
 ├── Item/      单个格子（UiwInventoryItemBase / SlotBase / Cell / Simple / Detail、UiwShopItemDetail、UiwCraftingBlueprintCell、UiwCraftingInputCell、UiwEquipmentSlot、UiwEquipmentBonusEntry、UiwInventoryItemEvents）
-├── ItemList/  虚拟滚动列表族：基类 UiwInventoryItemListBase + 通用 UiwInventoryGridList / UiwInventoryOrderList + 叶子（仓库 UiwInventoryItemGridList / UiwInventoryItemOrderList、制作 UiwCraftingBlueprintList、技能 UiwSkillGridList / UiwSkillOrderList）+ GridCellDragHandler + ViewportSizeWatcher（装备候选列表在 View/Equipment/、商店商品列表在 View/Shop/）
-├── Tab/       页签 / 过滤（UiwInventoryTab、UiwShopGroupTab、UiwFoldTab、UiwFilterTabBar、UiwCraftingGroupFilter）
+├── ItemList/  虚拟滚动列表族：基类 UiwVirtualListBase + 通用 UiwVirtualGridList / UiwVirtualOrderList + 叶子（仓库 UiwInventoryItemGridList / UiwInventoryItemOrderList、制作 UiwCraftingBlueprintList、技能 UiwSkillGridList / UiwSkillOrderList）+ GridCellDragHandler + ViewportSizeWatcher（装备候选列表在 View/Equipment/、商店商品列表在 View/Shop/）
+├── Tab/       页签 / 过滤（UiwTabButton、UiwShopGroupTab、UiwFoldTab、UiwFilterTabBar、UiwCraftingGroupFilter）
 ├── Tool/      通用工具类组件（UiwCurrencyBar、UiwSortToolbar、UiwItemTooltip、UiwNumberCounter）
 ├── View/      主界面：UiwViewBase 基类
 │   ├── Inventory/  UiwInventoryView
@@ -49,14 +49,16 @@ Runtime/UI/
 │   ├── Crafting/   UiwCraftingView、UiwCraftingDetail
 │   └── Equipment/  UiwEquipmentView、UiwEquipmentGroupPanel、UiwEquipmentSlotList、UiwEquipmentBonusPanel、UiwEquipmentSelectPanel、UiwEquipmentCandidateList、UiwEquipmentDragContext
 ├── Common/    通用小部件（UiwTextLabel）
-└── Ale.Inventory.UI.asmdef   （位于根目录，自动覆盖全部子文件夹）
+└── Ale.Inventory.Runtime.UI.asmdef   （位于根目录，自动覆盖全部子文件夹）
 ```
+
+> 注：上面的目录快照记录的是本插件包内 `Runtime/UI/` 的历史布局；抽取到 `com.ale.toolkit` 后，其中的**通用 UI 基座**已下沉至 toolkit（命名空间 `Ale.Toolkit.Runtime.UI`），本包目录内不再包含它们：虚拟滚动列表基类与网格 / 顺序实现（`UiwVirtualListBase` / `UiwVirtualGridList` / `UiwVirtualOrderList`、`ViewportSizeWatcher`）、通用页签与过滤（`UiwTabButton` / `UiwFoldTab` / `UiwFilterTabBar`）、Tooltip 基类、`UiwSortToolbar` / `UiwNumberCounter` / `UiwTextLabel` 等。本包目录内仅保留仓库 / 商店 / 制作 / 装备 / 技能等领域专属组件。
 
 > 货币栏 / 排序整理栏 / 悬停弹窗 / 数字计数器（`Tool/`）与 过滤页签栏 / 折叠页签（`Tab/`）均为独立通用组件；各主界面（`UiwInventoryView`、`UiwShopViewBase`、`UiwCraftingView`，均派生自 `UiwViewBase`）以「组合」方式持有其引用，在背包 / 商店 / 制作各系统 UI 间复用。
 
 ### 程序集
 
-`Ale.Inventory.UI`（`Ale.Inventory.UI.asmdef`）
+`Ale.Inventory.Runtime.UI`（`Ale.Inventory.Runtime.UI.asmdef`）
 
 - 引用 `Ale.Inventory.Runtime`（运行时数据与管理器）
 - 引用 `Unity.TextMeshPro`（可通过宏开关）
@@ -119,14 +121,14 @@ string t2 = locale.Format(value);
 
 ---
 
-## 3. UiwInventoryTab — 仓库页签按钮
+## 3. UiwTabButton — 仓库页签按钮
 
-`UiwInventoryTab` 是一个轻量 MonoBehaviour，负责显示**仓库 ID 名称**并根据是否选中切换视觉状态。由 `UiwInventoryView` 自动实例化和管理，通常不需要手动驱动。
+`UiwTabButton` 是一个轻量 MonoBehaviour，负责显示**仓库 ID 名称**并根据是否选中切换视觉状态。由 `UiwInventoryView` 自动实例化和管理，通常不需要手动驱动。
 
 ### 制作 Prefab
 
 1. 新建 UI **Button** 节点（Canvas 下），命名为 `Prefab_InventoryTab`。
-2. 挂载 `UiwInventoryTab` 组件。
+2. 挂载 `UiwTabButton` 组件。
 3. 在 Button 子节点中准备文本组件（`Text` 或 `TMP_Text`），将引用赋给 `label` 字段。
 4. 在 Button 内新建一个子 GameObject 作为**选中指示器**（如底部高亮条、颜色覆盖层），赋给 `selectedIndicator` 字段；`UiwInventoryView` 会在页签切换时调用 `SetActive(isSelected)` 控制其显示。
 
@@ -294,12 +296,12 @@ Prefab_InventoryItemDetail  [UiwInventoryItemDetail]
 ### 三层架构
 
 ```
-UiwInventoryItemListBase<TData, TCell>        ← 基类：虚拟滚动引擎（对象池 + 视口监听 + 回收/复用）+ 抽象"布局策略"
-   ├─ UiwInventoryGridList<TData, TCell>       ← 通用网格布局（多列/多行，纵向 / 横向滚动，跨轴数量自动）
+UiwVirtualListBase<TData, TCell>        ← 基类：虚拟滚动引擎（对象池 + 视口监听 + 回收/复用）+ 抽象"布局策略"
+   ├─ UiwVirtualGridList<TData, TCell>       ← 通用网格布局（多列/多行，纵向 / 横向滚动，跨轴数量自动）
    │     ├─ UiwInventoryItemGridList           ← 仓库网格（RuntimeItemSlot + UiwInventoryItemCell，含拖拽整理）
    │     ├─ UiwSkillGridList                    ← 技能网格（Skill + UiwSkillEntry）
    │     └─ UiwEquipmentCandidateList          ← 装备候选（无整理拖拽，保装备拖拽）
-   └─ UiwInventoryOrderList<TData, TCell>      ← 通用顺序布局（单列纵向）
+   └─ UiwVirtualOrderList<TData, TCell>      ← 通用顺序布局（单列纵向）
          ├─ UiwInventoryItemOrderList          ← 仓库列表（RuntimeItemSlot + UiwInventoryItemDetail）
          ├─ UiwCraftingBlueprintList           ← 制作蓝图列表（+ 选中）
          ├─ UiwSkillOrderList                   ← 技能列表（Skill + UiwSkillEntry）
@@ -307,8 +309,8 @@ UiwInventoryItemListBase<TData, TCell>        ← 基类：虚拟滚动引擎（
 ```
 
 - **基类**（泛型抽象，不直接挂载）持有对象池、视口尺寸监听、回收 / 复用循环，以及公共入口 `SetItems` / `UpdateItems` / `ScrollToStart`。
-- **通用层**（泛型抽象，不直接挂载）只提供布局策略：`UiwInventoryOrderList` = 单列纵向；`UiwInventoryGridList` = 二维网格，按 `scrollDirection` 分**纵向**（列数 = 视口宽 ÷ 格子宽）/ **横向**（行数 = 视口高 ÷ 格子高），跨轴数量随视口尺寸自动重算。
-- **叶子层**（非泛型，挂在预制体上）闭合泛型 `<数据类型, 格子类型>`，实现"把一条数据显示到格子 / 清空格子"，并对接各系统上下文。为**新系统**加列表时：继承 `UiwInventoryGridList<T,TCell>` 或 `UiwInventoryOrderList<T,TCell>`，重写 `BindCell` / `ClearCell`（及可选 `InitCell` / `OnCellAssigned`）即可。
+- **通用层**（泛型抽象，不直接挂载）只提供布局策略：`UiwVirtualOrderList` = 单列纵向；`UiwVirtualGridList` = 二维网格，按 `scrollDirection` 分**纵向**（列数 = 视口宽 ÷ 格子宽）/ **横向**（行数 = 视口高 ÷ 格子高），跨轴数量随视口尺寸自动重算。
+- **叶子层**（非泛型，挂在预制体上）闭合泛型 `<数据类型, 格子类型>`，实现"把一条数据显示到格子 / 清空格子"，并对接各系统上下文。为**新系统**加列表时：继承 `UiwVirtualGridList<T,TCell>` 或 `UiwVirtualOrderList<T,TCell>`，重写 `BindCell` / `ClearCell`（及可选 `InitCell` / `OnCellAssigned`）即可。
 
 ### 制作 Prefab
 
@@ -427,7 +429,7 @@ Prefab_List  [叶子组件，如 UiwInventoryItemGridList]
 
 ### 7.4 筛选 / 排序管线（封装在列表基类）
 
-`UiwFilterTabBar` + `UiwSortToolbar` 的接线已统一封装进虚拟滚动列表基类 `UiwInventoryListBase`，各系统视图**只需把两个组件引用挂到列表上并配置一次**，无需在每个视图里重复写筛选 / 排序代码。管线为可选、增量式：
+`UiwFilterTabBar` + `UiwSortToolbar` 的接线已统一封装进虚拟滚动列表基类 `UiwVirtualListBase`，各系统视图**只需把两个组件引用挂到列表上并配置一次**，无需在每个视图里重复写筛选 / 排序代码。管线为可选、增量式：
 
 ```
 源条目 → 主/次页签筛选(filterBar / secondaryFilterBar) → 额外筛选(SetExtraFilter，如搜索) → 排序(sortToolbar) → 显示
@@ -449,7 +451,7 @@ Prefab_List  [叶子组件，如 UiwInventoryItemGridList]
 
 `UiwInventoryView` 是最顶层的背包主界面控制器，**组合**以下组件与功能：
 
-- **多仓库页签切换**（使用 `UiwInventoryTab` Prefab）
+- **多仓库页签切换**（使用 `UiwTabButton` Prefab）
 - **货币栏**（`UiwCurrencyBar` 组件）
 - **虚拟滚动列表**（网格 `UiwInventoryItemGridList` / 顺序 `UiwInventoryItemOrderList`，由视图切换显示其一）
 - **过滤页签栏**（`UiwFilterTabBar` 组件）
@@ -483,8 +485,8 @@ Prefab_InventoryView  [UiwInventoryView]
 
 | 参数 | 说明 |
 |------|------|
-| `tabContainer` | 页签按钮的父节点（`UiwInventoryTab` 实例化在此下） |
-| `tabPrefab` | `UiwInventoryTab` Prefab |
+| `tabContainer` | 页签按钮的父节点（`UiwTabButton` 实例化在此下） |
+| `tabPrefab` | `UiwTabButton` Prefab |
 
 **虚拟滚动列表**
 
@@ -551,7 +553,7 @@ UI 的排序为**本地视图排序**（不修改运行时仓库数据），仅�
 
 | 顺序 | Prefab 名称 | 组件 |
 |------|------------|------|
-| 1 | `Prefab_InventoryTab` | `UiwInventoryTab` + `Button` |
+| 1 | `Prefab_InventoryTab` | `UiwTabButton` + `Button` |
 | 2 | `Prefab_ItemSimple` | `UiwInventoryItemSimple` |
 | 3 | `Prefab_ItemDetail` | `UiwInventoryItemDetail` |
 | 4 | `Prefab_ItemOrderList` / `Prefab_ItemGridList` | `UiwInventoryItemOrderList` / `UiwInventoryItemGridList`（引用条目 Prefab；Content 不挂 LayoutGroup） |
@@ -640,7 +642,7 @@ public class InventoryUIController : MonoBehaviour
 | `UiwCraftingDetail` | 蓝图详情：主 / 副产出、消耗列表、可制作次数、制作次数选择（`UiwNumberCounter`）、制作 / 停止 + 进度条 |
 | `UiwCraftingBlueprintCell` | 蓝图列表条目（主产出图标 + 名称 + 属性显示行） |
 | `UiwCraftingInputCell` | 消耗道具行（图标 / 名称 / 需求 / 持有） |
-| `UiwCraftingBlueprintList` | 蓝图虚拟滚动列表（继承 `UiwInventoryOrderList`，额外支持选中高亮 + 选中事件） |
+| `UiwCraftingBlueprintList` | 蓝图虚拟滚动列表（继承 `UiwVirtualOrderList`，额外支持选中高亮 + 选中事件） |
 | `UiwCraftingGroupFilter` | 分组折叠页签（主分组折叠出副分组，复用 `UiwFoldTab`） |
 
 行为（配方、制作仓库、可制作次数）见 [制作系统](CraftingSystem.md)。
@@ -657,7 +659,7 @@ public class InventoryUIController : MonoBehaviour
 | `UiwEquipmentSlot` | 装备槽（继承 `UiwInventoryItemSlotBase`）：显示已装备道具；左 / 右键事件；拖拽源（拖出交换）+ 放置目标（装备 / 交换）+ 绿/红有效性叠加（`selectedIndicator` / `validityOverlay` 可选） |
 | `UiwEquipmentBonusPanel` / `UiwEquipmentBonusEntry` | 属性加成面板：按分组标签分组显示总属性加成 |
 | `UiwEquipmentSelectPanel` | 装备选择面板：切换栏（左右 + 名称 + N/M）+ 当前槽位列表 + 可装备道具列表 + 退出（按钮 / 空白处右键） |
-| `UiwEquipmentCandidateList` | 可装备道具列表（虚拟滚动网格，继承 `UiwInventoryGridList`）：跨装备组「装备仓库」按当前槽位列表限制筛选（每格记录来源仓库）；**右键快速装备 / 左键拖拽到装备槽装备**。候选格子复用 `UiwInventoryItemCell` + `GridCellDragHandler`（不接整理拖拽，故 handler 驱动装备拖拽） |
+| `UiwEquipmentCandidateList` | 可装备道具列表（虚拟滚动网格，继承 `UiwVirtualGridList`）：跨装备组「装备仓库」按当前槽位列表限制筛选（每格记录来源仓库）；**右键快速装备 / 左键拖拽到装备槽装备**。候选格子复用 `UiwInventoryItemCell` + `GridCellDragHandler`（不接整理拖拽，故 handler 驱动装备拖拽） |
 | `GridCellDragHandler` | 道具格子拖拽中转组件（挂在 `UiwInventoryItemCell` 或其子物体上）：**已接入网格列表**（背包）时转发给 `UiwInventoryItemGridList`，结束拖拽时按落点决定（装备槽→装备，道具格子→换位）；**未接入网格列表**（候选列表）时驱动「拖到装备槽装备」（经 `UiwEquipmentDragContext`）。右键快速装备不由本组件处理（`UiwInventoryItemCell` 广播 → `UiwEquipmentView` 订阅）|
 | `UiwEquipmentDragContext` | 装备拖拽全局上下文（载荷 + 跟随光标幽灵 + 来源图标复位）；非 MonoBehaviour 静态类 |
 | `UiwInventoryItemEvents` | 通用静态事件总线：背包 / 明细道具格子右键广播 (仓库ID, 道具ID)，装备界面打开时由 `UiwEquipmentView` 订阅自动装备（与装备概念解耦，兼容网格格子与顺序 / 明细行） |
@@ -699,7 +701,7 @@ public class InventoryUIController : MonoBehaviour
 
 **`UiwTabStrip` —— 差异复用**：`SetTabs` 不再无条件销毁重建，数量不变时原地复用已有实例、只重绑取值与显示名，
 多则销毁尾部、少则补建。页签实例的下标始终等于它代表的条目下标，因此补建时挂的 `onClick` 闭包在后续复用中
-一直有效，无需反复增删监听。绑定与点击都以委托传入，对页签组件没有接口要求（`UiwInventoryTab` / `UiwShopGroupTab`
+一直有效，无需反复增删监听。绑定与点击都以委托传入，对页签组件没有接口要求（`UiwTabButton` / `UiwShopGroupTab`
 的 `SetData`、乃至裸 `Button` 的「改文本 + 改 normalColor」都能接）。
 
 **`UiwWidgetPool` —— 用法**：

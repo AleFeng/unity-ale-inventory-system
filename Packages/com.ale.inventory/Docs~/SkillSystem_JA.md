@@ -182,12 +182,12 @@ int    damage  = skill.GetAttributeValue<int>("ダメージ");  // 数値型
 
 # スキル UI
 
-スキル UI は `Runtime/UI/`（アセンブリ `Ale.Inventory.UI`）にあります：
+スキル UI は `Runtime/UI/`（アセンブリ `Ale.Inventory.Runtime.UI`）にあります：
 
 | コンポーネント | 説明 |
 |------|------|
 | `UiwSkillView` | スキルメイン画面（`UiwViewBase` を継承）：タイトル + 検索バー + **主 / 副グルーピングタブ**（各々「すべて」あり、各々横スクロール可能な `UiwFilterTabBar` を再利用）+ グリッド / 順序の 2 表示モード切り替え + ホバー詳細ポップアップ。`Open()` はシリアライズされたソース設定で開き、`Open(source, configId)` はソースを切り替えて開く。ソースに応じて `OnEquipmentChanged` / `OnInventoryChanged` / `OnLearnedChanged` を購読して自動リフレッシュ（`InventoryDatabase` は静的データなので購読しない） |
-| `UiwSkillGridList` / `UiwSkillOrderList` | スキルリスト（仮想スクロール）：それぞれ汎用の `UiwInventoryGridList` / `UiwInventoryOrderList` を継承。`SetSkills` はスキルを `UiwSkillEntry` にバインドしてプール再利用し、グリッドはビューポート幅から自動で列数を決め、順序は単一列、いずれも可視領域のみ描画。ビューは各インスタンスを 1 つずつ持ち、切り替えボタンでいずれかを表示 |
+| `UiwSkillGridList` / `UiwSkillOrderList` | スキルリスト（仮想スクロール）：それぞれ汎用の `UiwVirtualGridList` / `UiwVirtualOrderList` を継承。`SetSkills` はスキルを `UiwSkillEntry` にバインドしてプール再利用し、グリッドはビューポート幅から自動で列数を決め、順序は単一列、いずれも可視領域のみ描画。ビューは各インスタンスを 1 つずつ持ち、切り替えボタンでいずれかを表示 |
 | `UiwSkillEntry` | スキルエントリ（グリッド / 順序共用）：アイコン + 名称 + **位階背景フレーム** + 任意の説明 / カスタム属性フィールド行。ホバーで `UiwSkillTooltip` により詳細をポップ |
 | `UiwSkillTooltip` | スキルホバーポップアップ（`ISkillTooltip` を実装）：アイコン + 名称 + **位階名称** + 説明 + コンポーネント上で設定したカスタムフィールド（`customFieldKeys`、Array で複数可）。`UiwItemTooltip` のフェード / カーソル位置 / キューを再利用。**プレハブは `InventoryRuntimeManager` の `skillTooltipPrefab` に設定し、マネージャーがグローバルに 1 回インスタンス化**（親ノードは `tooltipParent` を再利用）、`ShowSkillTooltip` / `HideSkillTooltip` で呼び出し |
 | `UiwSkillText` / `SkillRankUtil` | 共有の解決ヘルパー：名称 / 説明 / カスタムフィールドのテキスト解決（ローカライズ優先）、位階列挙項目の解決。エントリと Tooltip で共用 |

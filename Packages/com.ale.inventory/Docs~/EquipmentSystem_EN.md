@@ -215,7 +215,7 @@ eq.ResetAll();                        // clear (e.g. starting a new game)
 
 # Equipment UI
 
-The equipment UI is under `Runtime/UI/` (assembly `Ale.Inventory.UI`):
+The equipment UI is under `Runtime/UI/` (assembly `Ale.Inventory.Runtime.UI`):
 
 | Component | Description |
 |------|------|
@@ -225,7 +225,7 @@ The equipment UI is under `Runtime/UI/` (assembly `Ale.Inventory.UI`):
 | `UiwEquipmentSlot` | Equipment slot: inherits `UiwInventoryItemSlotBase`; shows the equipped item; left/right-click events; drag source (drag out to swap) + drop target (equip / swap) + green/red validity overlay |
 | `UiwEquipmentBonusPanel` / `UiwEquipmentBonusEntry` | Bonus panel: shows the total attribute bonuses grouped by group tag; shows an empty-state hint when there are no bonuses (`emptyText`, supporting localization table/entry references `emptyTextLocalized*`) |
 | `UiwEquipmentSelectPanel` | Equipment selection panel: a top slot-group switch bar (left/right + N/M) + the current slot list in the middle + the equippable item list at the bottom + exit (button / right-click on blank space) |
-| `UiwEquipmentCandidateList` | Equippable item list (**virtual-scroll grid**, inherits `UiwInventoryGridList`): filters candidate items across the equipment group's "equipment warehouses" by the current slot list's limits (each cell records its source warehouse); **right-click to quick-equip / left-drag to an equipment slot to equip**. Candidate cells reuse the warehouse cell `UiwInventoryItemCell` + `GridCellDragHandler` (same source as backpack cells; it doesn't take sort dragging, so the handler drives equip dragging). The prefab needs ScrollRect + Viewport + Content (Content has no GridLayoutGroup) |
+| `UiwEquipmentCandidateList` | Equippable item list (**virtual-scroll grid**, inherits `UiwVirtualGridList`): filters candidate items across the equipment group's "equipment warehouses" by the current slot list's limits (each cell records its source warehouse); **right-click to quick-equip / left-drag to an equipment slot to equip**. Candidate cells reuse the warehouse cell `UiwInventoryItemCell` + `GridCellDragHandler` (same source as backpack cells; it doesn't take sort dragging, so the handler drives equip dragging). The prefab needs ScrollRect + Viewport + Content (Content has no GridLayoutGroup) |
 | `GridCellDragHandler` | The item-cell drag relay component (attached to `UiwInventoryItemCell` or its child, located in `Runtime/UI/ItemList/`): when **connected to a grid list** (backpack), it forwards to `UiwInventoryItemGridList`, and at drag end decides by the drop point (equipment slot→equip, item cell→reorder); when **not connected to a grid list** (candidate list), it drives "drag to an equipment slot to equip" (via `UiwEquipmentDragContext`, with a ghost + green/red validity). Right-click quick-equip is not handled by this component — `UiwInventoryItemCell` broadcasts "item right-click" and `UiwEquipmentView` subscribes and handles it uniformly, so the cell interacts consistently in any container |
 | `UiwEquipmentDragContext` | The global equipment-drag context (payload + a cursor-following ghost + source icon reset) |
 

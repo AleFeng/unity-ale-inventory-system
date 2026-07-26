@@ -227,13 +227,27 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 
 ### アセンブリ分割
 
+本プラグインは独立した汎用基盤パッケージ `com.ale.toolkit`（`Ale.Toolkit.*`）に依存し、汎用機能はそちらへ抽出済みです。以下は両パッケージのアセンブリ分割です。
+
+**本プラグイン（`com.ale.inventory`）**
+
 | asmdef | 内容 |
 |--------|------|
 | `Ale.Inventory.Runtime` | データモデル、マネージャー、シリアライズ（ランタイムコア） |
-| `Ale.Inventory.UI` | ランタイム UI コンポーネント。Runtime と TextMeshPro を参照 |
+| `Ale.Inventory.Runtime.UI` | ランタイム UI コンポーネント（倉庫 / ショップ / クラフト / スキルビュー）。Runtime、`Ale.Toolkit.Runtime.UI`、TextMeshPro を参照 |
 | `Ale.Inventory.Editor` | エディタウィンドウとパネル |
-| `Ale.Inventory.Addressables.Runtime` / `.Editor` | Addressables アセット読み込みサポート |
-| `Ale.Inventory.UI.Localization` | TMP テキスト / フォントのローカライズイベント |
+| `Ale.Inventory.Addressables.Editor` | Addressables エディタツール（`IS_ADDRESSABLE` 制約） |
+
+**基盤（`com.ale.toolkit`）**
+
+| asmdef | 内容 |
+|--------|------|
+| `Ale.Toolkit.Runtime` | 属性システム、ソート、タグ、共通シリアライズ、アセット読み込み抽象 |
+| `Ale.Toolkit.Runtime.UI` | バーチャルスクロールリストと汎用 UI コントロール |
+| `Ale.Toolkit.UI.Localization` | TMP テキスト / フォントのローカライズイベント（`IS_LOCALIZATION` 制約） |
+| `Ale.Toolkit.Addressables.Runtime` | Addressables 読み込みとハンドル管理（`IS_ADDRESSABLE` 制約） |
+| `Ale.Toolkit.Editor` | エディタ三列フレームワーク、属性ドロワー、多言語サービス |
+| `Ale.Toolkit.Addressables.Editor` | Addressables エディタツール（`IS_ADDRESSABLE` 制約） |
 
 ---
 

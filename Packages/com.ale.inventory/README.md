@@ -76,9 +76,9 @@
 - **存档契约**：仓库 / 装备 / 商店 / 技能四个管理器统一实现 `IInventorySaveable<TState>`——`GetSaveData` 返回深拷贝、`LoadSaveData` 为**覆盖而非合并**、三者都不触发变更事件；非泛型的 `IInventorySaveable` 只含 `ResetAll`，供「开新游戏」一次遍历重置。
 
 ### UI 组件
-位于 `Runtime/UI/`，程序集 `Ale.Inventory.UI`，命名空间 `Ale.Inventory.Runtime.UI`。提供背包 / 商店 / 制作 / 装备 / 技能主界面与可复用的货币栏、过滤栏、排序栏、悬停弹窗、数字计数器、折叠页签等通用组件。各主界面均派生自 `UiwViewBase`：无参 `Open()` 为基类模板方法（激活面板），子类覆写实现各自打开逻辑；背包 / 装备 / 商店视图把目标 ID（`inventoryIds` / `groupId` / `shopId`）暴露到 Inspector，可预设默认值。
+位于 `Runtime/UI/`，程序集 `Ale.Inventory.Runtime.UI`，命名空间 `Ale.Inventory.Runtime.UI`。提供背包 / 商店 / 制作 / 装备 / 技能主界面与可复用的货币栏、过滤栏、排序栏、悬停弹窗、数字计数器、折叠页签等通用组件。各主界面均派生自 `UiwViewBase`：无参 `Open()` 为基类模板方法（激活面板），子类覆写实现各自打开逻辑；背包 / 装备 / 商店视图把目标 ID（`inventoryIds` / `groupId` / `shopId`）暴露到 Inspector，可预设默认值。
 
-- **统一虚拟滚动列表**：所有"显示大量条目 / Item"的列表都建立在同一套虚拟滚动引擎之上（基类 `UiwInventoryItemListBase<TData,TCell>` → 通用 `UiwInventoryGridList` / `UiwInventoryOrderList` → 各系统叶子）。**网格与顺序列表都是虚拟滚动**：只渲染可见区域 + 缓冲、滚动循环复用；网格支持纵向 / 横向两种滚动、跨轴数量按视口自动计算；仓库网格在虚拟滚动下仍支持拖拽整理换位。为新系统加列表只需继承通用网格 / 顺序层、重写"绑定 / 清空格子"。
+- **统一虚拟滚动列表**：所有"显示大量条目 / Item"的列表都建立在同一套虚拟滚动引擎之上（基类 `UiwVirtualListBase<TData,TCell>` → 通用 `UiwVirtualGridList` / `UiwVirtualOrderList` → 各系统叶子）。**网格与顺序列表都是虚拟滚动**：只渲染可见区域 + 缓冲、滚动循环复用；网格支持纵向 / 横向两种滚动、跨轴数量按视口自动计算；仓库网格在虚拟滚动下仍支持拖拽整理换位。为新系统加列表只需继承通用网格 / 顺序层、重写"绑定 / 清空格子"。
 - **列表性能与体验**（引擎内建）：
   - **增量差异刷新**——内容变化时只重绑数据变化的可见格（拖拽换位 / 堆叠通常仅 2 格），图标不闪烁、滚动位置保留。
   - **生成 / 分配限速**（`spawnPerSecond`，默认 30 个/秒）——把实例化与绑定分摊到多帧，避免单帧峰值卡顿或资源加载堵塞（含预算封顶防"打开界面那一帧"爆发）。
@@ -152,7 +152,7 @@ Tools > Inventory System > Welcome Window
 | Unity Addressable | `IS_ADDRESSABLE` | 开启后运行时资源经 Addressable 按需异步加载、引用计数自动卸载；导出时自动登记被引用资源 |
 
 - **TextMeshPro** 开关下可设「默认字体」：向导生成 Prefab 时应用于所有 TMP 文本节点（留空用 TMP 默认字体）。
-- **Unity Localization** 开关下可设「本地化字体」：向导生成 Prefab 时赋给 `InventoryTmpFontEvent`（需同时启用 `IS_TMP`）。
+- **Unity Localization** 开关下可设「本地化字体」：向导生成 Prefab 时赋给 `LocalizedFontEvent`（需同时启用 `IS_TMP`）。
 - 切换宏后需等待 Unity 重新编译生效。
 
 ### 启动时自动显示

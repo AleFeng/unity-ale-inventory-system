@@ -181,12 +181,12 @@ int    damage  = skill.GetAttributeValue<int>("伤害");      // 数值类型
 
 # 技能 UI
 
-技能 UI 在 `Runtime/UI/`（程序集 `Ale.Inventory.UI`）：
+技能 UI 在 `Runtime/UI/`（程序集 `Ale.Inventory.Runtime.UI`）：
 
 | 组件 | 说明 |
 |------|------|
 | `UiwSkillView` | 技能主界面（继承 `UiwViewBase`）：标题 + 搜索栏 + **主 / 副分组页签**（各含「全部」、各复用一个横向可滚动 `UiwFilterTabBar`）+ 网格 / 顺序双显示模式切换 + 悬停详情弹窗。`Open()` 用序列化的来源配置打开；`Open(source, configId)` 切换来源打开。按来源订阅 `OnEquipmentChanged` / `OnInventoryChanged` / `OnLearnedChanged` 自动刷新（`InventoryDatabase` 为静态数据不订阅） |
-| `UiwSkillGridList` / `UiwSkillOrderList` | 技能列表（虚拟滚动）：分别继承通用 `UiwInventoryGridList` / `UiwInventoryOrderList`；`SetSkills` 把技能绑定到 `UiwSkillEntry` 并池化复用，网格按视口宽自动列数、顺序为单列，均只渲染可见区域。视图各持一实例，由切换按钮显示其一 |
+| `UiwSkillGridList` / `UiwSkillOrderList` | 技能列表（虚拟滚动）：分别继承通用 `UiwVirtualGridList` / `UiwVirtualOrderList`；`SetSkills` 把技能绑定到 `UiwSkillEntry` 并池化复用，网格按视口宽自动列数、顺序为单列，均只渲染可见区域。视图各持一实例，由切换按钮显示其一 |
 | `UiwSkillEntry` | 技能条目（网格 / 顺序共用）：图标 + 名称 + **位阶背景框** + 可选描述 / 自定义属性字段行；悬停经 `UiwSkillTooltip` 弹出详情 |
 | `UiwSkillTooltip` | 技能悬停弹窗（实现 `ISkillTooltip`）：图标 + 名称 + **位阶名称** + 描述 + 组件上配置的自定义字段（`customFieldKeys`，Array 可多个）。复用 `UiwItemTooltip` 的淡入淡出 / 光标定位 / 队列。**预制体配到 `InventoryRuntimeManager` 的 `skillTooltipPrefab`，由管理器全局实例化一次**（父节点复用 `tooltipParent`），经 `ShowSkillTooltip` / `HideSkillTooltip` 调用 |
 | `UiwSkillText` / `SkillRankUtil` | 共享解析辅助：名称 / 描述 / 自定义字段的文本解析（本地化优先）；位阶枚举项解析。供条目与 Tooltip 共用 |

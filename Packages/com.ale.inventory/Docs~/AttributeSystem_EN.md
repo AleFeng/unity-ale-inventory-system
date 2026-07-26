@@ -108,9 +108,9 @@ InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 
 > The two storage forms have different on-disk formats and can't be shared automatically via same-named fields. After switching macros, use the menu **Tools/Inventory System/Addressables** to convert all asset fields of a database between "Object reference ↔ AssetReference(GUID)" in one click.
 >
-> Underlying: the authorized GUID / runtime address is stored in `AttributeValue` in parallel with the live reference (address list vs `objRefs`); the facade prefers the live reference, falling back to async address loading if absent. The core assembly has zero dependency on Addressables; the native selector is injected via the constrained Addressable editor assembly (the same injection pattern as `InventoryExportResolver`).
+> Underlying: the authorized GUID / runtime address is stored in `AttributeValue` in parallel with the live reference (address list vs `objRefs`); the facade prefers the live reference, falling back to async address loading if absent. The core assembly has zero dependency on Addressables; the native selector is injected via the constrained Addressable editor assembly (the same injection pattern as `EditorExportResolver`).
 >
-> The config classes' **fixed asset fields** (named fields like `Skill.icon`, `SkillTemplate.icon`, `FunctionTag.backgroundSprite`) use the same mechanism: each has a parallel `xxxAddress` plain-string field, drawn in the editor via `InventoryAssetRefField` (direct `ObjectField` / authorized AssetReference selector), and fetched asynchronously at runtime likewise via `InventoryAssets.Bind(liveRef, address, owner, set)`.
+> The config classes' **fixed asset fields** (named fields like `Skill.icon`, `SkillTemplate.icon`, `Tag.backgroundSprite`) use the same mechanism: each has a parallel `xxxAddress` plain-string field, drawn in the editor via `EditorAssetRefField` (direct `ObjectField` / authorized AssetReference selector), and fetched asynchronously at runtime likewise via `InventoryAssets.Bind(liveRef, address, owner, set)`.
 
 # Localization (Fixed Text Fields and Tooling)
 

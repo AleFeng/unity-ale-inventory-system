@@ -214,7 +214,7 @@ eq.ResetAll();                        // 清空（如开始新游戏）
 
 # 装备 UI
 
-装备 UI 在 `Runtime/UI/`（程序集 `Ale.Inventory.UI`）：
+装备 UI 在 `Runtime/UI/`（程序集 `Ale.Inventory.Runtime.UI`）：
 
 | 组件 | 说明 |
 |------|------|
@@ -224,7 +224,7 @@ eq.ResetAll();                        // 清空（如开始新游戏）
 | `UiwEquipmentSlot` | 装备槽：继承 `UiwInventoryItemSlotBase`；显示已装备道具；左键 / 右键事件；拖拽源（拖出交换）+ 放置目标（装备 / 交换）+ 绿/红有效性叠加 |
 | `UiwEquipmentBonusPanel` / `UiwEquipmentBonusEntry` | 属性加成面板：按分组标签分组显示总属性加成；无任何加成时显示一条空状态提示（`emptyText`，支持本地化表/条目引用 `emptyTextLocalized*`） |
 | `UiwEquipmentSelectPanel` | 装备选择面板：顶部槽位组切换栏（左右 + N/M）+ 中间当前槽位列表 + 底部可装备道具列表 + 退出（按钮 / 空白处右键）|
-| `UiwEquipmentCandidateList` | 可装备道具列表（**虚拟滚动网格**，继承 `UiwInventoryGridList`）：跨装备组「装备仓库」按当前槽位列表限制筛选候选道具（每格记录其来源仓库）；**右键快速装备 / 左键拖拽到装备槽装备**。候选格子复用仓库格子 `UiwInventoryItemCell` + `GridCellDragHandler`（与背包格子同源；不接整理拖拽，故 handler 驱动装备拖拽）。预制体需 ScrollRect + Viewport + Content（Content 不挂 GridLayoutGroup） |
+| `UiwEquipmentCandidateList` | 可装备道具列表（**虚拟滚动网格**，继承 `UiwVirtualGridList`）：跨装备组「装备仓库」按当前槽位列表限制筛选候选道具（每格记录其来源仓库）；**右键快速装备 / 左键拖拽到装备槽装备**。候选格子复用仓库格子 `UiwInventoryItemCell` + `GridCellDragHandler`（与背包格子同源；不接整理拖拽，故 handler 驱动装备拖拽）。预制体需 ScrollRect + Viewport + Content（Content 不挂 GridLayoutGroup） |
 | `GridCellDragHandler` | 道具格子拖拽中转组件（挂在 `UiwInventoryItemCell` 或其子物体上，位于 `Runtime/UI/ItemList/`）：**已接入网格列表**（背包）时转发给 `UiwInventoryItemGridList`，结束拖拽时按落点决定（装备槽→装备，道具格子→换位）；**未接入网格列表**（候选列表）时驱动「拖到装备槽装备」（经 `UiwEquipmentDragContext`，带幽灵 + 绿/红有效性）。右键快速装备不由本组件处理——由 `UiwInventoryItemCell` 广播「道具右键」、`UiwEquipmentView` 订阅统一处理，使格子在任何容器中交互一致 |
 | `UiwEquipmentDragContext` | 装备拖拽全局上下文（载荷 + 跟随光标的幽灵 + 来源图标复位） |
 

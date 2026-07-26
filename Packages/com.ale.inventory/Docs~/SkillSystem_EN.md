@@ -182,12 +182,12 @@ int    damage  = skill.GetAttributeValue<int>("damage");      // numeric type
 
 # Skill UI
 
-The skill UI is under `Runtime/UI/` (assembly `Ale.Inventory.UI`):
+The skill UI is under `Runtime/UI/` (assembly `Ale.Inventory.Runtime.UI`):
 
 | Component | Description |
 |------|------|
 | `UiwSkillView` | Skill main screen (inherits `UiwViewBase`): title + search bar + **primary / secondary grouping tabs** (each with "All", each reusing a horizontally scrollable `UiwFilterTabBar`) + grid / ordered dual-display-mode toggle + hover detail popup. `Open()` opens with the serialized source config; `Open(source, configId)` switches source and opens. Subscribes to `OnEquipmentChanged` / `OnInventoryChanged` / `OnLearnedChanged` by source for auto-refresh (`InventoryDatabase` is static data, not subscribed) |
-| `UiwSkillGridList` / `UiwSkillOrderList` | Skill list (virtual-scroll): inherit the generic `UiwInventoryGridList` / `UiwInventoryOrderList` respectively; `SetSkills` binds skills to `UiwSkillEntry` and pools them for reuse, the grid auto-computes column count by viewport width, the ordered list is single-column, both render only the visible region. The view holds one instance of each, showing one via the toggle button |
+| `UiwSkillGridList` / `UiwSkillOrderList` | Skill list (virtual-scroll): inherit the generic `UiwVirtualGridList` / `UiwVirtualOrderList` respectively; `SetSkills` binds skills to `UiwSkillEntry` and pools them for reuse, the grid auto-computes column count by viewport width, the ordered list is single-column, both render only the visible region. The view holds one instance of each, showing one via the toggle button |
 | `UiwSkillEntry` | Skill entry (shared by grid / ordered): icon + name + **tier background frame** + optional description / custom attribute field rows; hover pops the detail via `UiwSkillTooltip` |
 | `UiwSkillTooltip` | Skill hover popup (implements `ISkillTooltip`): icon + name + **tier name** + description + custom fields configured on the component (`customFieldKeys`, Array-capable). Reuses `UiwItemTooltip`'s fade / cursor positioning / queue. **The prefab is configured on `InventoryRuntimeManager`'s `skillTooltipPrefab` and instantiated once globally by the manager** (reusing `tooltipParent`), invoked via `ShowSkillTooltip` / `HideSkillTooltip` |
 | `UiwSkillText` / `SkillRankUtil` | Shared resolution helpers: text resolution for name / description / custom fields (localization first); tier enum-item resolution. Shared by the entry and the Tooltip |

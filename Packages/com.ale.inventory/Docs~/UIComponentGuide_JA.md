@@ -9,7 +9,7 @@
 
 - [説明ドキュメント](../README_JA.md) に戻る
 
-本ドキュメントでは、`Ale.Inventory.UI` アセンブリ内の各 UI コンポーネントの機能、Inspector パラメータ、プレハブの作成方法を説明します。バックパック、ショップ、クラフト、装備の 4 つの画面と、再利用可能な共通コンポーネントをカバーします。
+本ドキュメントでは、`Ale.Inventory.Runtime.UI` アセンブリ内の各 UI コンポーネントの機能、Inspector パラメータ、プレハブの作成方法を説明します。バックパック、ショップ、クラフト、装備の 4 つの画面と、再利用可能な共通コンポーネントをカバーします。
 
 > **名前空間**：すべての UI スクリプトは `Ale.Inventory.Runtime.UI` に宣言されています。参照するときは `using Ale.Inventory.Runtime.UI;`。（asmdef の `rootNamespace` はこの名前空間と一致します。）
 
@@ -19,7 +19,7 @@
 
 1. [概要とアセンブリ設定](#1-概要とアセンブリ設定)
 2. [NumberFormatConfig — 数字フォーマット設定](#2-numberformatconfig--数字フォーマット設定データベース内蔵)
-3. [UiwInventoryTab — 倉庫タブボタン](#3-uiwinventorytab--倉庫タブボタン)
+3. [UiwTabButton — 倉庫タブボタン](#3-uiwtabbutton--倉庫タブボタン)
 4. [UiwInventoryItemSimple — 簡易アイテムセル](#4-uiwinventoryitemsimple--簡易アイテムセル)
 5. [UiwInventoryItemDetail — 完全アイテムセル](#5-uiwinventoryitemdetail--完全アイテムセル)
 6. [仮想スクロールリスト — 基底 + グリッド / 順序](#6-仮想スクロールリスト--基底--グリッド--順序)
@@ -40,8 +40,8 @@
 ```
 Runtime/UI/
 ├── Item/      単一セル（UiwInventoryItemBase / SlotBase / Cell / Simple / Detail、UiwShopItemDetail、UiwCraftingBlueprintCell、UiwCraftingInputCell、UiwEquipmentSlot、UiwEquipmentBonusEntry、UiwInventoryItemEvents）
-├── ItemList/  仮想スクロールリスト族：基底 UiwInventoryItemListBase + 汎用 UiwInventoryGridList / UiwInventoryOrderList + リーフ（倉庫 UiwInventoryItemGridList / UiwInventoryItemOrderList、クラフト UiwCraftingBlueprintList、スキル UiwSkillGridList / UiwSkillOrderList）+ GridCellDragHandler + ViewportSizeWatcher（装備候補リストは View/Equipment/、ショップ商品リストは View/Shop/）
-├── Tab/       タブ / フィルタ（UiwInventoryTab、UiwShopGroupTab、UiwFoldTab、UiwFilterTabBar、UiwCraftingGroupFilter）
+├── ItemList/  仮想スクロールリスト族：基底 UiwVirtualListBase + 汎用 UiwVirtualGridList / UiwVirtualOrderList + リーフ（倉庫 UiwInventoryItemGridList / UiwInventoryItemOrderList、クラフト UiwCraftingBlueprintList、スキル UiwSkillGridList / UiwSkillOrderList）+ GridCellDragHandler + ViewportSizeWatcher（装備候補リストは View/Equipment/、ショップ商品リストは View/Shop/）
+├── Tab/       タブ / フィルタ（UiwTabButton、UiwShopGroupTab、UiwFoldTab、UiwFilterTabBar、UiwCraftingGroupFilter）
 ├── Tool/      汎用ユーティリティコンポーネント（UiwCurrencyBar、UiwSortToolbar、UiwItemTooltip、UiwNumberCounter）
 ├── View/      メイン画面：UiwViewBase 基底クラス
 │   ├── Inventory/  UiwInventoryView
@@ -49,14 +49,16 @@ Runtime/UI/
 │   ├── Crafting/   UiwCraftingView、UiwCraftingDetail
 │   └── Equipment/  UiwEquipmentView、UiwEquipmentGroupPanel、UiwEquipmentSlotList、UiwEquipmentBonusPanel、UiwEquipmentSelectPanel、UiwEquipmentCandidateList、UiwEquipmentDragContext
 ├── Common/    汎用ウィジェット（UiwTextLabel）
-└── Ale.Inventory.UI.asmdef   （ルートにあり、すべてのサブフォルダを自動的にカバー）
+└── Ale.Inventory.Runtime.UI.asmdef   （ルートにあり、すべてのサブフォルダを自動的にカバー）
 ```
+
+> 注：上のディレクトリスナップショットは本プラグインパッケージの `Runtime/UI/` の歴史的なレイアウトを示しています。`com.ale.toolkit` への抽出後、**汎用 UI 基盤**は toolkit（名前空間 `Ale.Toolkit.Runtime.UI`）へ移動し、本パッケージには含まれなくなりました：バーチャルスクロールリスト基底とグリッド / 順次実装（`UiwVirtualListBase` / `UiwVirtualGridList` / `UiwVirtualOrderList`、`ViewportSizeWatcher`）、汎用タブとフィルタ（`UiwTabButton` / `UiwFoldTab` / `UiwFilterTabBar`）、Tooltip 基底クラス、`UiwSortToolbar` / `UiwNumberCounter` / `UiwTextLabel` など。本パッケージのフォルダには、倉庫 / ショップ / クラフト / 装備 / スキルなどのドメイン固有コンポーネントのみが残ります。
 
 > 通貨バー / ソートバー / ホバーポップアップ / 数値カウンター（`Tool/`）とフィルタタブバー / 折りたたみタブ（`Tab/`）はいずれも独立した汎用コンポーネントです。各メイン画面（`UiwInventoryView`、`UiwShopViewBase`、`UiwCraftingView`、いずれも `UiwViewBase` から派生）は「コンポジション」でそれらの参照を持ち、バックパック / ショップ / クラフトの各システム UI 間で再利用します。
 
 ### アセンブリ
 
-`Ale.Inventory.UI`（`Ale.Inventory.UI.asmdef`）
+`Ale.Inventory.Runtime.UI`（`Ale.Inventory.Runtime.UI.asmdef`）
 
 - `Ale.Inventory.Runtime`（ランタイムデータとマネージャー）を参照
 - `Unity.TextMeshPro` を参照（マクロで切り替え可能）
@@ -119,14 +121,14 @@ string t2 = locale.Format(value);
 
 ---
 
-## 3. UiwInventoryTab — 倉庫タブボタン
+## 3. UiwTabButton — 倉庫タブボタン
 
-`UiwInventoryTab` は軽量な MonoBehaviour で、**倉庫 ID 名**を表示し、選択されているかどうかで視覚状態を切り替えます。`UiwInventoryView` が自動でインスタンス化・管理するため、通常は手動で駆動する必要はありません。
+`UiwTabButton` は軽量な MonoBehaviour で、**倉庫 ID 名**を表示し、選択されているかどうかで視覚状態を切り替えます。`UiwInventoryView` が自動でインスタンス化・管理するため、通常は手動で駆動する必要はありません。
 
 ### プレハブの作成
 
 1. UI **Button** ノード（Canvas 下）を作成し、`Prefab_InventoryTab` と命名。
-2. `UiwInventoryTab` コンポーネントをアタッチ。
+2. `UiwTabButton` コンポーネントをアタッチ。
 3. Button の子ノードにテキストコンポーネント（`Text` または `TMP_Text`）を用意し、参照を `label` フィールドに割り当て。
 4. Button 内に子 GameObject を**選択インジケーター**（下部ハイライトバー、色オーバーレイなど）として作成し、`selectedIndicator` フィールドに割り当て。`UiwInventoryView` はタブ切り替え時にそれに `SetActive(isSelected)` を呼びます。
 
@@ -294,12 +296,12 @@ Prefab_InventoryItemDetail  [UiwInventoryItemDetail]
 ### 3 層アーキテクチャ
 
 ```
-UiwInventoryItemListBase<TData, TCell>        ← 基底：仮想スクロールエンジン（オブジェクトプール + ビューポート監視 + 回収/再利用）+ 抽象「レイアウト戦略」
-   ├─ UiwInventoryGridList<TData, TCell>       ← 汎用グリッドレイアウト（複数列/行、縦 / 横スクロール、交差軸の数は自動）
+UiwVirtualListBase<TData, TCell>        ← 基底：仮想スクロールエンジン（オブジェクトプール + ビューポート監視 + 回収/再利用）+ 抽象「レイアウト戦略」
+   ├─ UiwVirtualGridList<TData, TCell>       ← 汎用グリッドレイアウト（複数列/行、縦 / 横スクロール、交差軸の数は自動）
    │     ├─ UiwInventoryItemGridList           ← 倉庫グリッド（RuntimeItemSlot + UiwInventoryItemCell、ドラッグ整理あり）
    │     ├─ UiwSkillGridList                    ← スキルグリッド（Skill + UiwSkillEntry）
    │     └─ UiwEquipmentCandidateList          ← 装備候補（整理ドラッグなし、装備ドラッグは保持）
-   └─ UiwInventoryOrderList<TData, TCell>      ← 汎用順序レイアウト（単一列縦）
+   └─ UiwVirtualOrderList<TData, TCell>      ← 汎用順序レイアウト（単一列縦）
          ├─ UiwInventoryItemOrderList          ← 倉庫リスト（RuntimeItemSlot + UiwInventoryItemDetail）
          ├─ UiwCraftingBlueprintList           ← クラフトブループリントリスト（+ 選択）
          ├─ UiwSkillOrderList                   ← スキルリスト（Skill + UiwSkillEntry）
@@ -307,8 +309,8 @@ UiwInventoryItemListBase<TData, TCell>        ← 基底：仮想スクロール
 ```
 
 - **基底**（ジェネリック抽象、直接アタッチしない）はオブジェクトプール、ビューポートサイズ監視、回収 / 再利用ループ、共通入口 `SetItems` / `UpdateItems` / `ScrollToStart` を持つ。
-- **汎用層**（ジェネリック抽象、直接アタッチしない）はレイアウト戦略のみを提供：`UiwInventoryOrderList` = 単一列縦。`UiwInventoryGridList` = 2 次元グリッド、`scrollDirection` により**縦**（列数 = ビューポート幅 ÷ セル幅）/ **横**（行数 = ビューポート高 ÷ セル高）に分かれ、交差軸の数はビューポートサイズに応じて自動再計算。
-- **リーフ層**（非ジェネリック、プレハブにアタッチ）はジェネリック `<データ型, セル型>` を閉じ、「1 件のデータをセルに表示 / セルをクリア」を実装し、各システムのコンテキストに対応。**新システム**向けにリストを追加するには：`UiwInventoryGridList<T,TCell>` または `UiwInventoryOrderList<T,TCell>` を継承し、`BindCell` / `ClearCell`（および任意で `InitCell` / `OnCellAssigned`）をオーバーライドします。
+- **汎用層**（ジェネリック抽象、直接アタッチしない）はレイアウト戦略のみを提供：`UiwVirtualOrderList` = 単一列縦。`UiwVirtualGridList` = 2 次元グリッド、`scrollDirection` により**縦**（列数 = ビューポート幅 ÷ セル幅）/ **横**（行数 = ビューポート高 ÷ セル高）に分かれ、交差軸の数はビューポートサイズに応じて自動再計算。
+- **リーフ層**（非ジェネリック、プレハブにアタッチ）はジェネリック `<データ型, セル型>` を閉じ、「1 件のデータをセルに表示 / セルをクリア」を実装し、各システムのコンテキストに対応。**新システム**向けにリストを追加するには：`UiwVirtualGridList<T,TCell>` または `UiwVirtualOrderList<T,TCell>` を継承し、`BindCell` / `ClearCell`（および任意で `InitCell` / `OnCellAssigned`）をオーバーライドします。
 
 ### プレハブの作成
 
@@ -427,7 +429,7 @@ Prefab_List  [リーフコンポーネント、例：UiwInventoryItemGridList]
 
 ### 7.4 フィルタ / ソートパイプライン（リスト基底にカプセル化）
 
-`UiwFilterTabBar` + `UiwSortToolbar` の配線は、仮想スクロールリスト基底 `UiwInventoryListBase` に統一的にカプセル化されています。各システムのビューは**2 つのコンポーネント参照をリストにアタッチして 1 回設定するだけ**で、各ビューでフィルタ / ソートコードを繰り返し書く必要はありません。パイプラインは任意・増分式：
+`UiwFilterTabBar` + `UiwSortToolbar` の配線は、仮想スクロールリスト基底 `UiwVirtualListBase` に統一的にカプセル化されています。各システムのビューは**2 つのコンポーネント参照をリストにアタッチして 1 回設定するだけ**で、各ビューでフィルタ / ソートコードを繰り返し書く必要はありません。パイプラインは任意・増分式：
 
 ```
 ソースエントリ → 主/副タブフィルタ(filterBar / secondaryFilterBar) → 追加フィルタ(SetExtraFilter、例：検索) → ソート(sortToolbar) → 表示
@@ -449,7 +451,7 @@ Prefab_List  [リーフコンポーネント、例：UiwInventoryItemGridList]
 
 `UiwInventoryView` は最上位のバックパックメイン画面コントローラーで、以下のコンポーネントと機能を**コンポジション**します：
 
-- **複数倉庫タブ切り替え**（`UiwInventoryTab` プレハブを使用）
+- **複数倉庫タブ切り替え**（`UiwTabButton` プレハブを使用）
 - **通貨バー**（`UiwCurrencyBar` コンポーネント）
 - **仮想スクロールリスト**（グリッド `UiwInventoryItemGridList` / 順序 `UiwInventoryItemOrderList`、ビューがいずれかを表示切り替え）
 - **フィルタタブバー**（`UiwFilterTabBar` コンポーネント）
@@ -483,8 +485,8 @@ Prefab_InventoryView  [UiwInventoryView]
 
 | パラメータ | 説明 |
 |------|------|
-| `tabContainer` | タブボタンの親ノード（`UiwInventoryTab` がこの下にインスタンス化） |
-| `tabPrefab` | `UiwInventoryTab` プレハブ |
+| `tabContainer` | タブボタンの親ノード（`UiwTabButton` がこの下にインスタンス化） |
+| `tabPrefab` | `UiwTabButton` プレハブ |
 
 **仮想スクロールリスト**
 
@@ -551,7 +553,7 @@ Inventory Editor「倉庫システム」タブの数字フォーマットパネ�
 
 | 順 | プレハブ名 | コンポーネント |
 |------|------------|------|
-| 1 | `Prefab_InventoryTab` | `UiwInventoryTab` + `Button` |
+| 1 | `Prefab_InventoryTab` | `UiwTabButton` + `Button` |
 | 2 | `Prefab_ItemSimple` | `UiwInventoryItemSimple` |
 | 3 | `Prefab_ItemDetail` | `UiwInventoryItemDetail` |
 | 4 | `Prefab_ItemOrderList` / `Prefab_ItemGridList` | `UiwInventoryItemOrderList` / `UiwInventoryItemGridList`（エントリプレハブを参照。Content に LayoutGroup なし） |
@@ -640,7 +642,7 @@ public class InventoryUIController : MonoBehaviour
 | `UiwCraftingDetail` | ブループリント詳細：主 / 副産出、消費リスト、作成可能回数、作成回数選択（`UiwNumberCounter`）、作成 / 停止 + プログレスバー |
 | `UiwCraftingBlueprintCell` | ブループリント一覧エントリ（主産出アイコン + 名称 + 属性表示行） |
 | `UiwCraftingInputCell` | 消費アイテム行（アイコン / 名称 / 要求 / 保有） |
-| `UiwCraftingBlueprintList` | ブループリント仮想スクロールリスト（`UiwInventoryOrderList` を継承、選択ハイライト + 選択イベントを追加サポート） |
+| `UiwCraftingBlueprintList` | ブループリント仮想スクロールリスト（`UiwVirtualOrderList` を継承、選択ハイライト + 選択イベントを追加サポート） |
 | `UiwCraftingGroupFilter` | グループ折りたたみタブ（主グループから副グループを展開、`UiwFoldTab` を再利用） |
 
 挙動（レシピ、クラフト倉庫、作成可能回数）は [クラフトシステム](CraftingSystem_JA.md) を参照。
@@ -657,7 +659,7 @@ public class InventoryUIController : MonoBehaviour
 | `UiwEquipmentSlot` | 装備スロット（`UiwInventoryItemSlotBase` を継承）：装備中アイテムを表示。左 / 右クリックイベント。ドラッグソース（ドラッグアウトで交換）+ ドロップ対象（装備 / 交換）+ 緑/赤の有効性オーバーレイ（`selectedIndicator` / `validityOverlay` 任意） |
 | `UiwEquipmentBonusPanel` / `UiwEquipmentBonusEntry` | 属性ボーナスパネル：グループタグごとに合計属性ボーナスを表示 |
 | `UiwEquipmentSelectPanel` | 装備選択パネル：切り替えバー（左右 + 名称 + N/M）+ 現在のスロットリスト + 装備可能アイテムリスト + 退出（ボタン / 空白部の右クリック） |
-| `UiwEquipmentCandidateList` | 装備可能アイテムリスト（仮想スクロールグリッド、`UiwInventoryGridList` を継承）：装備グループの「装備倉庫」をまたいで現在のスロットリストの制限でフィルタ（各セルがソース倉庫を記録）。**右クリックでクイック装備 / 左ドラッグで装備スロットへ装備**。候補セルは `UiwInventoryItemCell` + `GridCellDragHandler` を再利用（整理ドラッグは受けないので handler が装備ドラッグを駆動） |
+| `UiwEquipmentCandidateList` | 装備可能アイテムリスト（仮想スクロールグリッド、`UiwVirtualGridList` を継承）：装備グループの「装備倉庫」をまたいで現在のスロットリストの制限でフィルタ（各セルがソース倉庫を記録）。**右クリックでクイック装備 / 左ドラッグで装備スロットへ装備**。候補セルは `UiwInventoryItemCell` + `GridCellDragHandler` を再利用（整理ドラッグは受けないので handler が装備ドラッグを駆動） |
 | `GridCellDragHandler` | アイテムセルのドラッグ中継コンポーネント（`UiwInventoryItemCell` またはその子に付与）：**グリッドリストに接続済み**（バックパック）のときは `UiwInventoryItemGridList` へ転送、ドラッグ終了時に落下点で判定（装備スロット→装備、アイテムセル→入れ替え）。**グリッドリストに未接続**（候補リスト）のときは「装備スロットへドラッグして装備」を駆動（`UiwEquipmentDragContext` 経由）。右クリッククイック装備は本コンポーネントでは処理しない（`UiwInventoryItemCell` がブロードキャスト → `UiwEquipmentView` が購読） |
 | `UiwEquipmentDragContext` | 装備ドラッグのグローバルコンテキスト（ペイロード + カーソル追従のゴースト + ソースアイコンの復帰）。非 MonoBehaviour の静的クラス |
 | `UiwInventoryItemEvents` | 汎用の静的イベントバス：バックパック / 明細アイテムセルが (倉庫ID, アイテムID) の右クリックをブロードキャストし、装備画面が開いているとき `UiwEquipmentView` が購読して自動装備（装備概念と分離、グリッドセルと順序 / 明細行の両方に対応） |
@@ -703,7 +705,7 @@ public class InventoryUIController : MonoBehaviour
 その場で再利用し、値 / 表示名だけを再バインドします。多ければ末尾を破棄、少なければ追加生成します。タブインスタンスの
 インデックスは常にそれが表すエントリのインデックスと一致するため、生成時に付けた `onClick` クロージャは以後の再利用でも
 有効なままで、リスナーの付け外しを繰り返す必要がありません。バインドもクリックもデリゲートで渡すため、タブコンポーネント
-側にインターフェース要件はありません（`UiwInventoryTab` / `UiwShopGroupTab` の `SetData`、素の `Button` の
+側にインターフェース要件はありません（`UiwTabButton` / `UiwShopGroupTab` の `SetData`、素の `Button` の
 「テキスト変更 + normalColor 変更」でも接続できます）。
 
 **`UiwWidgetPool` —— 使い方**：

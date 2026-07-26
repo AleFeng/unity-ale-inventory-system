@@ -215,7 +215,7 @@ eq.ResetAll();                        // クリア（新規ゲーム開始など
 
 # 装備 UI
 
-装備 UI は `Runtime/UI/`（アセンブリ `Ale.Inventory.UI`）にあります：
+装備 UI は `Runtime/UI/`（アセンブリ `Ale.Inventory.Runtime.UI`）にあります：
 
 | コンポーネント | 説明 |
 |------|------|
@@ -225,7 +225,7 @@ eq.ResetAll();                        // クリア（新規ゲーム開始など
 | `UiwEquipmentSlot` | 装備スロット：`UiwInventoryItemSlotBase` を継承。装備中アイテムを表示。左 / 右クリックイベント。ドラッグソース（ドラッグアウトで交換）+ ドロップ対象（装備 / 交換）+ 緑/赤の有効性オーバーレイ |
 | `UiwEquipmentBonusPanel` / `UiwEquipmentBonusEntry` | 属性ボーナスパネル：グループタグごとに合計属性ボーナスを表示。ボーナスが 1 つもないときは空状態ヒントを表示（`emptyText`、ローカライズテーブル/エントリ参照 `emptyTextLocalized*` に対応） |
 | `UiwEquipmentSelectPanel` | 装備選択パネル：上部のスロットグループ切り替えバー（左右 + N/M）+ 中央の現在のスロットリスト + 下部の装備可能アイテムリスト + 退出（ボタン / 空白部の右クリック） |
-| `UiwEquipmentCandidateList` | 装備可能アイテムリスト（**仮想スクロールグリッド**、`UiwInventoryGridList` を継承）：装備グループの「装備倉庫」をまたいで、現在のスロットリストの制限で候補アイテムをフィルタ（各セルがそのソース倉庫を記録）。**右クリックでクイック装備 / 左ドラッグで装備スロットへ装備**。候補セルは倉庫セル `UiwInventoryItemCell` + `GridCellDragHandler` を再利用（バックパックセルと同源。整理ドラッグは受けないので、handler が装備ドラッグを駆動）。プレハブには ScrollRect + Viewport + Content が必要（Content に GridLayoutGroup は付けない） |
+| `UiwEquipmentCandidateList` | 装備可能アイテムリスト（**仮想スクロールグリッド**、`UiwVirtualGridList` を継承）：装備グループの「装備倉庫」をまたいで、現在のスロットリストの制限で候補アイテムをフィルタ（各セルがそのソース倉庫を記録）。**右クリックでクイック装備 / 左ドラッグで装備スロットへ装備**。候補セルは倉庫セル `UiwInventoryItemCell` + `GridCellDragHandler` を再利用（バックパックセルと同源。整理ドラッグは受けないので、handler が装備ドラッグを駆動）。プレハブには ScrollRect + Viewport + Content が必要（Content に GridLayoutGroup は付けない） |
 | `GridCellDragHandler` | アイテムセルのドラッグ中継コンポーネント（`UiwInventoryItemCell` またはその子に付与、`Runtime/UI/ItemList/` にある）：**グリッドリストに接続済み**（バックパック）のときは `UiwInventoryItemGridList` へ転送し、ドラッグ終了時に落下点で判定（装備スロット→装備、アイテムセル→入れ替え）。**グリッドリストに未接続**（候補リスト）のときは「装備スロットへドラッグして装備」を駆動（`UiwEquipmentDragContext` 経由、ゴースト + 緑/赤の有効性付き）。右クリッククイック装備は本コンポーネントでは処理しない —— `UiwInventoryItemCell` が「アイテム右クリック」をブロードキャストし、`UiwEquipmentView` が購読して統一処理するので、セルはどのコンテナでも一貫して対話できる |
 | `UiwEquipmentDragContext` | 装備ドラッグのグローバルコンテキスト（ペイロード + カーソル追従のゴースト + ソースアイコンの復帰） |
 

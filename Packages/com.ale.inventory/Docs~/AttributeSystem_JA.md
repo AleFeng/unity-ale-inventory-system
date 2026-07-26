@@ -108,9 +108,9 @@ InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 
 > 2 つの格納形式はディスク上のフォーマットが異なり、同名フィールドで自動共有はできません。マクロ切り替え後、メニュー **Tools/Inventory System/Addressables** で、あるデータベースの全リソースフィールドを「Object 参照 ↔ AssetReference(GUID)」間でワンクリック相互変換できます。
 >
-> 内部：授権 GUID / ランタイムアドレスは実時参照と並行して `AttributeValue` に格納されます（アドレスリスト vs `objRefs`）。ファサードは実時参照を優先し、なければアドレスの非同期読み込みに退避します。core アセンブリは Addressables にゼロ依存で、ネイティブセレクターは制約付きの Addressable エディタアセンブリから注入されます（`InventoryExportResolver` と同じ注入パターン）。
+> 内部：授権 GUID / ランタイムアドレスは実時参照と並行して `AttributeValue` に格納されます（アドレスリスト vs `objRefs`）。ファサードは実時参照を優先し、なければアドレスの非同期読み込みに退避します。core アセンブリは Addressables にゼロ依存で、ネイティブセレクターは制約付きの Addressable エディタアセンブリから注入されます（`EditorExportResolver` と同じ注入パターン）。
 >
-> 設定クラスの**固定リソースフィールド**（`Skill.icon`、`SkillTemplate.icon`、`FunctionTag.backgroundSprite` などの名前付きフィールド）も同じ仕組みを採用します：各々が並行する `xxxAddress` の純文字列フィールドを持ち、エディタでは `InventoryAssetRefField` で描画（直接 `ObjectField` / 授権 AssetReference セレクター）、ランタイムでも同様に `InventoryAssets.Bind(liveRef, address, owner, set)` で非同期取得します。
+> 設定クラスの**固定リソースフィールド**（`Skill.icon`、`SkillTemplate.icon`、`Tag.backgroundSprite` などの名前付きフィールド）も同じ仕組みを採用します：各々が並行する `xxxAddress` の純文字列フィールドを持ち、エディタでは `EditorAssetRefField` で描画（直接 `ObjectField` / 授権 AssetReference セレクター）、ランタイムでも同様に `InventoryAssets.Bind(liveRef, address, owner, set)` で非同期取得します。
 
 # ローカライズ（固定 Text フィールドとツール）
 

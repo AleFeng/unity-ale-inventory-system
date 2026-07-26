@@ -229,13 +229,27 @@ The three clocks needed for shop refresh (game / local / server time) are regist
 
 ### Assembly Division
 
+This plugin depends on the standalone foundation package `com.ale.toolkit` (`Ale.Toolkit.*`), into which the general-purpose capabilities have been extracted; the tables below cover both packages.
+
+**This plugin (`com.ale.inventory`)**
+
 | asmdef | Content |
 |--------|------|
 | `Ale.Inventory.Runtime` | Data models, managers, serialization (runtime core) |
-| `Ale.Inventory.UI` | Runtime UI components; references Runtime and TextMeshPro |
+| `Ale.Inventory.Runtime.UI` | Runtime UI components (warehouse / shop / crafting / skill views); references Runtime, `Ale.Toolkit.Runtime.UI` and TextMeshPro |
 | `Ale.Inventory.Editor` | Editor windows and panels |
-| `Ale.Inventory.Addressables.Runtime` / `.Editor` | Addressables asset-loading support |
-| `Ale.Inventory.UI.Localization` | TMP text / font localization events |
+| `Ale.Inventory.Addressables.Editor` | Addressables editor tooling (constrained by `IS_ADDRESSABLE`) |
+
+**Foundation (`com.ale.toolkit`)**
+
+| asmdef | Content |
+|--------|------|
+| `Ale.Toolkit.Runtime` | Attribute system, sorting, tagging, shared serialization, asset-loading abstraction |
+| `Ale.Toolkit.Runtime.UI` | Virtual scrolling lists and general UI widgets |
+| `Ale.Toolkit.UI.Localization` | TMP text / font localization events (constrained by `IS_LOCALIZATION`) |
+| `Ale.Toolkit.Addressables.Runtime` | Addressables loading and handle management (constrained by `IS_ADDRESSABLE`) |
+| `Ale.Toolkit.Editor` | Editor three-column framework, attribute drawers, localization service |
+| `Ale.Toolkit.Addressables.Editor` | Addressables editor tooling (constrained by `IS_ADDRESSABLE`) |
 
 ---
 

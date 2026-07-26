@@ -9,7 +9,7 @@
 
 - Back to [documentation](../README_EN.md)
 
-This document explains the functionality, Inspector parameters, and prefab authoring of each UI component in the `Ale.Inventory.UI` assembly. It covers the inventory, shop, crafting, and equipment screens plus reusable common components.
+This document explains the functionality, Inspector parameters, and prefab authoring of each UI component in the `Ale.Inventory.Runtime.UI` assembly. It covers the inventory, shop, crafting, and equipment screens plus reusable common components.
 
 > **Namespace**: all UI scripts are declared in `Ale.Inventory.Runtime.UI`; reference them with `using Ale.Inventory.Runtime.UI;`. (The asmdef's `rootNamespace` matches this namespace.)
 
@@ -19,7 +19,7 @@ This document explains the functionality, Inspector parameters, and prefab autho
 
 1. [Overview and Assembly Setup](#1-overview-and-assembly-setup)
 2. [NumberFormatConfig — Number Formatting Config](#2-numberformatconfig--number-formatting-config-built-into-the-database)
-3. [UiwInventoryTab — Inventory Tab Button](#3-uiwinventorytab--inventory-tab-button)
+3. [UiwTabButton — Inventory Tab Button](#3-uiwtabbutton--inventory-tab-button)
 4. [UiwInventoryItemSimple — Simple Item Cell](#4-uiwinventoryitemsimple--simple-item-cell)
 5. [UiwInventoryItemDetail — Full Item Cell](#5-uiwinventoryitemdetail--full-item-cell)
 6. [Virtual-Scroll List — Base + Grid / Ordered](#6-virtual-scroll-list--base--grid--ordered)
@@ -40,8 +40,8 @@ Scripts are placed by type into subfolders under `Runtime/UI/` (the namespace is
 ```
 Runtime/UI/
 ├── Item/      Single cells (UiwInventoryItemBase / SlotBase / Cell / Simple / Detail, UiwShopItemDetail, UiwCraftingBlueprintCell, UiwCraftingInputCell, UiwEquipmentSlot, UiwEquipmentBonusEntry, UiwInventoryItemEvents)
-├── ItemList/  Virtual-scroll list family: base UiwInventoryItemListBase + generic UiwInventoryGridList / UiwInventoryOrderList + leaves (warehouse UiwInventoryItemGridList / UiwInventoryItemOrderList, crafting UiwCraftingBlueprintList, skill UiwSkillGridList / UiwSkillOrderList) + GridCellDragHandler + ViewportSizeWatcher (the equipment candidate list is in View/Equipment/, the shop product list in View/Shop/)
-├── Tab/       Tabs / filters (UiwInventoryTab, UiwShopGroupTab, UiwFoldTab, UiwFilterTabBar, UiwCraftingGroupFilter)
+├── ItemList/  Virtual-scroll list family: base UiwVirtualListBase + generic UiwVirtualGridList / UiwVirtualOrderList + leaves (warehouse UiwInventoryItemGridList / UiwInventoryItemOrderList, crafting UiwCraftingBlueprintList, skill UiwSkillGridList / UiwSkillOrderList) + GridCellDragHandler + ViewportSizeWatcher (the equipment candidate list is in View/Equipment/, the shop product list in View/Shop/)
+├── Tab/       Tabs / filters (UiwTabButton, UiwShopGroupTab, UiwFoldTab, UiwFilterTabBar, UiwCraftingGroupFilter)
 ├── Tool/      Common utility components (UiwCurrencyBar, UiwSortToolbar, UiwItemTooltip, UiwNumberCounter)
 ├── View/      Main screens: the UiwViewBase base class
 │   ├── Inventory/  UiwInventoryView
@@ -49,14 +49,16 @@ Runtime/UI/
 │   ├── Crafting/   UiwCraftingView, UiwCraftingDetail
 │   └── Equipment/  UiwEquipmentView, UiwEquipmentGroupPanel, UiwEquipmentSlotList, UiwEquipmentBonusPanel, UiwEquipmentSelectPanel, UiwEquipmentCandidateList, UiwEquipmentDragContext
 ├── Common/    Common widgets (UiwTextLabel)
-└── Ale.Inventory.UI.asmdef   (at the root, automatically covers all subfolders)
+└── Ale.Inventory.Runtime.UI.asmdef   (at the root, automatically covers all subfolders)
 ```
+
+> Note: the directory snapshot above reflects the historical `Runtime/UI/` layout of this plugin package; after the extraction to `com.ale.toolkit`, the **general-purpose UI foundation** has moved to the toolkit (namespace `Ale.Toolkit.Runtime.UI`) and no longer lives in this package: the virtual-scroll list base and grid / sequential implementations (`UiwVirtualListBase` / `UiwVirtualGridList` / `UiwVirtualOrderList`, `ViewportSizeWatcher`), the generic tabs and filters (`UiwTabButton` / `UiwFoldTab` / `UiwFilterTabBar`), the tooltip base class, `UiwSortToolbar` / `UiwNumberCounter` / `UiwTextLabel`, etc. This package's folders keep only the domain-specific components (warehouse / shop / crafting / equipment / skill).
 
 > The currency bar / sort bar / hover popup / number counter (`Tool/`) and the filter tab bar / fold tab (`Tab/`) are all independent, generic components; each main screen (`UiwInventoryView`, `UiwShopViewBase`, `UiwCraftingView`, all derived from `UiwViewBase`) holds references to them by "composition", reusing them across the inventory / shop / crafting system UIs.
 
 ### Assembly
 
-`Ale.Inventory.UI` (`Ale.Inventory.UI.asmdef`)
+`Ale.Inventory.Runtime.UI` (`Ale.Inventory.Runtime.UI.asmdef`)
 
 - References `Ale.Inventory.Runtime` (runtime data and managers)
 - References `Unity.TextMeshPro` (toggleable via macro)
@@ -119,14 +121,14 @@ string t2 = locale.Format(value);
 
 ---
 
-## 3. UiwInventoryTab — Inventory Tab Button
+## 3. UiwTabButton — Inventory Tab Button
 
-`UiwInventoryTab` is a lightweight MonoBehaviour responsible for showing the **warehouse ID name** and switching its visual state by whether it's selected. It's instantiated and managed automatically by `UiwInventoryView`, usually requiring no manual driving.
+`UiwTabButton` is a lightweight MonoBehaviour responsible for showing the **warehouse ID name** and switching its visual state by whether it's selected. It's instantiated and managed automatically by `UiwInventoryView`, usually requiring no manual driving.
 
 ### Making the Prefab
 
 1. Create a UI **Button** node (under a Canvas), named `Prefab_InventoryTab`.
-2. Attach the `UiwInventoryTab` component.
+2. Attach the `UiwTabButton` component.
 3. Prepare a text component (`Text` or `TMP_Text`) in the Button's children and assign the reference to the `label` field.
 4. Create a child GameObject inside the Button as the **selection indicator** (e.g. a bottom highlight bar, a color overlay), assign it to the `selectedIndicator` field; `UiwInventoryView` calls `SetActive(isSelected)` on it when switching tabs.
 
@@ -294,12 +296,12 @@ Every list that "displays a large number of entries / items in a list / grid" is
 ### Three-Layer Architecture
 
 ```
-UiwInventoryItemListBase<TData, TCell>        ← Base: the virtual-scroll engine (object pool + viewport monitoring + recycle/reuse) + an abstract "layout strategy"
-   ├─ UiwInventoryGridList<TData, TCell>       ← Generic grid layout (multi-column/row, vertical / horizontal scroll, auto cross-axis count)
+UiwVirtualListBase<TData, TCell>        ← Base: the virtual-scroll engine (object pool + viewport monitoring + recycle/reuse) + an abstract "layout strategy"
+   ├─ UiwVirtualGridList<TData, TCell>       ← Generic grid layout (multi-column/row, vertical / horizontal scroll, auto cross-axis count)
    │     ├─ UiwInventoryItemGridList           ← Warehouse grid (RuntimeItemSlot + UiwInventoryItemCell, with drag sorting)
    │     ├─ UiwSkillGridList                    ← Skill grid (Skill + UiwSkillEntry)
    │     └─ UiwEquipmentCandidateList          ← Equipment candidates (no sort dragging, keeps equip dragging)
-   └─ UiwInventoryOrderList<TData, TCell>      ← Generic ordered layout (single-column vertical)
+   └─ UiwVirtualOrderList<TData, TCell>      ← Generic ordered layout (single-column vertical)
          ├─ UiwInventoryItemOrderList          ← Warehouse list (RuntimeItemSlot + UiwInventoryItemDetail)
          ├─ UiwCraftingBlueprintList           ← Crafting blueprint list (+ selection)
          ├─ UiwSkillOrderList                   ← Skill list (Skill + UiwSkillEntry)
@@ -307,8 +309,8 @@ UiwInventoryItemListBase<TData, TCell>        ← Base: the virtual-scroll engin
 ```
 
 - The **base** (generic abstract, not attached directly) holds the object pool, viewport-size monitoring, the recycle / reuse loop, and the common entry points `SetItems` / `UpdateItems` / `ScrollToStart`.
-- The **generic layer** (generic abstract, not attached directly) provides only the layout strategy: `UiwInventoryOrderList` = single-column vertical; `UiwInventoryGridList` = a 2D grid, split by `scrollDirection` into **vertical** (columns = viewport width ÷ cell width) / **horizontal** (rows = viewport height ÷ cell height), with the cross-axis count auto-recomputed as the viewport size changes.
-- The **leaf layer** (non-generic, attached to prefabs) closes the generics `<data type, cell type>`, implements "display one datum into a cell / clear a cell", and integrates with each system's context. To add a list for a **new system**: inherit `UiwInventoryGridList<T,TCell>` or `UiwInventoryOrderList<T,TCell>` and override `BindCell` / `ClearCell` (and optionally `InitCell` / `OnCellAssigned`).
+- The **generic layer** (generic abstract, not attached directly) provides only the layout strategy: `UiwVirtualOrderList` = single-column vertical; `UiwVirtualGridList` = a 2D grid, split by `scrollDirection` into **vertical** (columns = viewport width ÷ cell width) / **horizontal** (rows = viewport height ÷ cell height), with the cross-axis count auto-recomputed as the viewport size changes.
+- The **leaf layer** (non-generic, attached to prefabs) closes the generics `<data type, cell type>`, implements "display one datum into a cell / clear a cell", and integrates with each system's context. To add a list for a **new system**: inherit `UiwVirtualGridList<T,TCell>` or `UiwVirtualOrderList<T,TCell>` and override `BindCell` / `ClearCell` (and optionally `InitCell` / `OnCellAssigned`).
 
 ### Making the Prefab
 
@@ -427,7 +429,7 @@ Aggregates three controls — sort dropdown + ascending/descending toggle + auto
 
 ### 7.4 Filter / Sort Pipeline (Encapsulated in the List Base)
 
-The wiring of `UiwFilterTabBar` + `UiwSortToolbar` is uniformly encapsulated into the virtual-scroll list base `UiwInventoryListBase`; each system view **only needs to attach the two component references to the list and configure once**, without repeating filter / sort code in every view. The pipeline is optional and incremental:
+The wiring of `UiwFilterTabBar` + `UiwSortToolbar` is uniformly encapsulated into the virtual-scroll list base `UiwVirtualListBase`; each system view **only needs to attach the two component references to the list and configure once**, without repeating filter / sort code in every view. The pipeline is optional and incremental:
 
 ```
 source entries → primary/secondary tab filter (filterBar / secondaryFilterBar) → extra filter (SetExtraFilter, e.g. search) → sort (sortToolbar) → display
@@ -449,7 +451,7 @@ source entries → primary/secondary tab filter (filterBar / secondaryFilterBar)
 
 `UiwInventoryView` is the top-level backpack main-screen controller, **composing** the following components and features:
 
-- **Multi-warehouse tab switching** (using the `UiwInventoryTab` Prefab)
+- **Multi-warehouse tab switching** (using the `UiwTabButton` Prefab)
 - **Currency bar** (the `UiwCurrencyBar` component)
 - **Virtual-scroll list** (grid `UiwInventoryItemGridList` / ordered `UiwInventoryItemOrderList`, the view showing one of them)
 - **Filter tab bar** (the `UiwFilterTabBar` component)
@@ -483,8 +485,8 @@ Prefab_InventoryView  [UiwInventoryView]
 
 | Parameter | Description |
 |------|------|
-| `tabContainer` | The parent node of tab buttons (`UiwInventoryTab` is instantiated under it) |
-| `tabPrefab` | The `UiwInventoryTab` Prefab |
+| `tabContainer` | The parent node of tab buttons (`UiwTabButton` is instantiated under it) |
+| `tabPrefab` | The `UiwTabButton` Prefab |
 
 **Virtual-scroll lists**
 
@@ -551,7 +553,7 @@ Make them in the following order (later Prefabs depend on earlier ones):
 
 | Order | Prefab name | Component |
 |------|------------|------|
-| 1 | `Prefab_InventoryTab` | `UiwInventoryTab` + `Button` |
+| 1 | `Prefab_InventoryTab` | `UiwTabButton` + `Button` |
 | 2 | `Prefab_ItemSimple` | `UiwInventoryItemSimple` |
 | 3 | `Prefab_ItemDetail` | `UiwInventoryItemDetail` |
 | 4 | `Prefab_ItemOrderList` / `Prefab_ItemGridList` | `UiwInventoryItemOrderList` / `UiwInventoryItemGridList` (reference the entry Prefab; Content has no LayoutGroup) |
@@ -640,7 +642,7 @@ Sections 2–9 focus on the backpack UI. The shop and crafting screens and other
 | `UiwCraftingDetail` | Blueprint detail: primary / secondary outputs, input list, craftable count, craft-count selector (`UiwNumberCounter`), craft / stop + progress bar |
 | `UiwCraftingBlueprintCell` | Blueprint list entry (primary-output icon + name + attribute display rows) |
 | `UiwCraftingInputCell` | Input item row (icon / name / requirement / holdings) |
-| `UiwCraftingBlueprintList` | Blueprint virtual-scroll list (inherits `UiwInventoryOrderList`, additionally supporting selection highlight + selection event) |
+| `UiwCraftingBlueprintList` | Blueprint virtual-scroll list (inherits `UiwVirtualOrderList`, additionally supporting selection highlight + selection event) |
 | `UiwCraftingGroupFilter` | Collapsible group tabs (a primary group unfolds its secondary groups, reusing `UiwFoldTab`) |
 
 Behavior (recipes, crafting warehouses, craftable count) — see [Crafting System](CraftingSystem_EN.md).
@@ -657,7 +659,7 @@ Behavior (recipes, crafting warehouses, craftable count) — see [Crafting Syste
 | `UiwEquipmentSlot` | Equipment slot (inherits `UiwInventoryItemSlotBase`): shows the equipped item; left / right-click events; drag source (drag out to swap) + drop target (equip / swap) + green/red validity overlay (`selectedIndicator` / `validityOverlay` optional) |
 | `UiwEquipmentBonusPanel` / `UiwEquipmentBonusEntry` | Bonus panel: shows total attribute bonuses grouped by group tag |
 | `UiwEquipmentSelectPanel` | Equipment selection panel: a switch bar (left/right + name + N/M) + the current slot list + the equippable item list + exit (button / right-click on blank space) |
-| `UiwEquipmentCandidateList` | Equippable item list (virtual-scroll grid, inherits `UiwInventoryGridList`): filters across the equipment group's "equipment warehouses" by the current slot list's limits (each cell records its source warehouse); **right-click to quick-equip / left-drag to an equipment slot to equip**. Candidate cells reuse `UiwInventoryItemCell` + `GridCellDragHandler` (doesn't take sort dragging, so the handler drives equip dragging) |
+| `UiwEquipmentCandidateList` | Equippable item list (virtual-scroll grid, inherits `UiwVirtualGridList`): filters across the equipment group's "equipment warehouses" by the current slot list's limits (each cell records its source warehouse); **right-click to quick-equip / left-drag to an equipment slot to equip**. Candidate cells reuse `UiwInventoryItemCell` + `GridCellDragHandler` (doesn't take sort dragging, so the handler drives equip dragging) |
 | `GridCellDragHandler` | The item-cell drag relay component (attached to `UiwInventoryItemCell` or its child): when **connected to a grid list** (backpack), forwards to `UiwInventoryItemGridList`, and at drag end decides by the drop point (equipment slot→equip, item cell→reorder); when **not connected to a grid list** (candidate list), drives "drag to an equipment slot to equip" (via `UiwEquipmentDragContext`). Right-click quick-equip is not handled by this component (`UiwInventoryItemCell` broadcasts → `UiwEquipmentView` subscribes) |
 | `UiwEquipmentDragContext` | The global equipment-drag context (payload + cursor-following ghost + source icon reset); a non-MonoBehaviour static class |
 | `UiwInventoryItemEvents` | A generic static event bus: backpack / detail item cells broadcast a right-click of (warehouse ID, item ID), which `UiwEquipmentView` subscribes to for auto-equip when the equipment screen is open (decoupled from the equipment concept, compatible with grid cells and ordered / detail rows) |
@@ -705,7 +707,7 @@ unchanged it reuses the existing instances in place and only rebinds values / la
 are too many and appends when there are too few. A tab instance's index always equals the index of the entry it
 represents, so the `onClick` closure attached at creation stays valid through every later reuse — no repeated
 add/remove of listeners. Binding and clicking are both passed in as delegates, so there is no interface requirement
-on the tab component (`UiwInventoryTab` / `UiwShopGroupTab`'s `SetData`, or even a bare `Button`'s "set text + set
+on the tab component (`UiwTabButton` / `UiwShopGroupTab`'s `SetData`, or even a bare `Button`'s "set text + set
 normalColor", all work).
 
 **`UiwWidgetPool` — usage**:
