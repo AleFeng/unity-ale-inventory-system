@@ -25,7 +25,6 @@ namespace Ale.Inventory.Editor
             Add("创建新数据文件",        "Create New Data File",    "新規データファイル作成");
             Add("打开 Inventory Editor", "Open Inventory Editor",   "Inventory Editor を開く");
             Add("打开 Addressable工具窗口", "Open Addressable Tool", "Addressable ツールを開く");
-            Add("打开 本地化工具窗口",   "Open Localization Tool",  "ローカライズツールを開く");
             Add("查看文档",              "View Docs",               "ドキュメントを見る");
             Add("打开 Ale Toolkit 设置（语言 / 插件宏）",
                 "Open Ale Toolkit Settings (Language / Defines)",

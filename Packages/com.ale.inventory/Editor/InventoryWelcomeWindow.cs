@@ -1,6 +1,3 @@
-using Ale.Toolkit.Runtime.UI;
-using Ale.Toolkit.Runtime;
-using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -19,7 +16,7 @@ namespace Ale.Inventory.Editor
     {
         private const string Version = "1.0.0";
 
-        private static readonly Vector2 WindowSize = new Vector2(520f, 800f);
+        private static readonly Vector2 WindowSize = new Vector2(520f, 600f);
 
         // 内部 UI 状态
         private InventoryDatabase _templateDb;
@@ -38,13 +35,13 @@ namespace Ale.Inventory.Editor
 
         #region 打开窗口
 
-        [MenuItem("Tools/Ale Toolkit/Inventory System/Welcome Window", priority = 1000)]
+        [MenuItem("Tools/Ale Toolkit/Inventory System/Welcome", priority = 1000)]
         public static void Open()
         {
             OpenWindow();
         }
 
-        private static InventoryWelcomeWindow OpenWindow()
+        private static void OpenWindow()
         {
             var window = GetWindow<InventoryWelcomeWindow>(true, Tr("Inventory 道具仓库系统"), true);
             window.minSize = WindowSize;
@@ -52,7 +49,6 @@ namespace Ale.Inventory.Editor
             window.CenterOnMainWin();
             window.Show();
             window.Focus();
-            return window;
         }
 
         private void CenterOnMainWin()
@@ -174,12 +170,6 @@ namespace Ale.Inventory.Editor
 
             if (GUILayout.Button(Tr("打开 Inventory Editor"), GUILayout.Height(28)))
                 InventoryEditorWindow.Open();
-
-#if ATK_LOCALIZATION
-            // 仅在启用 ATK_LOCALIZATION 时显示；打开 toolkit 通用本地化窗口（拖入本库的 InventoryDatabase 使用）。
-            if (GUILayout.Button(Tr("打开 本地化工具窗口"), GUILayout.Height(28)))
-                ToolkitLocalizationToolWindow.Open();
-#endif
 
             if (GUILayout.Button(Tr("查看文档"), GUILayout.Height(28)))
                 OpenDocumentation();
