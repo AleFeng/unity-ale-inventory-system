@@ -545,17 +545,15 @@ namespace Ale.Inventory.Editor
 
         // ── 辅助 ──────────────────────────────────────────────────────────────────
 
-        /// <summary>弹出按来源（道具模板 / 功能标签）分组的属性字段 ID 选择菜单，结果经 setter 写回。</summary>
+        /// <summary>弹出按来源（道具模板 / 功能标签）分组的属性字段 ID 选择菜单，结果经 setter 写回（收拢至 <see cref="InventoryGroupedIdMenu"/>）。</summary>
         private static void ShowAttrIdMenu(IInventoryEditorContext ctx, string current,
             Action<string> setter, Rect rect)
+            => InventoryGroupedIdMenu.Show(ctx, rect, current, "修改属性字段ID", Tr("（清空）"),
+                AttrPathOptions(ctx.Database), setter);
+
+        /// <summary>属性字段选项：道具模板（「模板名/字段id」）+ 功能标签（「功能标签/标签名/字段id」），按路径去重保序。</summary>
+        private static IEnumerable<(string path, string id)> AttrPathOptions(InventoryDatabase db)
         {
-            var db   = ctx.Database;
-            var menu = new GenericMenu();
-
-            menu.AddItem(new GUIContent(Tr("（清空）")), string.IsNullOrEmpty(current),
-                () => Apply(ctx, () => setter(string.Empty)));
-            menu.AddSeparator(string.Empty);
-
             var seen = new HashSet<string>();
             foreach (var tmpl in db.ItemTemplates)
                 foreach (var d in tmpl.attributes)
@@ -563,8 +561,7 @@ namespace Ale.Inventory.Editor
                     if (string.IsNullOrEmpty(d.id)) continue;
                     string path = (string.IsNullOrEmpty(tmpl.name) ? Tr("(模板)") : tmpl.name) + "/" + d.id;
                     if (!seen.Add(path)) continue;
-                    string id = d.id;
-                    menu.AddItem(new GUIContent(path), current == id, () => Apply(ctx, () => setter(id)));
+                    yield return (path, d.id);
                 }
             foreach (var tag in db.FunctionTags)
                 foreach (var d in tag.attributes)
@@ -572,24 +569,13 @@ namespace Ale.Inventory.Editor
                     if (string.IsNullOrEmpty(d.id)) continue;
                     string path = Tr("功能标签") + "/" + (string.IsNullOrEmpty(tag.name) ? Tr("(标签)") : tag.name) + "/" + d.id;
                     if (!seen.Add(path)) continue;
-                    string id = d.id;
-                    menu.AddItem(new GUIContent(path), current == id, () => Apply(ctx, () => setter(id)));
+                    yield return (path, d.id);
                 }
-
-            menu.DropDown(rect);
         }
 
         #endregion
 
         #region 辅助
-
-        private static void Apply(IInventoryEditorContext ctx, Action mutate)
-        {
-            ctx.RecordUndo("修改属性字段ID");
-            mutate();
-            ctx.MarkDirty();
-            ctx.Repaint();
-        }
 
         /// <summary>
         /// 仅当所选属性字段为 <see cref="EFieldType.EnumIntPair"/> 时，绘制「显示名来源（枚举字段）」下拉：

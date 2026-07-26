@@ -250,38 +250,10 @@ namespace Ale.Inventory.Editor
             }
         }
 
-        /// <summary>弹出按「道具模板」分组的道具选择菜单（仿 ShopConfigDrawer.ShowItemMenu）。</summary>
+        /// <summary>弹出按「道具模板」分组的道具选择菜单（收拢至 <see cref="InventoryGroupedIdMenu"/>）。</summary>
         private static void ShowItemMenu(IInventoryEditorContext ctx, CraftingItemAmount amount, Rect rect)
-        {
-            var db   = ctx.Database;
-            var menu = new GenericMenu();
-
-            menu.AddItem(new GUIContent(Tr("（未选择）")), string.IsNullOrEmpty(amount.itemId), () =>
-            {
-                ctx.RecordUndo("修改道具");
-                amount.itemId = string.Empty;
-                ctx.MarkDirty();
-                ctx.Repaint();
-            });
-            menu.AddSeparator(string.Empty);
-
-            foreach (var item in db.Items)
-            {
-                if (string.IsNullOrEmpty(item.id)) continue;
-                string group   = string.IsNullOrEmpty(item.templateRef) ? Tr("（无模板）") : item.templateRef;
-                string path    = group + "/" + item.id;
-                string capture = item.id;
-                menu.AddItem(new GUIContent(path), amount.itemId == item.id, () =>
-                {
-                    ctx.RecordUndo("修改道具");
-                    amount.itemId = capture;
-                    ctx.MarkDirty();
-                    ctx.Repaint();
-                });
-            }
-
-            menu.DropDown(rect);
-        }
+            => InventoryGroupedIdMenu.Show(ctx, rect, amount.itemId, "修改道具", Tr("（未选择）"),
+                InventoryGroupedIdMenu.ItemOptions(ctx.Database), id => amount.itemId = id);
 
         // ── 自定义属性 ──────────────────────────────────────────────────────────────
 

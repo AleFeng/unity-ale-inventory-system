@@ -407,36 +407,8 @@ namespace Ale.Inventory.Editor
 
         /// <summary>弹出按「道具模板」分组的道具选择菜单（GenericMenu 以 "模板/道具ID" 形成可折叠子菜单）。</summary>
         private static void ShowItemMenu(IInventoryEditorContext ctx, ShopCommodity c, Rect rect)
-        {
-            var db   = ctx.Database;
-            var menu = new GenericMenu();
-
-            menu.AddItem(new GUIContent(Tr("（未选择）")), string.IsNullOrEmpty(c.itemId), () =>
-            {
-                ctx.RecordUndo("修改商品道具");
-                c.itemId = string.Empty;
-                ctx.MarkDirty();
-                ctx.Repaint();
-            });
-            menu.AddSeparator(string.Empty);
-
-            foreach (var item in db.Items)
-            {
-                if (string.IsNullOrEmpty(item.id)) continue;
-                string group   = string.IsNullOrEmpty(item.templateRef) ? Tr("（无模板）") : item.templateRef;
-                string path    = group + "/" + item.id;
-                string capture = item.id;
-                menu.AddItem(new GUIContent(path), c.itemId == item.id, () =>
-                {
-                    ctx.RecordUndo("修改商品道具");
-                    c.itemId = capture;
-                    ctx.MarkDirty();
-                    ctx.Repaint();
-                });
-            }
-
-            menu.DropDown(rect);
-        }
+            => InventoryGroupedIdMenu.Show(ctx, rect, c.itemId, "修改商品道具", Tr("（未选择）"),
+                InventoryGroupedIdMenu.ItemOptions(ctx.Database), id => c.itemId = id);
         #endregion
 
     }
