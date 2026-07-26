@@ -55,7 +55,7 @@ namespace Ale.Inventory.Editor
 
         #region 打开窗口
 
-        [MenuItem("Tools/Inventory System/Inventory Editor")]
+        [MenuItem("Tools/Ale Toolkit/Inventory System/Inventory Editor", priority = 1001)]
         public static void Open()
         {
             OpenWindow().Show();

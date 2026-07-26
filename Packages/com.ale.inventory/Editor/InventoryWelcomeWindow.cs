@@ -21,7 +21,7 @@ namespace Ale.Inventory.Editor
     /// <summary>
     /// 仓库系统欢迎窗口。提供快捷入口、数据模板配置和插件宏开关。
     /// 每次 Unity 会话启动时自动弹出一次（可通过「不再自动显示」关闭）。
-    /// 通过菜单 Tools > InventorySystem > Welcome 手动打开。
+    /// 通过菜单 Tools > Ale Toolkit > Inventory System > Welcome Window 手动打开。
     /// </summary>
     public class InventoryWelcomeWindow : EditorWindow
     {
@@ -72,7 +72,7 @@ namespace Ale.Inventory.Editor
 
         #region 打开窗口
 
-        [MenuItem("Tools/Inventory System/Welcome Window", priority = 0)]
+        [MenuItem("Tools/Ale Toolkit/Inventory System/Welcome Window", priority = 1000)]
         public static void Open()
         {
             OpenWindow();

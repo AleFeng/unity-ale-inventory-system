@@ -18,7 +18,7 @@ namespace Ale.Inventory.Editor
 
     /// <summary>
     /// 编辑器向导：一键生成背包系统测试用的 ScriptableObject 资产和 UI Prefab。
-    /// 菜单：Tools > InventorySystem > 生成测试 Prefab
+    /// 入口：欢迎窗口（Tools > Ale Toolkit > Inventory System > Welcome Window）→ 预制体生成
     ///
     /// 一键生成（预制体统一命名 PF_(组件类名)，按类型放入 Demo/Assets/UI/Prefab 的子文件夹，
     /// 与 Runtime/UI 各组件所在子目录一致）：

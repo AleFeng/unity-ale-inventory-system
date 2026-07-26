@@ -48,66 +48,6 @@ namespace Ale.Inventory.Editor
                 "  Contains: {0} enum types  |  {1} function tags  |  {2} item templates  |  {3} items",
                 "  内容：{0} 列挙型  |  {1} 機能タグ  |  {2} アイテムテンプレート  |  {3} アイテム");
 
-            // ── 插件支持 ──────────────────────────────────────────────────────────
-            Add("插件支持", "Plugin Support", "プラグインサポート");
-
-            // TextMeshPro
-            Add("启用后，道具 UI 脚本（Uiw 开头）的文本组件使用 TMP_Text；" +
-                "未启用时使用 UnityEngine.UI.Text。Unity 2021+ 已内置 TextMeshPro，通常可直接启用。",
-                "When enabled, text components of item UI scripts (Uiw prefix) use TMP_Text; " +
-                "otherwise UnityEngine.UI.Text is used. TextMeshPro is built into Unity 2021+, so it can usually be enabled directly.",
-                "有効にすると、アイテム UI スクリプト（Uiw 始まり）のテキストコンポーネントが TMP_Text を使用します。" +
-                "無効時は UnityEngine.UI.Text を使用します。TextMeshPro は Unity 2021+ に内蔵されているため、通常はそのまま有効にできます。");
-            Add("TMPro 命名空间未检测到。\n" +
-                "请确认 TextMeshPro 已通过 Package Manager 安装。\n\n" +
-                "确定要继续启用吗？",
-                "The TMPro namespace was not detected.\n" +
-                "Please make sure TextMeshPro is installed via Package Manager.\n\n" +
-                "Enable anyway?",
-                "TMPro 名前空間が検出されませんでした。\n" +
-                "TextMeshPro が Package Manager 経由でインストールされているか確認してください。\n\n" +
-                "このまま有効にしますか？");
-
-            // Unity Localization
-            Add("启用后，属性字段类型可选择 LocalizedString，支持 Unity Localization 多语言配置。",
-                "When enabled, attribute field types can use LocalizedString for Unity Localization multi-language configuration.",
-                "有効にすると、属性フィールドの型で LocalizedString を選択でき、Unity Localization による多言語設定に対応します。");
-            Add("com.unity.localization 包尚未安装。\n" +
-                "启用宏后，LocalizedString 字段将出现在编辑器中，但运行时无法解析。\n\n" +
-                "确定要继续启用吗？",
-                "The com.unity.localization package is not installed.\n" +
-                "After enabling the define, LocalizedString fields will appear in the editor but cannot be resolved at runtime.\n\n" +
-                "Enable anyway?",
-                "com.unity.localization パッケージがインストールされていません。\n" +
-                "マクロを有効にすると LocalizedString フィールドがエディターに表示されますが、実行時には解決できません。\n\n" +
-                "このまま有効にしますか？");
-
-            // Unity Addressable
-            Add("启用后，属性系统的资源字段（Sprite/Prefab 等）在编辑器改用原生 AssetReference 选择器授权（仅存 GUID，" +
-                "不硬引用、加载数据库不再一并载入资源）；运行时经 Addressable 按需异步加载、引用计数随宿主销毁自动卸载。" +
-                "导出时自动把被引用资源登记进默认 Addressable 分组。" +
-                "已有数据可用菜单 Tools/Inventory System/Addressables/资源引用迁移工具（带进度条与实时日志）在「Object 引用 ↔ AssetReference(GUID)」间批量互转。",
-                "When enabled, asset fields of the attribute system (Sprite/Prefab, etc.) switch to the native AssetReference selector in the editor " +
-                "(storing only the GUID, no hard references, so loading the database no longer loads the assets too); at runtime they are loaded " +
-                "asynchronously on demand via Addressable and unloaded automatically by reference counting when the host is destroyed. " +
-                "On export, referenced assets are automatically registered into the default Addressable group. " +
-                "For existing data, use the menu Tools/Inventory System/Addressables/Asset Reference Migration Tool (with progress bar and live log) " +
-                "to batch-convert between \"Object reference ↔ AssetReference(GUID)\".",
-                "有効にすると、属性システムのアセットフィールド（Sprite/Prefab など）がエディターでネイティブの AssetReference セレクターに切り替わります" +
-                "（GUID のみを保存し、ハード参照しないため、データベースを読み込んでもアセットは同時に読み込まれません）。実行時は Addressable で必要に応じて" +
-                "非同期読み込みし、参照カウントによりホストの破棄時に自動でアンロードされます。エクスポート時には参照されたアセットが既定の Addressable グループへ自動登録されます。" +
-                "既存データはメニュー Tools/Inventory System/Addressables/アセット参照移行ツール（進捗バーとリアルタイムログ付き）で" +
-                "「Object 参照 ↔ AssetReference(GUID)」を一括変換できます。");
-            Add("com.unity.addressables 包尚未安装。\n" +
-                "启用宏后，运行时无法通过 Addressable 加载资源。\n\n" +
-                "确定要继续启用吗？",
-                "The com.unity.addressables package is not installed.\n" +
-                "After enabling the define, assets cannot be loaded via Addressable at runtime.\n\n" +
-                "Enable anyway?",
-                "com.unity.addressables パッケージがインストールされていません。\n" +
-                "マクロを有効にすると、実行時に Addressable でアセットを読み込めません。\n\n" +
-                "このまま有効にしますか？");
-
             // ── 宏开关：字体折叠栏 ────────────────────────────────────────────────
             Add("TextMeshPro 设置", "TextMeshPro Settings", "TextMeshPro 設定");
             Add("默认字体", "Default Font", "デフォルトフォント");

@@ -14,7 +14,7 @@ namespace Ale.Inventory.Editor
     /// </summary>
     public class InventoryLocalizationToolWindow : EditorLocalizationToolWindow<InventoryDatabase>
     {
-        [MenuItem("Tools/Inventory System/Localization/本地化工具窗口", priority = 200)]
+        [MenuItem("Tools/Ale Toolkit/Inventory System/Localization/本地化工具窗口", priority = 1100)]
         public static void Open()
         {
             var win = GetWindow<InventoryLocalizationToolWindow>(true, "本地化建表 / Key 生成", true);

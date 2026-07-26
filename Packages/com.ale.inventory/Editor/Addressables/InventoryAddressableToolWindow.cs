@@ -21,7 +21,7 @@ namespace Ale.Inventory.Editor
             InventoryWelcomeWindow.OpenAddressableMigration = Open;
         }
 
-        [MenuItem("Tools/Inventory System/Addressable/Addressable工具窗口", priority = 200)]
+        [MenuItem("Tools/Ale Toolkit/Inventory System/Addressable/Addressable工具窗口", priority = 1100)]
         public static void Open()
         {
             var win = GetWindow<InventoryAddressableToolWindow>(true, "资源引用迁移（Addressables）", true);
