@@ -16,7 +16,9 @@ namespace Ale.Inventory.Editor
     {
         private const string Version = "1.0.0";
 
-        private static readonly Vector2 WindowSize = new Vector2(520f, 600f);
+        // 打开时的初始高宽；窗口可手动调整（见 OpenWindow），缩放下限为 MinWindowSize。
+        private static readonly Vector2 WindowSize    = new Vector2(520f, 600f);
+        private static readonly Vector2 MinWindowSize = new Vector2(500f, 460f);
 
         // 内部 UI 状态
         private InventoryDatabase _templateDb;
@@ -44,8 +46,8 @@ namespace Ale.Inventory.Editor
         private static void OpenWindow()
         {
             var window = GetWindow<InventoryWelcomeWindow>(true, Tr("Inventory 道具仓库系统"), true);
-            window.minSize = WindowSize;
-            window.maxSize = WindowSize;
+            // 只设下限、不锁 max（min==max 会禁止缩放），使高宽可手动调整。
+            window.minSize = MinWindowSize;
             window.CenterOnMainWin();
             window.Show();
             window.Focus();
@@ -190,7 +192,7 @@ namespace Ale.Inventory.Editor
                     InventoryDemoWizard.GenerateAll();
 
                 // 滚动列表：按子系统分类折叠，逐项「生成」
-                _genListScroll = EditorGUILayout.BeginScrollView(_genListScroll, GUILayout.Height(200));
+                _genListScroll = EditorGUILayout.BeginScrollView(_genListScroll, GUILayout.Height(130));
                 foreach (var category in InventoryDemoWizard.Categories)
                 {
                     // 统计该分类下的可生成项数量；为空则跳过该分组
