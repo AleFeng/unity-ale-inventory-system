@@ -1,23 +1,29 @@
 {
   "name": "com.ale.inventory",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "displayName": "Ale Inventory System",
-  "description": "道具/仓库/商店/制作/装备/技能 一体化的库存系统插件。",
+  "description": "\u9053\u5177/\u4ed3\u5e93/\u5546\u5e97/\u5236\u4f5c/\u88c5\u5907/\u6280\u80fd \u4e00\u4f53\u5316\u7684\u5e93\u5b58\u7cfb\u7edf\u63d2\u4ef6\u3002",
   "unity": "2022.3",
   "documentationUrl": "https://github.com/AleFeng/unity-ale-inventory-system/blob/main/Packages/com.ale.inventory/README.md",
   "changelogUrl": "https://github.com/AleFeng/unity-ale-inventory-system/blob/main/Packages/com.ale.inventory/CHANGELOG.md",
   "licensesUrl": "https://github.com/AleFeng/unity-ale-inventory-system/blob/main/Packages/com.ale.inventory/LICENSE.md",
-  "keywords": ["inventory", "item", "equipment", "crafting", "skill", "framework"],
+  "keywords": [
+    "inventory",
+    "item",
+    "equipment",
+    "crafting",
+    "skill",
+    "framework"
+  ],
   "author": {
     "name": "Able Games",
     "url": "https://github.com/AleFeng/unity-ale-inventory-system"
   },
   "category": "Gameplay",
-  "dependencies": {},
   "samples": [
     {
       "displayName": "Inventory System Demo",
-      "description": "库存系统演示：数据库资产（InventoryDatabase）、管理器预制体与 UI 示例场景。",
+      "description": "\u5e93\u5b58\u7cfb\u7edf\u6f14\u793a\uff1a\u6570\u636e\u5e93\u8d44\u4ea7\uff08InventoryDatabase\uff09\u3001\u7ba1\u7406\u5668\u9884\u5236\u4f53\u4e0e UI \u793a\u4f8b\u573a\u666f\u3002",
       "path": "Samples~/Demo"
     }
   ]
