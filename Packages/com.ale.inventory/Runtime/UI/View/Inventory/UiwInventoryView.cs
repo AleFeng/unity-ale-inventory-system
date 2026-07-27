@@ -18,7 +18,7 @@ namespace Ale.Inventory.Runtime.UI
     /// </summary>
     public class UiwInventoryView : UiwViewBase
     {
-        private void Start()
+        protected override void Start()
         {
             // 视图切换（排序/过滤/货币 已抽到独立工具栏组件）
             // 订阅工具栏组件事件
@@ -28,6 +28,8 @@ namespace Ale.Inventory.Runtime.UI
             // 视图模式（含无切换按钮时自动采用已配置的那个列表）由基类统一处理。
             SetupViewModeToggle(itemOrderList, itemGridList);
             ApplyViewMode();
+
+            base.Start();   // 接线 / 视图模式就绪后，由基类判断初始激活则自打开
         }
 
         protected override void OnDestroy()

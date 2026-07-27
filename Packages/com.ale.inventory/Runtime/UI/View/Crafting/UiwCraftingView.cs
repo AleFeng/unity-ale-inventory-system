@@ -13,12 +13,14 @@ namespace Ale.Inventory.Runtime.UI
     /// </summary>
     public class UiwCraftingView : UiwViewBase
     {
-        private void Start()
+        protected override void Start()
         {
             if (groupFilter)  groupFilter.OnGroupChanged += OnGroupChanged;
             if (searchInput)  searchInput.onValueChanged.AddListener(OnSearchChanged);
             // 排序栏事件已下沉到蓝图列表组件（UiwVirtualListBase）自管，此处不再订阅。
             if (blueprintList) blueprintList.OnBlueprintSelected += OnBlueprintSelected;
+
+            base.Start();   // 接线就绪后，由基类判断初始激活则自打开
         }
 
         protected override void OnDestroy()

@@ -26,9 +26,11 @@ namespace Ale.Inventory.Runtime.UI
     /// </summary>
     public abstract class UiwShopViewBase : UiwViewBase
     {
-        private void Start()
+        protected override void Start()
         {
             if (settleButton) settleButton.onClick.AddListener(BtnSettle);
+
+            base.Start();   // 接线就绪后，由基类判断初始激活则自打开
         }
 
         // 销毁时的退订由基类 UiwViewBase.OnDestroy 统一兜底；

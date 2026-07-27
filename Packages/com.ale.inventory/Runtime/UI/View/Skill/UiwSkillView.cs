@@ -64,7 +64,7 @@ namespace Ale.Inventory.Runtime.UI
         private readonly List<string> _primaryTokens   = new List<string>(); // 主分组页签 token（显示名）
         private readonly List<string> _secondaryTokens = new List<string>(); // 副分组页签 token（显示名）
 
-        private void Start()
+        protected override void Start()
         {
             if (searchInput) searchInput.onValueChanged.AddListener(OnSearchChanged);
             // 主 / 副分组页签栏事件由技能列表组件（UiwVirtualListBase）自管，此处不再订阅。
@@ -72,6 +72,8 @@ namespace Ale.Inventory.Runtime.UI
             // 视图模式（含无切换按钮时自动采用已配置的那个视图）由基类统一处理。
             SetupViewModeToggle(orderList, gridList);
             ApplyViewMode();
+
+            base.Start();   // 接线 / 视图模式就绪后，由基类判断初始激活则自打开
         }
 
         protected override void OnDestroy()
