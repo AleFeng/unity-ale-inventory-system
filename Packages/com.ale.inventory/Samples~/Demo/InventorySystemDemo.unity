@@ -128,7 +128,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 142450689}
-  - component: {fileID: 142450688}
   - component: {fileID: 142450687}
   m_Layer: 0
   m_Name: PlayerController
@@ -263,18 +262,6 @@ MonoBehaviour:
   m_DefaultActionMap: UI
   m_SplitScreenIndex: 0
   m_Camera: {fileID: 0}
---- !u!114 &142450688
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 142450686}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f236fb9e4734085b82591d19446df21, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp-firstpass::Fs.GameFramework.Gameplay.Controller.PlayerController
 --- !u!4 &142450689
 Transform:
   m_ObjectHideFlags: 0
@@ -1251,6 +1238,10 @@ PrefabInstance:
       propertyPath: m_sharedMaterial
       value: 
       objectReference: {fileID: 921754396160446366, guid: 45e3bdc9d4723454f9d4fa8fdc80fafa, type: 2}
+    - target: {fileID: 670312328096113153, guid: 7d6ed5664144d9d4b89de33651e1f7c5, type: 3}
+      propertyPath: m_BlockingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 687859018146528248, guid: 7d6ed5664144d9d4b89de33651e1f7c5, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
