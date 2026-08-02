@@ -11,7 +11,7 @@ namespace Ale.Inventory.Runtime.Serialization
     ///
     /// <para>属性系统 / 分组标签 / 模板基类 / 数字格式 / 整理排序等通用 DTO 定义在 toolkit 的
     /// <see cref="Ale.Toolkit.Runtime.Serialization.ToolkitDtoModels"/> 一族里，本文件只放<b>领域 DTO</b>
-    /// （道具 / 仓库 / 商店 / 制作 / 装备 / 技能），并按需引用 / 派生通用 DTO。与运行时模型的双向映射见
+    /// （道具 / 仓库 / 商店 / 制作 / 装备），并按需引用 / 派生通用 DTO。与运行时模型的双向映射见
     /// <see cref="InventoryDtoMapper"/>（按系统拆成多个分部文件）。</para>
     /// </summary>
     [Serializable]

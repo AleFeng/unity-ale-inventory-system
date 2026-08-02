@@ -82,9 +82,9 @@ Three pieces of shared infrastructure (consolidated in 1.6.0; each entity used t
 
 | Infrastructure | Purpose |
 |------|------|
-| `AttributeOwner` | Base class for objects carrying an attribute-value set: lazily built O(1) dictionary cache + `GetEntry` / `GetAttributeValue<T>` / `SetAttributeValue<T>`. Inherited by `Item` / `EnumItem` / `Inventory` / `Shop` / `SortOption` / `CraftingBlueprint` / `EquipmentGroup` / `Skill`. **Call `InvalidateEntryCache()` after mutating the entry list** |
+| `AttributeOwner` | Base class for objects carrying an attribute-value set: lazily built O(1) dictionary cache + `GetEntry` / `GetAttributeValue<T>` / `SetAttributeValue<T>`. Inherited by `Item` / `EnumItem` / `Inventory` / `Shop` / `SortOption` / `CraftingBlueprint` / `EquipmentGroup`. **Call `InvalidateEntryCache()` after mutating the entry list** |
 | `AttributeSync.Sync` | The shared "add missing / remove orphaned / reset on type drift, per schema" implementation used inside every `RebuildAttributes` |
-| `ConfigTemplateBase` | The name / colour dot / attribute-field definitions shared by all six template types (`ItemTemplate` / `InventoryTemplate` / `ShopTemplate` / `CraftingBlueprintTemplate` / `EquipmentGroupTemplate` / `SkillTemplate`). Group tags share `GroupTag` the same way |
+| `ConfigTemplateBase` | The name / colour dot / attribute-field definitions shared by all five template types (`ItemTemplate` / `InventoryTemplate` / `ShopTemplate` / `CraftingBlueprintTemplate` / `EquipmentGroupTemplate`). Group tags share `GroupTag` the same way |
 
 > An equipment group and an equipment-group template share `IEquipmentConfig` (equipment warehouses + slot lists + equipment attribute fields), with the template carrying all configurable options; creating an equipment group from a template deep-copies these configs, after which the equipment group is independently editable (the opposite of the Crafting System's "template-level read-only"). The equipment warehouses list specifies the warehouses the equipment system / UI can interact with; on unequip it finds the first warehouse with room from Index0.
 
@@ -106,7 +106,7 @@ InventoryDatabase (SO)  ──edit──▶  still an SO
 The DTO layer is a flat structure that mirrors the data model one-to-one, the only difference being that object references are carried as GUID strings.
 `InventoryDtoModels.cs` holds only the DTO definitions; the two-way mapping lives in `InventoryDtoMapper*.cs`, split into per-system partials, and the binary block read/write is split the same way across `InventoryBinarySerializer*.cs`.
 
-**Format version** (`InventoryDtoMapper.Version`): since v5 attribute values carry `curveData` (AnimationCurve); **since v6 the export covers all 20 database lists** (adding inventories / sort options / number formats / shops / crafting / equipment / skills), and fills in the Item System fields that used to be dropped silently (template colour, `weight` / `stackLimit` / `hideInInventory`, function-tag UI settings). The binary reader skips the new blocks based on the version in the header, so `.bytes` exported by v5 still imports.
+**Format version** (`InventoryDtoMapper.Version`): since v5 attribute values carry `curveData` (AnimationCurve); **since v6 the export covers all 17 database lists** (adding inventories / sort options / number formats / shops / crafting / equipment), and fills in the Item System fields that used to be dropped silently (template colour, `weight` / `stackLimit` / `hideInInventory`, function-tag UI settings). The binary reader skips the new blocks based on the version in the header, so `.bytes` exported by v5 still imports.
 
 ---
 
@@ -131,14 +131,10 @@ InventoryEditorWindow          Main window + IInventoryEditorContext implementat
 │   ├── CraftingGroupTagPanel  Group tag list + edit panel
 │   ├── CraftingTemplatePanel  Blueprint template list + edit panel
 │   └── CraftingListPanel      Blueprint list + CraftingInspectorPanel
-├── EquipmentSystemTab        Equipment System tab
-│   ├── EquipmentGroupTagPanel Group tag list + edit panel
-│   ├── EquipmentTemplatePanel Equipment-group template list + edit panel (name/color + shared config + custom attribute fields)
-│   └── EquipmentListPanel     Equipment-group list + EquipmentInspectorPanel (nested slot lists / equipment slots / item limits / attribute fields)
-└── SkillSystemTab            Skill System tab
-    ├── SkillGroupTagPanel     Group tag list + edit panel
-    ├── SkillTemplatePanel     Skill template list + edit panel (skill default info + custom attribute fields)
-    └── SkillListPanel         Skill list + SkillInspectorPanel (name / description / icon / group tags / custom attribute values)
+└── EquipmentSystemTab        Equipment System tab
+    ├── EquipmentGroupTagPanel Group tag list + edit panel
+    ├── EquipmentTemplatePanel Equipment-group template list + edit panel (name/color + shared config + custom attribute fields)
+    └── EquipmentListPanel     Equipment-group list + EquipmentInspectorPanel (nested slot lists / equipment slots / item limits / attribute fields)
 ```
 
 > The Equipment System's "slot list + equipment attribute fields" are drawn uniformly by `Editor/Common/EquipmentConfigDrawer` (reused by the equipment-group Inspector and the equipment-group template Inspector), and the drag-reordering of nested sub-lists is isolated via a `Dictionary<string, EditorReorderableDrag>` keyed by path.
@@ -150,7 +146,7 @@ InventoryEditorWindow          Main window + IInventoryEditorContext implementat
 | `AttributeFieldDrawer` | Draws a single `AttributeValue` by `EFieldType`. The GUILayout and Rect paths **share one type-dispatch implementation** (before 1.6.0 these were two large switches maintained in parallel) |
 | `AttributeDefinitionDrawer` | Draws the full edit panel of an `AttributeDefinition` (Rect-based, for ReorderableList) |
 | `AttributeDefinitionListDrawer` | An attribute field definition list with drag-reordering (uses `ReorderableList` internally, drawElementCallback fully Rect-based) |
-| `EditorEntityListPanel<TEntity,TTemplate>` | **Generic base for the middle-column entity lists**: template filter tabs + search bar + "add from template" / "quick add" + two-row entry rows (drag handle / template colour dot / columns / delete button) + drag-reordering + deferred deletion + up/down navigation. All six systems' middle columns derive from it, each implementing only `DrawRowColumns` (column layout) plus its add / search rules |
+| `EditorEntityListPanel<TEntity,TTemplate>` | **Generic base for the middle-column entity lists**: template filter tabs + search bar + "add from template" / "quick add" + two-row entry rows (drag handle / template colour dot / columns / delete button) + drag-reordering + deferred deletion + up/down navigation. All five systems' middle columns derive from it, each implementing only `DrawRowColumns` (column layout) plus its add / search rules |
 | `EquipmentConfigDrawer` | Shared drawing of the equipment "slot lists + equipment attribute fields" (reused by both the equipment-group Inspector and the equipment-group-template Inspector) |
 
 **Rect-based principle**: within `ReorderableList.drawElementCallback`, calling `GUILayout.BeginArea / GUI.BeginGroup` is strictly forbidden, otherwise a mismatch in GUILayout slot counts between Layout and Repaint throws a "Getting control X's position..." exception. All `DrawRect` methods use only `EditorGUI.*`.
@@ -225,7 +221,7 @@ The runtime logic of the shop and crafting systems is handled by two **lightweig
 
 The three clocks needed for shop refresh (game / local / server time) are registered via `InventoryRuntimeManager.RegisterTimeGetter`, falling back to system local time when unregistered.
 
-**Save contract (`IInventorySaveable<TState>`)**: the four managers that hold saveable state (inventory / equipment / shop / skill) all implement this interface, which the game layer's SaveManager calls into. It pins down three things: `GetSaveData` returns a **deep copy**; `LoadSaveData` is **replace, not merge** (entries present in memory but absent from the save must not survive); none of the three methods fires a change event — after a bulk state swap the caller refreshes the UI itself. The non-generic `IInventorySaveable` carries only `ResetAll`, so "new game" can reset every system in one loop. Each system's save type differs (`RuntimeInventoryState` / `RuntimeEquipmentState` / `ShopRuntimeState` / `RuntimeLearnedSkillState`), so only the contract is unified — not the storage implementation.
+**Save contract (`IInventorySaveable<TState>`)**: the three managers that hold saveable state (inventory / equipment / shop) all implement this interface, which the game layer's SaveManager calls into. It pins down three things: `GetSaveData` returns a **deep copy**; `LoadSaveData` is **replace, not merge** (entries present in memory but absent from the save must not survive); none of the three methods fires a change event — after a bulk state swap the caller refreshes the UI itself. The non-generic `IInventorySaveable` carries only `ResetAll`, so "new game" can reset every system in one loop. Each system's save type differs (`RuntimeInventoryState` / `RuntimeEquipmentState` / `ShopRuntimeState`), so only the contract is unified — not the storage implementation.
 
 ### Assembly Division
 
@@ -236,7 +232,7 @@ This plugin depends on the standalone foundation package `com.ale.toolkit` (`Ale
 | asmdef | Content |
 |--------|------|
 | `Ale.Inventory.Runtime` | Data models, managers, serialization (runtime core) |
-| `Ale.Inventory.Runtime.UI` | Runtime UI components (warehouse / shop / crafting / skill views); references Runtime, `Ale.Toolkit.Runtime.UI` and TextMeshPro |
+| `Ale.Inventory.Runtime.UI` | Runtime UI components (warehouse / shop / crafting views); references Runtime, `Ale.Toolkit.Runtime.UI` and TextMeshPro |
 | `Ale.Inventory.Editor` | Editor windows and panels |
 
 **Foundation (`com.ale.toolkit`)**
@@ -254,12 +250,12 @@ This plugin depends on the standalone foundation package `com.ale.toolkit` (`Ale
 
 ## Extension Guide
 
-When adding a new subsystem (skill, etc.) (the shop / crafting / equipment systems are implemented per this pattern and can serve as references):
+When adding a new subsystem (the shop / crafting / equipment systems are implemented per this pattern and can serve as references):
 
 1. Add the corresponding data list in `InventoryDatabase` (+ getter / `CloneFrom` / `Validate`);
 2. Create a subfolder under `Editor/`, implementing the three-column panels (reusing `AttributeDefinitionListDrawer` and `AttributeFieldDrawer`);
 3. Register the new tab in `InventoryEditorWindow` (+ duplicate-ID scanning / `RebuildAllAttributes`);
 4. Add the corresponding query method in `InventoryDataManager`; runtime logic is handled by a lightweight singleton (`InventorySystemSingleton<T>`);
-5. Add a DTO mirror in `InventoryDtoModels.cs` plus a matching pair of partials `InventoryDtoMapper.<System>.cs` / `InventoryBinarySerializer.<System>.cs` (copy any of the five existing pairs), then hook the new block into `ToDto` / `FromDto` and the binary Export / Import — **skip this and that system's data is silently dropped on export**. Systems with group tags can reuse `GroupTagDto` and the generic `FromDto<T>`.
+5. Add a DTO mirror in `InventoryDtoModels.cs` plus a matching pair of partials `InventoryDtoMapper.<System>.cs` / `InventoryBinarySerializer.<System>.cs` (copy any of the four existing pairs), then hook the new block into `ToDto` / `FromDto` and the binary Export / Import — **skip this and that system's data is silently dropped on export**. Systems with group tags can reuse `GroupTagDto` and the generic `FromDto<T>`.
 
 The attribute system (`AttributeValue / AttributeDefinition / EFieldType`), enum types, function tags, and the DTO serialization framework can all be reused directly.

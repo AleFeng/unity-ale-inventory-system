@@ -7,7 +7,7 @@
   <a href="./README_JA.md">日本語</a>
 </p>
 
-面向设计师的 Unity 静态数据配置工具插件。用一个 `InventoryDatabase` 资产集中配置 **道具 / 仓库 / 商店 / 制作 / 装备 / 技能** 六大子系统的静态定义数据；动态运行时状态（拥有数量、实例 ID、交易进度、制作产出、已装备道具、已学技能、存档）由对应的运行时管理器维护。配套一整套开箱即用的运行时 UI 组件（背包 / 商店 / 制作 / 装备 / 技能界面）。
+面向设计师的 Unity 静态数据配置工具插件。用一个 `InventoryDatabase` 资产集中配置 **道具 / 仓库 / 商店 / 制作 / 装备** 五大子系统的静态定义数据；动态运行时状态（拥有数量、实例 ID、交易进度、制作产出、已装备道具、存档）由对应的运行时管理器维护。配套一整套开箱即用的运行时 UI 组件（背包 / 商店 / 制作 / 装备界面）。
 
 - 编辑器始终且仅在 ScriptableObject 上工作；JSON / 二进制 仅作为单向导出格式。
 - 全程支持 Undo / Redo。
@@ -26,7 +26,6 @@
 | **商店系统** | 商店模板、商店、商品组、价格来源、刷新计划 | `ShopRuntimeManager`（交易 + 进度存档） | [商店系统](Docs~/ShopSystem.md) |
 | **制作系统** | 分组标签、蓝图模板、蓝图（配方）、制作仓库 | `CraftingRuntimeManager`（消耗 → 产出） | [制作系统](Docs~/CraftingSystem.md) |
 | **装备系统** | 分组标签、装备组模板、装备组（槽位列表 / 装备槽 / 道具限制 / 属性加成） | `EquipmentRuntimeManager`（装备 / 卸下 + 加成 + 存档） | [装备系统](Docs~/EquipmentSystem.md) |
-| **技能系统** | 分组标签、技能模板、技能（自定义属性承载 类型 / 效果 / 数值 / 位阶 等） | `SkillRuntimeManager`（已学技能状态 + 存档）+ `SkillCollector`（四来源采集） | [技能系统](Docs~/SkillSystem.md) |
 
 ### 道具系统
 - **灵活属性系统**：字段类型支持 Bool / Int / Float / String / Text（纯文本 fallback + 可选本地化引用）/ Vector2~4 / VectorInt2~4 / Color / Enum / StringIntPair / EnumIntPair / Sprite / Texture / Prefab / Material / AudioClip / AnimationClip / AnimationCurve / PhysicsMaterial(2D)，每种均支持数组形态。
@@ -56,27 +55,15 @@
 - **属性加成**：「装备属性字段列表」指定哪些道具属性汇总为装备组总加成，按分组标签分组显示。
 - **运行时**：`EquipmentRuntimeManager` 维护各槽已装备道具，装备 / 卸下 / 交换与 `InventoryRuntimeManager` 协作搬运道具，提供自动找槽、加成汇总、存档与 `OnEquipmentChanged` 事件。
 
-### 技能系统
-- **分组标签 / 技能模板 / 技能**：分组标签用于运行时 UI 的分组页签筛选（每技能 1 主 + 多副）；模板定义自定义属性字段（schema）+ 一套「技能默认信息」（名称 / 描述 / 图标 / 分组标签），作为创建技能蓝本——「从模板添加」时把默认信息复制进新技能，此后独立可编辑；技能是配置条目，携带 ID / 名称 / 描述 / 图标 + 自定义属性值（技能的类型 / 效果 / 数值 / 位阶等，由使用方在自定义属性字段中自行约定 attrId 承载）。
-- **道具 ↔ 技能关联**：技能主要赋予给装备类道具，也可赋予其他道具。道具在其一个「技能引用属性字段」（String，可数组 = 一个道具多技能）中存放技能 ID；运行时按该 attrId 解析。
-- **位阶（Enum）驱动显示**：技能可配一个 Enum 类型的「位阶」属性字段；其枚举项（在道具系统「枚举类型」中定义）携带「名称 / 背景框(Sprite)」等自定义属性——技能条目按位阶显示对应「背景框」，Tooltip 显示位阶「名称」（复用道具品质背景的解析链）。相关 attrId 均在 UI 组件上可配。
-- **运行时**：`SkillRuntimeManager`（轻量单例）以 **角色 ID → 已学技能 ID 列表** 维护多角色的已学技能，提供 `Learn / Forget / HasLearned / GetLearnedSkills / GetSaveData / LoadSaveData` 接口与 `OnLearnedChanged` 事件；`SkillCollector` 按来源采集要显示的技能集合（去重、保序）。
-- **运行时 UI**：`UiwSkillView` = 标题 + 搜索栏 + 主 / 副分组页签（两个 AND 筛选条件，各含「全部」、横向可滚动）+ 网格 / 顺序双显示模式列表 + 悬停详情弹窗（`UiwSkillTooltip`，预制体配到 `InventoryRuntimeManager` 由其全局实例化）；技能来源可切换（见下），`UiwSkillView` 的自定义 Inspector 会按来源只显示对应的 ID 字段。
-- **四种技能来源**（`ESkillSource`）：
-  - **InventoryDatabase**：数据库全部技能（技能书 / 图鉴）。
-  - **Equipment**：某装备组所有装备槽已装备道具引用的技能（配装备组 ID）。
-  - **Inventory**：某仓库所有道具引用的技能（配仓库 ID）。
-  - **Character**：某角色当前已学会的技能（配角色 ID，读 `SkillRuntimeManager`）。
-
 ### 运行时与序列化
 - **`InventoryDataManager`**（数据查询单例）：注册数据库、按 ID 查询道具 / 仓库 / 商店 / 蓝图 / 枚举类型等；支持从 `.asset`、JSON、二进制三种来源加载。查询走惰性构建的字典索引（O(1)），注册 / 注销数据库后自动失效重建。
 - **`InventoryRuntimeManager`**（MonoBehaviour 单例）：仓库格子状态、整理排序、存档、时间注入入口、覆盖式 UI 根节点 / Layer 配置（弹窗 / 悬停弹窗 / 拖拽幽灵图标等实例化后重新套用指定 Layer），并把数据库注册到 `InventoryDataManager`；含编辑器测试道具填充（`autoPopulateOnStart` / `testInventoryId` / `testItems`，`Init` 时机填入、仅数据不开 UI）与一键「添加所有配置表道具」（`addAllConfiguredItems` + `addAllItemCount`）。
-- **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager` / `SkillRuntimeManager`**（轻量单例）：交易 / 制作 / 装备 / 技能逻辑（装备已装备状态、技能已学状态均可存档，商店有交易进度存档）；技能展示集合另由 `SkillCollector` 按四种来源采集。
-- **导出**：`InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部 20 个列表**（六大子系统的配置数据无一遗漏，格式版本 v6）；对象引用以 AssetGUID 承载；可选 Addressable 异步加载。v5 及更早导出的 `.bytes` 仍可导入。
-- **存档契约**：仓库 / 装备 / 商店 / 技能四个管理器统一实现 `IInventorySaveable<TState>`——`GetSaveData` 返回深拷贝、`LoadSaveData` 为**覆盖而非合并**、三者都不触发变更事件；非泛型的 `IInventorySaveable` 只含 `ResetAll`，供「开新游戏」一次遍历重置。
+- **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager`**（轻量单例）：交易 / 制作 / 装备逻辑（装备已装备状态可存档，商店有交易进度存档）。
+- **导出**：`InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部 17 个列表**（五大子系统的配置数据无一遗漏，格式版本 v6）；对象引用以 AssetGUID 承载；可选 Addressable 异步加载。v5 及更早导出的 `.bytes` 仍可导入。
+- **存档契约**：仓库 / 装备 / 商店三个管理器统一实现 `IInventorySaveable<TState>`——`GetSaveData` 返回深拷贝、`LoadSaveData` 为**覆盖而非合并**、三者都不触发变更事件；非泛型的 `IInventorySaveable` 只含 `ResetAll`，供「开新游戏」一次遍历重置。
 
 ### UI 组件
-位于 `Runtime/UI/`，程序集 `Ale.Inventory.Runtime.UI`，命名空间 `Ale.Inventory.Runtime.UI`。提供背包 / 商店 / 制作 / 装备 / 技能主界面与可复用的货币栏、过滤栏、排序栏、悬停弹窗、数字计数器、折叠页签等通用组件。各主界面均派生自 `UiwViewBase`：无参 `Open()` 为基类模板方法（激活面板），子类覆写实现各自打开逻辑；背包 / 装备 / 商店视图把目标 ID（`inventoryIds` / `groupId` / `shopId`）暴露到 Inspector，可预设默认值。
+位于 `Runtime/UI/`，程序集 `Ale.Inventory.Runtime.UI`，命名空间 `Ale.Inventory.Runtime.UI`。提供背包 / 商店 / 制作 / 装备主界面与可复用的货币栏、过滤栏、排序栏、悬停弹窗、数字计数器、折叠页签等通用组件。各主界面均派生自 `UiwViewBase`：无参 `Open()` 为基类模板方法（激活面板），子类覆写实现各自打开逻辑；背包 / 装备 / 商店视图把目标 ID（`inventoryIds` / `groupId` / `shopId`）暴露到 Inspector，可预设默认值。
 
 - **统一虚拟滚动列表**：所有"显示大量条目 / Item"的列表都建立在同一套虚拟滚动引擎之上（基类 `UiwVirtualListBase<TData,TCell>` → 通用 `UiwVirtualGridList` / `UiwVirtualOrderList` → 各系统叶子）。**网格与顺序列表都是虚拟滚动**：只渲染可见区域 + 缓冲、滚动循环复用；网格支持纵向 / 横向两种滚动、跨轴数量按视口自动计算；仓库网格在虚拟滚动下仍支持拖拽整理换位。为新系统加列表只需继承通用网格 / 顺序层、重写"绑定 / 清空格子"。
 - **列表性能与体验**（引擎内建）：
@@ -114,7 +101,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 
 ### 界面语言与插件宏（全局设定 → Ale Toolkit）
 
-界面语言（中 / English / 日本語）切换、「枚举值」翻译开关、以及三个可选依赖宏开关，均在 **Ale Toolkit 欢迎窗口**（`Tools > Ale Toolkit > Welcome`）中配置——点本窗口的「打开 Ale Toolkit 设置」按钮即可跳转。语言选择经 `EditorPrefs` 持久化、跨会话保留，切换后 `Inventory Editor`（含六大系统全部面板与配置绘制器）随之刷新；该设定仅影响**编辑器界面文案**，与运行时内容本地化（`ATK_LOCALIZATION` / Unity Localization）无关。详见 [Ale Toolkit 文档](../com.ale.toolkit)。
+界面语言（中 / English / 日本語）切换、「枚举值」翻译开关、以及三个可选依赖宏开关，均在 **Ale Toolkit 欢迎窗口**（`Tools > Ale Toolkit > Welcome`）中配置——点本窗口的「打开 Ale Toolkit 设置」按钮即可跳转。语言选择经 `EditorPrefs` 持久化、跨会话保留，切换后 `Inventory Editor`（含五大系统全部面板与配置绘制器）随之刷新；该设定仅影响**编辑器界面文案**，与运行时内容本地化（`ATK_LOCALIZATION` / Unity Localization）无关。详见 [Ale Toolkit 文档](../com.ale.toolkit)。
 
 ### 快捷操作
 
@@ -224,7 +211,7 @@ InventoryRuntimeManager.Instance.ResetAll();
 InventorySystem/
 ├── Runtime/
 │   ├── Data/           数据模型（Item / Inventory / Shop / Crafting* / AttributeValue 等）
-│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager / SkillRuntimeManager / SkillCollector
+│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager
 │   ├── Serialization/  DTO 定义 + 映射 / JSON / 二进制序列化（映射与二进制块按系统分部）
 │   ├── Assets/         资源加载抽象（直接加载）
 │   ├── Addressables/   Addressable 资源加载支持
@@ -236,7 +223,6 @@ InventorySystem/
 │   ├── ShopSystem/     商店系统面板
 │   ├── CraftingSystem/ 制作系统面板
 │   ├── EquipmentSystem/装备系统面板
-│   ├── SkillSystem/    技能系统面板 + UiwSkillView 自定义 Inspector
 │   ├── Common/         通用属性 / 配置绘制器 + 工具窗口基类
 │   ├── Addressables/   Addressable 资源引用迁移工具窗口
 │   ├── Localization/   本地化工具窗口（建表 / 生成中文 Key）

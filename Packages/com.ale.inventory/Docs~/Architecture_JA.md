@@ -82,9 +82,9 @@ InventoryDatabase (ScriptableObject)
 
 | 基盤 | 役割 |
 |------|------|
-| `AttributeOwner` | 属性値の集合を持つオブジェクトの基底クラス：遅延構築の O(1) 辞書キャッシュ + `GetEntry` / `GetAttributeValue<T>` / `SetAttributeValue<T>`。`Item` / `EnumItem` / `Inventory` / `Shop` / `SortOption` / `CraftingBlueprint` / `EquipmentGroup` / `Skill` が継承。**エントリリストを変更したら `InvalidateEntryCache()` を呼ぶこと** |
+| `AttributeOwner` | 属性値の集合を持つオブジェクトの基底クラス：遅延構築の O(1) 辞書キャッシュ + `GetEntry` / `GetAttributeValue<T>` / `SetAttributeValue<T>`。`Item` / `EnumItem` / `Inventory` / `Shop` / `SortOption` / `CraftingBlueprint` / `EquipmentGroup` が継承。**エントリリストを変更したら `InvalidateEntryCache()` を呼ぶこと** |
 | `AttributeSync.Sync` | 各 `RebuildAttributes` 内の「スキーマに従って不足を追加 / 孤立を削除 / 型ドリフト時にリセット」の共通実装 |
-| `ConfigTemplateBase` | 6 種のテンプレートが共有する 名称 / カラードット / 属性フィールド定義（`ItemTemplate` / `InventoryTemplate` / `ShopTemplate` / `CraftingBlueprintTemplate` / `EquipmentGroupTemplate` / `SkillTemplate`）。グループタグも同様に `GroupTag` を共有 |
+| `ConfigTemplateBase` | 5 種のテンプレートが共有する 名称 / カラードット / 属性フィールド定義（`ItemTemplate` / `InventoryTemplate` / `ShopTemplate` / `CraftingBlueprintTemplate` / `EquipmentGroupTemplate`）。グループタグも同様に `GroupTag` を共有 |
 
 > 装備グループと装備グループテンプレートは `IEquipmentConfig`（装備倉庫 + スロットリスト + 装備属性フィールド）を共有し、テンプレートがすべての設定可能項目を保持します。テンプレートから装備グループを作成するときこれらの設定をディープコピーし、以降は装備グループが独立して編集可能です（クラフトシステムの「テンプレートレベル読み取り専用」の逆）。装備倉庫リストは装備システム / UI が対話できる倉庫を指定し、解除時は Index0 から最初に入れられる倉庫を探します。
 
@@ -106,7 +106,7 @@ InventoryDatabase (SO)  ──編集──▶  依然として SO
 DTO 層はデータモデルと 1 対 1 でミラーする平坦な構造で、唯一の違いはオブジェクト参照を GUID 文字列で保持する点です。
 `InventoryDtoModels.cs` には DTO 定義のみを置き、双方向マッピングは `InventoryDtoMapper*.cs` にシステム別の partial として、バイナリブロックの読み書きも同様に `InventoryBinarySerializer*.cs` に分割されています。
 
-**フォーマットバージョン**（`InventoryDtoMapper.Version`）：v5 から属性値が `curveData`（AnimationCurve）を持ち、**v6 からエクスポートがデータベースの全 20 リストをカバー**（倉庫 / 整理オプション / 数値フォーマット / ショップ / クラフト / 装備 / スキルを追加）し、アイテムシステムでこれまで黙って捨てられていたフィールド（テンプレートのカラードット、`weight` / `stackLimit` / `hideInInventory`、機能タグの UI 表示設定）も補完されました。バイナリ読み込みはヘッダのバージョンに応じて新規ブロックをスキップするため、v5 でエクスポートした `.bytes` も引き続きインポートできます。
+**フォーマットバージョン**（`InventoryDtoMapper.Version`）：v5 から属性値が `curveData`（AnimationCurve）を持ち、**v6 からエクスポートがデータベースの全 17 リストをカバー**（倉庫 / 整理オプション / 数値フォーマット / ショップ / クラフト / 装備を追加）し、アイテムシステムでこれまで黙って捨てられていたフィールド（テンプレートのカラードット、`weight` / `stackLimit` / `hideInInventory`、機能タグの UI 表示設定）も補完されました。バイナリ読み込みはヘッダのバージョンに応じて新規ブロックをスキップするため、v5 でエクスポートした `.bytes` も引き続きインポートできます。
 
 ---
 
@@ -131,14 +131,10 @@ InventoryEditorWindow          メインウィンドウ + IInventoryEditorContex
 │   ├── CraftingGroupTagPanel  グループタグ一覧 + 編集パネル
 │   ├── CraftingTemplatePanel  ブループリントテンプレート一覧 + 編集パネル
 │   └── CraftingListPanel      ブループリント一覧 + CraftingInspectorPanel
-├── EquipmentSystemTab        装備システムタブ
-│   ├── EquipmentGroupTagPanel グループタグ一覧 + 編集パネル
-│   ├── EquipmentTemplatePanel 装備グループテンプレート一覧 + 編集パネル（名称/色 + 共有設定 + カスタム属性フィールド）
-│   └── EquipmentListPanel     装備グループ一覧 + EquipmentInspectorPanel（ネストしたスロットリスト / 装備スロット / アイテム制限 / 属性フィールド）
-└── SkillSystemTab            スキルシステムタブ
-    ├── SkillGroupTagPanel     グループタグ一覧 + 編集パネル
-    ├── SkillTemplatePanel     スキルテンプレート一覧 + 編集パネル（スキル既定情報 + カスタム属性フィールド）
-    └── SkillListPanel         スキル一覧 + SkillInspectorPanel（名称 / 説明 / アイコン / グループタグ / カスタム属性値）
+└── EquipmentSystemTab        装備システムタブ
+    ├── EquipmentGroupTagPanel グループタグ一覧 + 編集パネル
+    ├── EquipmentTemplatePanel 装備グループテンプレート一覧 + 編集パネル（名称/色 + 共有設定 + カスタム属性フィールド）
+    └── EquipmentListPanel     装備グループ一覧 + EquipmentInspectorPanel（ネストしたスロットリスト / 装備スロット / アイテム制限 / 属性フィールド）
 ```
 
 > 装備システムの「スロットリスト + 装備属性フィールド」は `Editor/Common/EquipmentConfigDrawer` が統一的に描画します（装備グループ Inspector と装備グループテンプレート Inspector で再利用）。ネストしたサブリストのドラッグ並べ替えは、パスをキーとする `Dictionary<string, EditorReorderableDrag>` で分離します。
@@ -150,7 +146,7 @@ InventoryEditorWindow          メインウィンドウ + IInventoryEditorContex
 | `AttributeFieldDrawer` | `EFieldType` に応じて単一の `AttributeValue` を描画。GUILayout パスと Rect パスは**型ディスパッチの実装を共有**します（1.6.0 以前は並行して保守される 2 つの大きな switch でした） |
 | `AttributeDefinitionDrawer` | `AttributeDefinition` の完全な編集パネルを描画（Rect ベース、ReorderableList 用） |
 | `AttributeDefinitionListDrawer` | ドラッグ並べ替え付きの属性フィールド定義リスト（内部で `ReorderableList` を使用、drawElementCallback は全 Rect ベース） |
-| `EditorEntityListPanel<TEntity,TTemplate>` | **中央カラムのエンティティ一覧のジェネリック基底**：テンプレートフィルタタブ + 検索バー +「テンプレートから追加」/「クイック追加」+ 2 行構成の項目行（ドラッグハンドル / テンプレートのカラードット / 各列 / 削除ボタン）+ ドラッグ並べ替え + 遅延削除 + 上下キーナビゲーション。6 システムの中央カラムはすべてこれを継承し、各自は `DrawRowColumns`（列レイアウト）と追加 / 検索ルールのみを実装します |
+| `EditorEntityListPanel<TEntity,TTemplate>` | **中央カラムのエンティティ一覧のジェネリック基底**：テンプレートフィルタタブ + 検索バー +「テンプレートから追加」/「クイック追加」+ 2 行構成の項目行（ドラッグハンドル / テンプレートのカラードット / 各列 / 削除ボタン）+ ドラッグ並べ替え + 遅延削除 + 上下キーナビゲーション。5 システムの中央カラムはすべてこれを継承し、各自は `DrawRowColumns`（列レイアウト）と追加 / 検索ルールのみを実装します |
 | `EquipmentConfigDrawer` | 装備の「スロットリスト + 装備属性フィールド」の共有描画（装備グループ Inspector と装備グループテンプレート Inspector で再利用） |
 
 **Rect ベースの原則**：`ReorderableList.drawElementCallback` 内で `GUILayout.BeginArea / GUI.BeginGroup` を呼ぶことは厳禁です。さもないと Layout と Repaint の GUILayout スロット数が一致しないとき「Getting control X's position...」例外が投げられます。すべての `DrawRect` メソッドは `EditorGUI.*` のみを使います。
@@ -223,7 +219,7 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 
 ショップ更新に必要な 3 種の時計（ゲーム / ローカル / サーバー時間）は `InventoryRuntimeManager.RegisterTimeGetter` で登録し、未登録のときはシステムのローカル時間にフォールバックします。
 
-**セーブ契約（`IInventorySaveable<TState>`）**：セーブ対象の状態を持つ 4 つのマネージャ（倉庫 / 装備 / ショップ / スキル）がこのインターフェースを実装し、ゲーム層の SaveManager がこれを呼びます。契約は 3 点を固定します：`GetSaveData` は**ディープコピー**を返す。`LoadSaveData` は**マージではなく上書き**（セーブに無くメモリに在るエントリを残してはいけない）。3 つのメソッドはいずれも変更イベントを**発火しない** —— 一括差し替えの後は呼び出し側が UI を更新します。非ジェネリックの `IInventorySaveable` は `ResetAll` のみを持ち、「ニューゲーム」で全システムを一括リセットできます。各システムのセーブ型は異なる（`RuntimeInventoryState` / `RuntimeEquipmentState` / `ShopRuntimeState` / `RuntimeLearnedSkillState`）ため、統一するのは契約のみで、ストレージ実装は統一しません。
+**セーブ契約（`IInventorySaveable<TState>`）**：セーブ対象の状態を持つ 3 つのマネージャ（倉庫 / 装備 / ショップ）がこのインターフェースを実装し、ゲーム層の SaveManager がこれを呼びます。契約は 3 点を固定します：`GetSaveData` は**ディープコピー**を返す。`LoadSaveData` は**マージではなく上書き**（セーブに無くメモリに在るエントリを残してはいけない）。3 つのメソッドはいずれも変更イベントを**発火しない** —— 一括差し替えの後は呼び出し側が UI を更新します。非ジェネリックの `IInventorySaveable` は `ResetAll` のみを持ち、「ニューゲーム」で全システムを一括リセットできます。各システムのセーブ型は異なる（`RuntimeInventoryState` / `RuntimeEquipmentState` / `ShopRuntimeState`）ため、統一するのは契約のみで、ストレージ実装は統一しません。
 
 ### アセンブリ分割
 
@@ -234,7 +230,7 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 | asmdef | 内容 |
 |--------|------|
 | `Ale.Inventory.Runtime` | データモデル、マネージャー、シリアライズ（ランタイムコア） |
-| `Ale.Inventory.Runtime.UI` | ランタイム UI コンポーネント（倉庫 / ショップ / クラフト / スキルビュー）。Runtime、`Ale.Toolkit.Runtime.UI`、TextMeshPro を参照 |
+| `Ale.Inventory.Runtime.UI` | ランタイム UI コンポーネント（倉庫 / ショップ / クラフトビュー）。Runtime、`Ale.Toolkit.Runtime.UI`、TextMeshPro を参照 |
 | `Ale.Inventory.Editor` | エディタウィンドウとパネル |
 
 **基盤（`com.ale.toolkit`）**
@@ -252,12 +248,12 @@ InventoryRuntimeManager (MonoBehaviour シングルトン)
 
 ## 拡張ガイド
 
-新しいサブシステム（スキルなど）を追加するとき（ショップ / クラフト / 装備はこのパターンで実装済みで、参考になります）：
+新しいサブシステムを追加するとき（ショップ / クラフト / 装備はこのパターンで実装済みで、参考になります）：
 
 1. `InventoryDatabase` に対応するデータリストを追加（+ getter / `CloneFrom` / `Validate`）；
 2. `Editor/` 以下にサブディレクトリを新規作成し、3 カラムパネルを実装（`AttributeDefinitionListDrawer` と `AttributeFieldDrawer` を再利用）；
 3. `InventoryEditorWindow` に新しいタブを登録（+ ID 重複スキャン / `RebuildAllAttributes`）；
 4. `InventoryDataManager` に対応するクエリメソッドを追加。ランタイムロジックは軽量シングルトン（`InventorySystemSingleton<T>`）が担う；
-5. `InventoryDtoModels.cs` に DTO ミラーを追加し、あわせて `InventoryDtoMapper.<システム>.cs` / `InventoryBinarySerializer.<システム>.cs` の partial を 1 組作成（既存 5 組のいずれかを真似ればよい）し、`ToDto` / `FromDto` とバイナリの Export / Import に新ブロックを繋ぎます —— **これを忘れるとそのシステムのデータはエクスポート時に黙って捨てられます**。グループタグを持つシステムは `GroupTagDto` とジェネリックの `FromDto<T>` をそのまま再利用できます。
+5. `InventoryDtoModels.cs` に DTO ミラーを追加し、あわせて `InventoryDtoMapper.<システム>.cs` / `InventoryBinarySerializer.<システム>.cs` の partial を 1 組作成（既存 4 組のいずれかを真似ればよい）し、`ToDto` / `FromDto` とバイナリの Export / Import に新ブロックを繋ぎます —— **これを忘れるとそのシステムのデータはエクスポート時に黙って捨てられます**。グループタグを持つシステムは `GroupTagDto` とジェネリックの `FromDto<T>` をそのまま再利用できます。
 
 属性システム（`AttributeValue / AttributeDefinition / EFieldType`）、列挙型、機能タグ、DTO シリアライズフレームワークはいずれも直接再利用できます。

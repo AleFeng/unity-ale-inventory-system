@@ -7,7 +7,7 @@
   <a href="./README_JA.md">日本語</a>
 </p>
 
-A Unity plugin providing designer-facing static-data configuration tooling. A single `InventoryDatabase` asset centralizes the static definition data of six subsystems — **Item / Warehouse / Shop / Crafting / Equipment / Skill**; the dynamic runtime state (owned counts, instance IDs, trade progress, crafted output, equipped items, learned skills, save data) is maintained by the corresponding runtime managers. A full set of ready-to-use runtime UI components (inventory / shop / crafting / equipment / skill screens) is included.
+A Unity plugin providing designer-facing static-data configuration tooling. A single `InventoryDatabase` asset centralizes the static definition data of five subsystems — **Item / Warehouse / Shop / Crafting / Equipment**; the dynamic runtime state (owned counts, instance IDs, trade progress, crafted output, equipped items, save data) is maintained by the corresponding runtime managers. A full set of ready-to-use runtime UI components (inventory / shop / crafting / equipment screens) is included.
 
 - The editor always and only works on ScriptableObjects; JSON / binary are used solely as one-way export formats.
 - Full Undo / Redo support throughout.
@@ -26,7 +26,6 @@ A Unity plugin providing designer-facing static-data configuration tooling. A si
 | **Shop System** | Shop templates, shops, product groups, price sources, refresh schedules | `ShopRuntimeManager` (trades + progress save) | [Shop System](Docs~/ShopSystem_EN.md) |
 | **Crafting System** | Group tags, blueprint templates, blueprints (recipes), crafting warehouses | `CraftingRuntimeManager` (consume → produce) | [Crafting System](Docs~/CraftingSystem_EN.md) |
 | **Equipment System** | Group tags, equipment-group templates, equipment groups (slot lists / slots / item limits / attribute bonuses) | `EquipmentRuntimeManager` (equip / unequip + bonuses + save) | [Equipment System](Docs~/EquipmentSystem_EN.md) |
-| **Skill System** | Group tags, skill templates, skills (custom attributes carry type / effect / values / tier, etc.) | `SkillRuntimeManager` (learned state + save) + `SkillCollector` (four-source collection) | [Skill System](Docs~/SkillSystem_EN.md) |
 
 ### Item System
 - **Flexible attribute system**: field types support Bool / Int / Float / String / Text (plain-text fallback + optional localization reference) / Vector2~4 / VectorInt2~4 / Color / Enum / StringIntPair / EnumIntPair / Sprite / Texture / Prefab / Material / AudioClip / AnimationClip / AnimationCurve / PhysicsMaterial(2D), each also supporting an array form.
@@ -56,27 +55,15 @@ A Unity plugin providing designer-facing static-data configuration tooling. A si
 - **Attribute bonuses**: the "equipment attribute field list" specifies which item attributes are summed into the equipment group's total bonuses, displayed grouped by group tag.
 - **Runtime**: `EquipmentRuntimeManager` maintains the equipped items per slot; equipping / unequipping / swapping cooperates with `InventoryRuntimeManager` to move items, and it provides auto slot-finding, bonus aggregation, save data, and an `OnEquipmentChanged` event.
 
-### Skill System
-- **Group tags / skill templates / skills**: group tags are used for the runtime UI's grouping-tab filtering (each skill has 1 primary + multiple secondary); a template defines custom attribute fields (schema) + a set of "skill default info" (name / description / icon / group tags), acting as a blueprint for creating skills — "add from template" copies the default info into the new skill, independently editable afterward; a skill is a config entry carrying ID / name / description / icon + custom attribute values (a skill's type / effect / values / tier, etc., are agreed on by the consumer via attrIds in the custom attribute fields).
-- **Item ↔ skill association**: skills are primarily granted to equipment-type items, but can also be granted to other items. An item stores a skill ID in one of its "skill reference attribute fields" (String, array-capable = one item with multiple skills); at runtime it's resolved by that attrId.
-- **Tier (Enum)-driven display**: a skill can be configured with an Enum-typed "tier" attribute field; its enum items (defined in the Item System's "enum types") carry custom attributes like "name / background frame (Sprite)" — a skill entry displays the corresponding "background frame" by tier, and the Tooltip shows the tier's "name" (reusing the item-quality background resolution chain). The relevant attrIds are all configurable on the UI component.
-- **Runtime**: `SkillRuntimeManager` (a lightweight singleton) maintains multiple characters' learned skills as **character ID → list of learned skill IDs**, providing `Learn / Forget / HasLearned / GetLearnedSkills / GetSaveData / LoadSaveData` APIs and an `OnLearnedChanged` event; `SkillCollector` collects the set of skills to display by source (deduplicated, order-preserving).
-- **Runtime UI**: `UiwSkillView` = title + search bar + primary / secondary grouping tabs (two AND filter conditions, each with an "All", horizontally scrollable) + a grid / ordered dual-display-mode list + a hover detail popup (`UiwSkillTooltip`, its prefab configured on `InventoryRuntimeManager`, which instantiates it globally); the skill source is switchable (see below), and `UiwSkillView`'s custom Inspector shows only the ID field corresponding to the source.
-- **Four skill sources** (`ESkillSource`):
-  - **InventoryDatabase**: all skills in the database (skill book / codex).
-  - **Equipment**: skills referenced by the equipped items of every slot in an equipment group (configure the equipment-group ID).
-  - **Inventory**: skills referenced by every item in a warehouse (configure the warehouse ID).
-  - **Character**: the skills a character has currently learned (configure the character ID, read from `SkillRuntimeManager`).
-
 ### Runtime and Serialization
 - **`InventoryDataManager`** (data-query singleton): registers databases, queries items / warehouses / shops / blueprints / enum types, etc. by ID; supports loading from `.asset`, JSON, and binary sources. Lookups go through a lazily built dictionary index (O(1)), invalidated and rebuilt when databases are registered / unregistered.
 - **`InventoryRuntimeManager`** (MonoBehaviour singleton): warehouse slot state, sorting, save data, the time-injection entry point, the cover-UI root node / Layer config (popups / hover popups / drag ghost icons, etc., are re-assigned the specified Layer after instantiation), and registers databases into `InventoryDataManager`; includes editor test-item population (`autoPopulateOnStart` / `testInventoryId` / `testItems`, filled at `Init` time, data-only, no UI opened) and a one-click "add all configured items" (`addAllConfiguredItems` + `addAllItemCount`).
-- **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager` / `SkillRuntimeManager`** (lightweight singletons): trade / craft / equip / skill logic (equipped state and learned state can both be saved, and shops have trade-progress save data); the skill display set is additionally collected by `SkillCollector` from the four sources.
-- **Export**: `InventoryDtoMapper` → JSON / binary, **covering all 20 database lists** (nothing from the six subsystems is left out; format version v6); object references are carried as AssetGUIDs; optional async loading via Addressables. `.bytes` exported by v5 and earlier still imports.
-- **Save contract**: the inventory / equipment / shop / skill managers all implement `IInventorySaveable<TState>` — `GetSaveData` returns a deep copy, `LoadSaveData` **replaces rather than merges**, and none of them fires a change event; the non-generic `IInventorySaveable` carries only `ResetAll`, so "new game" can reset every system in one loop.
+- **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager`** (lightweight singletons): trade / craft / equip logic (equipped state can be saved, and shops have trade-progress save data).
+- **Export**: `InventoryDtoMapper` → JSON / binary, **covering all 17 database lists** (nothing from the five subsystems is left out; format version v6); object references are carried as AssetGUIDs; optional async loading via Addressables. `.bytes` exported by v5 and earlier still imports.
+- **Save contract**: the inventory / equipment / shop managers all implement `IInventorySaveable<TState>` — `GetSaveData` returns a deep copy, `LoadSaveData` **replaces rather than merges**, and none of them fires a change event; the non-generic `IInventorySaveable` carries only `ResetAll`, so "new game" can reset every system in one loop.
 
 ### UI Components
-Located under `Runtime/UI/`, assembly `Ale.Inventory.Runtime.UI`, namespace `Ale.Inventory.Runtime.UI`. Provides the inventory / shop / crafting / equipment / skill main screens plus reusable common components such as a currency bar, filter bar, sort bar, hover popup, number counter, and collapsible tabs. Each main screen derives from `UiwViewBase`: the parameterless `Open()` is a base-class template method (activates the panel), which subclasses override to implement their own open logic; the inventory / equipment / shop views expose their target IDs (`inventoryIds` / `groupId` / `shopId`) to the Inspector so defaults can be preset.
+Located under `Runtime/UI/`, assembly `Ale.Inventory.Runtime.UI`, namespace `Ale.Inventory.Runtime.UI`. Provides the inventory / shop / crafting / equipment main screens plus reusable common components such as a currency bar, filter bar, sort bar, hover popup, number counter, and collapsible tabs. Each main screen derives from `UiwViewBase`: the parameterless `Open()` is a base-class template method (activates the panel), which subclasses override to implement their own open logic; the inventory / equipment / shop views expose their target IDs (`inventoryIds` / `groupId` / `shopId`) to the Inspector so defaults can be preset.
 
 - **Unified virtual-scroll list**: every list that "displays a large number of entries / items" is built on the same virtual-scroll engine (base `UiwVirtualListBase<TData,TCell>` → generic `UiwVirtualGridList` / `UiwVirtualOrderList` → each system's leaf). **Both grid and ordered lists are virtual-scrolling**: only the visible region + buffer is rendered, with scroll-loop reuse; the grid supports vertical / horizontal scrolling, with cross-axis counts computed automatically from the viewport; the warehouse grid still supports drag-to-reorder under virtual scrolling. Adding a list for a new system only requires inheriting the generic grid / ordered layer and overriding "bind / clear cell".
 - **List performance and experience** (built into the engine):
@@ -115,7 +102,7 @@ Top to bottom: a **header** (title / version) + the "Open Ale Toolkit Settings" 
 
 ### Editor Language & Macros (global → Ale Toolkit)
 
-UI language switching (中 / English / 日本語), the "Enum Values" translation toggle, and the three optional feature-macro toggles are all configured in the **Ale Toolkit Welcome Window** (`Tools > Ale Toolkit > Welcome`) — click the "Open Ale Toolkit Settings" button in this window to jump there. The language choice is persisted via `EditorPrefs` and kept across sessions; switching it refreshes the `Inventory Editor` (all six subsystem panels and config drawers). This affects **editor UI text only**, and is unrelated to runtime content localization (`ATK_LOCALIZATION` / Unity Localization). See the [Ale Toolkit docs](../com.ale.toolkit).
+UI language switching (中 / English / 日本語), the "Enum Values" translation toggle, and the three optional feature-macro toggles are all configured in the **Ale Toolkit Welcome Window** (`Tools > Ale Toolkit > Welcome`) — click the "Open Ale Toolkit Settings" button in this window to jump there. The language choice is persisted via `EditorPrefs` and kept across sessions; switching it refreshes the `Inventory Editor` (all five subsystem panels and config drawers). This affects **editor UI text only**, and is unrelated to runtime content localization (`ATK_LOCALIZATION` / Unity Localization). See the [Ale Toolkit docs](../com.ale.toolkit).
 
 ### Quick Actions
 
@@ -225,7 +212,7 @@ In the **Welcome Window**, "Test Tools – Prefab Generation → Generate All" p
 InventorySystem/
 ├── Runtime/
 │   ├── Data/           Data models (Item / Inventory / Shop / Crafting* / AttributeValue, etc.)
-│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager / SkillRuntimeManager / SkillCollector
+│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager
 │   ├── Serialization/  DTO definitions + mapping / JSON / binary (mapping and binary blocks split per system)
 │   ├── Assets/         Asset-loading abstraction (direct loading)
 │   ├── Addressables/   Addressables asset-loading support
@@ -237,7 +224,6 @@ InventorySystem/
 │   ├── ShopSystem/     Shop System panel
 │   ├── CraftingSystem/ Crafting System panel
 │   ├── EquipmentSystem/Equipment System panel
-│   ├── SkillSystem/    Skill System panel + UiwSkillView custom Inspector
 │   ├── Common/         Shared attribute / config drawers + tool-window base class
 │   ├── Addressables/   Addressables asset-reference migration tool window
 │   ├── Localization/   Localization tool window (table creation / key generation)

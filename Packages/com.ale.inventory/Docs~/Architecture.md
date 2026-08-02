@@ -82,9 +82,9 @@ InventoryDatabase (ScriptableObject)
 
 | 基建 | 作用 |
 |------|------|
-| `AttributeOwner` | 承载属性值集合的对象基类：懒加载 O(1) 字典缓存 + `GetEntry` / `GetAttributeValue<T>` / `SetAttributeValue<T>`。`Item` / `EnumItem` / `Inventory` / `Shop` / `SortOption` / `CraftingBlueprint` / `EquipmentGroup` / `Skill` 均继承。**改动条目列表后须调 `InvalidateEntryCache()`** |
+| `AttributeOwner` | 承载属性值集合的对象基类：懒加载 O(1) 字典缓存 + `GetEntry` / `GetAttributeValue<T>` / `SetAttributeValue<T>`。`Item` / `EnumItem` / `Inventory` / `Shop` / `SortOption` / `CraftingBlueprint` / `EquipmentGroup` 均继承。**改动条目列表后须调 `InvalidateEntryCache()`** |
 | `AttributeSync.Sync` | 各 `RebuildAttributes` 内「按 schema 增补缺失 / 移除孤立 / 类型漂移重置」的共用实现 |
-| `ConfigTemplateBase` | 六大系统模板共有的 名称 / 色点 / 属性字段定义（`ItemTemplate` / `InventoryTemplate` / `ShopTemplate` / `CraftingBlueprintTemplate` / `EquipmentGroupTemplate` / `SkillTemplate`）。分组标签同法共享 `GroupTag` |
+| `ConfigTemplateBase` | 五大系统模板共有的 名称 / 色点 / 属性字段定义（`ItemTemplate` / `InventoryTemplate` / `ShopTemplate` / `CraftingBlueprintTemplate` / `EquipmentGroupTemplate`）。分组标签同法共享 `GroupTag` |
 
 > 装备组与装备组模板共享 `IEquipmentConfig`（装备仓库 + 槽位列表 + 装备属性字段），模板承载全部可配置项；从模板创建装备组时深拷贝这些配置，此后装备组独立可编辑（与制作系统「模板级只读」相反）。装备仓库列表指定装备系统 / UI 可交互的仓库，卸下时从 Index0 起找第一个放得下的仓库。
 
@@ -106,7 +106,7 @@ InventoryDatabase (SO)  ──编辑──▶  仍是 SO
 DTO 层是与数据模型一一镜像的扁平结构，唯一区别是对象引用以 GUID 字符串承载。
 `InventoryDtoModels.cs` 只放 DTO 定义；双向映射在 `InventoryDtoMapper*.cs` 中按系统分部，二进制块读写在 `InventoryBinarySerializer*.cs` 中同法分部。
 
-**格式版本**（`InventoryDtoMapper.Version`）：v5 起属性值带 `curveData`（AnimationCurve）；**v6 起导出覆盖数据库的全部 20 个列表**（新增仓库 / 整理选项 / 数字格式 / 商店 / 制作 / 装备 / 技能），并补上道具系统此前静默丢弃的字段（模板色点、`weight` / `stackLimit` / `hideInInventory`、功能标签的 UI 显示配置）。二进制读取按文件头版本号跳过新增块，v5 导出的 `.bytes` 仍可导入。
+**格式版本**（`InventoryDtoMapper.Version`）：v5 起属性值带 `curveData`（AnimationCurve）；**v6 起导出覆盖数据库的全部 17 个列表**（新增仓库 / 整理选项 / 数字格式 / 商店 / 制作 / 装备），并补上道具系统此前静默丢弃的字段（模板色点、`weight` / `stackLimit` / `hideInInventory`、功能标签的 UI 显示配置）。二进制读取按文件头版本号跳过新增块，v5 导出的 `.bytes` 仍可导入。
 
 ---
 
@@ -131,14 +131,10 @@ InventoryEditorWindow          主窗口 + IInventoryEditorContext 实现（顶�
 │   ├── CraftingGroupTagPanel  分组标签列表 + 编辑面板
 │   ├── CraftingTemplatePanel  蓝图模板列表 + 编辑面板
 │   └── CraftingListPanel      蓝图列表 + CraftingInspectorPanel
-├── EquipmentSystemTab        装备系统页签
-│   ├── EquipmentGroupTagPanel 分组标签列表 + 编辑面板
-│   ├── EquipmentTemplatePanel 装备组模板列表 + 编辑面板（名称/颜色 + 共享配置 + 自定义属性字段）
-│   └── EquipmentListPanel     装备组列表 + EquipmentInspectorPanel（嵌套槽位列表 / 装备槽 / 道具限制 / 属性字段）
-└── SkillSystemTab            技能系统页签
-    ├── SkillGroupTagPanel     分组标签列表 + 编辑面板
-    ├── SkillTemplatePanel     技能模板列表 + 编辑面板（技能默认信息 + 自定义属性字段）
-    └── SkillListPanel         技能列表 + SkillInspectorPanel（名称 / 描述 / 图标 / 分组标签 / 自定义属性值）
+└── EquipmentSystemTab        装备系统页签
+    ├── EquipmentGroupTagPanel 分组标签列表 + 编辑面板
+    ├── EquipmentTemplatePanel 装备组模板列表 + 编辑面板（名称/颜色 + 共享配置 + 自定义属性字段）
+    └── EquipmentListPanel     装备组列表 + EquipmentInspectorPanel（嵌套槽位列表 / 装备槽 / 道具限制 / 属性字段）
 ```
 
 > 装备系统的「槽位列表 + 装备属性字段」由 `Editor/Common/EquipmentConfigDrawer` 统一绘制（装备组 Inspector 与装备组模板 Inspector 复用），嵌套子列表的拖拽重排用按路径键的 `Dictionary<string, EditorReorderableDrag>` 隔离。
@@ -210,7 +206,7 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 
 商店刷新所需的三种时钟（游戏 / 本地 / 服务器时间）由 `InventoryRuntimeManager.RegisterTimeGetter` 注册，未注册回退系统本地时间。
 
-**存档契约（`IInventorySaveable<TState>`）**：持有可存档状态的四个管理器（仓库 / 装备 / 商店 / 技能）都实现此接口，游戏层的 SaveManager 据此调用。契约钉死三点：`GetSaveData` 返回**深拷贝**；`LoadSaveData` 为**覆盖语义**而非合并（存档里没有、内存里有的条目不得残留）；三个方法都**不触发**变更事件，批量替换后由调用方自行刷新界面。非泛型的 `IInventorySaveable` 只含 `ResetAll`，供「开新游戏」统一遍历重置。各系统的存档数据类型不同（`RuntimeInventoryState` / `RuntimeEquipmentState` / `ShopRuntimeState` / `RuntimeLearnedSkillState`），故仅统一契约、不统一存储实现。
+**存档契约（`IInventorySaveable<TState>`）**：持有可存档状态的三个管理器（仓库 / 装备 / 商店）都实现此接口，游戏层的 SaveManager 据此调用。契约钉死三点：`GetSaveData` 返回**深拷贝**；`LoadSaveData` 为**覆盖语义**而非合并（存档里没有、内存里有的条目不得残留）；三个方法都**不触发**变更事件，批量替换后由调用方自行刷新界面。非泛型的 `IInventorySaveable` 只含 `ResetAll`，供「开新游戏」统一遍历重置。各系统的存档数据类型不同（`RuntimeInventoryState` / `RuntimeEquipmentState` / `ShopRuntimeState`），故仅统一契约、不统一存储实现。
 
 > **静态状态的跨播放重置（1.5.0）**：上述轻量单例与 MonoBehaviour 单例的实例、以及 `IsQuitting` 标记都是静态字段。
 > 关闭 Domain Reload（Project Settings → Editor → Enter Play Mode Options）时静态字段会跨播放会话残留，
@@ -227,7 +223,7 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 | asmdef | 内容 |
 |--------|------|
 | `Ale.Inventory.Runtime` | 数据模型、管理器、序列化（运行时核心） |
-| `Ale.Inventory.Runtime.UI` | 运行时 UI 组件（仓库 / 商店 / 制作 / 技能视图）；引用 Runtime、`Ale.Toolkit.Runtime.UI` 与 TextMeshPro |
+| `Ale.Inventory.Runtime.UI` | 运行时 UI 组件（仓库 / 商店 / 制作视图）；引用 Runtime、`Ale.Toolkit.Runtime.UI` 与 TextMeshPro |
 | `Ale.Inventory.Editor` | 编辑器窗口与面板 |
 
 **通用底层（`com.ale.toolkit`）**
@@ -245,12 +241,12 @@ InventoryRuntimeManager (MonoBehaviour 单例)
 
 ## 扩展指南
 
-新增子系统（技能等）时（商店 / 制作 / 装备已按此模式实现，可作参考）：
+新增子系统时（商店 / 制作 / 装备已按此模式实现，可作参考）：
 
 1. 在 `InventoryDatabase` 增加对应数据列表（+ getter / `CloneFrom` / `Validate`）；
 2. 在 `Editor/` 下新建子目录，实现三列面板（复用 `AttributeDefinitionListDrawer` 和 `AttributeFieldDrawer`）；
 3. 在 `InventoryEditorWindow` 注册新页签（+ 重复 ID 扫描 / `RebuildAllAttributes`）；
 4. 在 `InventoryDataManager` 添加对应查询方法；运行时逻辑用轻量单例（`InventorySystemSingleton<T>`）承担；
-5. 在 `InventoryDtoModels.cs` 增加 DTO 镜像，并按系统新建一对 `InventoryDtoMapper.<系统>.cs` / `InventoryBinarySerializer.<系统>.cs` 分部（照抄现有五组之一即可），再在 `ToDto` / `FromDto` 与二进制的 Export / Import 里挂上新块——**漏了这步，该系统的数据会在导出时被静默丢弃**。分组标签类的系统可直接复用 `GroupTagDto` 与泛型 `FromDto<T>`。
+5. 在 `InventoryDtoModels.cs` 增加 DTO 镜像，并按系统新建一对 `InventoryDtoMapper.<系统>.cs` / `InventoryBinarySerializer.<系统>.cs` 分部（照抄现有四组之一即可），再在 `ToDto` / `FromDto` 与二进制的 Export / Import 里挂上新块——**漏了这步，该系统的数据会在导出时被静默丢弃**。分组标签类的系统可直接复用 `GroupTagDto` 与泛型 `FromDto<T>`。
 
 属性系统（`AttributeValue / AttributeDefinition / EFieldType`）、枚举类型、功能标签、DTO 序列化框架均可直接复用。

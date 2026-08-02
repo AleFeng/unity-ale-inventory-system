@@ -40,7 +40,7 @@
 ```
 Runtime/UI/
 ├── Item/      単一セル（UiwInventoryItemBase / SlotBase / Cell / Simple / Detail、UiwShopItemDetail、UiwCraftingBlueprintCell、UiwCraftingInputCell、UiwEquipmentSlot、UiwEquipmentBonusEntry、UiwInventoryItemEvents）
-├── ItemList/  仮想スクロールリスト族：基底 UiwVirtualListBase + 汎用 UiwVirtualGridList / UiwVirtualOrderList + リーフ（倉庫 UiwInventoryItemGridList / UiwInventoryItemOrderList、クラフト UiwCraftingBlueprintList、スキル UiwSkillGridList / UiwSkillOrderList）+ GridCellDragHandler + ViewportSizeWatcher（装備候補リストは View/Equipment/、ショップ商品リストは View/Shop/）
+├── ItemList/  仮想スクロールリスト族：基底 UiwVirtualListBase + 汎用 UiwVirtualGridList / UiwVirtualOrderList + リーフ（倉庫 UiwInventoryItemGridList / UiwInventoryItemOrderList、クラフト UiwCraftingBlueprintList）+ GridCellDragHandler + ViewportSizeWatcher（装備候補リストは View/Equipment/、ショップ商品リストは View/Shop/）
 ├── Tab/       タブ / フィルタ（UiwTabButton、UiwShopGroupTab、UiwFoldTab、UiwFilterTabBar、UiwCraftingGroupFilter）
 ├── Tool/      汎用ユーティリティコンポーネント（UiwCurrencyBar、UiwSortToolbar、UiwItemTooltip、UiwNumberCounter）
 ├── View/      メイン画面：UiwViewBase 基底クラス
@@ -52,7 +52,7 @@ Runtime/UI/
 └── Ale.Inventory.Runtime.UI.asmdef   （ルートにあり、すべてのサブフォルダを自動的にカバー）
 ```
 
-> 注：上のディレクトリスナップショットは本プラグインパッケージの `Runtime/UI/` の歴史的なレイアウトを示しています。`com.ale.toolkit` への抽出後、**汎用 UI 基盤**は toolkit（名前空間 `Ale.Toolkit.Runtime.UI`）へ移動し、本パッケージには含まれなくなりました：バーチャルスクロールリスト基底とグリッド / 順次実装（`UiwVirtualListBase` / `UiwVirtualGridList` / `UiwVirtualOrderList`、`ViewportSizeWatcher`）、汎用タブとフィルタ（`UiwTabButton` / `UiwFoldTab` / `UiwFilterTabBar`）、Tooltip 基底クラス、`UiwSortToolbar` / `UiwNumberCounter` / `UiwTextLabel` など。本パッケージのフォルダには、倉庫 / ショップ / クラフト / 装備 / スキルなどのドメイン固有コンポーネントのみが残ります。
+> 注：上のディレクトリスナップショットは本プラグインパッケージの `Runtime/UI/` の歴史的なレイアウトを示しています。`com.ale.toolkit` への抽出後、**汎用 UI 基盤**は toolkit（名前空間 `Ale.Toolkit.Runtime.UI`）へ移動し、本パッケージには含まれなくなりました：バーチャルスクロールリスト基底とグリッド / 順次実装（`UiwVirtualListBase` / `UiwVirtualGridList` / `UiwVirtualOrderList`、`ViewportSizeWatcher`）、汎用タブとフィルタ（`UiwTabButton` / `UiwFoldTab` / `UiwFilterTabBar`）、Tooltip 基底クラス、`UiwSortToolbar` / `UiwNumberCounter` / `UiwTextLabel` など。本パッケージのフォルダには、倉庫 / ショップ / クラフト / 装備などのドメイン固有コンポーネントのみが残ります。
 
 > 通貨バー / ソートバー / ホバーポップアップ / 数値カウンター（`Tool/`）とフィルタタブバー / 折りたたみタブ（`Tab/`）はいずれも独立した汎用コンポーネントです。各メイン画面（`UiwInventoryView`、`UiwShopViewBase`、`UiwCraftingView`、いずれも `UiwViewBase` から派生）は「コンポジション」でそれらの参照を持ち、バックパック / ショップ / クラフトの各システム UI 間で再利用します。
 
@@ -299,12 +299,10 @@ Prefab_InventoryItemDetail  [UiwInventoryItemDetail]
 UiwVirtualListBase<TData, TCell>        ← 基底：仮想スクロールエンジン（オブジェクトプール + ビューポート監視 + 回収/再利用）+ 抽象「レイアウト戦略」
    ├─ UiwVirtualGridList<TData, TCell>       ← 汎用グリッドレイアウト（複数列/行、縦 / 横スクロール、交差軸の数は自動）
    │     ├─ UiwInventoryItemGridList           ← 倉庫グリッド（RuntimeItemSlot + UiwInventoryItemCell、ドラッグ整理あり）
-   │     ├─ UiwSkillGridList                    ← スキルグリッド（Skill + UiwSkillEntry）
    │     └─ UiwEquipmentCandidateList          ← 装備候補（整理ドラッグなし、装備ドラッグは保持）
    └─ UiwVirtualOrderList<TData, TCell>      ← 汎用順序レイアウト（単一列縦）
          ├─ UiwInventoryItemOrderList          ← 倉庫リスト（RuntimeItemSlot + UiwInventoryItemDetail）
          ├─ UiwCraftingBlueprintList           ← クラフトブループリントリスト（+ 選択）
-         ├─ UiwSkillOrderList                   ← スキルリスト（Skill + UiwSkillEntry）
          └─ UiwShopCommodityList               ← ショップ商品リスト（回数はデータモデルに格納、ショップ画面参照）
 ```
 
@@ -352,7 +350,7 @@ Prefab_List  [リーフコンポーネント、例：UiwInventoryItemGridList]
 | `RefreshItemsData(items)` | 増分**差分リフレッシュ**（スクロール位置を保持）：エントリ数が不変のとき、データが変わった可視セルのみ再バインド（`NeedsRebind` が判定）、変わらないものは触らない —— アイコン非同期再読み込みのちらつきを回避。倉庫のドラッグ入れ替え / スタックはこの経路 |
 | `ScrollToStart()` | 起点（縦=先頭 / 横=最左）へスクロールし、可視セルをリフレッシュ |
 
-各リーフはこの上にドメインメソッドを提供します（例：倉庫 `SetItemSlotList` / `UpdateItemSlotList` / `SetNumberFormat`、ブループリント `SetBlueprints` / `SetSelectedById`、スキル `SetSkills`）。通常は所属メイン画面がデータ変化後に呼ぶため、手動は不要です。
+各リーフはこの上にドメインメソッドを提供します（例：倉庫 `SetItemSlotList` / `UpdateItemSlotList` / `SetNumberFormat`、ブループリント `SetBlueprints` / `SetSelectedById`）。通常は所属メイン画面がデータ変化後に呼ぶため、手動は不要です。
 
 ### パフォーマンスと体験（基底に内蔵）
 
@@ -442,7 +440,7 @@ Prefab_List  [リーフコンポーネント、例：UiwInventoryItemGridList]
 | `ConfigureSort(keySelector, db, priorities, tiebreakers, writeRuntime=null)` | ソートを設定：表示ソートまたはランタイムソートの書き込み |
 | `SetSourceItems(items, preserveScroll=false)` | ソースデータを設定、フィルタ → ソート → 表示 を発火 |
 
-- **再利用範囲**：ショップ商品リスト（`UiwShopCommodityList`）、クラフトブループリントリスト、スキルリストはいずれもこのパイプラインを通す。`UiwShopViewBase` は `UiwFilterTabBar` / `UiwSortToolbar` を直接サポート。
+- **再利用範囲**：ショップ商品リスト（`UiwShopCommodityList`）、クラフトブループリントリストはいずれもこのパイプラインを通す。`UiwShopViewBase` は `UiwFilterTabBar` / `UiwSortToolbar` を直接サポート。
 - **バックパックの例外**：バックパックはドラッグ整理（`dragSort`）とランタイムソート書き込みなどが結合しているため、自身のフィルタ / ソートロジックを保持し、本パイプラインを通しません。
 
 ---
@@ -696,7 +694,7 @@ public class InventoryUIController : MonoBehaviour
 |------|------|------|
 | `UiwTabStrip<TTab,TValue>` | `UI/Tab/` | タブストリップ：一列のタブインスタンス + 並行する値 / 表示名 + 単一選択ハイライト。倉庫タブ、ショップ商品グループタブ、ブループリントテンプレートタブ、フィルタタブバーで共用 |
 | `UiwWidgetPool<T>` | `UI/Common/` | 子アイテムのインスタンスプール：必要に応じて生成 → フレームごとに再利用 → 余剰は非表示に回収。価格セル / ラベル行 / 属性行 / 装備スロット / 通貨セル / ボーナス項目で共用 |
-| `UiwTooltipBase<TPayload>` | `UI/Tool/` | ホバーポップアップ基底：カーソル位置合わせ + フェード状態機械 + フェードアウト中の表示待ちキュー。アイテムとスキルのポップアップの共通の親 |
+| `UiwTooltipBase<TPayload>` | `UI/Tool/` | ホバーポップアップ基底：カーソル位置合わせ + フェード状態機械 + フェードアウト中の表示待ちキュー。アイテムのポップアップの親 |
 | `UiwHoverTooltipSource` | `UI/Common/` | 「ホバーで詳細を出す」能力の基底：Enter / Exit / **Disable** の 3 経路 |
 | `SpriteSlot` | `UI/Utility/` | アイコンスロット：Sprite の読み込み / 解放を集約し、ホットパスでの重複確保を回避 |
 | `UIFormat` | `UI/Utility/` | 静的フォーマット：`NumberFormatLocale` に従う数値整形、複数通貨の価格文字列の組み立て |

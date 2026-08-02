@@ -7,7 +7,7 @@
   日本語
 </p>
 
-デザイナー向けの Unity 静的データ設定ツールプラグイン。1 つの `InventoryDatabase` アセットで、**アイテム / 倉庫 / ショップ / クラフト / 装備 / スキル** という 6 つのサブシステムの静的な定義データを一元的に設定します。動的なランタイム状態（所持数、インスタンス ID、取引の進捗、クラフト成果物、装備中アイテム、習得済みスキル、セーブデータ）は、対応するランタイムマネージャーが管理します。そのまま使えるランタイム UI コンポーネント一式（バックパック / ショップ / クラフト / 装備 / スキル画面）も付属します。
+デザイナー向けの Unity 静的データ設定ツールプラグイン。1 つの `InventoryDatabase` アセットで、**アイテム / 倉庫 / ショップ / クラフト / 装備** という 5 つのサブシステムの静的な定義データを一元的に設定します。動的なランタイム状態（所持数、インスタンス ID、取引の進捗、クラフト成果物、装備中アイテム、セーブデータ）は、対応するランタイムマネージャーが管理します。そのまま使えるランタイム UI コンポーネント一式（バックパック / ショップ / クラフト / 装備画面）も付属します。
 
 - エディタは常に、そして ScriptableObject 上でのみ動作します。JSON / バイナリは一方向のエクスポートフォーマットとしてのみ使われます。
 - 全工程で Undo / Redo に対応。
@@ -26,7 +26,6 @@
 | **ショップシステム** | ショップテンプレート、ショップ、商品グループ、価格ソース、更新スケジュール | `ShopRuntimeManager`（取引 + 進捗セーブ） | [ショップシステム](Docs~/ShopSystem_JA.md) |
 | **クラフトシステム** | グループタグ、ブループリントテンプレート、ブループリント（レシピ）、クラフト倉庫 | `CraftingRuntimeManager`（消費 → 産出） | [クラフトシステム](Docs~/CraftingSystem_JA.md) |
 | **装備システム** | グループタグ、装備グループテンプレート、装備グループ（スロットリスト / 装備スロット / アイテム制限 / 属性ボーナス） | `EquipmentRuntimeManager`（装備 / 解除 + ボーナス + セーブ） | [装備システム](Docs~/EquipmentSystem_JA.md) |
-| **スキルシステム** | グループタグ、スキルテンプレート、スキル（カスタム属性が 種類 / 効果 / 数値 / 位階 などを保持） | `SkillRuntimeManager`（習得状態 + セーブ）+ `SkillCollector`（4 ソース収集） | [スキルシステム](Docs~/SkillSystem_JA.md) |
 
 ### アイテムシステム
 - **柔軟な属性システム**：フィールド型は Bool / Int / Float / String / Text（プレーンテキストのフォールバック + 任意のローカライズ参照）/ Vector2〜4 / VectorInt2〜4 / Color / Enum / StringIntPair / EnumIntPair / Sprite / Texture / Prefab / Material / AudioClip / AnimationClip / AnimationCurve / PhysicsMaterial(2D) に対応し、いずれも配列形式もサポートします。
@@ -56,27 +55,15 @@
 - **属性ボーナス**：「装備属性フィールドリスト」は、どのアイテム属性を装備グループの合計ボーナスに集計するかを指定し、グループタグごとにグループ分けして表示します。
 - **ランタイム**：`EquipmentRuntimeManager` は各スロットの装備中アイテムを管理します。装備 / 解除 / 交換は `InventoryRuntimeManager` と連携してアイテムを移動し、スロットの自動検索、ボーナス集計、セーブデータ、`OnEquipmentChanged` イベントを提供します。
 
-### スキルシステム
-- **グループタグ / スキルテンプレート / スキル**：グループタグはランタイム UI のグルーピングタブによるフィルタに使われます（各スキルは主 1 + 副複数）。テンプレートはカスタム属性フィールド（スキーマ）+ 一組の「スキル既定情報」（名称 / 説明 / アイコン / グループタグ）を定義し、スキル作成のひな型になります。「テンプレートから追加」で既定情報を新スキルにコピーし、以降は独立して編集可能です。スキルは設定エントリで、ID / 名称 / 説明 / アイコン + カスタム属性値（スキルの種類 / 効果 / 数値 / 位階などは、利用側がカスタム属性フィールド内で attrId を取り決めて保持）を持ちます。
-- **アイテム ↔ スキルの関連付け**：スキルは主に装備系アイテムに付与されますが、他のアイテムにも付与できます。アイテムはその「スキル参照属性フィールド」の 1 つ（String、配列可 = 1 アイテムに複数スキル）にスキル ID を格納し、ランタイムではその attrId で解決します。
-- **位階（Enum）駆動の表示**：スキルには Enum 型の「位階」属性フィールドを設定できます。その列挙項目（アイテムシステムの「列挙型」で定義）は「名称 / 背景フレーム(Sprite)」などのカスタム属性を持ちます。スキルエントリは位階に応じて対応する「背景フレーム」を表示し、Tooltip は位階の「名称」を表示します（アイテム品質背景の解決チェーンを再利用）。関連する attrId はいずれも UI コンポーネント上で設定可能です。
-- **ランタイム**：`SkillRuntimeManager`（軽量シングルトン）は **キャラクター ID → 習得済みスキル ID リスト** として複数キャラクターの習得済みスキルを管理し、`Learn / Forget / HasLearned / GetLearnedSkills / GetSaveData / LoadSaveData` の API と `OnLearnedChanged` イベントを提供します。`SkillCollector` はソース別に表示すべきスキル集合を収集します（重複排除、順序保持）。
-- **ランタイム UI**：`UiwSkillView` = タイトル + 検索バー + 主 / 副グルーピングタブ（2 つの AND フィルタ条件、それぞれ「すべて」あり、横スクロール可能）+ グリッド / 順序の 2 表示モードリスト + ホバー詳細ポップアップ（`UiwSkillTooltip`、プレハブは `InventoryRuntimeManager` に設定され、そこからグローバルにインスタンス化）。スキルソースは切り替え可能（下記参照）で、`UiwSkillView` のカスタム Inspector はソースに対応する ID フィールドだけを表示します。
-- **4 種類のスキルソース**（`ESkillSource`）：
-  - **InventoryDatabase**：データベース内のすべてのスキル（スキルブック / 図鑑）。
-  - **Equipment**：ある装備グループの全装備スロットの装備中アイテムが参照するスキル（装備グループ ID を設定）。
-  - **Inventory**：ある倉庫内の全アイテムが参照するスキル（倉庫 ID を設定）。
-  - **Character**：あるキャラクターが現在習得しているスキル（キャラクター ID を設定、`SkillRuntimeManager` を参照）。
-
 ### ランタイムとシリアライズ
 - **`InventoryDataManager`**（データクエリのシングルトン）：データベースを登録し、ID でアイテム / 倉庫 / ショップ / ブループリント / 列挙型などをクエリします。`.asset`、JSON、バイナリの 3 種類のソースからの読み込みに対応します。クエリは遅延構築される辞書インデックス（O(1)）を経由し、データベースの登録 / 登録解除時に無効化・再構築されます。
 - **`InventoryRuntimeManager`**（MonoBehaviour シングルトン）：倉庫のスロット状態、整理ソート、セーブデータ、時間注入の入口、カバー UI のルートノード / Layer 設定（ポップアップ / ホバーポップアップ / ドラッグのゴーストアイコンなどはインスタンス化後に指定 Layer を再適用）を担い、データベースを `InventoryDataManager` に登録します。エディタのテストアイテム投入（`autoPopulateOnStart` / `testInventoryId` / `testItems`、`Init` のタイミングで投入、データのみで UI は開かない）と、ワンクリックの「すべての設定表アイテムを追加」（`addAllConfiguredItems` + `addAllItemCount`）を含みます。
-- **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager` / `SkillRuntimeManager`**（軽量シングルトン）：取引 / クラフト / 装備 / スキルのロジック（装備中状態と習得状態はいずれもセーブ可能、ショップは取引進捗のセーブあり）。スキルの表示集合は別途 `SkillCollector` が 4 種のソースから収集します。
-- **エクスポート**：`InventoryDtoMapper` → JSON / バイナリ。**データベースの全 20 リストを網羅**（6 サブシステムの設定データを一切取りこぼしません。フォーマットバージョン v6）。オブジェクト参照は AssetGUID として保持され、Addressables による非同期読み込みも任意で可能です。v5 以前にエクスポートした `.bytes` も引き続きインポートできます。
-- **セーブ契約**：倉庫 / 装備 / ショップ / スキルの 4 マネージャが `IInventorySaveable<TState>` を実装 —— `GetSaveData` はディープコピーを返し、`LoadSaveData` は**マージではなく上書き**、いずれも変更イベントを発火しません。非ジェネリックの `IInventorySaveable` は `ResetAll` のみを持ち、「ニューゲーム」で全システムを一括リセットできます。
+- **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager`**（軽量シングルトン）：取引 / クラフト / 装備のロジック（装備中状態はセーブ可能、ショップは取引進捗のセーブあり）。
+- **エクスポート**：`InventoryDtoMapper` → JSON / バイナリ。**データベースの全 17 リストを網羅**（5 サブシステムの設定データを一切取りこぼしません。フォーマットバージョン v6）。オブジェクト参照は AssetGUID として保持され、Addressables による非同期読み込みも任意で可能です。v5 以前にエクスポートした `.bytes` も引き続きインポートできます。
+- **セーブ契約**：倉庫 / 装備 / ショップの 3 マネージャが `IInventorySaveable<TState>` を実装 —— `GetSaveData` はディープコピーを返し、`LoadSaveData` は**マージではなく上書き**、いずれも変更イベントを発火しません。非ジェネリックの `IInventorySaveable` は `ResetAll` のみを持ち、「ニューゲーム」で全システムを一括リセットできます。
 
 ### UI コンポーネント
-`Runtime/UI/` 以下、アセンブリ `Ale.Inventory.Runtime.UI`、名前空間 `Ale.Inventory.Runtime.UI` にあります。バックパック / ショップ / クラフト / 装備 / スキルのメイン画面と、通貨バー、フィルタバー、ソートバー、ホバーポップアップ、数値カウンター、折りたたみタブなどの再利用可能な共通コンポーネントを提供します。各メイン画面は `UiwViewBase` から派生します：引数なしの `Open()` は基底クラスのテンプレートメソッド（パネルを有効化）で、サブクラスがオーバーライドしてそれぞれの開く処理を実装します。バックパック / 装備 / ショップビューは対象 ID（`inventoryIds` / `groupId` / `shopId`）を Inspector に公開し、既定値をあらかじめ設定できます。
+`Runtime/UI/` 以下、アセンブリ `Ale.Inventory.Runtime.UI`、名前空間 `Ale.Inventory.Runtime.UI` にあります。バックパック / ショップ / クラフト / 装備のメイン画面と、通貨バー、フィルタバー、ソートバー、ホバーポップアップ、数値カウンター、折りたたみタブなどの再利用可能な共通コンポーネントを提供します。各メイン画面は `UiwViewBase` から派生します：引数なしの `Open()` は基底クラスのテンプレートメソッド（パネルを有効化）で、サブクラスがオーバーライドしてそれぞれの開く処理を実装します。バックパック / 装備 / ショップビューは対象 ID（`inventoryIds` / `groupId` / `shopId`）を Inspector に公開し、既定値をあらかじめ設定できます。
 
 - **統一された仮想スクロールリスト**：「大量のエントリ / アイテムを表示する」すべてのリストは、同じ仮想スクロールエンジンの上に構築されています（基底 `UiwVirtualListBase<TData,TCell>` → 汎用 `UiwVirtualGridList` / `UiwVirtualOrderList` → 各システムのリーフ）。**グリッドも順序リストも仮想スクロール**です：可視領域 + バッファのみを描画し、スクロールループで再利用します。グリッドは縦 / 横の 2 方向スクロールに対応し、交差軸の数はビューポートから自動計算されます。倉庫グリッドは仮想スクロール下でもドラッグによる整理・並べ替えに対応します。新システム向けにリストを追加するには、汎用のグリッド / 順序レイヤーを継承し「セルのバインド / クリア」をオーバーライドするだけです。
 - **リストのパフォーマンスと体験**（エンジン内蔵）：
@@ -115,7 +102,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 
 ### エディタ言語とマクロ（グローバル設定 → Ale Toolkit）
 
-UI 言語切り替え（中 / English / 日本語）、「列挙値」翻訳トグル、および 3 つのオプション機能マクロのトグルは、いずれも **Ale Toolkit ウェルカムウィンドウ**（`Tools > Ale Toolkit > Welcome`）で設定します——本ウィンドウの「Ale Toolkit 設定を開く」ボタンから移動できます。言語の選択は `EditorPrefs` で永続化されセッションをまたいで保持され、切り替えると `Inventory Editor`（6 つのサブシステムの全パネルと設定ドロワー）も更新されます。これは**エディタ UI の文言のみ**に影響し、ランタイムのコンテンツローカライズ（`ATK_LOCALIZATION` / Unity Localization）とは無関係です。詳しくは [Ale Toolkit ドキュメント](../com.ale.toolkit)を参照。
+UI 言語切り替え（中 / English / 日本語）、「列挙値」翻訳トグル、および 3 つのオプション機能マクロのトグルは、いずれも **Ale Toolkit ウェルカムウィンドウ**（`Tools > Ale Toolkit > Welcome`）で設定します——本ウィンドウの「Ale Toolkit 設定を開く」ボタンから移動できます。言語の選択は `EditorPrefs` で永続化されセッションをまたいで保持され、切り替えると `Inventory Editor`（5 つのサブシステムの全パネルと設定ドロワー）も更新されます。これは**エディタ UI の文言のみ**に影響し、ランタイムのコンテンツローカライズ（`ATK_LOCALIZATION` / Unity Localization）とは無関係です。詳しくは [Ale Toolkit ドキュメント](../com.ale.toolkit)を参照。
 
 ### クイック操作
 
@@ -225,7 +212,7 @@ InventoryRuntimeManager.Instance.ResetAll();
 InventorySystem/
 ├── Runtime/
 │   ├── Data/           データモデル（Item / Inventory / Shop / Crafting* / AttributeValue など）
-│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager / SkillRuntimeManager / SkillCollector
+│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager
 │   ├── Serialization/  DTO 定義 + マッピング / JSON / バイナリ（マッピングとバイナリブロックはシステム別に分割）
 │   ├── Assets/         アセット読み込みの抽象化（直接読み込み）
 │   ├── Addressables/   Addressables アセット読み込みサポート
@@ -237,7 +224,6 @@ InventorySystem/
 │   ├── ShopSystem/     ショップシステムのパネル
 │   ├── CraftingSystem/ クラフトシステムのパネル
 │   ├── EquipmentSystem/装備システムのパネル
-│   ├── SkillSystem/    スキルシステムのパネル + UiwSkillView カスタム Inspector
 │   ├── Common/         共通の属性 / 設定ドロワー + ツールウィンドウ基底クラス
 │   ├── Addressables/   Addressables アセット参照の移行ツールウィンドウ
 │   ├── Localization/   ローカライズツールウィンドウ（テーブル作成 / キー生成）

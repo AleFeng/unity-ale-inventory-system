@@ -12,12 +12,12 @@ namespace Ale.Inventory.Editor
     /// <summary>
     /// 「分组标签」面板泛型基类：主列表骨架来自 <see cref="EditorMasterListPanel{T}"/>，
     /// 本类补上分组标签专有的行显示（色点 + ID）、新建规则（自动 ID + 默认名）与
-    /// Inspector（ID / 标识颜色 / 名称 / 描述）。制作、装备、技能三个系统共用。
+    /// Inspector（ID / 标识颜色 / 名称 / 描述）。制作、装备两个系统共用。
     ///
-    /// <para>三者的数据类都继承 <see cref="GroupTag"/>，面板此前是三份逐字符相同的拷贝，
+    /// <para>两者的数据类都继承 <see cref="GroupTag"/>，面板此前是两份逐字符相同的拷贝，
     /// 仅「取哪个列表」与「新 ID 前缀」不同 —— 现由两个子类契约成员表达。</para>
     /// </summary>
-    /// <typeparam name="T">分组标签类型（<c>CraftingGroupTag</c> / <c>EquipmentGroupTag</c> / <c>SkillGroupTag</c>）。</typeparam>
+    /// <typeparam name="T">分组标签类型（<c>CraftingGroupTag</c> / <c>EquipmentGroupTag</c>）。</typeparam>
     public abstract class EditorGroupTagPanel<T> : EditorMasterListPanel<T> where T : GroupTag, new()
     {
         /// <summary>自动生成 ID 的前缀（如 <c>"group_"</c>）。</summary>

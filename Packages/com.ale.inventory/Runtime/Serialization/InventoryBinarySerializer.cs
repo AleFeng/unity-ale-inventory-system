@@ -10,15 +10,15 @@ namespace Ale.Inventory.Runtime.Serialization
     /// 仓库系统二进制序列化器。导出：DB -> 紧凑 byte[]（带魔数与版本头）；导入：byte[] -> 新的 InventoryDatabase 实例。
     /// 与 JSON 一样为单向导出格式，适合正式发布时使用。
     ///
-    /// <para><b>向后兼容：</b>v6 起在道具系统数据块之后追加了 仓库 / 商店 / 制作 / 装备 / 技能 五个数据块，
+    /// <para><b>向后兼容：</b>v6 起在道具系统数据块之后追加了 仓库 / 商店 / 制作 / 装备 等数据块，
     /// 并给道具系统的三类条目补了若干字段。读取时按文件头里的版本号跳过这些新增部分，因此 v5 及更早导出的
     /// <c>.bytes</c> 仍可正常导入（新增字段取运行时默认值）。反之新版导出的文件旧版读不了——单向导出格式，
     /// 按需重新导出即可。</para>
     ///
     /// <para>本分部承载：顶层 Export / Import、道具系统的块读写、整理条件读写；属性系统 / 枚举 / 分组标签的
     /// 紧凑读写与通用基础读写辅助已下沉到 <see cref="ToolkitBinaryCodec"/>，本类保留同名 <c>private</c> 转发，
-    /// 使各分部（<c>.Inventory.cs</c> / <c>.Shop.cs</c> / <c>.Crafting.cs</c> / <c>.Equipment.cs</c> /
-    /// <c>.Skill.cs</c>）调用点不变。导出格式保持不变，仅读写代码所在的类不同。</para>
+    /// 使各分部（<c>.Inventory.cs</c> / <c>.Shop.cs</c> / <c>.Crafting.cs</c> / <c>.Equipment.cs</c>）
+    /// 调用点不变。导出格式保持不变，仅读写代码所在的类不同。</para>
     /// </summary>
     public static partial class InventoryBinarySerializer
     {
@@ -141,7 +141,7 @@ namespace Ale.Inventory.Runtime.Serialization
                 ReadShopBlock(r, dto);
                 ReadCraftingBlock(r, dto);
                 ReadEquipmentBlock(r, dto);
-                // 更早/旧版本文件在此之后可能还有技能块（v6/v7）或数据库级本地化表 GUID（v6）等尾部数据，均未读、被忽略，向后兼容。
+                // 更早/旧版本文件在此之后可能还有旧的扩展数据块或数据库级本地化表 GUID（v6/v7）等尾部数据，均未读、被忽略，向后兼容。
             }
 
             InventoryDtoMapper.FromDto(dto, target, resolver);

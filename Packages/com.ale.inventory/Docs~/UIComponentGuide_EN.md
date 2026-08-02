@@ -40,7 +40,7 @@ Scripts are placed by type into subfolders under `Runtime/UI/` (the namespace is
 ```
 Runtime/UI/
 ├── Item/      Single cells (UiwInventoryItemBase / SlotBase / Cell / Simple / Detail, UiwShopItemDetail, UiwCraftingBlueprintCell, UiwCraftingInputCell, UiwEquipmentSlot, UiwEquipmentBonusEntry, UiwInventoryItemEvents)
-├── ItemList/  Virtual-scroll list family: base UiwVirtualListBase + generic UiwVirtualGridList / UiwVirtualOrderList + leaves (warehouse UiwInventoryItemGridList / UiwInventoryItemOrderList, crafting UiwCraftingBlueprintList, skill UiwSkillGridList / UiwSkillOrderList) + GridCellDragHandler + ViewportSizeWatcher (the equipment candidate list is in View/Equipment/, the shop product list in View/Shop/)
+├── ItemList/  Virtual-scroll list family: base UiwVirtualListBase + generic UiwVirtualGridList / UiwVirtualOrderList + leaves (warehouse UiwInventoryItemGridList / UiwInventoryItemOrderList, crafting UiwCraftingBlueprintList) + GridCellDragHandler + ViewportSizeWatcher (the equipment candidate list is in View/Equipment/, the shop product list in View/Shop/)
 ├── Tab/       Tabs / filters (UiwTabButton, UiwShopGroupTab, UiwFoldTab, UiwFilterTabBar, UiwCraftingGroupFilter)
 ├── Tool/      Common utility components (UiwCurrencyBar, UiwSortToolbar, UiwItemTooltip, UiwNumberCounter)
 ├── View/      Main screens: the UiwViewBase base class
@@ -52,7 +52,7 @@ Runtime/UI/
 └── Ale.Inventory.Runtime.UI.asmdef   (at the root, automatically covers all subfolders)
 ```
 
-> Note: the directory snapshot above reflects the historical `Runtime/UI/` layout of this plugin package; after the extraction to `com.ale.toolkit`, the **general-purpose UI foundation** has moved to the toolkit (namespace `Ale.Toolkit.Runtime.UI`) and no longer lives in this package: the virtual-scroll list base and grid / sequential implementations (`UiwVirtualListBase` / `UiwVirtualGridList` / `UiwVirtualOrderList`, `ViewportSizeWatcher`), the generic tabs and filters (`UiwTabButton` / `UiwFoldTab` / `UiwFilterTabBar`), the tooltip base class, `UiwSortToolbar` / `UiwNumberCounter` / `UiwTextLabel`, etc. This package's folders keep only the domain-specific components (warehouse / shop / crafting / equipment / skill).
+> Note: the directory snapshot above reflects the historical `Runtime/UI/` layout of this plugin package; after the extraction to `com.ale.toolkit`, the **general-purpose UI foundation** has moved to the toolkit (namespace `Ale.Toolkit.Runtime.UI`) and no longer lives in this package: the virtual-scroll list base and grid / sequential implementations (`UiwVirtualListBase` / `UiwVirtualGridList` / `UiwVirtualOrderList`, `ViewportSizeWatcher`), the generic tabs and filters (`UiwTabButton` / `UiwFoldTab` / `UiwFilterTabBar`), the tooltip base class, `UiwSortToolbar` / `UiwNumberCounter` / `UiwTextLabel`, etc. This package's folders keep only the domain-specific components (warehouse / shop / crafting / equipment).
 
 > The currency bar / sort bar / hover popup / number counter (`Tool/`) and the filter tab bar / fold tab (`Tab/`) are all independent, generic components; each main screen (`UiwInventoryView`, `UiwShopViewBase`, `UiwCraftingView`, all derived from `UiwViewBase`) holds references to them by "composition", reusing them across the inventory / shop / crafting system UIs.
 
@@ -299,12 +299,10 @@ Every list that "displays a large number of entries / items in a list / grid" is
 UiwVirtualListBase<TData, TCell>        ← Base: the virtual-scroll engine (object pool + viewport monitoring + recycle/reuse) + an abstract "layout strategy"
    ├─ UiwVirtualGridList<TData, TCell>       ← Generic grid layout (multi-column/row, vertical / horizontal scroll, auto cross-axis count)
    │     ├─ UiwInventoryItemGridList           ← Warehouse grid (RuntimeItemSlot + UiwInventoryItemCell, with drag sorting)
-   │     ├─ UiwSkillGridList                    ← Skill grid (Skill + UiwSkillEntry)
    │     └─ UiwEquipmentCandidateList          ← Equipment candidates (no sort dragging, keeps equip dragging)
    └─ UiwVirtualOrderList<TData, TCell>      ← Generic ordered layout (single-column vertical)
          ├─ UiwInventoryItemOrderList          ← Warehouse list (RuntimeItemSlot + UiwInventoryItemDetail)
          ├─ UiwCraftingBlueprintList           ← Crafting blueprint list (+ selection)
-         ├─ UiwSkillOrderList                   ← Skill list (Skill + UiwSkillEntry)
          └─ UiwShopCommodityList               ← Shop product list (count stored in the data model, see the shop screen)
 ```
 
@@ -352,7 +350,7 @@ Steps:
 | `RefreshItemsData(items)` | Incremental **diff refresh** (preserves scroll position): when the entry count is unchanged, only rebinds visible cells whose data changed (decided by `NeedsRebind`), leaving unchanged ones untouched — avoiding icon async-reload flicker; warehouse drag-swap / stacking take this path |
 | `ScrollToStart()` | Scrolls to the start (vertical = top / horizontal = far left) and refreshes the visible cells |
 
-Each leaf provides domain methods on top of this (e.g. warehouse `SetItemSlotList` / `UpdateItemSlotList` / `SetNumberFormat`, blueprint `SetBlueprints` / `SetSelectedById`, skill `SetSkills`). Usually called by the owning main screen after data changes, requiring no manual work.
+Each leaf provides domain methods on top of this (e.g. warehouse `SetItemSlotList` / `UpdateItemSlotList` / `SetNumberFormat`, blueprint `SetBlueprints` / `SetSelectedById`). Usually called by the owning main screen after data changes, requiring no manual work.
 
 ### Performance and Experience (Built into the Base)
 
@@ -442,7 +440,7 @@ source entries → primary/secondary tab filter (filterBar / secondaryFilterBar)
 | `ConfigureSort(keySelector, db, priorities, tiebreakers, writeRuntime=null)` | Configure sorting: display sort or write runtime sort |
 | `SetSourceItems(items, preserveScroll=false)` | Set source data, triggering filter → sort → display |
 
-- **Reuse scope**: the shop product list (`UiwShopCommodityList`), crafting blueprint list, and skill list all use this pipeline; `UiwShopViewBase` directly supports `UiwFilterTabBar` / `UiwSortToolbar`.
+- **Reuse scope**: the shop product list (`UiwShopCommodityList`) and crafting blueprint list both use this pipeline; `UiwShopViewBase` directly supports `UiwFilterTabBar` / `UiwSortToolbar`.
 - **Backpack exception**: because the backpack couples drag sorting (`dragSort`) with writing runtime sort, etc., it keeps its own filter / sort logic and does not use this pipeline.
 
 ---
@@ -697,7 +695,7 @@ UI or extending the plugin's screens, reuse them instead of rewriting the same s
 |------|------|------|
 | `UiwTabStrip<TTab,TValue>` | `UI/Tab/` | Tab strip: a row of tab instances + parallel values / labels + single-selection highlight. Shared by the inventory tabs, shop product-group tabs, blueprint template tabs and the filter tab bar |
 | `UiwWidgetPool<T>` | `UI/Common/` | Child-item pool: instantiate on demand → reuse per frame → deactivate the surplus. Shared by price cells / label rows / attribute rows / equipment slots / currency cells / bonus entries |
-| `UiwTooltipBase<TPayload>` | `UI/Tool/` | Hover-tooltip base: cursor positioning + fade state machine + pending-show queue during fade-out. Common parent of the item and skill tooltips |
+| `UiwTooltipBase<TPayload>` | `UI/Tool/` | Hover-tooltip base: cursor positioning + fade state machine + pending-show queue during fade-out. Common parent of the item tooltip |
 | `UiwHoverTooltipSource` | `UI/Common/` | "Hover shows details" capability base: enter / exit / **disable** paths |
 | `SpriteSlot` | `UI/Utility/` | Icon slot: consolidates sprite load / release, avoiding repeated allocation on hot paths |
 | `UIFormat` | `UI/Utility/` | Static formatting: format numbers per `NumberFormatLocale`, build multi-currency price strings |

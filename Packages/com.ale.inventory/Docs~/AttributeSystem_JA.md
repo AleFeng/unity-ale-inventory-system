@@ -110,7 +110,7 @@ InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 >
 > 内部：授権 GUID / ランタイムアドレスは実時参照と並行して `AttributeValue` に格納されます（アドレスリスト vs `objRefs`）。ファサードは実時参照を優先し、なければアドレスの非同期読み込みに退避します。core アセンブリは Addressables にゼロ依存で、ネイティブセレクターは制約付きの Addressable エディタアセンブリから注入されます（`EditorExportResolver` と同じ注入パターン）。
 >
-> 設定クラスの**固定リソースフィールド**（`Skill.icon`、`SkillTemplate.icon`、`Tag.backgroundSprite` などの名前付きフィールド）も同じ仕組みを採用します：各々が並行する `xxxAddress` の純文字列フィールドを持ち、エディタでは `EditorAssetRefField` で描画（直接 `ObjectField` / 授権 AssetReference セレクター）、ランタイムでも同様に `InventoryAssets.Bind(liveRef, address, owner, set)` で非同期取得します。
+> 設定クラスの**固定リソースフィールド**（`Tag.backgroundSprite` などの名前付きフィールド）も同じ仕組みを採用します：各々が並行する `xxxAddress` の純文字列フィールドを持ち、エディタでは `EditorAssetRefField` で描画（直接 `ObjectField` / 授権 AssetReference セレクター）、ランタイムでも同様に `InventoryAssets.Bind(liveRef, address, owner, set)` で非同期取得します。
 
 # ローカライズ（固定 Text フィールドとツール）
 
@@ -118,9 +118,9 @@ InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 
 | 設定クラス | 固定 Text フィールド |
 |--------|---------------|
-| `Skill` / `SkillTemplate` / `CraftingBlueprint` | `displayText`（名称）、`descriptionText`（説明） |
+| `CraftingBlueprint` | `displayText`（名称）、`descriptionText`（説明） |
 | `Shop` / `Inventory` / `EquipmentGroup` / `FunctionTag` | `displayNameText`（名称）、`descriptionText`（説明） |
-| `GroupTag`（スキル / クラフト / 装備 のグループタグ） | `displayName`、`description` |
+| `GroupTag`（クラフト / 装備 のグループタグ） | `displayName`、`description` |
 | `NumberFormatRule` | `suffixText`（数字の接尾辞） |
 | `SortOption` | `displayName`（整理ドロップダウンの表示名） |
 
@@ -131,12 +131,12 @@ InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 `Tools > Ale Toolkit > Localization > ローカライズツールウィンドウ`（`ATK_LOCALIZATION` のみ。インベントリのウェルカムウィンドウにも入口ボタンあり）。**本プラグインは専用のローカライズウィンドウを同梱しなくなり、toolkit の汎用ウィンドウを使います**——本ライブラリの `InventoryDatabase` をドラッグするだけで Unity Localization をワンストップで接続します：
 
 1. **多言語テーブルの生成 / 関連付け**：現在の Locale に基づき String Table 集合を生成します（テーブル名 `{接頭辞}_{データベース名}`、接頭辞 / 生成フォルダは設定・記憶可能）。関連付けは**データベースのフィールドには記録されず**、各 Text 属性値自身の `tableRef` に保持され、ウィンドウが自動で**推定**します。初回生成前は「多言語テーブルを関連付け」で手動作成 / ドラッグでき、「編集」ボタンでそのテーブルの Table Editor を開きます。
-2. **多言語キーの生成**：ライブラリ内の**すべての** Text 型属性値をリフレクションで走査し、フレームごとに一意のキーを生成します。キーは**構造化パス**で、リスト要素の `id` / `name` を安定したセグメントに使います（並べ替えても失効しない）。例：`{データベース名}-Items-{道具id}-displayText`、`{データベース名}-Skills-{技能id}-values-{属性id}`。フィールドのテーブル / エントリ参照を書き戻し、テーブルにエントリを作成します。プレーンテキスト内容のあるフィールドのみ処理し、同名キーは `#n` を付けます。
+2. **多言語キーの生成**：ライブラリ内の**すべての** Text 型属性値をリフレクションで走査し、フレームごとに一意のキーを生成します。キーは**構造化パス**で、リスト要素の `id` / `name` を安定したセグメントに使います（並べ替えても失効しない）。例：`{データベース名}-Items-{道具id}-displayText`。フィールドのテーブル / エントリ参照を書き戻し、テーブルにエントリを作成します。プレーンテキスト内容のあるフィールドのみ処理し、同名キーは `#n` を付けます。
 3. **2 つのチェック項目**：
    - **既存の多言語キーを上書き**：チェックすると実行前に確認をポップ。キー設定済みのフィールドは自動生成されたキーに切り替え（命名が既存と同じなら変更しない）。チェックしなければ設定済みフィールドをスキップ。
    - **Text 内の String テキストを埋める**：チェックするとソース Text のプレーンテキスト値を初期値として、そのキーの**すべての言語テーブル**の空エントリに埋めます（既存の翻訳は上書きしない）。
 
-> Unity Localization は Unicode キーに対応し、ランタイムはキーで解決します。リソース参照の移行も同様に汎用ツール（`Tools > Ale Toolkit > Addressable`）に集約されました——`InventoryDatabase` をドラッグすれば、スキル / テンプレートのアイコンや機能タグの背景（いずれも属性システムに統合済み）を含む全リソース属性値をカバーできます。
+> Unity Localization は Unicode キーに対応し、ランタイムはキーで解決します。リソース参照の移行も同様に汎用ツール（`Tools > Ale Toolkit > Addressable`）に集約されました——`InventoryDatabase` をドラッグすれば、機能タグの背景（属性システムに統合済み）を含む全リソース属性値をカバーできます。
 
 # 表示文字列（ToDisplayString）
 

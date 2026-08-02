@@ -11,7 +11,7 @@ namespace Ale.Inventory.Editor
 {
     /// <summary>
     /// 实体 Inspector 的共用绘制片段：ID 行（含重复高亮）、只读「来源模板」行、自定义属性列表。
-    /// 六个实体 Inspector（道具 / 仓库 / 商店 / 蓝图 / 装备组 / 技能）此前各写了一遍，
+    /// 五个实体 Inspector（道具 / 仓库 / 商店 / 蓝图 / 装备组）此前各写了一遍，
     /// 只差实体类型、重复 ID 集合与 Undo 文案。
     /// </summary>
     public static class EditorEntityHeader

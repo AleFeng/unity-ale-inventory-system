@@ -6,6 +6,20 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.11.0] - 2026-08-02
+
+### 移除
+
+- **删除整个技能（Skill）子系统**：技能功能已迁移到独立包 `com.ale.chronicle`，本包移除全部技能相关内容——
+  数据类型（`Skill` / `SkillTemplate` / `SkillGroupTag` / `ISkillConfig` / `RuntimeLearnedSkillState`）、
+  运行时管理（`SkillRuntimeManager` / `SkillCollector` / `ESkillSource`）、
+  UI（`UiwSkillView` / `UiwSkillEntry` / `UiwSkillTooltip` / `UiwSkillGridList` / `UiwSkillOrderList` / `SkillDisplay` / `ISkillTooltip`）、
+  编辑器（「技能系统」页签及其面板 / `UiwSkillViewEditor` / `SkillConfigDrawer` / 向导的技能预制体生成）、
+  序列化（技能 DTO 与二进制 / JSON 读写块）、以及 `InventoryDatabase` 的技能字段与查询。
+  **编辑器主窗口由六页签减为五页签**（道具 / 仓库 / 商店 / 制作 / 装备）。
+- **装备联动技能改由业务层跨包完成**：装备道具在其属性上配置 Chronicle 技能 ID，游戏层桥接读取并同步到 `com.ale.chronicle`（不再依赖本包的技能类型）。
+- **序列化向后兼容**：`InventoryDtoMapper.Version` 维持 7；技能块本在二进制末尾，删除后旧文件尾部技能字节被忽略，旧 `.bytes` / `.json` 仍可导入（其中的技能数据被丢弃）。
+
 ## [1.10.0] - 2026-07-26
 
 配合 `com.ale.toolkit` 1.2.0：把「界面语言」与「可选依赖宏」下沉到 toolkit 欢迎窗口、菜单收拢到 `Tools > Ale Toolkit` 下，并把两个库存专用工具窗口（本地化 / Addressable）整合进 toolkit 的**通用工具窗口**（图标字段并入属性系统后即可通用）。**全局设定 / 菜单部分为纯结构调整；图标整合涉及一次性资产迁移（见「整合」），导出 DTO 表示不变但格式版本号 6 → 7。** 另把**数据模板**等项目级设定改存 `ProjectSettings`（入库共享，旧 EditorPrefs 设置自动迁移）。

@@ -26,7 +26,7 @@ namespace Ale.Inventory.Runtime
             => ToolkitAssets.Bind(value, owner, set, index);
 
         /// <summary>
-        /// 绑定固定资源引用（配置类具名字段，如 <c>Skill.icon</c> + <c>Skill.iconAddress</c>）到宿主：
+        /// 绑定固定资源引用（配置类的具名字段：实时引用 + Addressable 地址一对）到宿主：
         /// 直接模式同步返回 <paramref name="liveRef"/>；授权模式无实时引用时按 <paramref name="address"/> 异步加载。
         /// </summary>
         public static void Bind<T>(Object liveRef, string address, GameObject owner, Action<T> set) where T : Object

@@ -110,7 +110,7 @@ InventoryAssets.Bind<Sprite>(attrValue, owner, s => image.sprite = s, index);
 >
 > Underlying: the authorized GUID / runtime address is stored in `AttributeValue` in parallel with the live reference (address list vs `objRefs`); the facade prefers the live reference, falling back to async address loading if absent. The core assembly has zero dependency on Addressables; the native selector is injected via the constrained Addressable editor assembly (the same injection pattern as `EditorExportResolver`).
 >
-> The config classes' **fixed asset fields** (named fields like `Skill.icon`, `SkillTemplate.icon`, `Tag.backgroundSprite`) use the same mechanism: each has a parallel `xxxAddress` plain-string field, drawn in the editor via `EditorAssetRefField` (direct `ObjectField` / authorized AssetReference selector), and fetched asynchronously at runtime likewise via `InventoryAssets.Bind(liveRef, address, owner, set)`.
+> The config classes' **fixed asset fields** (named fields like `Tag.backgroundSprite`) use the same mechanism: each has a parallel `xxxAddress` plain-string field, drawn in the editor via `EditorAssetRefField` (direct `ObjectField` / authorized AssetReference selector), and fetched asynchronously at runtime likewise via `InventoryAssets.Bind(liveRef, address, owner, set)`.
 
 # Localization (Fixed Text Fields and Tooling)
 
@@ -118,9 +118,9 @@ The whole library's localization display text is carried uniformly by `EFieldTyp
 
 | Config class | Fixed Text fields |
 |--------|---------------|
-| `Skill` / `SkillTemplate` / `CraftingBlueprint` | `displayText` (name), `descriptionText` (description) |
+| `CraftingBlueprint` | `displayText` (name), `descriptionText` (description) |
 | `Shop` / `Inventory` / `EquipmentGroup` / `FunctionTag` | `displayNameText` (name), `descriptionText` (description) |
-| `GroupTag` (skill / crafting / equipment group tags) | `displayName`, `description` |
+| `GroupTag` (crafting / equipment group tags) | `displayName`, `description` |
 | `NumberFormatRule` | `suffixText` (number suffix) |
 | `SortOption` | `displayName` (sort dropdown display name) |
 
@@ -131,12 +131,12 @@ The editor draws Text uniformly via `AttributeFieldDrawer` (plain text box + nat
 `Tools > Ale Toolkit > Localization > Localization Tool Window` (`ATK_LOCALIZATION` only; the inventory Welcome Window also has an entry button). **This plugin no longer ships its own localization window — it uses the toolkit's generic one**: just drag this library's `InventoryDatabase` in to integrate Unity Localization in one place:
 
 1. **Generate / link localization tables**: generates a String Table collection per the current Locale (table name `{prefix}_{database name}`, prefix / output folder configurable and remembered). The association is **no longer recorded** in a database field — it is carried by each Text attribute value's own `tableRef` and **derived automatically** by the window. Before the first generation you can manually create / drag in a collection at "Link localization table"; the "Edit" button opens that table's Table Editor.
-2. **Generate localization keys**: reflectively walks **all** Text-typed attribute values and generates a unique key frame by frame. Keys are **structural paths** using each list element's `id` / `name` as a stable segment (stable across reordering), e.g. `{database name}-Items-{item id}-displayText`, `{database name}-Skills-{skill id}-values-{attr id}`; the field's table / entry reference is written back and a table entry is created. Only fields with plain-text content are processed; duplicate keys append `#n`.
+2. **Generate localization keys**: reflectively walks **all** Text-typed attribute values and generates a unique key frame by frame. Keys are **structural paths** using each list element's `id` / `name` as a stable segment (stable across reordering), e.g. `{database name}-Items-{item id}-displayText`; the field's table / entry reference is written back and a table entry is created. Only fields with plain-text content are processed; duplicate keys append `#n`.
 3. **Two checkboxes**:
    - **Overwrite existing localization keys**: pops a confirmation before running when checked; fields that already have a key switch to the auto-generated key (unchanged if identical). Unchecked skips already-configured fields.
    - **Fill in the String text from Text**: fills the source Text's plain-text value as the initial value into that key's empty entries across **all language tables** when checked (does not overwrite existing translations).
 
-> Unity Localization supports Unicode keys, resolved by key at runtime. Asset-reference migration is likewise a generic tool (`Tools > Ale Toolkit > Addressable`) — drag in an `InventoryDatabase` to cover all asset attribute values, including skill / template icons and function-tag backgrounds (all now part of the attribute system).
+> Unity Localization supports Unicode keys, resolved by key at runtime. Asset-reference migration is likewise a generic tool (`Tools > Ale Toolkit > Addressable`) — drag in an `InventoryDatabase` to cover all asset attribute values, including function-tag backgrounds (all now part of the attribute system).
 
 # Display String (ToDisplayString)
 

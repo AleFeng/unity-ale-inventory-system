@@ -14,7 +14,7 @@ namespace Ale.Inventory.Runtime.Serialization
     /// <para>本分部承载：版本号、顶层 <see cref="ToDto"/> / <see cref="FromDto"/>、道具系统（枚举 / 功能标签 /
     /// 道具）的映射，以及各分部对 toolkit 通用映射 <see cref="ToolkitDtoMapper"/> 的转发封装。其余系统各有一个
     /// 分部文件：<c>InventoryDtoMapper.Inventory.cs</c> / <c>.Shop.cs</c> / <c>.Crafting.cs</c> /
-    /// <c>.Equipment.cs</c> / <c>.Skill.cs</c>。属性系统 / 分组标签 / 模板公共字段 / 整理排序等通用映射已下沉到
+    /// <c>.Equipment.cs</c>。属性系统 / 分组标签 / 模板公共字段 / 整理排序等通用映射已下沉到
     /// <see cref="ToolkitDtoMapper"/>；本类保留同名 <c>private</c> 转发以使各分部调用点不变。</para>
     /// </summary>
     public static partial class InventoryDtoMapper
@@ -24,14 +24,14 @@ namespace Ale.Inventory.Runtime.Serialization
         /// <list type="bullet">
         ///   <item>v5：AttributeValueDto 追加 curveData（AnimationCurve 支持）。</item>
         ///   <item>v6：导出补齐——<b>数据库的全部 20 个列表均已纳入</b>（新增 仓库 / 整理选项 / 数字格式 /
-        ///         商店 / 制作 / 装备 / 技能），并补上道具系统此前静默丢弃的字段（模板色点、
+        ///         商店 / 制作 / 装备 等），并补上道具系统此前静默丢弃的字段（模板色点、
         ///         weight / stackLimit / hideInInventory、功能标签的 UI 显示配置）。</item>
         ///   <item>v7：移除数据库级 localizationTableCollectionGuid（本地化表绑定已回归到各 Text 属性值的 tableRef）。</item>
         /// </list>
         /// </summary>
         public const int Version = 7;
 
-        /// <summary>首个包含仓库 / 商店 / 制作 / 装备 / 技能等扩展数据块的格式版本（二进制读取按此做向后兼容判断）。</summary>
+        /// <summary>首个包含仓库 / 商店 / 制作 / 装备 等扩展数据块的格式版本（二进制读取按此做向后兼容判断）。</summary>
         internal const int VersionWithAllSystems = 6;
 
         #region 导出：DB -> DTO
@@ -260,7 +260,7 @@ namespace Ale.Inventory.Runtime.Serialization
         #region 共用辅助（转发 toolkit 通用映射 ToolkitDtoMapper）
 
         // 属性系统 / 分组标签 / 模板公共字段 / 整理排序等通用映射已下沉到 ToolkitDtoMapper。
-        // 下方保留同名 private 转发，使本类各分部（Inventory / Shop / Crafting / Equipment / Skill）
+        // 下方保留同名 private 转发，使本类各分部（Inventory / Shop / Crafting / Equipment）
         // 与道具系统映射的调用点无需改动。
 
         private static TOut[] ToArray<TIn, TOut>(List<TIn> source, Func<TIn, TOut> map)

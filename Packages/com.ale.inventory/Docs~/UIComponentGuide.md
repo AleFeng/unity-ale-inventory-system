@@ -40,7 +40,7 @@
 ```
 Runtime/UI/
 ├── Item/      单个格子（UiwInventoryItemBase / SlotBase / Cell / Simple / Detail、UiwShopItemDetail、UiwCraftingBlueprintCell、UiwCraftingInputCell、UiwEquipmentSlot、UiwEquipmentBonusEntry、UiwInventoryItemEvents）
-├── ItemList/  虚拟滚动列表族：基类 UiwVirtualListBase + 通用 UiwVirtualGridList / UiwVirtualOrderList + 叶子（仓库 UiwInventoryItemGridList / UiwInventoryItemOrderList、制作 UiwCraftingBlueprintList、技能 UiwSkillGridList / UiwSkillOrderList）+ GridCellDragHandler + ViewportSizeWatcher（装备候选列表在 View/Equipment/、商店商品列表在 View/Shop/）
+├── ItemList/  虚拟滚动列表族：基类 UiwVirtualListBase + 通用 UiwVirtualGridList / UiwVirtualOrderList + 叶子（仓库 UiwInventoryItemGridList / UiwInventoryItemOrderList、制作 UiwCraftingBlueprintList）+ GridCellDragHandler + ViewportSizeWatcher（装备候选列表在 View/Equipment/、商店商品列表在 View/Shop/）
 ├── Tab/       页签 / 过滤（UiwTabButton、UiwShopGroupTab、UiwFoldTab、UiwFilterTabBar、UiwCraftingGroupFilter）
 ├── Tool/      通用工具类组件（UiwCurrencyBar、UiwSortToolbar、UiwItemTooltip、UiwNumberCounter）
 ├── View/      主界面：UiwViewBase 基类
@@ -52,7 +52,7 @@ Runtime/UI/
 └── Ale.Inventory.Runtime.UI.asmdef   （位于根目录，自动覆盖全部子文件夹）
 ```
 
-> 注：上面的目录快照记录的是本插件包内 `Runtime/UI/` 的历史布局；抽取到 `com.ale.toolkit` 后，其中的**通用 UI 基座**已下沉至 toolkit（命名空间 `Ale.Toolkit.Runtime.UI`），本包目录内不再包含它们：虚拟滚动列表基类与网格 / 顺序实现（`UiwVirtualListBase` / `UiwVirtualGridList` / `UiwVirtualOrderList`、`ViewportSizeWatcher`）、通用页签与过滤（`UiwTabButton` / `UiwFoldTab` / `UiwFilterTabBar`）、Tooltip 基类、`UiwSortToolbar` / `UiwNumberCounter` / `UiwTextLabel` 等。本包目录内仅保留仓库 / 商店 / 制作 / 装备 / 技能等领域专属组件。
+> 注：上面的目录快照记录的是本插件包内 `Runtime/UI/` 的历史布局；抽取到 `com.ale.toolkit` 后，其中的**通用 UI 基座**已下沉至 toolkit（命名空间 `Ale.Toolkit.Runtime.UI`），本包目录内不再包含它们：虚拟滚动列表基类与网格 / 顺序实现（`UiwVirtualListBase` / `UiwVirtualGridList` / `UiwVirtualOrderList`、`ViewportSizeWatcher`）、通用页签与过滤（`UiwTabButton` / `UiwFoldTab` / `UiwFilterTabBar`）、Tooltip 基类、`UiwSortToolbar` / `UiwNumberCounter` / `UiwTextLabel` 等。本包目录内仅保留仓库 / 商店 / 制作 / 装备等领域专属组件。
 
 > 货币栏 / 排序整理栏 / 悬停弹窗 / 数字计数器（`Tool/`）与 过滤页签栏 / 折叠页签（`Tab/`）均为独立通用组件；各主界面（`UiwInventoryView`、`UiwShopViewBase`、`UiwCraftingView`，均派生自 `UiwViewBase`）以「组合」方式持有其引用，在背包 / 商店 / 制作各系统 UI 间复用。
 
@@ -299,12 +299,10 @@ Prefab_InventoryItemDetail  [UiwInventoryItemDetail]
 UiwVirtualListBase<TData, TCell>        ← 基类：虚拟滚动引擎（对象池 + 视口监听 + 回收/复用）+ 抽象"布局策略"
    ├─ UiwVirtualGridList<TData, TCell>       ← 通用网格布局（多列/多行，纵向 / 横向滚动，跨轴数量自动）
    │     ├─ UiwInventoryItemGridList           ← 仓库网格（RuntimeItemSlot + UiwInventoryItemCell，含拖拽整理）
-   │     ├─ UiwSkillGridList                    ← 技能网格（Skill + UiwSkillEntry）
    │     └─ UiwEquipmentCandidateList          ← 装备候选（无整理拖拽，保装备拖拽）
    └─ UiwVirtualOrderList<TData, TCell>      ← 通用顺序布局（单列纵向）
          ├─ UiwInventoryItemOrderList          ← 仓库列表（RuntimeItemSlot + UiwInventoryItemDetail）
          ├─ UiwCraftingBlueprintList           ← 制作蓝图列表（+ 选中）
-         ├─ UiwSkillOrderList                   ← 技能列表（Skill + UiwSkillEntry）
          └─ UiwShopCommodityList               ← 商店商品列表（次数存数据模型，见商店界面）
 ```
 
@@ -352,7 +350,7 @@ Prefab_List  [叶子组件，如 UiwInventoryItemGridList]
 | `RefreshItemsData(items)` | 增量**差异刷新**（保留滚动位置）：条目数不变时只重绑数据变化的可见格（由 `NeedsRebind` 判定），未变的不动——避免图标异步重载闪烁；仓库拖拽换位 / 堆叠即走此路径 |
 | `ScrollToStart()` | 滚动到起点（纵向=顶部 / 横向=最左）并刷新可见格 |
 
-各叶子在此之上提供领域方法（如仓库 `SetItemSlotList` / `UpdateItemSlotList` / `SetNumberFormat`、蓝图 `SetBlueprints` / `SetSelectedById`、技能 `SetSkills`）。通常由所属主界面在数据变化后调用，无需手动。
+各叶子在此之上提供领域方法（如仓库 `SetItemSlotList` / `UpdateItemSlotList` / `SetNumberFormat`、蓝图 `SetBlueprints` / `SetSelectedById`）。通常由所属主界面在数据变化后调用，无需手动。
 
 ### 性能与体验（基类内建）
 
@@ -442,7 +440,7 @@ Prefab_List  [叶子组件，如 UiwInventoryItemGridList]
 | `ConfigureSort(keySelector, db, priorities, tiebreakers, writeRuntime=null)` | 配置排序：显示排序或写运行时排序 |
 | `SetSourceItems(items, preserveScroll=false)` | 设置源数据，触发筛选 → 排序 → 显示 |
 
-- **复用范围**：商店商品列表（`UiwShopCommodityList`）、制作蓝图列表、技能列表均走此管线；`UiwShopViewBase` 直接支持 `UiwFilterTabBar` / `UiwSortToolbar`。
+- **复用范围**：商店商品列表（`UiwShopCommodityList`）、制作蓝图列表均走此管线；`UiwShopViewBase` 直接支持 `UiwFilterTabBar` / `UiwSortToolbar`。
 - **背包例外**：背包因拖拽整理（`dragSort`）与写运行时排序等耦合，保留其自有筛选 / 排序逻辑，不走本管线。
 
 ---
@@ -694,7 +692,7 @@ public class InventoryUIController : MonoBehaviour
 |------|------|------|
 | `UiwTabStrip<TTab,TValue>` | `UI/Tab/` | 页签条：一排页签实例 + 与之平行的取值 / 显示名 + 单选高亮。仓库页签、商店商品组页签、蓝图模板页签、过滤页签栏共用 |
 | `UiwWidgetPool<T>` | `UI/Common/` | 子项实例池：按需实例化 → 逐帧复用 → 多余的回收隐藏。价格格 / 标签行 / 属性行 / 装备槽 / 货币格 / 加成条目共用 |
-| `UiwTooltipBase<TPayload>` | `UI/Tool/` | 悬停弹窗基类：光标定位 + 淡入淡出状态机 + 淡出期间的待显示队列。道具与技能弹窗的共同父类 |
+| `UiwTooltipBase<TPayload>` | `UI/Tool/` | 悬停弹窗基类：光标定位 + 淡入淡出状态机 + 淡出期间的待显示队列。道具弹窗的父类 |
 | `UiwHoverTooltipSource` | `UI/Common/` | 「悬停弹出详情」能力基类：进入 / 移出 / **停用** 三条路径 |
 | `SpriteSlot` | `UI/Utility/` | 图标槽位：Sprite 的加载 / 释放收口，避免热路径重复分配 |
 | `UIFormat` | `UI/Utility/` | 静态格式化：按 `NumberFormatLocale` 格式化数值、拼接多货币价格串 |

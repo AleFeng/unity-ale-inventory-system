@@ -19,7 +19,6 @@ This document originally covered the editor configuration of items + warehouses 
 | Shop templates / shops / product groups / refresh / trade API | [Shop System](ShopSystem_EN.md) |
 | Group tags / blueprint templates / blueprints / crafting API | [Crafting System](CraftingSystem_EN.md) |
 | Group tags / equipment-group templates / slot lists / item limits / attribute bonuses / equip API | [Equipment System](EquipmentSystem_EN.md) |
-| Group tags / skill templates / skills / item skill references / four sources / learned-skill API | [Skill System](SkillSystem_EN.md) |
 | Attribute field type reference, retrieval / display / sort comparison | [Attribute System](AttributeSystem_EN.md) |
 | UI components and prefab authoring | [UI Component Guide](UIComponentGuide_EN.md) |
 | Architecture and design | [Architecture](Architecture_EN.md) |
@@ -28,7 +27,7 @@ This document originally covered the editor configuration of items + warehouses 
 
 ## Common Entry-List Operations (Middle Column of All Systems)
 
-The "entry list" in the middle column of the six system tabs (item / warehouse / shop / blueprint / equipment group / skill) has a unified structure and consistent operations:
+The "entry list" in the middle column of the five system tabs (item / warehouse / shop / blueprint / equipment group) has a unified structure and consistent operations:
 
 - **Two-row structure**: each entry occupies two rows, a "column header row + value row", with consistent row height; the header shows each column's field name — after the ID come **name / description** in turn (reading the entry's `displayNameText` / `descriptionText` plain-text fallback), then each system's specific columns (type / primary group / slot group…).
 - **Template filter + search**: the template filter tag bar and search box at the top narrow the list.
