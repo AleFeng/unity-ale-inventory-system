@@ -30,9 +30,6 @@ namespace Ale.Inventory.Runtime
         [SerializeField] private List<EquipmentGroupTag>         equipmentGroupTags         = new List<EquipmentGroupTag>();
         [SerializeField] private List<EquipmentGroupTemplate>    equipmentGroupTemplates    = new List<EquipmentGroupTemplate>();
         [SerializeField] private List<EquipmentGroup>            equipmentGroups            = new List<EquipmentGroup>();
-        [SerializeField] private List<SkillGroupTag>             skillGroupTags             = new List<SkillGroupTag>();
-        [SerializeField] private List<SkillTemplate>             skillTemplates             = new List<SkillTemplate>();
-        [SerializeField] private List<Skill>                     skills                     = new List<Skill>();
 
         #region 访问器
         /// <summary>
@@ -123,21 +120,6 @@ namespace Ale.Inventory.Runtime
         /// </summary>
         public List<EquipmentGroup> EquipmentGroups => equipmentGroups;
 
-        /// <summary>
-        /// 技能-分组标签 列表
-        /// </summary>
-        public List<SkillGroupTag> SkillGroupTags => skillGroupTags;
-
-        /// <summary>
-        /// 技能-技能模板 列表
-        /// </summary>
-        public List<SkillTemplate> SkillTemplates => skillTemplates;
-
-        /// <summary>
-        /// 技能 列表
-        /// </summary>
-        public List<Skill> Skills => skills;
-
         #endregion
 
         #region 按键查找
@@ -190,9 +172,6 @@ namespace Ale.Inventory.Runtime
         public EquipmentGroupTemplate GetEquipmentGroupTemplate(string templateName)
             => Find(equipmentGroupTemplates, templateName, t => t.name);
 
-        /// <summary>按名称查找技能模板，未找到返回 null。</summary>
-        public SkillTemplate GetSkillTemplate(string templateName) => Find(skillTemplates, templateName, t => t.name);
-
         // ── 按 ID ─────────────────────────────────────────────────────────────────
 
         /// <summary>按 ID 查找道具，未找到返回 null。</summary>
@@ -216,12 +195,6 @@ namespace Ale.Inventory.Runtime
 
         /// <summary>按 ID 查找装备组，未找到返回 null。</summary>
         public EquipmentGroup GetEquipmentGroup(string groupId) => Find(equipmentGroups, groupId, g => g.id);
-
-        /// <summary>按 ID 查找技能分组标签，未找到返回 null。</summary>
-        public SkillGroupTag GetSkillGroupTag(string tagId) => Find(skillGroupTags, tagId, t => t.id);
-
-        /// <summary>按 ID 查找技能，未找到返回 null。</summary>
-        public Skill GetSkill(string skillId) => Find(skills, skillId, s => s.id);
 
         /// <summary>按 field 查找整理选项，未找到返回 null。</summary>
         public SortOption GetSortOption(string field) => Find(sortOptions, field, so => so.field);
@@ -389,16 +362,6 @@ namespace Ale.Inventory.Runtime
             if (egDuplicates.Count > 0)
                 errors.Add("存在重复的装备组 ID：" + string.Join(", ", egDuplicates));
 
-            var skillSeen       = new HashSet<string>();
-            var skillDuplicates = new HashSet<string>();
-            foreach (var s in skills)
-            {
-                if (string.IsNullOrWhiteSpace(s.id)) continue;
-                if (!skillSeen.Add(s.id)) skillDuplicates.Add(s.id);
-            }
-            if (skillDuplicates.Count > 0)
-                errors.Add("存在重复的技能 ID：" + string.Join(", ", skillDuplicates));
-
             return errors.Count == 0;
         }
 
@@ -430,9 +393,6 @@ namespace Ale.Inventory.Runtime
             equipmentGroupTags         = source.equipmentGroupTags.Select(t => t.Clone()).ToList();
             equipmentGroupTemplates    = source.equipmentGroupTemplates.Select(t => t.Clone()).ToList();
             equipmentGroups            = source.equipmentGroups.Select(g => g.Clone()).ToList();
-            skillGroupTags             = source.skillGroupTags.Select(t => t.Clone()).ToList();
-            skillTemplates             = source.skillTemplates.Select(t => t.Clone()).ToList();
-            skills                     = source.skills.Select(s => s.Clone()).ToList();
         }
 
         #endregion
