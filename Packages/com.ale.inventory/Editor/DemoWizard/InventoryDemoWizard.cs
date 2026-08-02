@@ -163,12 +163,6 @@ namespace Ale.Inventory.Editor
         private const string KPfEquipBonusPanel        = "PF_UiwEquipmentBonusPanel";   // 属性加成面板 UiwEquipmentBonusPanel  → View/
         private const string KPfEquipSelectPanel       = "PF_UiwEquipmentSelectPanel";  // 装备选择面板 UiwEquipmentSelectPanel  → View/
         private const string KPfEquipView              = "PF_UiwEquipmentView";         // 装备主界面 UiwEquipmentView          → View/
-        private const string KPfSkillCell              = "PF_UiwSkillCell";             // 技能网格条目 UiwSkillEntry           → Item/
-        private const string KPfSkillDetail            = "PF_UiwSkillDetail";           // 技能列表条目 UiwSkillEntry           → Item/
-        private const string KPfSkillGridList          = "PF_UiwSkillGridList";         // 技能网格列表 UiwSkillGridList        → ItemList/
-        private const string KPfSkillOrderList         = "PF_UiwSkillOrderList";        // 技能顺序列表 UiwSkillOrderList       → ItemList/
-        private const string KPfSkillTooltip           = "PF_UiwSkillTooltip";          // 技能悬停弹窗 UiwSkillTooltip         → Tool/
-        private const string KPfSkillView              = "PF_UiwSkillView";             // 技能主界面 UiwSkillView             → View/
         private const string KPfInventoryManager       = "InventoryManager";            // 管理器（Demo 入口）
     }
 }

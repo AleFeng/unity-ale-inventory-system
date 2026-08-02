@@ -3,8 +3,8 @@ using static Ale.Toolkit.Editor.ToolkitEditorL10n;
 namespace Ale.Inventory.Editor
 {
     /// <summary>
-    /// 运行时组件自定义 Inspector（<c>UiwEquipmentGroupPanelEditor</c> / <c>UiwEquipmentSlotListEditor</c> /
-    /// <c>UiwSkillViewEditor</c>）的英 / 日译表。这些面板显示在 Unity 标准 Inspector 中，
+    /// 运行时组件自定义 Inspector（<c>UiwEquipmentGroupPanelEditor</c> / <c>UiwEquipmentSlotListEditor</c>）
+    /// 的英 / 日译表。这些面板显示在 Unity 标准 Inspector 中，
     /// 不属于插件的两个编辑器窗口，故单列一张表。
     /// </summary>
     internal static partial class InventoryEditorL10nTables
@@ -26,20 +26,6 @@ namespace Ale.Inventory.Editor
                 "Each slot ID must match the ID of an equipment slot in the slot list config.",
                 "このオブジェクトの階層下に装備スロットのオブジェクトを手動で配置し、下で「スロット ID → 装備スロット」を 1 件ずつ指定します。\n" +
                 "スロット ID はスロットリスト設定内のいずれかの装備スロットの ID と一致する必要があります。");
-
-            // ── 技能视图：按技能来源显示的 ID 字段 ────────────────────────────────
-            Add("装备组 ID", "Equipment Group ID", "装備グループ ID");
-            Add("从该装备组所有装备槽的已装备道具采集技能。",
-                "Collects skills from the items equipped in every slot of this equipment group.",
-                "この装備グループの全スロットに装備中のアイテムからスキルを収集します。");
-            Add("仓库 ID", "Warehouse ID", "倉庫 ID");
-            Add("从该仓库所有道具采集技能。",
-                "Collects skills from every item in this warehouse.",
-                "この倉庫の全アイテムからスキルを収集します。");
-            Add("角色 ID", "Character ID", "キャラクター ID");
-            Add("显示该角色（SkillRuntimeManager）当前已学会的技能。",
-                "Shows the skills this character has currently learned (from SkillRuntimeManager).",
-                "このキャラクターが現在習得しているスキル（SkillRuntimeManager）を表示します。");
         }
     }
 }

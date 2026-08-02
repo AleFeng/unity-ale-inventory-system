@@ -26,7 +26,7 @@ namespace Ale.Inventory.Editor
         /// </summary>
         static void BuildInventoryManagerPrefab(InventoryDatabase db, GameObject panelPrefab,
             GameObject shopPanelPrefab, GameObject craftViewPrefab, GameObject tooltipPrefab,
-            GameObject equipViewPrefab, GameObject skillViewPrefab, GameObject skillTooltipPrefab)
+            GameObject equipViewPrefab)
         {
             string path = BeginPrefab(KPfInventoryManager);
 
@@ -103,25 +103,13 @@ namespace Ale.Inventory.Editor
             else
                 Debug.LogWarning("[InventoryDemoWizard] 缺少 PF_UiwEquipmentView，请先生成「装备主界面」项。");
 
-            // ── 加载 PF_UiwSkillView（向右下偏移，避免与其它面板重叠）+ 默认「数据库」来源，Play 后自动打开 ──────
-            if (skillViewPrefab)
-            {
-                var skillInst = (GameObject)PrefabUtility.InstantiatePrefab(skillViewPrefab, canvasGo.transform);
-                ((RectTransform)skillInst.transform).anchoredPosition = new Vector2(560f, -40f);
-            }
-            else
-                Debug.LogWarning("[InventoryDemoWizard] 缺少 PF_UiwSkillView，请先生成「技能主界面」项。");
-
-            // ── 悬停弹窗（道具 + 技能）：预制体与父 Canvas 配置到管理器，运行时由管理器各自全局实例化一次 ──────
+            // ── 道具悬停弹窗：预制体与父 Canvas 配置到管理器，运行时由管理器全局实例化一次 ──────
             var tipSo = new SerializedObject(mgr);
             tipSo.FindProperty("itemTooltipPrefab").objectReferenceValue  = tooltipPrefab;
-            tipSo.FindProperty("skillTooltipPrefab").objectReferenceValue = skillTooltipPrefab;
             tipSo.FindProperty("tooltipParent").objectReferenceValue      = canvasGo.transform;
             tipSo.ApplyModifiedPropertiesWithoutUndo();
             if (!tooltipPrefab)
                 Debug.LogWarning("[InventoryDemoWizard] 缺少 PF_UiwItemTooltip，请先生成「道具悬停弹窗」项。");
-            if (!skillTooltipPrefab)
-                Debug.LogWarning("[InventoryDemoWizard] 缺少 PF_UiwSkillTooltip，请先生成「技能悬停弹窗」项。");
 
             // ── 保存主 Prefab ─────────────────────────────────────────────────
             // 不走 SavePrefab：根节点上没有 Uiw 组件（无需上移），且子节点全是嵌套预制体实例

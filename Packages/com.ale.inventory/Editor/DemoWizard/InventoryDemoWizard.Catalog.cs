@@ -44,12 +44,11 @@ namespace Ale.Inventory.Editor
         public const string CatShop      = "商店系统";
         public const string CatCrafting  = "制作系统";
         public const string CatEquipment = "装备系统";
-        public const string CatSkill     = "技能系统";
 
         /// <summary>分类显示顺序（供 WelcomeWindow 遍历分组）。</summary>
         public static readonly string[] Categories =
         {
-            CatCommon, CatItem, CatInventory, CatShop, CatCrafting, CatEquipment, CatSkill
+            CatCommon, CatItem, CatInventory, CatShop, CatCrafting, CatEquipment
         };
 
         private static List<GenItem> _items;
@@ -88,16 +87,11 @@ namespace Ale.Inventory.Editor
                 case KPfCraftingBlueprintCell:
                 case KPfEquipSlot:
                 case KPfEquipCandidateCell:
-                case KPfEquipBonusEntry:
-                case KPfSkillCell:
-                case KPfSkillDetail:        return "Item";
+                case KPfEquipBonusEntry:    return "Item";
                 case KPfInventoryOrderList:
                 case KPfCraftingBlueprintList:
-                case KPfSkillGridList:
-                case KPfSkillOrderList:
                 case KPfInventoryGridList:  return "ItemList";
                 case KPfItemTooltip:
-                case KPfSkillTooltip:
                 case KPfNumberCounter:      return "Tool";
                 case KPfItemLabel:          return "Common";
                 case KPfInventoryPanel:
@@ -108,7 +102,6 @@ namespace Ale.Inventory.Editor
                 case KPfEquipBonusPanel:
                 case KPfEquipSelectPanel:
                 case KPfEquipView:
-                case KPfSkillView:
                 case KPfCraftingView:       return "View";
                 default:                    return string.Empty;
             }
@@ -218,31 +211,14 @@ namespace Ale.Inventory.Editor
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipGroupPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipBonusPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipSelectPanel))) },
-                new GenItem { Category = CatSkill, Key = "SkillCell",   DisplayName = Fmt("技能网格条目 {0}", KPfSkillCell),   AssetPath = Pfb(KPfSkillCell),   DepKeys = new string[0],
-                    Build = () => BuildSkillCellPrefab() },
-                new GenItem { Category = CatSkill, Key = "SkillDetail", DisplayName = Fmt("技能列表条目 {0}", KPfSkillDetail), AssetPath = Pfb(KPfSkillDetail), DepKeys = new string[0],
-                    Build = () => BuildSkillDetailPrefab() },
-                new GenItem { Category = CatSkill, Key = "SkillGridList", DisplayName = Fmt("技能网格列表 {0}", KPfSkillGridList), AssetPath = Pfb(KPfSkillGridList), DepKeys = new[] { "SkillCell" },
-                    Build = () => BuildSkillGridListPrefab(LoadPrefabComp<UiwSkillEntry>(Pfb(KPfSkillCell))) },
-                new GenItem { Category = CatSkill, Key = "SkillOrderList", DisplayName = Fmt("技能顺序列表 {0}", KPfSkillOrderList), AssetPath = Pfb(KPfSkillOrderList), DepKeys = new[] { "SkillDetail" },
-                    Build = () => BuildSkillOrderListPrefab(LoadPrefabComp<UiwSkillEntry>(Pfb(KPfSkillDetail))) },
-                new GenItem { Category = CatSkill, Key = "SkillTooltip", DisplayName = Fmt("技能悬停弹窗 {0}", KPfSkillTooltip), AssetPath = Pfb(KPfSkillTooltip), DepKeys = new string[0],
-                    Build = () => BuildSkillTooltipPrefab() },
-                new GenItem { Category = CatSkill, Key = "SkillView", DisplayName = Fmt("技能主界面 {0}", KPfSkillView), AssetPath = Pfb(KPfSkillView), DepKeys = new[] { "SkillGridList", "SkillOrderList", "Filter" },
-                    Build = () => BuildSkillViewPrefab(
-                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfSkillGridList)),
-                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfSkillOrderList)),
-                        LoadPrefabComp<Button>(Pfb(KPfFilterButton))) },
-                new GenItem { Category = CatCommon, Key = "Manager",  DisplayName = Fmt("管理器 {0}", KPfInventoryManager), AssetPath = Pfb(KPfInventoryManager),  DepKeys = new[] { "DB", "Panel", "ShopPanel", "CraftView", "EquipView", "SkillView", "Tooltip", "SkillTooltip" },
+                new GenItem { Category = CatCommon, Key = "Manager",  DisplayName = Fmt("管理器 {0}", KPfInventoryManager), AssetPath = Pfb(KPfInventoryManager),  DepKeys = new[] { "DB", "Panel", "ShopPanel", "CraftView", "EquipView", "Tooltip" },
                     Build = () => BuildInventoryManagerPrefab(
                         AssetDatabase.LoadAssetAtPath<InventoryDatabase>(DatabasePath),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfInventoryPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfShopPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfCraftingView)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemTooltip)),
-                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipView)),
-                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfSkillView)),
-                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfSkillTooltip))) },
+                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipView))) },
             };
         }
 

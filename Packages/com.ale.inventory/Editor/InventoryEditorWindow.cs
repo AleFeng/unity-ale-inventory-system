@@ -13,8 +13,8 @@ using Ale.Toolkit.Editor;
 namespace Ale.Inventory.Editor
 {
     /// <summary>
-    /// 仓库系统配置编辑器主窗口（IMGUI）。顶部为系统页签（道具 / 仓库 / 商店 / 制作 / 装备 / 技能），
-    /// 六个页签均已实现，各自由对应的 <c>*SystemTab</c> 承载。所有编辑基于 ScriptableObject，
+    /// 仓库系统配置编辑器主窗口（IMGUI）。顶部为系统页签（道具 / 仓库 / 商店 / 制作 / 装备），
+    /// 五个页签均已实现，各自由对应的 <c>*SystemTab</c> 承载。所有编辑基于 ScriptableObject，
     /// 支持 Undo/Redo；JSON / 二进制 仅用于单向导出。
     /// </summary>
     public class InventoryEditorWindow : EditorWindow, IInventoryEditorContext
@@ -28,7 +28,7 @@ namespace Ale.Inventory.Editor
         private const string PrefKeyDbPath = "InventorySystem.DatabasePath";
 
         private static readonly string[] SystemTabs =
-            { "道具系统", "仓库系统", "商店系统", "制作系统", "装备系统", "技能系统" };
+            { "道具系统", "仓库系统", "商店系统", "制作系统", "装备系统" };
 
         private InventoryDatabase _db;
         private SerializedObject _serialized;
@@ -39,10 +39,9 @@ namespace Ale.Inventory.Editor
         private readonly ShopSystemTab      _shopSystemTab      = new ShopSystemTab();
         private readonly CraftingSystemTab  _craftingSystemTab  = new CraftingSystemTab();
         private readonly EquipmentSystemTab _equipmentSystemTab = new EquipmentSystemTab();
-        private readonly SkillSystemTab     _skillSystemTab     = new SkillSystemTab();
 
         // 重复 ID 缓存。
-        // 六类实体的重复 / 空 ID 缓存（种类 → 集合），由 EditorDuplicateIdScanner.ScanAll 整体刷新。
+        // 五类实体的重复 / 空 ID 缓存（种类 → 集合），由 EditorDuplicateIdScanner.ScanAll 整体刷新。
         private Dictionary<EInventoryEntityKind, HashSet<string>> _duplicateIds
             = EditorDuplicateIdScanner.ScanAll(null);
         private bool _needDuplicateCheck = true;
@@ -114,7 +113,6 @@ namespace Ale.Inventory.Editor
             _shopSystemTab.OnUndoRedo();
             _craftingSystemTab.OnUndoRedo();
             _equipmentSystemTab.OnUndoRedo();
-            _skillSystemTab.OnUndoRedo();
             _needDuplicateCheck = true;
             _rebuildPending     = true;
             Repaint();
@@ -133,7 +131,6 @@ namespace Ale.Inventory.Editor
             _shopSystemTab.OnDatabaseChanged(this);
             _craftingSystemTab.OnDatabaseChanged(this);
             _equipmentSystemTab.OnDatabaseChanged(this);
-            _skillSystemTab.OnDatabaseChanged(this);
         }
 
         #endregion
@@ -225,7 +222,7 @@ namespace Ale.Inventory.Editor
             using (new EditorGUI.DisabledScope(!_db))
             {
                 // 仅当存在"非空重复 ID"时禁用导出；空 ID 条目在导出时自动跳过，不阻塞。
-                // 六类实体一并检查——此前只看道具，仓库 / 商店 / 蓝图 / 装备组 / 技能的重复 ID
+                // 五类实体一并检查——此前只看道具，仓库 / 商店 / 蓝图 / 装备组 的重复 ID
                 // 只在状态栏出警告却不拦截导出。
                 bool hasNonEmptyDups = false;
                 if (_db)
@@ -268,7 +265,6 @@ namespace Ale.Inventory.Editor
                 case 2: _shopSystemTab.OnGUI(inner, this);      break;
                 case 3: _craftingSystemTab.OnGUI(inner, this);  break;
                 case 4: _equipmentSystemTab.OnGUI(inner, this); break;
-                case 5: _skillSystemTab.OnGUI(inner, this);     break;
             }
             GUILayout.EndArea();
         }
@@ -341,8 +337,6 @@ namespace Ale.Inventory.Editor
                 bp.RebuildAttributes(db);
             foreach (var g in db.EquipmentGroups)
                 g.RebuildAttributes(db);
-            foreach (var s in db.Skills)
-                s.RebuildAttributes(db);
         }
 
         #endregion

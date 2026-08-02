@@ -4,7 +4,7 @@ using Ale.Toolkit.Editor;
 
 namespace Ale.Inventory.Editor
 {
-    /// <summary>六大系统中「按 ID 唯一」的实体种类。用于统一驱动重复 ID 扫描、红字高亮与状态栏文案。</summary>
+    /// <summary>各系统中「按 ID 唯一」的实体种类。用于统一驱动重复 ID 扫描、红字高亮与状态栏文案。</summary>
     public enum EInventoryEntityKind
     {
         Item,
@@ -12,7 +12,6 @@ namespace Ale.Inventory.Editor
         Shop,
         Crafting,
         Equipment,
-        Skill,
     }
 
     /// <summary>
@@ -30,7 +29,6 @@ namespace Ale.Inventory.Editor
             EInventoryEntityKind.Shop,
             EInventoryEntityKind.Crafting,
             EInventoryEntityKind.Equipment,
-            EInventoryEntityKind.Skill,
         };
 
         /// <summary>该种类的中文名词（状态栏与提示文案用）。</summary>
@@ -42,8 +40,7 @@ namespace Ale.Inventory.Editor
                 case EInventoryEntityKind.Inventory: return "仓库";
                 case EInventoryEntityKind.Shop:      return "商店";
                 case EInventoryEntityKind.Crafting:  return "蓝图";
-                case EInventoryEntityKind.Equipment: return "装备组";
-                default:                             return "技能";
+                default:                             return "装备组";   // Equipment
             }
         }
 
@@ -59,7 +56,6 @@ namespace Ale.Inventory.Editor
             map[EInventoryEntityKind.Shop]      = EditorIdScanner.Scan(db.Shops,              x => x.id);
             map[EInventoryEntityKind.Crafting]  = EditorIdScanner.Scan(db.CraftingBlueprints, x => x.id);
             map[EInventoryEntityKind.Equipment] = EditorIdScanner.Scan(db.EquipmentGroups,    x => x.id);
-            map[EInventoryEntityKind.Skill]     = EditorIdScanner.Scan(db.Skills,             x => x.id);
             return map;
         }
 

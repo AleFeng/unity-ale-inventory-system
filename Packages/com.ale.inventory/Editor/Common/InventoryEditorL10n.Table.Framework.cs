@@ -19,7 +19,6 @@ namespace Ale.Inventory.Editor
             Add("商店系统", "Shop System",      "ショップシステム");
             Add("制作系统", "Crafting System",  "クラフトシステム");
             Add("装备系统", "Equipment System", "装備システム");
-            Add("技能系统", "Skill System",     "スキルシステム");
 
             // ── 实体名词（右列标题 / 删除按钮 / 状态栏；术语同上）──────────────────
             Add("道具",   "Item",            "アイテム");
@@ -27,7 +26,6 @@ namespace Ale.Inventory.Editor
             Add("商店",   "Shop",            "ショップ");
             Add("蓝图",   "Blueprint",       "ブループリント");
             Add("装备组", "Equipment Group", "装備グループ");
-            Add("技能",   "Skill",           "スキル");
             Add("分组标签", "Group Tag",     "グループタグ");
 
             // ── 工具栏 / 主列表 ───────────────────────────────────────────────────
