@@ -63,11 +63,7 @@ namespace Ale.Inventory.Runtime.Serialization
 
                 equipmentGroupTags      = ToArray(db.EquipmentGroupTags, t => ToDto(t, resolver)),
                 equipmentGroupTemplates = ToArray(db.EquipmentGroupTemplates, t => ToDto(t, resolver)),
-                equipmentGroups         = ToArray(db.EquipmentGroups, g => ToDto(g, resolver)),
-
-                skillGroupTags = ToArray(db.SkillGroupTags, t => ToDto(t, resolver)),
-                skillTemplates = ToArray(db.SkillTemplates, t => ToDto(t, resolver)),
-                skills         = ToArray(db.Skills, s => ToDto(s, resolver))
+                equipmentGroups         = ToArray(db.EquipmentGroups, g => ToDto(g, resolver))
             };
         }
 
@@ -157,9 +153,6 @@ namespace Ale.Inventory.Runtime.Serialization
             target.EquipmentGroupTags.Clear();
             target.EquipmentGroupTemplates.Clear();
             target.EquipmentGroups.Clear();
-            target.SkillGroupTags.Clear();
-            target.SkillTemplates.Clear();
-            target.Skills.Clear();
 
             if (dto == null) return;
 
@@ -201,13 +194,6 @@ namespace Ale.Inventory.Runtime.Serialization
                 foreach (var t in dto.equipmentGroupTemplates) target.EquipmentGroupTemplates.Add(FromDto(t, resolver));
             if (dto.equipmentGroups != null)
                 foreach (var g in dto.equipmentGroups) target.EquipmentGroups.Add(FromDto(g, resolver));
-
-            if (dto.skillGroupTags != null)
-                foreach (var t in dto.skillGroupTags) target.SkillGroupTags.Add(FromDto<SkillGroupTag>(t, resolver));
-            if (dto.skillTemplates != null)
-                foreach (var t in dto.skillTemplates) target.SkillTemplates.Add(FromDto(t, resolver));
-            if (dto.skills != null)
-                foreach (var s in dto.skills) target.Skills.Add(FromDto(s, resolver));
         }
 
         private static EnumType FromDto(EnumTypeDto dto, IAssetRefResolver resolver)

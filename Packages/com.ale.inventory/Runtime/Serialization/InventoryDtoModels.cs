@@ -45,11 +45,6 @@ namespace Ale.Inventory.Runtime.Serialization
         public GroupTagDto[]               equipmentGroupTags;
         public EquipmentGroupTemplateDto[] equipmentGroupTemplates;
         public EquipmentGroupDto[]         equipmentGroups;
-
-        // ── 技能系统（v6 新增）────────────────────────────────────────────────────
-        public GroupTagDto[]     skillGroupTags;
-        public SkillTemplateDto[] skillTemplates;
-        public SkillDto[]        skills;
     }
 
     #region 道具系统
@@ -349,40 +344,6 @@ namespace Ale.Inventory.Runtime.Serialization
         public EquipmentAttributeDisplayDto[] attributeDisplays;
         public SortPriorityDto[] sortPriorities;
         public SortPriorityDto[] sortTiebreakers;
-        /// <summary>来自模板的自定义属性值。</summary>
-        public AttributeEntryDto[] values;
-    }
-
-    #endregion
-
-    #region 技能系统
-
-    [Serializable]
-    public class SkillTemplateDto : ConfigTemplateDto
-    {
-        /// <summary>默认显示名（Text：纯文本 fallback + 本地化引用）。</summary>
-        public AttributeValueDto displayText;
-        /// <summary>默认描述（Text：纯文本 fallback + 本地化引用）。</summary>
-        public AttributeValueDto descriptionText;
-        /// <summary>默认图标的 GUID / Addressable 地址（约定同 <see cref="AttributeValueDto.objGuids"/>）。</summary>
-        public string iconGuid;
-        public string primaryGroupTag;
-        public string[] secondaryGroupTags;
-    }
-
-    [Serializable]
-    public class SkillDto
-    {
-        public string id;
-        public string templateRef;
-        /// <summary>显示名（Text：纯文本 fallback + 本地化引用）。</summary>
-        public AttributeValueDto displayText;
-        /// <summary>描述（Text：纯文本 fallback + 本地化引用）。</summary>
-        public AttributeValueDto descriptionText;
-        /// <summary>图标的 GUID / Addressable 地址（约定同 <see cref="AttributeValueDto.objGuids"/>）。</summary>
-        public string iconGuid;
-        public string primaryGroupTag;
-        public string[] secondaryGroupTags;
         /// <summary>来自模板的自定义属性值。</summary>
         public AttributeEntryDto[] values;
     }
