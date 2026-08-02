@@ -90,9 +90,6 @@ namespace Ale.Inventory.Runtime
         private readonly Dictionary<string, EquipmentGroup>           _equipGroups   = new Dictionary<string, EquipmentGroup>();
         private readonly Dictionary<string, EquipmentGroupTemplate>   _equipTmpls    = new Dictionary<string, EquipmentGroupTemplate>();
         private readonly Dictionary<string, EquipmentGroupTag>        _equipTags     = new Dictionary<string, EquipmentGroupTag>();
-        private readonly Dictionary<string, Skill>                    _skills        = new Dictionary<string, Skill>();
-        private readonly Dictionary<string, SkillGroupTag>            _skillTags     = new Dictionary<string, SkillGroupTag>();
-        private readonly Dictionary<string, SkillTemplate>            _skillTmpls    = new Dictionary<string, SkillTemplate>();
         private readonly Dictionary<string, NumberFormatConfig>       _numberFormats = new Dictionary<string, NumberFormatConfig>();
 
         // 「条目 ID → 所属数据库」，供 FindDatabaseForXxx 使用。
@@ -126,9 +123,6 @@ namespace Ale.Inventory.Runtime
                 Index(_equipGroups,   db, db.EquipmentGroups,         x => x.id,   _equipGroupOwner);
                 Index(_equipTmpls,    db, db.EquipmentGroupTemplates, x => x.name);
                 Index(_equipTags,     db, db.EquipmentGroupTags,      x => x.id);
-                Index(_skills,        db, db.Skills,                  x => x.id);
-                Index(_skillTags,     db, db.SkillGroupTags,          x => x.id);
-                Index(_skillTmpls,    db, db.SkillTemplates,          x => x.name);
                 Index(_numberFormats, db, db.NumberFormatConfigs,     x => x.name);
             }
         }
@@ -137,8 +131,8 @@ namespace Ale.Inventory.Runtime
         {
             _items.Clear();         _enumTypes.Clear();   _tags.Clear();        _itemTemplates.Clear();
             _inventories.Clear();   _shops.Clear();       _blueprints.Clear();  _craftTags.Clear();
-            _equipGroups.Clear();   _equipTmpls.Clear();  _equipTags.Clear();   _skills.Clear();
-            _skillTags.Clear();     _skillTmpls.Clear();  _numberFormats.Clear();
+            _equipGroups.Clear();   _equipTmpls.Clear();  _equipTags.Clear();
+            _numberFormats.Clear();
             _inventoryOwner.Clear(); _shopOwner.Clear();  _equipGroupOwner.Clear();
         }
 
@@ -217,40 +211,9 @@ namespace Ale.Inventory.Runtime
         /// <summary>按 ID 跨所有已注册数据库查找装备分组标签，未找到返回 null。</summary>
         public EquipmentGroupTag GetEquipmentGroupTag(string tagId) => Lookup(_equipTags, tagId);
 
-        /// <summary>按 ID 跨所有已注册数据库查找技能，未找到返回 null。</summary>
-        public Skill GetSkill(string skillId) => Lookup(_skills, skillId);
-
-        /// <summary>按 ID 跨所有已注册数据库查找技能分组标签，未找到返回 null。</summary>
-        public SkillGroupTag GetSkillGroupTag(string tagId) => Lookup(_skillTags, tagId);
-
-        /// <summary>按名称跨所有已注册数据库查找技能模板，未找到返回 null。</summary>
-        public SkillTemplate GetSkillTemplate(string templateName) => Lookup(_skillTmpls, templateName);
-
         /// <summary>按名称跨所有已注册数据库查找数字格式配置，未找到返回 null。</summary>
         public NumberFormatConfig GetNumberFormatConfig(string configName)
             => Lookup(_numberFormats, configName);
-
-        /// <summary>枚举所有已注册数据库中的全部技能（供运行时「数据库来源」使用）。</summary>
-        public IEnumerable<Skill> GetAllSkills()
-        {
-            foreach (var db in _databases)
-            {
-                if (!db) continue;   // 未赋值 / 已销毁的数据库槽位（与 EnsureIndex 的守卫一致）
-                foreach (var s in db.Skills)
-                    yield return s;
-            }
-        }
-
-        /// <summary>枚举所有已注册数据库中的全部技能分组标签（供技能 UI 生成分组页签）。</summary>
-        public IEnumerable<SkillGroupTag> GetAllSkillGroupTags()
-        {
-            foreach (var db in _databases)
-            {
-                if (!db) continue;
-                foreach (var t in db.SkillGroupTags)
-                    yield return t;
-            }
-        }
 
         /// <summary>判断道具是否在仓库仓库中隐藏（读取 <see cref="Item.hideInInventory"/>）。道具不存在时返回 false。</summary>
         public bool IsItemHiddenInList(string itemId)
