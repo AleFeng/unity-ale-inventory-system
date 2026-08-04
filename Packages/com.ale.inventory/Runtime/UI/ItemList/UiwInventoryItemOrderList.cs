@@ -73,26 +73,6 @@ namespace Ale.Inventory.Runtime.UI
         /// <param name="cell"></param>
         protected override void InitCell(UiwInventoryItemDetail cell) => cell.numberFormat = _numberFormat;
 
-        /// <summary>
-        /// 增量差异刷新时：格子当前显示（道具 ID + 数量）与新槽位一致则跳过重绑，避免无谓开销与图标闪烁。
-        /// </summary>
-        protected override bool NeedsRebind(UiwInventoryItemDetail cell, RuntimeItemSlot slot)
-            => !cell.MatchesSlot(slot);
-
-        /// <summary>回收时播放整行根淡出（保持存活淡出，完成后由引擎清空归还）。GO 已停用则不淡、走即时回收。</summary>
-        protected override bool TryPlayRecycleAnim(UiwInventoryItemDetail cell, System.Action onComplete)
-        {
-            if (!cell || !cell.gameObject.activeSelf) return false;
-            cell.FadeOutAndHide(onComplete);
-            return true;
-        }
-
-        /// <summary>打断某行在途的回收淡出（不触发完成回调，由引擎即时清空）。</summary>
-        protected override void CancelRecycleAnim(UiwInventoryItemDetail cell)
-        {
-            if (cell) cell.CancelRootFade();
-        }
-
         // ── 辅助 ──────────────────────────────────────────────────────────────────
 
         /// <summary>过滤掉空槽（itemId 为空），顺序列表只显示有道具的槽位。</summary>

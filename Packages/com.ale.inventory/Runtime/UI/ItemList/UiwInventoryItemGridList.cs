@@ -151,34 +151,11 @@ namespace Ale.Inventory.Runtime.UI
             // 过滤显示下禁用整理拖拽：格子按筛选顺序紧凑排列，索引无法对应真实槽位。
             handler.enabled = _dragSort && !_filtered;
         }
-
-        /// <summary>
-        /// 增量差异刷新时：格子当前显示（道具 ID + 数量）与新槽位一致则跳过重绑，
-        /// 避免图标异步重载闪烁与无谓开销。
-        /// </summary>
-        protected override bool NeedsRebind(UiwInventoryItemCell cell, RuntimeItemSlot slot)
-            => !cell.MatchesSlot(slot);
-
-        /// <summary>回收时播放整格根淡出（保持存活淡出，完成后由引擎清空归还）。GO 已停用则不淡、走即时回收。</summary>
-        protected override bool TryPlayRecycleAnim(UiwInventoryItemCell cell, System.Action onComplete)
-        {
-            if (!cell || !cell.gameObject.activeSelf) return false;
-            cell.FadeOutAndHide(onComplete);
-            return true;
-        }
-
-        /// <summary>打断某格在途的回收淡出（不触发完成回调，由引擎即时清空）。</summary>
-        protected override void CancelRecycleAnim(UiwInventoryItemCell cell)
-        {
-            if (cell) cell.CancelRootFade();
-        }
-
-
+        
         #endregion
 
         #region 拖拽整理（适配虚拟滚动；由 GridCellDragHandler 转发）
-
-
+        
         /// <summary>事件：格子 开始拖拽。创建拖拽幽灵并记录拖拽源数据索引。</summary>
         internal void OnCellBeginDrag(int dataIndex, PointerEventData eventData)
         {
