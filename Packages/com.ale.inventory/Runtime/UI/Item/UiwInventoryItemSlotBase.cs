@@ -1,4 +1,4 @@
-using System.Collections;
+using Ale.Toolkit.Runtime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,25 +13,19 @@ namespace Ale.Inventory.Runtime.UI
     /// <see cref="UiwInventoryItemBase"/>；本中间基类在其基础上增加：</para>
     /// <list type="bullet">
     ///   <item>悬停高亮（<see cref="IPointerEnterHandler"/> / <see cref="IPointerExitHandler"/>）</item>
-    ///   <item>堆叠已满提示（淡入淡出协程）</item>
+    ///   <item>堆叠已满提示（Tween 淡入淡出）</item>
     ///   <item>拖拽整理（<see cref="dragHandler"/>）</item>
     /// </list>
     /// </summary>
     public abstract class UiwInventoryItemSlotBase : UiwInventoryItemBase, IPointerClickHandler
     {
-        protected virtual void OnEnable()
-        {
-            // GO 被激活时，旧协程引用已由 Unity 自动停止，置空防止误调 StopCoroutine
-            _hoverCoroutine     = null;
-            _stackFullCoroutine = null;
-        }
-
         protected override void OnDisable()
         {
             base.OnDisable();   // 关闭本格可能残留的详情弹窗（停用不会派发 PointerExit）
-            // GO 停用时协程被 Unity 自动终止，同步置空引用
-            _hoverCoroutine     = null;
-            _stackFullCoroutine = null;
+            // [B6] Tween 不随 GameObject 停用而自动停止（协程会被 Unity 自动停）：回收 / 停用时打断悬停 & 堆叠
+            // 淡入并复位 alpha=0，否则正在淡入的高亮边框会残留到对象池复用后的另一个道具上。
+            ClearHoverHighlight();
+            ClearStackFull();
         }
 
         #region 道具标识 + 右键
@@ -98,44 +92,44 @@ namespace Ale.Inventory.Runtime.UI
         #endregion
 
         #region 悬停高亮
-        
+
         [Header("悬停高亮")]
         [Tooltip("悬停时淡入的高亮边框图片（通过 Color.a 控制透明度，初始 alpha=0）。")]
         public Image hoverBorder;
         [Tooltip("悬停高亮淡入淡出时长（秒）。")]
         public float hoverFadeDuration = 0.15f;
 
-        private Coroutine _hoverCoroutine; // 悬停高亮淡入淡出协程引用，用于停止正在进行的动画
-        
+        private ToolkitTweenHandle _hoverFade; // 悬停高亮淡入淡出句柄，用于打断正在进行的动画
+
         public override void OnPointerEnter(PointerEventData eventData)
         {
             base.OnPointerEnter(eventData);   // 保留基类的悬停详情弹窗能力
             if (!hoverBorder) return;
-            StopFade(ref _hoverCoroutine);
-            _hoverCoroutine = StartCoroutine(FadeImage(hoverBorder, 1f, hoverFadeDuration));
+            _hoverFade.Kill(false);
+            _hoverFade = ToolkitTween.FadeGraphic(hoverBorder, 1f, hoverFadeDuration);
         }
 
         public override void OnPointerExit(PointerEventData eventData)
         {
             base.OnPointerExit(eventData);
             if (!hoverBorder) return;
-            StopFade(ref _hoverCoroutine);
-            _hoverCoroutine = StartCoroutine(FadeImage(hoverBorder, 0f, hoverFadeDuration));
+            _hoverFade.Kill(false);
+            _hoverFade = ToolkitTween.FadeGraphic(hoverBorder, 0f, hoverFadeDuration);
         }
 
         /// <summary>
-        /// 立即取消悬停高亮（无动画，停止正在进行的淡入并将边框 alpha 归零）。
+        /// 立即取消悬停高亮（无动画，打断正在进行的淡入并将边框 alpha 归零）。
         /// 用于本物体即将被停用、Unity 不会派发 <see cref="OnPointerExit"/> 而导致高亮残留的场景。
         /// </summary>
         public void ClearHoverHighlight()
         {
-            StopFade(ref _hoverCoroutine);
+            _hoverFade.Kill(false);
             if (!hoverBorder) return;
             var c = hoverBorder.color; c.a = 0f; hoverBorder.color = c;
         }
 
         #endregion
-        
+
         #region 堆叠数量
         [Header("堆叠已满提示")]
         [Tooltip("堆叠已满时显示的提示图标（通过 Color.a 控制透明度，初始 alpha=0）。")]
@@ -143,17 +137,17 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("堆叠已满提示淡入淡出时长（秒）。")]
         public float stackFullFadeDuration = 0.15f;
 
-        private Coroutine _stackFullCoroutine; // 堆叠已满提示淡入淡出协程引用，用于停止正在进行的动画
+        private ToolkitTweenHandle _stackFullFade; // 堆叠已满提示淡入淡出句柄，用于打断正在进行的动画
 
         /// <summary>设置堆叠已满图标的显示状态（可选淡入淡出动画）。</summary>
         protected void SetStackFull(bool isFull, bool animate)
         {
             if (!stackFullIcon) return;
-            StopFade(ref _stackFullCoroutine);
+            _stackFullFade.Kill(false);
             float target = isFull ? 1f : 0f;
-            // GO 非激活时无法启动协程，直接设值
+            // GO 非激活时淡入不可见，直接设值
             if (animate && gameObject.activeInHierarchy)
-                _stackFullCoroutine = StartCoroutine(FadeImage(stackFullIcon, target, stackFullFadeDuration));
+                _stackFullFade = ToolkitTween.FadeGraphic(stackFullIcon, target, stackFullFadeDuration);
             else
             {
                 var c = stackFullIcon.color; c.a = target; stackFullIcon.color = c;
@@ -164,46 +158,8 @@ namespace Ale.Inventory.Runtime.UI
         protected void ClearStackFull()
         {
             if (!stackFullIcon) return;
-            StopFade(ref _stackFullCoroutine);
+            _stackFullFade.Kill(false);
             var c = stackFullIcon.color; c.a = 0f; stackFullIcon.color = c;
-        }
-
-        #endregion
-        
-        #region 淡入淡出
-        
-        /// <summary>
-        /// 停止 并置空淡入淡出协程引用（安全调用不受 GameObject 激活状态影响）。
-        /// </summary>
-        /// <param name="coroutine"></param>
-        protected void StopFade(ref Coroutine coroutine)
-        {
-            if (coroutine == null) return;
-            StopCoroutine(coroutine);
-            coroutine = null;
-        }
-        
-        /// <summary>
-        /// 对 Image 的 alpha 进行淡入淡出动画（要求 Image 的初始 alpha 已设置为目标状态）。协程结束时确保 alpha 设置为目标值。
-        /// </summary>
-        /// <param name="img"></param>
-        /// <param name="targetAlpha"></param>
-        /// <param name="duration"></param>
-        /// <returns></returns>
-        protected static IEnumerator FadeImage(Image img, float targetAlpha, float duration)
-        {
-            float startAlpha = img.color.a;
-            float elapsed    = 0f;
-            while (elapsed < duration)
-            {
-                elapsed  += Time.unscaledDeltaTime;
-                float t   = Mathf.Clamp01(elapsed / duration);
-                var   c   = img.color;
-                c.a       = Mathf.Lerp(startAlpha, targetAlpha, t);
-                img.color = c;
-                yield return null;
-            }
-            var final = img.color; final.a = targetAlpha; img.color = final;
         }
 
         #endregion
