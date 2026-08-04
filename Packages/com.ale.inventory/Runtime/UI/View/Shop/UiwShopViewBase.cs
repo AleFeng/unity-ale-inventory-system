@@ -72,8 +72,10 @@ namespace Ale.Inventory.Runtime.UI
         #endregion
 
         #region 打开与关闭
-
-        protected Shop Shop;
+        /// <summary>
+        /// 当前商店数据模型（Open 时经 <see cref="InventoryDataManager.GetShop(string)"/> 获取）。
+        /// </summary>
+        protected Shop shop;
 
         [Header("商店")]
         [Tooltip("要打开的商店 ID。可在 Inspector 预设：本视图始终使用该值，直到经 Open(shopId) 或 Inspector 改动。")]
@@ -91,22 +93,22 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>用当前 <see cref="ShopId"/> 打开商店界面（ShopId 可由 Inspector 预设，或经 <see cref="Open(string)"/> / 代码指定）。</summary>
         public override void Open()
         {
-            Shop = InventoryDataManager.Instance.GetShop(ShopId);
-            if (Shop == null)
+            shop = InventoryDataManager.Instance.GetShop(ShopId);
+            if (shop == null)
             {
                 Debug.LogWarning($"[{GetType().Name}] 未找到商店：{ShopId}");
                 return;
             }
-            if (Shop.shopType != ExpectedType)
-                Debug.LogWarning($"[{GetType().Name}] 商店「{ShopId}」类型为 {Shop.shopType}，" +
+            if (shop.shopType != ExpectedType)
+                Debug.LogWarning($"[{GetType().Name}] 商店「{ShopId}」类型为 {shop.shopType}，" +
                                  $"与本视图期望的 {ExpectedType} 不符；请使用对应类型的商店视图预制体。");
 
             base.Open();   // 激活面板（公共步骤）
 
             _db = InventoryDataManager.Instance.FindDatabaseForShop(ShopId);
 
-            NumberFormat = ResolveNumberFormatLocale(
-                InventoryDataManager.Instance.GetNumberFormatConfig(Shop.numberFormatRef));
+            numberFormat = ResolveNumberFormatLocale(
+                InventoryDataManager.Instance.GetNumberFormatConfig(shop.numberFormatRef));
 
             RefreshTitle();
             BuildExtraCommodities();
@@ -160,8 +162,8 @@ namespace Ale.Inventory.Runtime.UI
         private void RefreshTitle()
         {
             if (!titleLabel) return;
-            titleLabel.text = Shop != null
-                ? ResolveTitleText(Shop.displayNameText != null ? Shop.displayNameText.ResolveText() : null, Shop.id)
+            titleLabel.text = shop != null
+                ? ResolveTitleText(shop.displayNameText != null ? shop.displayNameText.ResolveText() : null, shop.id)
                 : string.Empty;
         }
         #endregion
@@ -188,12 +190,12 @@ namespace Ale.Inventory.Runtime.UI
             _tabNames.Clear();
 
             // 「全部」页签：由 showAllFilterTab 决定是否显示（关闭时默认选中第一个商品组）。
-            if (Shop.showAllFilterTab)
+            if (shop.showAllFilterTab)
             {
                 _tabGroups.Add(null);
                 _tabNames.Add(allTabName);
             }
-            foreach (var g in Shop.groups)
+            foreach (var g in shop.groups)
             {
                 _tabGroups.Add(g);
                 _tabNames.Add(string.IsNullOrEmpty(g.name) ? "未命名" : g.name);
@@ -216,14 +218,14 @@ namespace Ale.Inventory.Runtime.UI
         public UiwShopCommodityList commodityList;
 
         // 商品数据模型（选中次数 times 的真源；虚拟滚动下不随格子回收丢失）。子类结算据此遍历。
-        protected readonly List<ShopCommodityEntry> Entries = new List<ShopCommodityEntry>();
+        protected readonly List<ShopCommodityEntry> entries = new List<ShopCommodityEntry>();
         // 类型特定的「额外商品」（如回收店无配置商品时基于交易仓库合成的可回收商品）。引用稳定，供 cell 持有。
-        protected readonly List<ShopCommodity> SyntheticCommodities = new List<ShopCommodity>();
+        protected readonly List<ShopCommodity> syntheticCommodities = new List<ShopCommodity>();
 
         /// <summary>本商店是否没有任何配置商品（所有商品组均为空）。</summary>
         protected bool ShopHasNoCommodities()
         {
-            foreach (var g in Shop.groups)
+            foreach (var g in shop.groups)
                 if (g.commodities.Count > 0) return false;
             return true;
         }
@@ -237,7 +239,7 @@ namespace Ale.Inventory.Runtime.UI
             {
                 if (activeGroup == null)
                 {
-                    foreach (var g in Shop.groups)
+                    foreach (var g in shop.groups)
                         foreach (var c in g.commodities)
                             list.Add(new KeyValuePair<ShopCommodity, bool>(c, false));
                 }
@@ -253,14 +255,14 @@ namespace Ale.Inventory.Runtime.UI
 
             // 构建数据模型（次数归零，全集）；功能标签过滤 + 显示排序交由商品列表组件内建管线处理。
             // Entries 始终为全集（购物车 / 结算 / 总价均遍历它），列表仅按过滤 / 排序显示其子集。
-            Entries.Clear();
+            entries.Clear();
             foreach (var kv in list)
-                Entries.Add(new ShopCommodityEntry(kv.Key, kv.Value));
+                entries.Add(new ShopCommodityEntry(kv.Key, kv.Value));
 
             if (commodityList)
             {
-                commodityList.SetContext(this, Shop, Shop.shopType, NumberFormat);
-                commodityList.SetSourceItems(Entries);   // 列表内部：过滤 → 排序 → 显示
+                commodityList.SetContext(this, shop, shop.shopType, numberFormat);
+                commodityList.SetSourceItems(entries);   // 列表内部：过滤 → 排序 → 显示
             }
 
             RecomputeTotals();
@@ -273,7 +275,7 @@ namespace Ale.Inventory.Runtime.UI
 
         protected void ResetAllTimes()
         {
-            foreach (var e in Entries) e.times = 0;
+            foreach (var e in entries) e.times = 0;
             if (commodityList) commodityList.RefreshVisibleCells();
         }
         #endregion
@@ -297,12 +299,12 @@ namespace Ale.Inventory.Runtime.UI
             commodityList.ConfigureFilter(
                 (e, primary, _) => string.IsNullOrEmpty(primary)
                     || (e?.commodity != null && dm != null && dm.ItemHasTag(e.commodity.itemId, primary)),
-                Shop.filterTagRefs, showAll: true);
+                shop.filterTagRefs, showAll: true);
 
             // 显示排序（不写运行时）：排序键取商品的道具 ID，复用 CompareSlots 按道具属性比较。
             commodityList.ConfigureSort(
                 e => e?.commodity != null ? e.commodity.itemId : null,
-                _db, Shop.sortPriorities, Shop.sortTiebreakers);
+                _db, shop.sortPriorities, shop.sortTiebreakers);
         }
         #endregion
 
@@ -318,7 +320,7 @@ namespace Ale.Inventory.Runtime.UI
             if (!currencyBar) return;
             _currencyIds.Clear();
             CollectCurrencyIds(_currencyIds);
-            currencyBar.Setup(_currencyIds, GetOwnedCurrency, NumberFormat);
+            currencyBar.Setup(_currencyIds, GetOwnedCurrency, numberFormat);
         }
 
         private void UpdateCurrencyBar()
@@ -329,7 +331,7 @@ namespace Ale.Inventory.Runtime.UI
         // 货币栏 getter：跨商店交易仓库统计某货币持有量。
         private int GetOwnedCurrency(string itemId)
             => ShopRuntimeManager.Instance != null
-                ? ShopRuntimeManager.Instance.GetOwnedCount(Shop, itemId)
+                ? ShopRuntimeManager.Instance.GetOwnedCount(shop, itemId)
                 : 0;
 
         // 收集货币 ID：UiwCurrencyBar 上配置的 currencyItemIds 优先，否则遍历所有商品单价的货币键去重。
@@ -345,12 +347,12 @@ namespace Ale.Inventory.Runtime.UI
 
             var shopMgr = ShopRuntimeManager.Instance;
             if (shopMgr == null) return;
-            foreach (var g in Shop.groups)
+            foreach (var g in shop.groups)
                 foreach (var c in g.commodities)
-                    foreach (var kv in shopMgr.GetUnitPrice(Shop, c))
+                    foreach (var kv in shopMgr.GetUnitPrice(shop, c))
                         if (!result.Contains(kv.Key)) result.Add(kv.Key);
-            foreach (var sc in SyntheticCommodities)
-                foreach (var kv in shopMgr.GetUnitPrice(Shop, sc))
+            foreach (var sc in syntheticCommodities)
+                foreach (var kv in shopMgr.GetUnitPrice(shop, sc))
                     if (!result.Contains(kv.Key)) result.Add(kv.Key);
         }
         #endregion
@@ -376,12 +378,12 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("不支持交易提示。")]
         public string notSupportedHint   = "该商店类型暂不支持交易。";
 
-        protected bool Settling;
+        protected bool settling;
 
         /// <summary>由 <see cref="UiwShopItemDetail"/> 在次数变化时回调，重算总价。</summary>
         public void OnCellTimesChanged(UiwShopItemDetail cell)
         {
-            if (Settling) return;
+            if (settling) return;
             RecomputeTotals();
         }
 
@@ -400,18 +402,18 @@ namespace Ale.Inventory.Runtime.UI
 
             _totals.Clear();
             int selected = 0;
-            foreach (var e in Entries)
+            foreach (var e in entries)
             {
                 if (e == null || e.commodity == null) continue;
                 // 防御性钳制：离屏 entry 的次数可能因库存 / 可交易次数变化而超出当前上限。
                 if (shopMgr != null)
                 {
-                    int max = ShopTradeMath.MaxTimes(shopMgr, Shop, e.commodity, Shop.shopType, maxPerOrder);
+                    int max = ShopTradeMath.MaxTimes(shopMgr, shop, e.commodity, shop.shopType, maxPerOrder);
                     if (e.times > max) e.times = max;
                 }
                 if (e.times <= 0) continue;
                 selected++;
-                var unitPrice = shopMgr != null ? shopMgr.GetUnitPrice(Shop, e.commodity) : null;
+                var unitPrice = shopMgr != null ? shopMgr.GetUnitPrice(shop, e.commodity) : null;
                 if (unitPrice != null)
                     foreach (var kv in unitPrice)
                     {
@@ -426,7 +428,7 @@ namespace Ale.Inventory.Runtime.UI
 
             if (totalLabel)
             {
-                string priceText = UIFormat.PriceString(NumberFormat, _totals);
+                string priceText = UIFormat.PriceString(numberFormat, _totals);
                 totalLabel.text  = TotalPrefix + (priceText.Length > 0 ? priceText : "0");
                 totalLabel.color = over ? overBudgetColor : normalColor;
             }
@@ -437,7 +439,7 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>结算按钮点击事件：转交子类 <see cref="Settle"/> 实现。</summary>
         private void BtnSettle()
         {
-            if (Shop == null) return;
+            if (shop == null) return;
             Settle();
         }
 
@@ -459,13 +461,13 @@ namespace Ale.Inventory.Runtime.UI
         }
 
         /// <summary>按当前数字格式格式化数值（无格式时退回 <c>ToString()</c>）。</summary>
-        protected string FmtNum(long v) => UIFormat.Number(NumberFormat, v);
+        protected string FmtNum(long v) => UIFormat.Number(numberFormat, v);
         #endregion
 
         #region 事件
         private void OnShopChanged(string shopIdSet)
         {
-            if (Settling || shopIdSet != ShopId) return;
+            if (settling || shopIdSet != ShopId) return;
             RefreshAllCells();
             UpdateCurrencyBar();
             RecomputeTotals();
@@ -473,8 +475,8 @@ namespace Ale.Inventory.Runtime.UI
 
         private void OnInventoryChanged(string inventoryId)
         {
-            if (Settling || Shop == null) return;
-            if (!Shop.tradeInventoryRefs.Contains(inventoryId)) return;
+            if (settling || shop == null) return;
+            if (!shop.tradeInventoryRefs.Contains(inventoryId)) return;
             RefreshAllCells();
             UpdateCurrencyBar();
             RecomputeTotals();
@@ -482,7 +484,7 @@ namespace Ale.Inventory.Runtime.UI
         #endregion
 
         #region 数字格式
-        protected NumberFormatLocale NumberFormat;
+        protected NumberFormatLocale numberFormat;
         // GetCurrentLanguage / ResolveNumberFormatLocale 继承自 UiwViewBase。
         #endregion
     }

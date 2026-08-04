@@ -70,13 +70,13 @@ namespace Ale.Inventory.Runtime.UI
             SourceSlotId      = null;
             if (_source) _source.SetIconAlpha(1f);   // 复位来源图标透明度
             _source = null;
-            if (_ghost) UnityEngine.Object.Destroy(_ghost);
+            if (_ghost) Object.Destroy(_ghost);
             _ghost = null;
         }
 
         private static void CreateGhost(Sprite icon, Canvas canvas, Vector2 screenPos)
         {
-            if (_ghost) UnityEngine.Object.Destroy(_ghost);
+            if (_ghost) Object.Destroy(_ghost);
             _ghost = null;
             if (!canvas) return;
 

@@ -44,7 +44,6 @@ namespace Ale.Inventory.Runtime.UI
 
         #region 设置数据
 
-
         /// <summary>
         /// 设置道具槽位数据列表，并从仓库定义读取容量 / 拖拽整理配置后刷新网格。
         /// </summary>
@@ -99,12 +98,10 @@ namespace Ale.Inventory.Runtime.UI
             foreach (var inst in Instances)
                 if (inst) inst.numberFormat = locale;
         }
-
-
+        
         #endregion
 
         #region 格子绑定
-
         
         /// <summary>
         /// 绑定 格子与道具槽位数据。由基类在格子实例化 / 滚动复用时调用。
@@ -160,8 +157,8 @@ namespace Ale.Inventory.Runtime.UI
         internal void OnCellBeginDrag(int dataIndex, PointerEventData eventData)
         {
             // 空格（含容量补齐占位）不可拖拽。
-            if (dataIndex < 0 || dataIndex >= Items.Count || Items[dataIndex] == null
-                || string.IsNullOrEmpty(Items[dataIndex].itemId))
+            if (dataIndex < 0 || dataIndex >= items.Count || items[dataIndex] == null
+                || string.IsNullOrEmpty(items[dataIndex].itemId))
             { _dragSourceIndex = -1; return; }
 
             _dragSourceIndex = dataIndex;
@@ -217,11 +214,11 @@ namespace Ale.Inventory.Runtime.UI
         internal void OnCellDrop(int targetDataIndex, PointerEventData eventData)
         {
             if (_dragSourceIndex < 0 || _dragSourceIndex == targetDataIndex) return;
-            if (targetDataIndex < 0 || targetDataIndex >= Items.Count) return;
+            if (targetDataIndex < 0 || targetDataIndex >= items.Count) return;
             if (!InventoryRuntimeManager.Instance) return;
 
-            var src = Items[_dragSourceIndex];
-            var tgt = Items[targetDataIndex];
+            var src = items[_dragSourceIndex];
+            var tgt = items[targetDataIndex];
             // 容量补齐的纯占位（无 slotId）不是有效落点，跳过。
             if (src == null || tgt == null || string.IsNullOrEmpty(src.slotId) || string.IsNullOrEmpty(tgt.slotId)) return;
 
@@ -237,9 +234,9 @@ namespace Ale.Inventory.Runtime.UI
         internal bool TryGetCellSlot(int dataIndex, out string inventoryId, out string slotId, out bool isEmpty)
         {
             inventoryId = _inventoryId; slotId = null; isEmpty = true;
-            if (dataIndex < 0 || dataIndex >= Items.Count || Items[dataIndex] == null) return false;
-            slotId  = Items[dataIndex].slotId;
-            isEmpty = string.IsNullOrEmpty(Items[dataIndex].itemId);
+            if (dataIndex < 0 || dataIndex >= items.Count || items[dataIndex] == null) return false;
+            slotId  = items[dataIndex].slotId;
+            isEmpty = string.IsNullOrEmpty(items[dataIndex].itemId);
             return !string.IsNullOrEmpty(slotId);
         }
 
@@ -262,8 +259,7 @@ namespace Ale.Inventory.Runtime.UI
         #endregion
 
         #region 边缘自动滚动（拖拽中）
-
-
+        
         private void Update()
         {
             if (_dragSourceIndex < 0) return;   // 仅拖拽中
@@ -322,8 +318,7 @@ namespace Ale.Inventory.Runtime.UI
         #endregion
 
         #region 生命周期
-
-
+        
         protected override void OnDisable()
         {
             base.OnDisable();
@@ -333,6 +328,5 @@ namespace Ale.Inventory.Runtime.UI
             _dragSourceIndex  = -1;
         }
         #endregion
-
     }
 }

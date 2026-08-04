@@ -15,7 +15,7 @@ namespace Ale.Inventory.Runtime.UI
         protected override bool IsOverBudget(string currencyId, int amount)
         {
             var shopMgr = ShopRuntimeManager.Instance;
-            return shopMgr != null && amount > shopMgr.GetOwnedCount(Shop, currencyId);
+            return shopMgr != null && amount > shopMgr.GetOwnedCount(shop, currencyId);
         }
 
         /// <summary>
@@ -32,14 +32,14 @@ namespace Ale.Inventory.Runtime.UI
                 return;
             }
 
-            Settling = true;
+            settling = true;
             var shopMgr = ShopRuntimeManager.Instance;
-            foreach (var e in Entries)
+            foreach (var e in entries)
             {
                 if (e.commodity == null || e.times <= 0) continue;
                 shopMgr.Purchase(ShopId, e.commodity, e.times);
             }
-            Settling = false;
+            settling = false;
 
             AfterSettle();
         }
@@ -63,10 +63,10 @@ namespace Ale.Inventory.Runtime.UI
             if (shopMgr == null) return false;
 
             var budget = new Dictionary<string, int>();
-            foreach (var e in Entries)
+            foreach (var e in entries)
             {
                 if (e.commodity == null || e.times <= 0) continue;
-                var unitPrice = shopMgr.GetUnitPrice(Shop, e.commodity);
+                var unitPrice = shopMgr.GetUnitPrice(shop, e.commodity);
 
                 // ── 阶段①：货币上限 ── 取各货币「剩余预算 / 单次价」的最小值，下调到货币能支撑的次数。
                 int currencyCap = e.times;
@@ -75,7 +75,7 @@ namespace Ale.Inventory.Runtime.UI
                     if (kv.Value <= 0) continue;
                     if (!budget.TryGetValue(kv.Key, out var b))
                     {
-                        b = shopMgr.GetOwnedCount(Shop, kv.Key);
+                        b = shopMgr.GetOwnedCount(shop, kv.Key);
                         budget[kv.Key] = b;
                     }
                     currencyCap = Mathf.Min(currencyCap, b / kv.Value);   // 剩余货币 / 单次价 = 可负担次数
@@ -84,7 +84,7 @@ namespace Ale.Inventory.Runtime.UI
 
                 // ── 阶段②：背包容量上限 ── 在阶段①结果之上，再下调到剩余容量能容纳的次数。
                 int per         = Mathf.Max(1, e.commodity.count);        // 单次购买获得的道具数量
-                int freeSpace   = shopMgr.GetFreeSpace(Shop, e.commodity.itemId);
+                int freeSpace   = shopMgr.GetFreeSpace(shop, e.commodity.itemId);
                 int feasible    = Mathf.Min(currencyCap, freeSpace / per); // 剩余容量 / 单次数量 = 可容纳次数
                 feasible        = Mathf.Max(0, feasible);
 

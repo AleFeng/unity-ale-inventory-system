@@ -7,8 +7,6 @@ using UiText = UnityEngine.UI.Text;
 using Ale.Toolkit.Runtime.UI;
 using Ale.Toolkit.Runtime;
 using System.Collections;
-using System.Collections.Generic;
-using Ale.Inventory.Runtime;
 using UnityEngine;
 using UnityEngine.UI;
 

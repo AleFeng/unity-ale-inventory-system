@@ -70,7 +70,7 @@ namespace Ale.Inventory.Runtime.UI
         private readonly UiwWidgetPool<UiwEquipmentSlotList> _slotListPool = new UiwWidgetPool<UiwEquipmentSlotList>();
 
         /// <summary>自动模式下已实例化的槽位列表（含被隐藏的）。</summary>
-        private IReadOnlyList<UiwEquipmentSlotList> _slotLists => _slotListPool.Items;
+        private IReadOnlyList<UiwEquipmentSlotList> SlotLists => _slotListPool.Items;
         private bool _bound;
 
         /// <summary>当前绑定的装备组 ID。</summary>
@@ -119,7 +119,7 @@ namespace Ale.Inventory.Runtime.UI
             }
             else
             {
-                foreach (var sl in _slotLists)
+                foreach (var sl in SlotLists)
                     if (sl && sl.gameObject.activeSelf) sl.Refresh();
             }
         }
@@ -141,7 +141,8 @@ namespace Ale.Inventory.Runtime.UI
                     sl.SlotClicked      += OnSlotClicked;
                     sl.SlotRightClicked += OnSlotRightClicked;
                 }
-                sl.Bind(newGroupId, group.slotLists[i]);
+
+                if (group != null) sl.Bind(newGroupId, group.slotLists[i]);
             }
 
             _slotListPool.End();

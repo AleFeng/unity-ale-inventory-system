@@ -23,7 +23,7 @@ namespace Ale.Inventory.Runtime.UI
             get
             {
                 if (string.IsNullOrEmpty(_selectedId)) return null;
-                foreach (var bp in Items) if (bp != null && bp.id == _selectedId) return bp;
+                foreach (var bp in items) if (bp != null && bp.id == _selectedId) return bp;
                 return null;
             }
         }

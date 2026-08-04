@@ -1,11 +1,9 @@
 using Ale.Toolkit.Runtime.UI;
-using Ale.Toolkit.Runtime;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 #if ATK_LOCALIZATION
-using UnityEngine.Localization;
 using UnityEngine.Localization.Components;
 #endif
 
@@ -86,13 +84,14 @@ namespace Ale.Inventory.Runtime.UI
                 // 加成条目无条件生成：仅**分组标题**依赖 funcTag 非空（无分组自然没有标题），
                 // 条目本身不该受此约束——否则未配分组标签的加成会被静默丢弃，
                 // 若全部加成都没有分组，面板还会误显示「无属性加成」空态。
-                foreach (var b in _byTag[funcTag])
-                {
-                    var attrBonus = _entryPool.Next();
-                    if (!attrBonus) break;
-                    attrBonus.SetData(b.Label, FormatValue(b.Total));
-                    attrBonus.transform.SetSiblingIndex(sibling++);
-                }
+                if (funcTag != null)
+                    foreach (var b in _byTag[funcTag])
+                    {
+                        var attrBonus = _entryPool.Next();
+                        if (!attrBonus) break;
+                        attrBonus.SetData(b.Label, FormatValue(b.Total));
+                        attrBonus.transform.SetSiblingIndex(sibling++);
+                    }
             }
 
             // 空状态：没有任何可显示的属性加成时，用条目预制体显示一条提示文本（数值留空）。
@@ -102,7 +101,7 @@ namespace Ale.Inventory.Runtime.UI
                 if (empty)
                 {
                     empty.SetData(ResolveEmptyText(), string.Empty);
-                    empty.transform.SetSiblingIndex(sibling++);
+                    empty.transform.SetSiblingIndex(sibling);
                 }
             }
 

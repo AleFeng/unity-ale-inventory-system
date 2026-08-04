@@ -16,18 +16,18 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>无配置商品时，把交易仓库中现有的不同道具合成为可回收商品。</summary>
         protected override void BuildExtraCommodities()
         {
-            SyntheticCommodities.Clear();
+            syntheticCommodities.Clear();
             if (!ShopHasNoCommodities()) return;
             if (!InventoryRuntimeManager.Instance) return;
 
             var seen = new HashSet<string>();
-            foreach (var invId in Shop.tradeInventoryRefs)
+            foreach (var invId in shop.tradeInventoryRefs)
             {
                 foreach (var slot in InventoryRuntimeManager.Instance.GetSlots(invId))
                 {
                     if (string.IsNullOrEmpty(slot.itemId) || !seen.Add(slot.itemId)) continue;
                     if (!MatchesTradeTags(slot.itemId)) continue;   // 交易功能标签限制：不含勾选标签的道具不收集
-                    SyntheticCommodities.Add(new ShopCommodity
+                    syntheticCommodities.Add(new ShopCommodity
                     {
                         itemId          = slot.itemId,
                         count           = 1,
@@ -43,7 +43,7 @@ namespace Ale.Inventory.Runtime.UI
             ShopCommodityGroup activeGroup, List<KeyValuePair<ShopCommodity, bool>> result)
         {
             if (!ShopHasNoCommodities()) return false;
-            foreach (var sc in SyntheticCommodities)
+            foreach (var sc in syntheticCommodities)
                 result.Add(new KeyValuePair<ShopCommodity, bool>(sc, true));
             return true;
         }
@@ -53,15 +53,15 @@ namespace Ale.Inventory.Runtime.UI
         /// </summary>
         protected override void Settle()
         {
-            Settling = true;
+            settling = true;
             var shopMgr = ShopRuntimeManager.Instance;
-            foreach (var e in Entries)
+            foreach (var e in entries)
             {
                 if (e.commodity == null || e.times <= 0) continue;
                 if (e.synthetic) shopMgr.RecycleItem(ShopId, e.commodity.itemId, e.times);
                 else             shopMgr.Recycle(ShopId, e.commodity, e.times);
             }
-            Settling = false;
+            settling = false;
 
             AfterSettle();
         }
@@ -76,7 +76,7 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>道具是否满足本店「交易功能标签」限制（空列表 = 不限制）。</summary>
         private bool MatchesTradeTags(string itemId)
         {
-            var funcTags = Shop.tradeTagRefs;
+            var funcTags = shop.tradeTagRefs;
             if (funcTags == null || funcTags.Count == 0) return true;   // 空 = 不限制
 
             var dm = InventoryDataManager.Instance;

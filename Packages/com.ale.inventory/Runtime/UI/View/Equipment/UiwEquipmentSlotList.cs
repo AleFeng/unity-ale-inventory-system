@@ -62,7 +62,7 @@ namespace Ale.Inventory.Runtime.UI
         private readonly UiwWidgetPool<UiwEquipmentSlot> _slotPool = new UiwWidgetPool<UiwEquipmentSlot>();
 
         /// <summary>自动模式下已实例化的装备槽（含被隐藏的）。</summary>
-        private IReadOnlyList<UiwEquipmentSlot> _slots => _slotPool.Items;
+        private IReadOnlyList<UiwEquipmentSlot> Slots => _slotPool.Items;
 
         /// <summary>所属装备组 ID。</summary>
         public string GroupId { get; private set; }
@@ -101,7 +101,7 @@ namespace Ale.Inventory.Runtime.UI
             }
             else
             {
-                foreach (var s in _slots)
+                foreach (var s in Slots)
                     if (s && s.gameObject.activeSelf) s.Refresh();
             }
         }
@@ -117,7 +117,7 @@ namespace Ale.Inventory.Runtime.UI
             }
             else
             {
-                foreach (var s in _slots)
+                foreach (var s in Slots)
                     if (s) s.SetSelected(s.gameObject.activeSelf && !string.IsNullOrEmpty(slotId) && s.SlotId == slotId);
             }
         }
@@ -139,7 +139,8 @@ namespace Ale.Inventory.Runtime.UI
                     s.Clicked      += OnSlotClicked;
                     s.RightClicked += OnSlotRightClicked;
                 }
-                s.Bind(groupId, def, def.slots[i]);
+
+                if (def != null) s.Bind(groupId, def, def.slots[i]);
             }
 
             _slotPool.End();

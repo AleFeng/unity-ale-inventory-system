@@ -7,15 +7,24 @@ namespace Ale.Inventory.Runtime.UI
     /// <summary>装备候选条目：候选道具 + 其取出来源仓库 + 跨全部装备仓库的合计持有量。</summary>
     public struct EquipmentCandidateEntry
     {
-        public string SourceInv;   // 该候选道具的取出来源仓库（首个持有该道具的装备仓库）
-        public string ItemId;      // 道具 ID
-        public int    Count;       // 跨全部装备仓库的合计持有量
+        /// <summary>
+        /// 该候选道具的取出来源仓库（首个持有该道具的装备仓库）。用于「拖到装备槽装备」时，指定从哪个仓库取出道具。
+        /// </summary>
+        public string sourceInv;
+        /// <summary>
+        /// 该候选道具的 ID（ItemTemplate.id）。用于「拖到装备槽装备」时，指定取出哪个道具。
+        /// </summary>
+        public string itemId;
+        /// <summary>
+        /// 该候选道具的跨全部装备仓库的合计持有量。用于「拖到装备槽装备」时，指定取出多少数量。
+        /// </summary>
+        public int    count;
 
         public EquipmentCandidateEntry(string sourceInv, string itemId, int count)
         {
-            this.SourceInv = sourceInv;
-            this.ItemId    = itemId;
-            this.Count     = count;
+            this.sourceInv = sourceInv;
+            this.itemId    = itemId;
+            this.count     = count;
         }
     }
 
@@ -48,7 +57,7 @@ namespace Ale.Inventory.Runtime.UI
             _sourceInventoryIds = sourceInventoryIds;
             _slotListDef        = slotListDef;
             // 显示排序：排序键取候选道具 ID，复用 CompareSlots 按道具属性比较（仅显示排序，不写运行时）。
-            this.ConfigureSort(e => e.ItemId, sortDb, sortPriorities, sortTiebreakers);
+            this.ConfigureSort(e => e.itemId, sortDb, sortPriorities, sortTiebreakers);
             Refresh();
         }
 
@@ -59,7 +68,7 @@ namespace Ale.Inventory.Runtime.UI
 
         // 复用仓库格子的 SetSlot：来源仓库 → InventoryId，道具 → ItemId（slotId 对候选显示无意义，置空）。
         protected override void BindCell(UiwInventoryItemCell cell, EquipmentCandidateEntry entry)
-            => cell.SetSlot(entry.SourceInv, new RuntimeItemSlot(null, entry.ItemId, entry.Count));
+            => cell.SetSlot(entry.sourceInv, new RuntimeItemSlot(null, entry.itemId, entry.count));
 
         protected override void ClearCell(UiwInventoryItemCell cell) => cell.ClearAndHide();
 

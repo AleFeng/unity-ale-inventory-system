@@ -5,7 +5,6 @@ using UiText = UnityEngine.UI.Text;
 #endif
 
 using System;
-using Ale.Inventory.Runtime;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
