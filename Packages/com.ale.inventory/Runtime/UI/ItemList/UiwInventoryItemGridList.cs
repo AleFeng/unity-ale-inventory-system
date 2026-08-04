@@ -117,7 +117,8 @@ namespace Ale.Inventory.Runtime.UI
                 cell.SetEmpty();                 // 窗口内空槽 → 可见空态（作为拖拽落点）
             else
                 cell.SetSlot(_inventoryId, slot);
-            cell.SetIconAlpha(1f);               // 复用重置：清除对象池残留的半透明
+            // [B7] 原 cell.SetIconAlpha(1f) 复用重置已移除：图标 alpha 现由 ApplyIcon 独占（首次显示 0→淡入 / 就地 1），
+            // 强制置 1 会盖掉图标淡入；拖拽半透明的还原仍由 OnCellEndDrag 负责。
         }
         
         /// <summary>
@@ -157,6 +158,20 @@ namespace Ale.Inventory.Runtime.UI
         /// </summary>
         protected override bool NeedsRebind(UiwInventoryItemCell cell, RuntimeItemSlot slot)
             => !cell.MatchesSlot(slot);
+
+        /// <summary>回收时播放整格根淡出（保持存活淡出，完成后由引擎清空归还）。GO 已停用则不淡、走即时回收。</summary>
+        protected override bool TryPlayRecycleAnim(UiwInventoryItemCell cell, System.Action onComplete)
+        {
+            if (!cell || !cell.gameObject.activeSelf) return false;
+            cell.FadeOutAndHide(onComplete);
+            return true;
+        }
+
+        /// <summary>打断某格在途的回收淡出（不触发完成回调，由引擎即时清空）。</summary>
+        protected override void CancelRecycleAnim(UiwInventoryItemCell cell)
+        {
+            if (cell) cell.CancelRootFade();
+        }
 
 
         #endregion
