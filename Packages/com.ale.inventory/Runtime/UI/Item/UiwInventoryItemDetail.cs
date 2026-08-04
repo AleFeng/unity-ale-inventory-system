@@ -77,12 +77,15 @@ namespace Ale.Inventory.Runtime.UI
         {
             if (slot == null) { SetEmpty(); return; }
 
+            // 池化实例首次显示（滚入，GO 尚未激活）→ 播放淡入；就地刷新（已激活）→ 不淡，直接换。
+            bool firstShow = !gameObject.activeSelf;
+
             SetBoundSlot(inventoryId, slot.itemId, slot.count);   // 记录来源仓库 / 道具 ID / 数量 + 悬停弹窗目标（基类共用）
 
             var item = InventoryDataManager.Instance.GetItem(slot.itemId);
 
-            ApplyQualityBackground(item);
-            ApplyIcon(item);
+            ApplyQualityBackground(item, animate: firstShow);
+            ApplyIcon(item, animate: firstShow);
 
             // 名称
             ApplyName(item, slot.itemId);
@@ -129,8 +132,8 @@ namespace Ale.Inventory.Runtime.UI
             // 功能标签
             ApplyItemLabels(item);
 
-            // 先激活，再启动协程（StartCoroutine 要求 GameObject 处于 active 状态）
             gameObject.SetActive(true);
+            if (firstShow) PlayRootFadeIn();   // 根 CanvasGroup 淡入（整行）
 
             bool isFull = item != null && item.stackLimit > 0 && slot.count >= item.stackLimit;
             SetStackFull(isFull, animate: true);
@@ -139,6 +142,7 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>将此格子设为空态（隐藏内容，清空数据）。</summary>
         public void SetEmpty()
         {
+            ResetRootVisible();   // 打断在途根淡变并复位（回收前保险；本方法末尾会停用本行）
             ClearBoundSlot();   // 清除道具标识 + 悬停弹窗目标（基类共用）
             ClearIcon();
             ClearNameAndQuality();

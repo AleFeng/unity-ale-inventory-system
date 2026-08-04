@@ -197,8 +197,26 @@ namespace Ale.Inventory.Runtime.UI
             _rootFade = ToolkitTween.FadeCanvasGroup(cg, 0f, rootFadeOutDuration, onComplete: onComplete);
         }
 
-        /// <summary>打断在途的根淡入 / 淡出（不触发其完成回调）。</summary>
-        protected void CancelRootFade() => _rootFade.Kill(false);
+        /// <summary>打断在途的根淡入 / 淡出（不触发其完成回调）。供列表回收动画钩子取消。</summary>
+        public void CancelRootFade() => _rootFade.Kill(false);
+
+        /// <summary>
+        /// 播放根淡出并在结束时回调 <paramref name="onComplete"/>（供列表回收动画钩子 <c>TryPlayRecycleAnim</c> 调用）。
+        /// 本方法只负责淡出动画；真正的清空 / 隐藏由列表引擎在 <paramref name="onComplete"/> 里经 ClearCell 完成，
+        /// 避免与格子清空逻辑（如明细的标签 / 价格池回收）重复执行。
+        /// </summary>
+        public void FadeOutAndHide(System.Action onComplete) => PlayRootFadeOut(onComplete);
+
+        /// <summary>
+        /// 复位根显示：打断在途根淡变并把根 CanvasGroup 复位为完全显示（alpha 1、可点）。
+        /// 仅当已存在根 CanvasGroup 时才处理（未淡过的格子无 CanvasGroup、本就完全显示）。
+        /// 供「淡出归还的实例被复用为可见空格」等场景复位，避免根 alpha 停在 0 而隐身（[B3]）。
+        /// </summary>
+        protected void ResetRootVisible()
+        {
+            CancelRootFade();
+            if (_rootCanvasGroup) { _rootCanvasGroup.alpha = 1f; _rootCanvasGroup.blocksRaycasts = true; }
+        }
 
         // 图标就位回调：有图 → 淡入；无图 → SpriteSlot 已禁用该 Image，复位 alpha 以防外部再启用。
         private void OnIconApplied(bool hasSprite)
