@@ -66,15 +66,32 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>
         /// 从 item 属性中读取图标 Sprite 并写入 iconImage：经 <see cref="InventoryAssets"/> 门面
         /// （直接模式同步赋值；Addressable 模式异步加载完成后赋值）。item 为 null / 无图标时清空。
+        /// <para><paramref name="animate"/>=true：先杀旧淡入、把图标 alpha 置 0，待 Sprite 就位（可能异步）后淡入；
+        /// false：即时置 alpha 1、不淡入（就地刷新 / 非首次显示）。</para>
         /// </summary>
-        protected void ApplyIcon(Item item)
+        protected void ApplyIcon(Item item, bool animate = false)
         {
             var entry = item != null && !string.IsNullOrEmpty(iconAttrId) ? item.GetEntry(iconAttrId) : null;
-            _iconSlot.Bind(iconImage, entry?.value);
+            _iconFade.Kill(false);   // [B5] 先杀旧句柄（两条路径都要）
+            if (animate)
+            {
+                SetImageAlpha(iconImage, 0f);   // [B5] 置 0 须在 Bind 之前（直接模式 onApplied 同步触发）
+                _onIconApplied ??= OnIconApplied;
+                _iconSlot.Bind(iconImage, entry?.value, onApplied: _onIconApplied);
+            }
+            else
+            {
+                SetImageAlpha(iconImage, 1f);
+                _iconSlot.Bind(iconImage, entry?.value);
+            }
         }
 
-        /// <summary>清空图标显示（并释放异步句柄、作废未完成的加载回调）。</summary>
-        protected void ClearIcon() => _iconSlot.Clear(iconImage);
+        /// <summary>清空图标显示（并释放异步句柄、作废未完成的加载回调、打断淡入）。</summary>
+        protected void ClearIcon()
+        {
+            _iconFade.Kill(false);
+            _iconSlot.Clear(iconImage);
+        }
 
         /// <summary>
         /// 从 item 的品质枚举属性中读取背景 Sprite 并写入 <see cref="qualityBackground"/>。
@@ -82,7 +99,7 @@ namespace Ale.Inventory.Runtime.UI
         /// <para>背景框常驻显示（enabled 恒为 true），未解析出 Sprite 时只是没有贴图 ——
         /// 故绑定时不让 <see cref="SpriteSlot"/> 代管 enabled。</para>
         /// </summary>
-        protected void ApplyQualityBackground(Item item)
+        protected void ApplyQualityBackground(Item item, bool animate = false)
         {
             if (!qualityBackground) return;
             qualityBackground.enabled = true;
@@ -98,14 +115,114 @@ namespace Ale.Inventory.Runtime.UI
                     bgValue = enumItem?.GetEntry(qualityBackgroundAttrId)?.value;
                 }
             }
-            _qualityBgSlot.Bind(qualityBackground, bgValue, toggleEnabled: false);
+
+            _qualityBgFade.Kill(false);   // [B5] 先杀旧句柄
+            if (animate)
+            {
+                SetImageAlpha(qualityBackground, 0f);
+                _onQualityBgApplied ??= OnQualityBgApplied;
+                _qualityBgSlot.Bind(qualityBackground, bgValue, toggleEnabled: false, onApplied: _onQualityBgApplied);
+            }
+            else
+            {
+                SetImageAlpha(qualityBackground, 1f);
+                _qualityBgSlot.Bind(qualityBackground, bgValue, toggleEnabled: false);
+            }
         }
 
         /// <summary>清空名称与品质背景显示（供空态 / 对象池回收复用）。</summary>
         protected void ClearNameAndQuality()
         {
             if (nameText) nameText.text = string.Empty;
+            _qualityBgFade.Kill(false);
             _qualityBgSlot.Clear(qualityBackground);
+        }
+
+        #endregion
+
+        #region 淡入淡出（Tween）
+
+        [Header("淡入淡出（Tween）")]
+        [Tooltip("格子被分配（滚入）时，根 CanvasGroup 的淡入时长（秒）。")]
+        public float rootFadeInDuration  = 0.15f;
+        [Tooltip("格子被回收（滚出）时，根 CanvasGroup 的淡出时长（秒）。")]
+        public float rootFadeOutDuration = 0.12f;
+        [Tooltip("图标 / 背景框 图片就位（可能异步加载完成）后的淡入时长（秒）。")]
+        public float imageFadeDuration   = 0.15f;
+
+        // 根 / 图标 / 背景框 各自的在途淡入淡出句柄（打断旧动画、避免重叠写 alpha）。
+        private ToolkitTweenHandle _rootFade;
+        private ToolkitTweenHandle _iconFade;
+        private ToolkitTweenHandle _qualityBgFade;
+
+        // 缓存的图片就位回调（避免每次绑定分配闭包）。
+        private System.Action<bool> _onIconApplied;
+        private System.Action<bool> _onQualityBgApplied;
+
+        // 惰性根 CanvasGroup：预制体未挂则运行时补挂（默认 alpha=1 / 可交互 / 挡射线，不改变原有表现）。
+        private CanvasGroup _rootCanvasGroup;
+        /// <summary>本格根 CanvasGroup（惰性获取 / 补挂）。</summary>
+        protected CanvasGroup RootCanvasGroup
+        {
+            get
+            {
+                if (_rootCanvasGroup) return _rootCanvasGroup;
+                if (!TryGetComponent(out _rootCanvasGroup))
+                    _rootCanvasGroup = gameObject.AddComponent<CanvasGroup>();
+                return _rootCanvasGroup;
+            }
+        }
+
+        /// <summary>播放根淡入（alpha 0 → 1）。用于格子被分配（滚入）显示。</summary>
+        protected void PlayRootFadeIn()
+        {
+            var cg = RootCanvasGroup;
+            if (!cg) return;
+            _rootFade.Kill(false);
+            cg.blocksRaycasts = true;   // 恢复可点（淡出时被置 false）
+            cg.alpha = 0f;
+            _rootFade = ToolkitTween.FadeCanvasGroup(cg, 1f, rootFadeInDuration);
+        }
+
+        /// <summary>
+        /// 播放根淡出（alpha → 0），完成后回调 <paramref name="onComplete"/>（由列表引擎在此清空 / 归还格子）。
+        /// 淡出期间置 blocksRaycasts=false，避免对陈旧道具触发点击。CanvasGroup 缺失时立即回调。
+        /// </summary>
+        protected void PlayRootFadeOut(System.Action onComplete)
+        {
+            var cg = RootCanvasGroup;
+            if (!cg) { onComplete?.Invoke(); return; }
+            _rootFade.Kill(false);
+            cg.blocksRaycasts = false;
+            _rootFade = ToolkitTween.FadeCanvasGroup(cg, 0f, rootFadeOutDuration, onComplete: onComplete);
+        }
+
+        /// <summary>打断在途的根淡入 / 淡出（不触发其完成回调）。</summary>
+        protected void CancelRootFade() => _rootFade.Kill(false);
+
+        // 图标就位回调：有图 → 淡入；无图 → SpriteSlot 已禁用该 Image，复位 alpha 以防外部再启用。
+        private void OnIconApplied(bool hasSprite)
+        {
+            if (!iconImage) return;
+            _iconFade.Kill(false);
+            if (hasSprite) _iconFade = ToolkitTween.FadeGraphic(iconImage, 1f, imageFadeDuration);
+            else           SetImageAlpha(iconImage, 1f);
+        }
+
+        // 背景框就位回调：有图 → 淡入；无背景图 → 复位为实心底框（alpha 1，保留常驻底框观感）。
+        private void OnQualityBgApplied(bool hasSprite)
+        {
+            if (!qualityBackground) return;
+            _qualityBgFade.Kill(false);
+            if (hasSprite) _qualityBgFade = ToolkitTween.FadeGraphic(qualityBackground, 1f, imageFadeDuration);
+            else           SetImageAlpha(qualityBackground, 1f);
+        }
+
+        /// <summary>设置某图片的 alpha（不改变 RGB）。</summary>
+        protected static void SetImageAlpha(Image img, float a)
+        {
+            if (!img) return;
+            var c = img.color; c.a = a; img.color = c;
         }
 
         #endregion
