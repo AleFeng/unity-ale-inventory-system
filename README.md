@@ -26,8 +26,8 @@
 </p>
 
 # Ale Inventory System - 仓库系统
-Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件**，把 **道具 / 仓库 / 商店 / 制作 / 装备 / 技能** 六大子系统整合进同一套工具链。  
-它用一个 `InventoryDatabase` 资产集中配置六大子系统的**静态定义数据**（枚举类型、功能标签、道具模板、仓库、商店、蓝图、装备组、技能等），配套一整套**开箱即用的运行时 UI**（背包 / 商店 / 制作 / 装备 / 技能界面）与各自的**运行时管理器**（拥有数量、交易进度、制作产出、已装备道具、已学技能、存档均由管理器维护）。  
+Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件**，把 **道具 / 仓库 / 商店 / 制作 / 装备** 五大子系统整合进同一套工具链。  
+它用一个 `InventoryDatabase` 资产集中配置五大子系统的**静态定义数据**（枚举类型、功能标签、道具模板、仓库、商店、蓝图、装备组等），配套一整套**开箱即用的运行时 UI**（背包 / 商店 / 制作 / 装备界面）与各自的**运行时管理器**（拥有数量、交易进度、制作产出、已装备道具、存档均由管理器维护）。  
 面向**设计师**：编辑器始终且仅在 ScriptableObject 上工作，全程支持 Undo / Redo；`JSON` / 二进制仅作为**单向导出**格式。文本组件（TextMeshPro）、本地化（Unity Localization）、资源加载（Addressables）均通过**编译宏可选启用**，因此插件包本身不引入任何硬依赖。
 
 ![alt text](./Packages/com.ale.inventory/Docs~/Images/image.png)
@@ -37,7 +37,7 @@ Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件
   - [📜 目录](#-目录)
   - [简介](#简介)
     - [项目特性](#项目特性)
-    - [六大子系统](#六大子系统)
+    - [五大子系统](#五大子系统)
   - [💻 环境要求](#-环境要求)
   - [📦 安装](#-安装)
     - [使用 UPM（推荐）](#使用-upm推荐)
@@ -57,29 +57,29 @@ Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件
   - [📄 许可](#-许可)
 
 ## 简介
-大多数游戏都需要一套「道具 + 背包 + 商店 + 制作 + 装备 + 技能」的数据体系，但这些系统各自零散、互相耦合，反复造轮子成本高。Ale Inventory System 把它们收拢到**同一份数据资产**与**同一套编辑器**下：
+大多数游戏都需要一套「道具 + 背包 + 商店 + 制作 + 装备」的数据体系，但这些系统各自零散、互相耦合，反复造轮子成本高。Ale Inventory System 把它们收拢到**同一份数据资产**与**同一套编辑器**下：
 
-1. **集中配置** —— 一个 `InventoryDatabase` 承载六大子系统的全部静态定义，编辑器为「顶部系统页签 + 三列布局（定义配置 / 条目列表 / 详细 Inspector）」，支持模板过滤、搜索、拖拽重排、键盘导航、实时重复 ID 检查。
+1. **集中配置** —— 一个 `InventoryDatabase` 承载五大子系统的全部静态定义，编辑器为「顶部系统页签 + 三列布局（定义配置 / 条目列表 / 详细 Inspector）」，支持模板过滤、搜索、拖拽重排、键盘导航、实时重复 ID 检查。
 2. **灵活属性** —— 道具与各配置条目的字段由一套**灵活属性系统**承载（Bool / Int / Float / String / Text / Vector / Color / Enum / Sprite / Prefab / AudioClip / AnimationCurve… 每种都支持数组形态），可按功能标签成组增删，无需改代码即可扩展数据结构。
-3. **运行时开箱即用** —— 各子系统配套轻量运行时管理器与虚拟滚动 UI 组件，查询、增删、整理、交易、制作、装备、学习技能、存档 / 读档均有现成接口。
+3. **运行时开箱即用** —— 各子系统配套轻量运行时管理器与虚拟滚动 UI 组件，查询、增删、整理、交易、制作、装备、存档 / 读档均有现成接口。
 4. **零硬依赖** —— TextMeshPro / Localization / Addressables 全部经编译宏可选启用，未开启时插件照常工作。
 
 ### 项目特性
 | 特性 | 描述 |
 | --- | --- |
-| 单资产集中配置 | 一个 `InventoryDatabase` 集中六大子系统全部静态数据；编辑器仅在 ScriptableObject 上工作，全程 Undo / Redo。 |
+| 单资产集中配置 | 一个 `InventoryDatabase` 集中五大子系统全部静态数据；编辑器仅在 ScriptableObject 上工作，全程 Undo / Redo。 |
 | 灵活属性系统 | 20+ 字段类型（含数组形态）：Bool / Int / Float / String / **Text**（纯文本 fallback + 可选本地化引用）/ Vector2~4 / VectorInt / Color / Enum / StringIntPair / EnumIntPair / Sprite / Texture / Prefab / Material / AudioClip / AnimationClip / AnimationCurve / PhysicsMaterial。 |
 | 自定义枚举 + 功能标签 | 枚举值系统自动分配、永不复用、可拖拽重排；功能标签定义一组属性字段，增删标签自动增删道具对应字段，可锁定到模板。 |
-| 六大子系统一体化 | 道具 / 仓库 / 商店 / 制作 / 装备 / 技能，共享同一份数据与属性系统，条目互相引用（如技能挂在装备道具上、商店价格取自道具属性）。 |
-| 统一虚拟滚动 UI | 网格与顺序列表均为虚拟滚动（对象池 + 仅渲染可见区）；增量差异刷新、生成限速（`spawnPerSecond`）、逐格浮现，海量条目不卡顿。 |
-| 运行时管理器 | `InventoryDataManager`（查询）+ 仓库 / 商店 / 制作 / 装备 / 技能各自的运行时管理器，装备 / 技能状态与商店进度均可存档。 |
-| 单向导出 | `InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部配置数据**（六大子系统 20 个列表）；对象引用以 AssetGUID 承载，可选经 Addressable 异步加载。 |
+| 五大子系统一体化 | 道具 / 仓库 / 商店 / 制作 / 装备，共享同一份数据与属性系统，条目互相引用（如商店价格取自道具属性、装备加成汇总自道具属性）。 |
+| 统一虚拟滚动 UI | 网格与顺序列表均为虚拟滚动（对象池 + 仅渲染可见区）；增量差异刷新、生成限速（`spawnPerSecond`）、逐格浮现、分配 / 回收淡入淡出（下沉 toolkit 通用），海量条目不卡顿。 |
+| 运行时管理器 | `InventoryDataManager`（查询）+ 仓库 / 商店 / 制作 / 装备各自的运行时管理器，装备状态与商店进度均可存档。 |
+| 单向导出 | `InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部配置数据**（五大子系统 17 个列表）；对象引用以 AssetGUID 承载，可选经 Addressable 异步加载。 |
 | 三个可选宏 | TextMeshPro（`ATK_TMP`）/ Unity Localization（`ATK_LOCALIZATION`）/ Unity Addressables（`ATK_ADDRESSABLE`），在 **Ale Toolkit 欢迎窗口**一键开关并检测对应包是否安装（宏为项目级全局设定，已下沉 toolkit）；插件包本身零硬依赖。 |
 | 本地化工具 | 一键为 `InventoryDatabase` 生成 / 关联多语言表，遍历全库 `Text` 字段自动生成中文 Key 并回填条目（进度条 + 日志 + 取消）。 |
 | 欢迎窗口向导 | 统一入口：创建数据、打开编辑器 / 工具窗口、生成示例预制体，以及「一键生成完整可运行示例」（数据库 + 全部 UI 预制体 + 管理器）；界面语言与插件宏等全局设定跳转到 Ale Toolkit 欢迎窗口。 |
-| 编辑器界面三语 | 在 **Ale Toolkit 欢迎窗口**一键切换 **中文 / English / 日本語**，`Inventory Editor` 配置编辑器（六大系统全部面板）整体切换；选择持久化保存，与运行时内容本地化互不相关。 |
+| 编辑器界面三语 | 在 **Ale Toolkit 欢迎窗口**一键切换 **中文 / English / 日本語**，`Inventory Editor` 配置编辑器（五大系统全部面板）整体切换；选择持久化保存，与运行时内容本地化互不相关。 |
 
-### 六大子系统
+### 五大子系统
 | 子系统 | 配置内容 | 运行时管理器 |
 | --- | --- | --- |
 | **道具系统** | 枚举类型、功能标签、道具模板、道具 + 灵活属性 | `InventoryDataManager`（查询） |
@@ -87,7 +87,6 @@ Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件
 | **商店系统** | 商店模板、商店、商品组、价格来源、刷新计划 | `ShopRuntimeManager`（交易 + 进度存档） |
 | **制作系统** | 分组标签、蓝图模板、蓝图（配方）、制作仓库 | `CraftingRuntimeManager`（消耗 → 产出） |
 | **装备系统** | 分组标签、装备组模板、装备组（槽位列表 / 装备槽 / 道具限制 / 属性加成） | `EquipmentRuntimeManager`（装备 / 卸下 + 加成 + 存档） |
-| **技能系统** | 分组标签、技能模板、技能（类型 / 效果 / 数值 / 位阶 由自定义属性承载） | `SkillRuntimeManager`（已学状态 + 存档）+ `SkillCollector`（四来源采集） |
 
 > 每个子系统的完整配置与运行时说明见[详细文档](#-详细文档)。
 
@@ -98,7 +97,7 @@ Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件
 
 ## 📦 安装
 
-> ⚠️ **本插件依赖通用底层包 [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit)，必须先装它、再装本插件。** 自 1.8.0 起本插件依赖它；Unity Package Manager 不支持在 `package.json` 的 `dependencies` 里写 git URL，无法自动拉取，故**顺序不能颠倒**。用与下方相同的方式先安装 toolkit：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.2.0`。漏装或颠倒会报 `找不到 Ale.Toolkit.*` 一类编译错——补装 toolkit 并等重新编译即可，无需重装本插件。
+> ⚠️ **本插件依赖通用底层包 [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit)，必须先装它、再装本插件。** 自 1.8.0 起本插件依赖它；Unity Package Manager 不支持在 `package.json` 的 `dependencies` 里写 git URL，无法自动拉取，故**顺序不能颠倒**。用与下方相同的方式先安装 toolkit：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.5.1`。漏装或颠倒会报 `找不到 Ale.Toolkit.*` 一类编译错——补装 toolkit 并等重新编译即可，无需重装本插件。
 
 ### 使用 UPM（推荐）
 `Window > Package Manager` → 左上角 `+` → `Install package from git URL...` → 粘贴：
@@ -110,7 +109,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 这样装的是 `main` 的最新提交。**要固定版本，把 `#<tag>` 加在整条 URL 的最末尾**（必须在 `?path=` 之后）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.10.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.11.1
 ```
 
 可用的 tag 见 [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases)。
@@ -134,12 +133,12 @@ Project 面板右键 > Create > Inventory System > Inventory Database
 
 ### 2. 打开编辑器并配置
 - 选中 `.asset`，在 Inspector 顶部点击「在 Inventory Editor 中编辑」；或菜单 `Tools > Ale Toolkit > Inventory System > Inventory Editor`。
-- 编辑器为**顶部系统页签 + 三列布局**（左：定义配置 / 中：条目列表 / 右：详细 Inspector）。依次在「道具 / 仓库 / 商店 / 制作 / 装备 / 技能」页签中配置。中间条目列表支持模板过滤、搜索、拖拽重排、↑ / ↓ 键盘导航。
+- 编辑器为**顶部系统页签 + 三列布局**（左：定义配置 / 中：条目列表 / 右：详细 Inspector）。依次在「道具 / 仓库 / 商店 / 制作 / 装备」页签中配置。中间条目列表支持模板过滤、搜索、拖拽重排、↑ / ↓ 键盘导航。
 
 ### 3. 导出（可选）
 工具栏「导出 JSON」或「导出二进制」（存在非空重复 ID 时按钮禁用；空白 ID 条目导出时自动跳过）。编辑器始终在 ScriptableObject 上工作，导出为单向格式。
 
-> 自 **1.6.0（格式 v6）** 起，导出覆盖数据库的**全部**配置数据——六大子系统的 20 个列表都在内。此前只导出道具系统四项，其余静默丢弃。
+> 自 **1.6.0（格式 v6）** 起，导出覆盖数据库的**全部**配置数据——五大子系统的 17 个列表都在内。此前只导出道具系统四项，其余静默丢弃。
 
 ### 4. 运行时挂载
 在场景中新建 GameObject，添加 `InventoryRuntimeManager` 组件，把 `.asset` 拖入 `databases` 数组。游戏启动时自动注册数据库并初始化各仓库空状态。
@@ -163,7 +162,7 @@ InventoryRuntimeManager.Instance.ResetAll();
 ```
 
 ### 5. 一键 Demo
-在**欢迎窗口**展开「测试工具-预制体生成 → 生成全部」，一键生成完整可运行示例（数据库 + 全部 UI 预制体 + 背包 / 商店 / 制作 / 装备 / 技能面板 + 管理器）。
+在**欢迎窗口**展开「测试工具-预制体生成 → 生成全部」，一键生成完整可运行示例（数据库 + 全部 UI 预制体 + 背包 / 商店 / 制作 / 装备面板 + 管理器）。
 
 ## 🖥️ 欢迎窗口
 插件的统一入口面板，集中了「创建数据 / 打开编辑器 / 查看文档 / 生成示例」等库存领域操作。每次 Unity 会话首次会自动弹出一次，也可随时手动打开：
@@ -174,7 +173,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 
 ![alt text](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
 
-> **界面语言、枚举翻译、可选依赖宏均为项目级全局设定，自 1.10.0 起已下沉到 Ale Toolkit 欢迎窗口（`Tools > Ale Toolkit > Welcome`）统一配置。** 本窗口顶部提供「打开 Ale Toolkit 设置」按钮一键跳转；语言切换后 `Inventory Editor`（六大系统全部面板）随之刷新，仅影响编辑器界面文案，与运行时内容本地化无关。
+> **界面语言、枚举翻译、可选依赖宏均为项目级全局设定，自 1.10.0 起已下沉到 Ale Toolkit 欢迎窗口（`Tools > Ale Toolkit > Welcome`）统一配置。** 本窗口顶部提供「打开 Ale Toolkit 设置」按钮一键跳转；语言切换后 `Inventory Editor`（五大系统全部面板）随之刷新，仅影响编辑器界面文案，与运行时内容本地化无关。
 
 页眉之下自上而下：**「打开 Ale Toolkit 设置」跳转**、**快捷操作**（创建数据 / 打开各编辑器与工具窗口 / 一键生成示例预制体）、**数据模板**（指定一个 `InventoryDatabase` 作为新建蓝本）、**向导字体**（启用 `ATK_TMP` 时，供向导生成 Prefab）、**启动时自动显示**。
 
@@ -201,7 +200,6 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 - [商店系统](Packages/com.ale.inventory/Docs~/ShopSystem.md) — 商店类型 / 价格来源 / 商品组 / 刷新计划 / 交易 API
 - [制作系统](Packages/com.ale.inventory/Docs~/CraftingSystem.md) — 分组标签 / 蓝图模板 / 蓝图配方 / 制作仓库 / 制作 API
 - [装备系统](Packages/com.ale.inventory/Docs~/EquipmentSystem.md) — 分组标签 / 装备组模板 / 槽位列表 / 装备槽 / 道具限制 / 属性加成 / 装备 API
-- [技能系统](Packages/com.ale.inventory/Docs~/SkillSystem.md) — 分组标签 / 技能模板 / 技能 / 道具技能引用 / 位阶枚举 / 四种来源 / 已学技能 API
 - [属性系统](Packages/com.ale.inventory/Docs~/AttributeSystem.md) — 字段类型参考、`AttributeValue` 取值 / 显示 / 排序比较
 - [UI 组件指南](Packages/com.ale.inventory/Docs~/UIComponentGuide.md) — UI 组件、预制体制作、宏开关、Demo 向导
 - [架构说明](Packages/com.ale.inventory/Docs~/Architecture.md) — 设计目标、数据流、编辑器与运行时架构、扩展指南
@@ -212,14 +210,14 @@ Packages/com.ale.inventory/          ← 包根
 ├── package.json  CHANGELOG.md  LICENSE.md  README.md   ← 详细使用文档
 ├── Runtime/
 │   ├── Data/            数据模型（Item / Inventory / Shop / Crafting* / AttributeValue 等）
-│   ├── Manager/         DataManager / 仓库 / 商店 / 制作 / 装备 / 技能 运行时管理器 + SkillCollector
+│   ├── Manager/         DataManager / 仓库 / 商店 / 制作 / 装备 运行时管理器
 │   ├── Serialization/   DTO + JSON / 二进制序列化
 │   ├── Assets/          资源加载抽象（直接加载）
 │   ├── Addressables/    Addressable 资源加载支持
 │   ├── Localization/    TMP 文本 / 字体本地化事件
 │   └── UI/              运行时 UI 组件（Item / ItemList / Tab / Tool / View / Common）
 ├── Editor/
-│   ├── ItemSystem/ InventorySystem/ ShopSystem/ CraftingSystem/ EquipmentSystem/ SkillSystem/   ← 六大系统面板
+│   ├── ItemSystem/ InventorySystem/ ShopSystem/ CraftingSystem/ EquipmentSystem/   ← 五大系统面板
 │   ├── Common/         通用属性 / 配置绘制器 + 工具窗口基类
 │   ├── Addressables/   Addressable 资源引用迁移工具窗口
 │   ├── Localization/   本地化工具窗口（建表 / 生成中文 Key）

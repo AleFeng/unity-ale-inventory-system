@@ -26,8 +26,8 @@
 </p>
 
 # Ale Inventory System
-Ale Inventory System is a **data-driven inventory plugin** for `Unity` that unifies six subsystems — **Item / Warehouse / Shop / Crafting / Equipment / Skill** — into a single toolchain.  
-A single `InventoryDatabase` asset centralizes the **static definition data** of all six subsystems (enum types, function tags, item templates, warehouses, shops, blueprints, equipment groups, skills, and more), backed by a full set of **ready-to-use runtime UI** (inventory / shop / crafting / equipment / skill screens) and their respective **runtime managers** (owned counts, trade progress, crafted output, equipped items, learned skills, and save data are all maintained by the managers).  
+Ale Inventory System is a **data-driven inventory plugin** for `Unity` that unifies five subsystems — **Item / Warehouse / Shop / Crafting / Equipment** — into a single toolchain.  
+A single `InventoryDatabase` asset centralizes the **static definition data** of all five subsystems (enum types, function tags, item templates, warehouses, shops, blueprints, equipment groups, and more), backed by a full set of **ready-to-use runtime UI** (inventory / shop / crafting / equipment screens) and their respective **runtime managers** (owned counts, trade progress, crafted output, equipped items, and save data are all maintained by the managers).  
 It is **designed for designers**: the editor works exclusively on ScriptableObjects with full Undo / Redo, while `JSON` / binary serve only as **one-way export** formats. Text components (TextMeshPro), localization (Unity Localization), and asset loading (Addressables) are all **optional via compile-time macros**, so the package itself pulls in no hard dependencies.
 
 ![screenshot](./Packages/com.ale.inventory/Docs~/Images/image.png)
@@ -37,7 +37,7 @@ It is **designed for designers**: the editor works exclusively on ScriptableObje
   - [📜 Table of Contents](#-table-of-contents)
   - [Introduction](#introduction)
     - [Features](#features)
-    - [The Six Subsystems](#the-six-subsystems)
+    - [The Five Subsystems](#the-five-subsystems)
   - [💻 Requirements](#-requirements)
   - [📦 Installation](#-installation)
     - [Install via UPM (Recommended)](#install-via-upm-recommended)
@@ -57,11 +57,11 @@ It is **designed for designers**: the editor works exclusively on ScriptableObje
   - [📄 License](#-license)
 
 ## Introduction
-Almost every game needs an "items + inventory + shop + crafting + equipment + skills" data layer, yet these systems are usually scattered, tightly coupled, and expensive to reinvent each time. Ale Inventory System pulls them together under **one data asset** and **one editor**:
+Almost every game needs an "items + inventory + shop + crafting + equipment" data layer, yet these systems are usually scattered, tightly coupled, and expensive to reinvent each time. Ale Inventory System pulls them together under **one data asset** and **one editor**:
 
-1. **Centralized configuration** — a single `InventoryDatabase` holds every static definition across all six subsystems. The editor uses a "top system tabs + three-column layout (definitions / entry list / detail Inspector)" and supports template filtering, search, drag-to-reorder, keyboard navigation, and live duplicate-ID checking.
+1. **Centralized configuration** — a single `InventoryDatabase` holds every static definition across all five subsystems. The editor uses a "top system tabs + three-column layout (definitions / entry list / detail Inspector)" and supports template filtering, search, drag-to-reorder, keyboard navigation, and live duplicate-ID checking.
 2. **Flexible attributes** — the fields on items and every config entry are carried by a **flexible attribute system** (Bool / Int / Float / String / Text / Vector / Color / Enum / Sprite / Prefab / AudioClip / AnimationCurve… each also supports an array form). Fields can be added or removed in groups by function tag, letting you extend the data schema without touching code.
-3. **Runtime out of the box** — each subsystem ships with a lightweight runtime manager and virtual-scrolling UI components; querying, adding/removing, sorting, trading, crafting, equipping, learning skills, and save/load all have ready-made APIs.
+3. **Runtime out of the box** — each subsystem ships with a lightweight runtime manager and virtual-scrolling UI components; querying, adding/removing, sorting, trading, crafting, equipping, and save/load all have ready-made APIs.
 4. **Zero hard dependencies** — TextMeshPro / Localization / Addressables are all optional via compile-time macros; the plugin works fine with them turned off.
 
 ![screenshot](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
@@ -69,19 +69,19 @@ Almost every game needs an "items + inventory + shop + crafting + equipment + sk
 ### Features
 | Feature | Description |
 | --- | --- |
-| Single-asset configuration | One `InventoryDatabase` centralizes all static data for the six subsystems; the editor works only on ScriptableObjects, with full Undo / Redo. |
+| Single-asset configuration | One `InventoryDatabase` centralizes all static data for the five subsystems; the editor works only on ScriptableObjects, with full Undo / Redo. |
 | Flexible attribute system | 20+ field types (each with an array form): Bool / Int / Float / String / **Text** (plain-text fallback + optional localization reference) / Vector2~4 / VectorInt / Color / Enum / StringIntPair / EnumIntPair / Sprite / Texture / Prefab / Material / AudioClip / AnimationClip / AnimationCurve / PhysicsMaterial. |
 | Custom enums + function tags | Enum values are auto-assigned by the system, never reused, and can be reordered by drag; a function tag defines a group of attribute fields, and adding/removing a tag adds/removes the item's corresponding fields — tags can be locked onto templates. |
-| Six subsystems, unified | Item / Warehouse / Shop / Crafting / Equipment / Skill share the same data and attribute system, and entries cross-reference each other (e.g. skills attached to equippable items, shop prices sourced from item attributes). |
-| Unified virtual-scroll UI | Both grid and ordered lists are virtual-scrolling (object pooling + only visible cells rendered); incremental diff refresh, spawn rate limiting (`spawnPerSecond`), and per-cell fade-in keep huge lists smooth. |
-| Runtime managers | `InventoryDataManager` (queries) plus dedicated runtime managers for Warehouse / Shop / Crafting / Equipment / Skill — equipment & skill state and shop progress can all be saved. |
-| One-way export | `InventoryDtoMapper` → JSON / binary, **covering every piece of database config** (all 20 lists across the six subsystems); object references are carried as AssetGUIDs and can be loaded asynchronously via Addressables. |
+| Five subsystems, unified | Item / Warehouse / Shop / Crafting / Equipment share the same data and attribute system, and entries cross-reference each other (e.g. shop prices sourced from item attributes, equipment bonuses aggregated from item attributes). |
+| Unified virtual-scroll UI | Both grid and ordered lists are virtual-scrolling (object pooling + only visible cells rendered); incremental diff refresh, spawn rate limiting (`spawnPerSecond`), per-cell staggered reveal, and assign / recycle fade in-out (shared via toolkit) keep huge lists smooth. |
+| Runtime managers | `InventoryDataManager` (queries) plus dedicated runtime managers for Warehouse / Shop / Crafting / Equipment — equipment state and shop progress can all be saved. |
+| One-way export | `InventoryDtoMapper` → JSON / binary, **covering every piece of database config** (all 17 lists across the five subsystems); object references are carried as AssetGUIDs and can be loaded asynchronously via Addressables. |
 | Three optional macros | TextMeshPro (`ATK_TMP`) / Unity Localization (`ATK_LOCALIZATION`) / Unity Addressables (`ATK_ADDRESSABLE`), toggled in the **Ale Toolkit Welcome Window** (project-level global settings, sunk to toolkit; it also detects whether the corresponding package is installed); the package itself has zero hard dependencies. |
 | Localization tooling | One click to generate / link localization tables for an `InventoryDatabase`, then walk every `Text` field in the database to auto-generate keys and write them back to entries (progress bar + log + cancel). |
 | Welcome Window wizard | A single entry point: create data, open the editor / tool windows, generate sample prefabs, and "generate a complete runnable sample in one click" (database + all UI prefabs + managers); global settings such as editor language and feature macros jump to the Ale Toolkit Welcome Window. |
-| Trilingual editor UI | Switch between **中文 / English / 日本語** in the **Ale Toolkit Welcome Window**; the `Inventory Editor` configuration window (every panel across all six subsystems) switches together. The choice is persisted, and it is unrelated to runtime content localization. |
+| Trilingual editor UI | Switch between **中文 / English / 日本語** in the **Ale Toolkit Welcome Window**; the `Inventory Editor` configuration window (every panel across all five subsystems) switches together. The choice is persisted, and it is unrelated to runtime content localization. |
 
-### The Six Subsystems
+### The Five Subsystems
 | Subsystem | What you configure | Runtime manager |
 | --- | --- | --- |
 | **Item** | Enum types, function tags, item templates, items + flexible attributes | `InventoryDataManager` (queries) |
@@ -89,7 +89,6 @@ Almost every game needs an "items + inventory + shop + crafting + equipment + sk
 | **Shop** | Shop templates, shops, product groups, price sources, refresh schedules | `ShopRuntimeManager` (trades + progress save) |
 | **Crafting** | Group tags, blueprint templates, blueprints (recipes), crafting warehouses | `CraftingRuntimeManager` (consume → produce) |
 | **Equipment** | Group tags, equipment-group templates, equipment groups (slot lists / slots / item limits / attribute bonuses) | `EquipmentRuntimeManager` (equip / unequip + bonuses + save) |
-| **Skill** | Group tags, skill templates, skills (type / effect / values / tier carried by custom attributes) | `SkillRuntimeManager` (learned state + save) + `SkillCollector` (four-source collection) |
 
 > See the [full documentation](#-documentation) for each subsystem's complete configuration and runtime details.
 
@@ -100,7 +99,7 @@ Almost every game needs an "items + inventory + shop + crafting + equipment + sk
 
 ## 📦 Installation
 
-> ⚠️ **This plugin depends on the shared foundation package [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) — install it first, then this plugin.** It has depended on it since 1.8.0; Unity's Package Manager cannot auto-pull git-URL `dependencies`, so **the order must not be reversed**. Install toolkit the same way as below first: `https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.2.0`. If it is missing or the order is reversed you will get `Ale.Toolkit.* not found` compile errors — just install toolkit and wait for the recompile, no need to reinstall this plugin.
+> ⚠️ **This plugin depends on the shared foundation package [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) — install it first, then this plugin.** It has depended on it since 1.8.0; Unity's Package Manager cannot auto-pull git-URL `dependencies`, so **the order must not be reversed**. Install toolkit the same way as below first: `https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.5.1`. If it is missing or the order is reversed you will get `Ale.Toolkit.* not found` compile errors — just install toolkit and wait for the recompile, no need to reinstall this plugin.
 
 ### Install via UPM (Recommended)
 `Window > Package Manager` → the `+` in the top-left → `Install package from git URL...` → paste:
@@ -112,7 +111,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 This installs the latest commit on `main`. **To pin a version, append `#<tag>` to the very end of the URL** (it must come after `?path=`):
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.10.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.11.1
 ```
 
 See [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) for available tags.
@@ -136,12 +135,12 @@ Right-click in the Project panel > Create > Inventory System > Inventory Databas
 
 ### 2. Open the Editor and Configure
 - Select the `.asset` and click "Edit in Inventory Editor" at the top of the Inspector; or use the menu `Tools > Ale Toolkit > Inventory System > Inventory Editor`.
-- The editor uses **top system tabs + a three-column layout** (left: definitions / middle: entry list / right: detail Inspector). Configure each of the "Item / Warehouse / Shop / Crafting / Equipment / Skill" tabs in turn. The middle entry list supports template filtering, search, drag-to-reorder, and ↑ / ↓ keyboard navigation.
+- The editor uses **top system tabs + a three-column layout** (left: definitions / middle: entry list / right: detail Inspector). Configure each of the "Item / Warehouse / Shop / Crafting / Equipment" tabs in turn. The middle entry list supports template filtering, search, drag-to-reorder, and ↑ / ↓ keyboard navigation.
 
 ### 3. Export (Optional)
 Use the toolbar's "Export JSON" or "Export Binary" (the buttons are disabled while any non-empty duplicate ID exists; entries with a blank ID are skipped on export). The editor always works on ScriptableObjects, with export being a one-way format.
 
-> As of **1.6.0 (format v6)** the export covers **all** of the database's config data — all 20 lists across the six subsystems. Earlier versions exported only the four Item System lists and silently dropped the rest.
+> As of **1.6.0 (format v6)** the export covers **all** of the database's config data — all 17 lists across the five subsystems. Earlier versions exported only the four Item System lists and silently dropped the rest.
 
 ### 4. Runtime Setup
 Create a GameObject in your scene, add the `InventoryRuntimeManager` component, and drag the `.asset` into the `databases` array. On game start the database is registered automatically and each warehouse is initialized to an empty state.
@@ -165,7 +164,7 @@ InventoryRuntimeManager.Instance.ResetAll();
 ```
 
 ### 5. One-Click Demo
-In the **Welcome Window**, expand "Test Tools – Prefab Generation → Generate All" to produce a complete runnable sample in one click (database + all UI prefabs + inventory / shop / crafting / equipment / skill screens + managers).
+In the **Welcome Window**, expand "Test Tools – Prefab Generation → Generate All" to produce a complete runnable sample in one click (database + all UI prefabs + inventory / shop / crafting / equipment screens + managers).
 
 ## 🖥️ Welcome Window
 The plugin's unified entry panel, gathering common inventory-domain actions such as "create data / open editors / view docs / generate samples". It pops up automatically the first time each Unity session, and can be opened manually at any time:
@@ -176,7 +175,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 
 ![screenshot](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
 
-> **Editor UI language, enum translation, and the optional feature macros are all project-level global settings; since 1.10.0 they live in the Ale Toolkit Welcome Window (`Tools > Ale Toolkit > Welcome`).** This window offers an "Open Ale Toolkit Settings" button at the top for quick access; switching the language refreshes the `Inventory Editor` (all six subsystem panels). It affects editor UI text only and is unrelated to runtime content localization.
+> **Editor UI language, enum translation, and the optional feature macros are all project-level global settings; since 1.10.0 they live in the Ale Toolkit Welcome Window (`Tools > Ale Toolkit > Welcome`).** This window offers an "Open Ale Toolkit Settings" button at the top for quick access; switching the language refreshes the `Inventory Editor` (all five subsystem panels). It affects editor UI text only and is unrelated to runtime content localization.
 
 Below the header, top to bottom: the **"Open Ale Toolkit Settings" jump**, **Quick Actions** (create data / open the various editor and tool windows / generate sample prefabs in one click), **Data Template** (pick an `InventoryDatabase` as the blueprint for new files), **Wizard Fonts** (when `ATK_TMP` is enabled; for wizard-generated prefabs), and **Show on Startup**.
 
@@ -203,7 +202,6 @@ Subsystem and reference docs (under `Packages/com.ale.inventory/Docs~/`):
 - [Shop System](Packages/com.ale.inventory/Docs~/ShopSystem_EN.md) — shop types / price sources / product groups / refresh schedules / trade API
 - [Crafting System](Packages/com.ale.inventory/Docs~/CraftingSystem_EN.md) — group tags / blueprint templates / blueprint recipes / crafting warehouses / crafting API
 - [Equipment System](Packages/com.ale.inventory/Docs~/EquipmentSystem_EN.md) — group tags / equipment-group templates / slot lists / slots / item limits / attribute bonuses / equip API
-- [Skill System](Packages/com.ale.inventory/Docs~/SkillSystem_EN.md) — group tags / skill templates / skills / item skill references / tier enums / four sources / learned-skill API
 - [Attribute System](Packages/com.ale.inventory/Docs~/AttributeSystem_EN.md) — field-type reference, `AttributeValue` retrieval / display / sort comparison
 - [UI Component Guide](Packages/com.ale.inventory/Docs~/UIComponentGuide_EN.md) — UI components, prefab authoring, feature macros, demo wizard
 - [Architecture](Packages/com.ale.inventory/Docs~/Architecture_EN.md) — design goals, data flow, editor & runtime architecture, extension guide
@@ -214,14 +212,14 @@ Packages/com.ale.inventory/          ← package root
 ├── package.json  CHANGELOG.md  LICENSE.md  README.md   ← detailed usage docs
 ├── Runtime/
 │   ├── Data/            Data models (Item / Inventory / Shop / Crafting* / AttributeValue, etc.)
-│   ├── Manager/         DataManager / Warehouse / Shop / Crafting / Equipment / Skill runtime managers + SkillCollector
+│   ├── Manager/         DataManager / Warehouse / Shop / Crafting / Equipment runtime managers
 │   ├── Serialization/   DTO + JSON / binary serialization
 │   ├── Assets/          Asset-loading abstraction (direct loading)
 │   ├── Addressables/    Addressables asset-loading support
 │   ├── Localization/    TMP text / font localization events
 │   └── UI/              Runtime UI components (Item / ItemList / Tab / Tool / View / Common)
 ├── Editor/
-│   ├── ItemSystem/ InventorySystem/ ShopSystem/ CraftingSystem/ EquipmentSystem/ SkillSystem/   ← the six system panels
+│   ├── ItemSystem/ InventorySystem/ ShopSystem/ CraftingSystem/ EquipmentSystem/   ← the five system panels
 │   ├── Common/         Shared attribute / config drawers + tool-window base class
 │   ├── Addressables/   Addressables asset-reference migration tool window
 │   ├── Localization/   Localization tool window (table creation / key generation)

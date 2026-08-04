@@ -6,6 +6,27 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.11.1] - 2026-08-04
+
+列表 UI 的一次「淡入淡出 + 去重下沉」迭代：为虚拟滚动列表的单元格加入**分配（滚入）淡入 / 回收（滚出）淡出**，并把该能力**下沉为 `com.ale.toolkit` 的通用基类与接口**，令所有列表（背包 / 商店 / 制作 / 装备候选）统一获得。**纯 UI / 运行时层改动，导出 DTO 与数据零变化。**
+
+### 新增
+
+- **列表单元格淡入淡出**：滚动时格子被分配 → 整格根 `CanvasGroup` 淡入；被回收 → 淡出后再清空归还（虚拟列表引擎在回收时保持格子存活播放淡出，完成后统一清空 / 归还对象池）。道具格额外支持**图标 / 品质背景框的「加载门控」逐图片淡入**——Sprite（可能经 Addressable 异步加载）就位后该图片才淡入。时长可在格子 Inspector 调整（`rootFadeInDuration` / `rootFadeOutDuration` / `imageFadeDuration`）。
+- **淡入淡出下沉为 toolkit 通用能力**：新增 `UiwListFadeCell`（根 CanvasGroup 淡入淡出基类）+ `IUiwRecycleFadeCell` / `IUiwDiffCell<TData>` 接口，由 `UiwVirtualListBase` 的默认 hook 自动驱动——**任何继承 `UiwListFadeCell` 的单元格白得对称淡入淡出**。本插件 `UiwInventoryItemBase` 改继承之，故背包 / 商店 / 制作 / 装备候选列表统一生效。
+
+### 变更
+
+- **依赖 `com.ale.toolkit` 升级**：需要 toolkit 新增的 `UiwListFadeCell` / `IUiwRecycleFadeCell` / `IUiwDiffCell` 与 `UiwVirtualListBase` 默认 hook（`ToolkitTween` 亦新增 `Graphic` / `Image` 的 alpha 淡入）。安装顺序不变：先 `com.ale.toolkit`、再本插件。
+- **悬停高亮 / 堆叠已满提示**的淡入由手写协程迁至 `ToolkitTween`（统一走中央 Tween 作业表；回收 / 停用时打断并复位，顺带修复「悬停中被回收 → 复用格残留高亮」的隐患）。
+- **回收淡出 / 增量差异下沉引擎默认**：两个背包列表删除各自的 `TryPlayRecycleAnim` / `CancelRecycleAnim` / `NeedsRebind` override，改由 `UiwVirtualListBase` 默认 hook 经接口驱动（`UiwInventoryItemSlotBase` 实现 `IUiwDiffCell<RuntimeItemSlot>`，既有 `MatchesSlot` 即满足）。
+- **命名规范化**：文本别名 `InventoryText` → `UiText`（多处 UI 脚本）；列表脚本 `UiwGridItemList` / `UiwOrderItemList` → `UiwInventoryItemGridList` / `UiwInventoryItemOrderList`（`.meta` GUID 保留，预制体引用不受影响）；若干虚拟列表脚本命名统一。
+
+### 说明
+
+- 网格空槽（拖拽落点）在生成时也会淡入（原为即时），功能无碍。
+- 若某单元格的根 CanvasGroup 另作它用、与淡入淡出冲突，可 override toolkit `UiwListFadeCell.RecycleFadeEnabled => false` 退出通用淡入淡出。
+
 ## [1.11.0] - 2026-08-02
 
 ### 移除

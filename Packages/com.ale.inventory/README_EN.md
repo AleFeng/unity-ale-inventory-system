@@ -69,7 +69,8 @@ Located under `Runtime/UI/`, assembly `Ale.Inventory.Runtime.UI`, namespace `Ale
 - **List performance and experience** (built into the engine):
   - **Incremental diff refresh** — on content change, only the visible cells whose data changed are rebound (drag-swap / stacking is usually just 2 cells); icons don't flicker and scroll position is preserved.
   - **Spawn / assignment rate limiting** (`spawnPerSecond`, default 30/sec) — amortizes instantiation and binding across multiple frames to avoid single-frame spikes or asset-loading congestion (with a budget cap to prevent an "opening-frame" burst).
-  - **Per-cell fade-in following scroll direction** — cells appear in the order they enter the viewport (top-down when scrolling down, bottom-up when scrolling up).
+  - **Per-cell staggered reveal following scroll direction** — cells appear in the order they enter the viewport (top-down when scrolling down, bottom-up when scrolling up).
+  - **Assign / recycle fade in-out** — a cell fades its whole root `CanvasGroup` in when assigned (scrolled in) and out before being cleared / returned when recycled (scrolled out); item cells additionally fade their icon / quality-background in per-image once the sprite (possibly loaded asynchronously via Addressables) is ready. Driven generically by the toolkit `UiwListFadeCell` + `UiwVirtualListBase` default hooks (via the `IUiwRecycleFadeCell` / `IUiwDiffCell` interfaces), so every system's list has it.
 - **Reusable building blocks**: the tab strip `UiwTabStrip`, child-item pool `UiwWidgetPool`, hover-tooltip bases
   `UiwTooltipBase` / `UiwHoverTooltipSource`, icon slot `SpriteSlot` and number / price formatter `UIFormat` — prefer
   reusing these when extending the UI; see

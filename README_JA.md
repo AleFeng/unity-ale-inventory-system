@@ -26,8 +26,8 @@
 </p>
 
 # Ale Inventory System - インベントリシステム
-Ale Inventory System は `Unity` 向けの**データ駆動インベントリプラグイン**で、**アイテム / 倉庫 / ショップ / クラフト / 装備 / スキル** という 6 つのサブシステムを一つのツールチェーンに統合します。  
-1 つの `InventoryDatabase` アセットで、6 つのサブシステムすべての**静的な定義データ**（列挙型、機能タグ、アイテムテンプレート、倉庫、ショップ、ブループリント、装備グループ、スキルなど）を一元管理し、**そのまま使えるランタイム UI 一式**（バックパック / ショップ / クラフト / 装備 / スキル画面）と、それぞれの**ランタイムマネージャー**（所持数、取引の進捗、クラフト成果物、装備中アイテム、習得済みスキル、セーブデータはすべてマネージャーが管理）を備えています。  
+Ale Inventory System は `Unity` 向けの**データ駆動インベントリプラグイン**で、**アイテム / 倉庫 / ショップ / クラフト / 装備** という 5 つのサブシステムを一つのツールチェーンに統合します。  
+1 つの `InventoryDatabase` アセットで、5 つのサブシステムすべての**静的な定義データ**（列挙型、機能タグ、アイテムテンプレート、倉庫、ショップ、ブループリント、装備グループなど）を一元管理し、**そのまま使えるランタイム UI 一式**（バックパック / ショップ / クラフト / 装備画面）と、それぞれの**ランタイムマネージャー**（所持数、取引の進捗、クラフト成果物、装備中アイテム、セーブデータはすべてマネージャーが管理）を備えています。  
 **デザイナー向け**の設計です：エディタは常に ScriptableObject のみを対象に動作し、Undo / Redo に完全対応。`JSON` / バイナリは**一方向のエクスポート**フォーマットとしてのみ使われます。テキストコンポーネント（TextMeshPro）、ローカライズ（Unity Localization）、アセット読み込み（Addressables）はいずれも**コンパイルマクロで任意に有効化**でき、パッケージ本体はハード依存を一切持ち込みません。
 
 ![スクリーンショット](./Packages/com.ale.inventory/Docs~/Images/image.png)
@@ -37,7 +37,7 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
   - [📜 目次](#-目次)
   - [概要](#概要)
     - [主な特徴](#主な特徴)
-    - [6 つのサブシステム](#6-つのサブシステム)
+    - [5 つのサブシステム](#5-つのサブシステム)
   - [💻 動作環境](#-動作環境)
   - [📦 インストール](#-インストール)
     - [UPM を使う（推奨）](#upm-を使う推奨)
@@ -57,11 +57,11 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
   - [📄 ライセンス](#-ライセンス)
 
 ## 概要
-ほとんどのゲームは「アイテム + バックパック + ショップ + クラフト + 装備 + スキル」というデータ体系を必要としますが、これらのシステムは散り散りで互いに密結合になりがちで、毎回作り直すコストは高くつきます。Ale Inventory System はそれらを**一つのデータアセット**と**一つのエディタ**の下にまとめます：
+ほとんどのゲームは「アイテム + バックパック + ショップ + クラフト + 装備」というデータ体系を必要としますが、これらのシステムは散り散りで互いに密結合になりがちで、毎回作り直すコストは高くつきます。Ale Inventory System はそれらを**一つのデータアセット**と**一つのエディタ**の下にまとめます：
 
-1. **一元的な設定** —— 1 つの `InventoryDatabase` が 6 つのサブシステムすべての静的定義を保持します。エディタは「上部のシステムタブ + 3 カラムレイアウト（定義設定 / エントリ一覧 / 詳細 Inspector）」で、テンプレートフィルタ、検索、ドラッグ並べ替え、キーボード操作、リアルタイムの ID 重複チェックに対応します。
+1. **一元的な設定** —— 1 つの `InventoryDatabase` が 5 つのサブシステムすべての静的定義を保持します。エディタは「上部のシステムタブ + 3 カラムレイアウト（定義設定 / エントリ一覧 / 詳細 Inspector）」で、テンプレートフィルタ、検索、ドラッグ並べ替え、キーボード操作、リアルタイムの ID 重複チェックに対応します。
 2. **柔軟な属性** —— アイテムや各設定エントリのフィールドは、**柔軟な属性システム**（Bool / Int / Float / String / Text / Vector / Color / Enum / Sprite / Prefab / AudioClip / AnimationCurve… いずれも配列形式に対応）で表現されます。機能タグ単位でまとめて追加・削除でき、コードを触らずにデータ構造を拡張できます。
-3. **ランタイムはすぐ使える** —— 各サブシステムには軽量なランタイムマネージャーと仮想スクロール UI コンポーネントが付属し、検索、追加・削除、整理、取引、クラフト、装備、スキル習得、セーブ / ロードのいずれにも既製の API が用意されています。
+3. **ランタイムはすぐ使える** —— 各サブシステムには軽量なランタイムマネージャーと仮想スクロール UI コンポーネントが付属し、検索、追加・削除、整理、取引、クラフト、装備、セーブ / ロードのいずれにも既製の API が用意されています。
 4. **ハード依存ゼロ** —— TextMeshPro / Localization / Addressables はすべてコンパイルマクロで任意に有効化でき、無効のままでもプラグインは問題なく動作します。
 
 ![スクリーンショット](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
@@ -69,19 +69,19 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
 ### 主な特徴
 | 特徴 | 説明 |
 | --- | --- |
-| 単一アセットで一元管理 | 1 つの `InventoryDatabase` が 6 サブシステムの静的データをすべて集約。エディタは ScriptableObject のみを対象に動作し、Undo / Redo に完全対応。 |
+| 単一アセットで一元管理 | 1 つの `InventoryDatabase` が 5 サブシステムの静的データをすべて集約。エディタは ScriptableObject のみを対象に動作し、Undo / Redo に完全対応。 |
 | 柔軟な属性システム | 20 種類以上のフィールド型（いずれも配列形式あり）：Bool / Int / Float / String / **Text**（プレーンテキストのフォールバック + 任意のローカライズ参照）/ Vector2〜4 / VectorInt / Color / Enum / StringIntPair / EnumIntPair / Sprite / Texture / Prefab / Material / AudioClip / AnimationClip / AnimationCurve / PhysicsMaterial。 |
 | カスタム列挙 + 機能タグ | 列挙値はシステムが自動採番し、再利用されず、ドラッグで並べ替え可能。機能タグは一組の属性フィールドを定義し、タグの増減でアイテム側の対応フィールドも自動で増減、タグはテンプレートに固定できます。 |
-| 6 サブシステム一体化 | アイテム / 倉庫 / ショップ / クラフト / 装備 / スキルが同じデータと属性システムを共有し、エントリ同士が相互参照します（例：装備アイテムに紐づくスキル、アイテム属性から取得するショップ価格）。 |
-| 統一された仮想スクロール UI | グリッドも順序リストも仮想スクロール（オブジェクトプール + 可視セルのみ描画）。差分による増分リフレッシュ、生成レート制限（`spawnPerSecond`）、セルごとのフェードインで大量のエントリでも快適です。 |
-| ランタイムマネージャー | `InventoryDataManager`（クエリ）に加え、倉庫 / ショップ / クラフト / 装備 / スキルそれぞれの専用ランタイムマネージャー。装備・スキルの状態やショップの進捗はいずれもセーブ可能です。 |
-| 一方向エクスポート | `InventoryDtoMapper` → JSON / バイナリ。**データベースの設定データを全て網羅**（6 サブシステムの 20 リスト）。オブジェクト参照は AssetGUID として保持され、Addressables 経由で非同期読み込みも可能です。 |
+| 5 サブシステム一体化 | アイテム / 倉庫 / ショップ / クラフト / 装備が同じデータと属性システムを共有し、エントリ同士が相互参照します（例：アイテム属性から取得するショップ価格、アイテム属性から集計する装備ボーナス）。 |
+| 統一された仮想スクロール UI | グリッドも順序リストも仮想スクロール（オブジェクトプール + 可視セルのみ描画）。差分による増分リフレッシュ、生成レート制限（`spawnPerSecond`）、セルの順次表示、割り当て / 回収時のフェードイン・アウト（toolkit に共通化）で大量のエントリでも快適です。 |
+| ランタイムマネージャー | `InventoryDataManager`（クエリ）に加え、倉庫 / ショップ / クラフト / 装備それぞれの専用ランタイムマネージャー。装備の状態やショップの進捗はいずれもセーブ可能です。 |
+| 一方向エクスポート | `InventoryDtoMapper` → JSON / バイナリ。**データベースの設定データを全て網羅**（5 サブシステムの 17 リスト）。オブジェクト参照は AssetGUID として保持され、Addressables 経由で非同期読み込みも可能です。 |
 | 3 つのオプションマクロ | TextMeshPro（`ATK_TMP`）/ Unity Localization（`ATK_LOCALIZATION`）/ Unity Addressables（`ATK_ADDRESSABLE`）。いずれも **Ale Toolkit ウェルカムウィンドウ**からワンクリックで切り替え可能（プロジェクト単位のグローバル設定で toolkit に集約。対応パッケージの導入有無も検出）。パッケージ本体はハード依存ゼロ。 |
 | ローカライズツール | `InventoryDatabase` 向けの多言語テーブルをワンクリックで生成 / 関連付けし、データベース内のすべての `Text` フィールドを走査してキーを自動生成、エントリへ書き戻します（プログレスバー + ログ + キャンセル対応）。 |
 | ウェルカムウィンドウのウィザード | データ作成、エディタ / ツールウィンドウの起動、サンプルプレハブ生成、そして「完全に動作するサンプルをワンクリック生成」（データベース + 全 UI プレハブ + マネージャー）を一箇所にまとめた入口です。エディタ言語やマクロなどのグローバル設定は Ale Toolkit ウェルカムウィンドウへ移動します。 |
-| エディタ UI の 3 言語対応 | **Ale Toolkit ウェルカムウィンドウ**から **中文 / English / 日本語** をワンクリックで切り替え。`Inventory Editor` 設定エディタ（6 サブシステムの全パネル）が一括で切り替わります。選択は永続化され、ランタイムのコンテンツローカライズとは無関係です。 |
+| エディタ UI の 3 言語対応 | **Ale Toolkit ウェルカムウィンドウ**から **中文 / English / 日本語** をワンクリックで切り替え。`Inventory Editor` 設定エディタ（5 サブシステムの全パネル）が一括で切り替わります。選択は永続化され、ランタイムのコンテンツローカライズとは無関係です。 |
 
-### 6 つのサブシステム
+### 5 つのサブシステム
 | サブシステム | 設定する内容 | ランタイムマネージャー |
 | --- | --- | --- |
 | **アイテム** | 列挙型、機能タグ、アイテムテンプレート、アイテム + 柔軟な属性 | `InventoryDataManager`（クエリ） |
@@ -89,7 +89,6 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
 | **ショップ** | ショップテンプレート、ショップ、商品グループ、価格ソース、更新スケジュール | `ShopRuntimeManager`（取引 + 進捗セーブ） |
 | **クラフト** | グループタグ、ブループリントテンプレート、ブループリント（レシピ）、クラフト倉庫 | `CraftingRuntimeManager`（消費 → 産出） |
 | **装備** | グループタグ、装備グループテンプレート、装備グループ（スロットリスト / 装備スロット / アイテム制限 / 属性ボーナス） | `EquipmentRuntimeManager`（装備 / 解除 + ボーナス + セーブ） |
-| **スキル** | グループタグ、スキルテンプレート、スキル（種類 / 効果 / 数値 / 位階をカスタム属性で表現） | `SkillRuntimeManager`（習得状態 + セーブ）+ `SkillCollector`（4 ソース収集） |
 
 > 各サブシステムの詳しい設定とランタイムの説明は[ドキュメント](#-ドキュメント)を参照してください。
 
@@ -100,7 +99,7 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
 
 ## 📦 インストール
 
-> ⚠️ **本プラグインは共通基盤パッケージ [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) に依存します。先に toolkit を、その後に本プラグインをインストールしてください。** 1.8.0 以降これに依存します。Unity の Package Manager は `package.json` の `dependencies` での git URL を自動取得できないため、**順序を逆にしないでください**。下と同じ方法でまず toolkit をインストール：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.2.0`。未インストールや順序が逆だと `Ale.Toolkit.* が見つかりません` といったコンパイルエラーになります。toolkit を追加インストールして再コンパイルを待つだけでよく、本プラグインの再インストールは不要です。
+> ⚠️ **本プラグインは共通基盤パッケージ [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) に依存します。先に toolkit を、その後に本プラグインをインストールしてください。** 1.8.0 以降これに依存します。Unity の Package Manager は `package.json` の `dependencies` での git URL を自動取得できないため、**順序を逆にしないでください**。下と同じ方法でまず toolkit をインストール：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.5.1`。未インストールや順序が逆だと `Ale.Toolkit.* が見つかりません` といったコンパイルエラーになります。toolkit を追加インストールして再コンパイルを待つだけでよく、本プラグインの再インストールは不要です。
 
 ### UPM を使う（推奨）
 `Window > Package Manager` → 左上の `+` → `Install package from git URL...` → 次を貼り付け：
@@ -112,7 +111,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 これで `main` の最新コミットが入ります。**バージョンを固定するには、URL の末尾に `#<tag>` を付けます**（必ず `?path=` の後ろに）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.10.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.11.1
 ```
 
 利用可能なタグは [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) を参照してください。
@@ -136,12 +135,12 @@ Project パネルで右クリック > Create > Inventory System > Inventory Data
 
 ### 2. エディタを開いて設定
 - `.asset` を選択し、Inspector 上部の「Inventory Editor で編集」をクリック。または、メニューの `Tools > Ale Toolkit > Inventory System > Inventory Editor`。
-- エディタは**上部のシステムタブ + 3 カラムレイアウト**（左：定義設定 / 中：エントリ一覧 / 右：詳細 Inspector）です。「アイテム / 倉庫 / ショップ / クラフト / 装備 / スキル」の各タブを順に設定します。中央のエントリ一覧はテンプレートフィルタ、検索、ドラッグ並べ替え、↑ / ↓ キーボード操作に対応します。
+- エディタは**上部のシステムタブ + 3 カラムレイアウト**（左：定義設定 / 中：エントリ一覧 / 右：詳細 Inspector）です。「アイテム / 倉庫 / ショップ / クラフト / 装備」の各タブを順に設定します。中央のエントリ一覧はテンプレートフィルタ、検索、ドラッグ並べ替え、↑ / ↓ キーボード操作に対応します。
 
 ### 3. エクスポート（任意）
 ツールバーの「JSON エクスポート」または「バイナリエクスポート」を使います（空でない ID 重複がある間はボタンが無効。ID が空白のエントリはエクスポート時に自動でスキップされます）。エディタは常に ScriptableObject 上で動作し、エクスポートは一方向のフォーマットです。
 
-> **1.6.0（フォーマット v6）** より、エクスポートはデータベースの設定データを**すべて**網羅します —— 6 サブシステムの 20 リスト全部です。それ以前はアイテムシステムの 4 項目のみで、残りは黙って捨てられていました。
+> **1.6.0（フォーマット v6）** より、エクスポートはデータベースの設定データを**すべて**網羅します —— 5 サブシステムの 17 リスト全部です。それ以前はアイテムシステムの 4 項目のみで、残りは黙って捨てられていました。
 
 ### 4. ランタイムのセットアップ
 シーンに GameObject を作成し、`InventoryRuntimeManager` コンポーネントを追加して、`.asset` を `databases` 配列にドラッグします。ゲーム開始時にデータベースが自動登録され、各倉庫が空の状態で初期化されます。
@@ -165,7 +164,7 @@ InventoryRuntimeManager.Instance.ResetAll();
 ```
 
 ### 5. ワンクリック Demo
-**ウェルカムウィンドウ**で「テストツール-プレハブ生成 → すべて生成」を展開すると、完全に動作するサンプルをワンクリックで生成できます（データベース + 全 UI プレハブ + バックパック / ショップ / クラフト / 装備 / スキル画面 + マネージャー）。
+**ウェルカムウィンドウ**で「テストツール-プレハブ生成 → すべて生成」を展開すると、完全に動作するサンプルをワンクリックで生成できます（データベース + 全 UI プレハブ + バックパック / ショップ / クラフト / 装備画面 + マネージャー）。
 
 ## 🖥️ ウェルカムウィンドウ
 プラグインの統一入口パネルで、「データ作成 / エディタ起動 / ドキュメント表示 / サンプル生成」といったインベントリ領域のよく使う操作を集約しています。Unity セッションで最初の一度は自動的に表示され、いつでも手動で開けます：
@@ -176,7 +175,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 
 ![スクリーンショット](./Packages/com.ale.inventory/Docs~/Images/image-1.png)
 
-> **エディタ UI 言語、列挙翻訳、オプション機能マクロはいずれもプロジェクト単位のグローバル設定で、1.10.0 以降は Ale Toolkit ウェルカムウィンドウ（`Tools > Ale Toolkit > Welcome`）に集約されています。** 本ウィンドウ上部の「Ale Toolkit 設定を開く」ボタンから移動でき、言語を切り替えると `Inventory Editor`（6 サブシステムの全パネル）も更新されます。エディタ UI の文言のみに影響し、ランタイムのコンテンツローカライズとは無関係です。
+> **エディタ UI 言語、列挙翻訳、オプション機能マクロはいずれもプロジェクト単位のグローバル設定で、1.10.0 以降は Ale Toolkit ウェルカムウィンドウ（`Tools > Ale Toolkit > Welcome`）に集約されています。** 本ウィンドウ上部の「Ale Toolkit 設定を開く」ボタンから移動でき、言語を切り替えると `Inventory Editor`（5 サブシステムの全パネル）も更新されます。エディタ UI の文言のみに影響し、ランタイムのコンテンツローカライズとは無関係です。
 
 ヘッダーの下は上から順に：**「Ale Toolkit 設定を開く」への移動**、**クイック操作**（データ作成 / 各エディタ・ツールウィンドウの起動 / サンプルプレハブのワンクリック生成）、**データテンプレート**（新規作成のひな型となる `InventoryDatabase` を指定）、**ウィザードフォント**（`ATK_TMP` 有効時、ウィザードの Prefab 生成用）、**起動時に自動表示**。
 
@@ -203,7 +202,6 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 - [ショップシステム](Packages/com.ale.inventory/Docs~/ShopSystem_JA.md) — ショップ種類 / 価格ソース / 商品グループ / 更新スケジュール / 取引 API
 - [クラフトシステム](Packages/com.ale.inventory/Docs~/CraftingSystem_JA.md) — グループタグ / ブループリントテンプレート / ブループリントのレシピ / クラフト倉庫 / クラフト API
 - [装備システム](Packages/com.ale.inventory/Docs~/EquipmentSystem_JA.md) — グループタグ / 装備グループテンプレート / スロットリスト / 装備スロット / アイテム制限 / 属性ボーナス / 装備 API
-- [スキルシステム](Packages/com.ale.inventory/Docs~/SkillSystem_JA.md) — グループタグ / スキルテンプレート / スキル / アイテムのスキル参照 / 位階の列挙 / 4 つのソース / 習得スキル API
 - [属性システム](Packages/com.ale.inventory/Docs~/AttributeSystem_JA.md) — フィールド型リファレンス、`AttributeValue` の取得 / 表示 / ソート比較
 - [UI コンポーネントガイド](Packages/com.ale.inventory/Docs~/UIComponentGuide_JA.md) — UI コンポーネント、プレハブ作成、機能マクロ、デモウィザード
 - [アーキテクチャ](Packages/com.ale.inventory/Docs~/Architecture_JA.md) — 設計目標、データフロー、エディタ・ランタイムのアーキテクチャ、拡張ガイド
@@ -214,14 +212,14 @@ Packages/com.ale.inventory/          ← パッケージルート
 ├── package.json  CHANGELOG.md  LICENSE.md  README.md   ← 詳細な利用ドキュメント
 ├── Runtime/
 │   ├── Data/            データモデル（Item / Inventory / Shop / Crafting* / AttributeValue など）
-│   ├── Manager/         DataManager / 倉庫 / ショップ / クラフト / 装備 / スキルのランタイムマネージャー + SkillCollector
+│   ├── Manager/         DataManager / 倉庫 / ショップ / クラフト / 装備のランタイムマネージャー
 │   ├── Serialization/   DTO + JSON / バイナリのシリアライズ
 │   ├── Assets/          アセット読み込みの抽象化（直接読み込み）
 │   ├── Addressables/    Addressables アセット読み込みサポート
 │   ├── Localization/    TMP テキスト / フォントのローカライズイベント
 │   └── UI/              ランタイム UI コンポーネント（Item / ItemList / Tab / Tool / View / Common）
 ├── Editor/
-│   ├── ItemSystem/ InventorySystem/ ShopSystem/ CraftingSystem/ EquipmentSystem/ SkillSystem/   ← 6 つのシステムパネル
+│   ├── ItemSystem/ InventorySystem/ ShopSystem/ CraftingSystem/ EquipmentSystem/   ← 5 つのシステムパネル
 │   ├── Common/         共通の属性 / 設定ドロワー + ツールウィンドウ基底クラス
 │   ├── Addressables/   Addressables アセット参照の移行ツールウィンドウ
 │   ├── Localization/   ローカライズツールウィンドウ（テーブル作成 / キー生成）

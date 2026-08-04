@@ -1,6 +1,6 @@
 {
   "name": "com.ale.inventory",
-  "version": "1.10.2",
+  "version": "1.11.1",
   "displayName": "Ale Inventory System",
   "description": "\u9053\u5177/\u4ed3\u5e93/\u5546\u5e97/\u5236\u4f5c/\u88c5\u5907/\u6280\u80fd \u4e00\u4f53\u5316\u7684\u5e93\u5b58\u7cfb\u7edf\u63d2\u4ef6\u3002",
   "unity": "2022.3",
