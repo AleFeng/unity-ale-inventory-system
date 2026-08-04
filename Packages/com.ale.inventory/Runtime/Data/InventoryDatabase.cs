@@ -276,7 +276,7 @@ namespace Ale.Inventory.Runtime
         }
 
         /// <summary>生成一个商品组 / 商品的稳定 guid。编辑器新建条目时也用它，保证格式统一。</summary>
-        public static string NewShopEntryGuid() => System.Guid.NewGuid().ToString("N");
+        public static string NewShopEntryGuid() => Guid.NewGuid().ToString("N");
 
         #endregion
 
