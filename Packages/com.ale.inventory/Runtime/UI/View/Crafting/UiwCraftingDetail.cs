@@ -1,7 +1,7 @@
 #if ATK_TMP
-using InventoryText = TMPro.TMP_Text;
+using UiText = TMPro.TMP_Text;
 #else
-using InventoryText = UnityEngine.UI.Text;
+using UiText = UnityEngine.UI.Text;
 #endif
 
 using Ale.Toolkit.Runtime.UI;
@@ -39,11 +39,11 @@ namespace Ale.Inventory.Runtime.UI
 
         [Header("产出信息")]
         [Tooltip("可制作次数文本。")]
-        public InventoryText craftableCountText;
+        public UiText craftableCountText;
         [Tooltip("可制作次数格式：{0}=次数。")]
         public string        craftableFormat = "可制作：{0}";
         [Tooltip("主产出持有量文本。")]
-        public InventoryText ownedCountText;
+        public UiText ownedCountText;
         [Tooltip("主产出持有量格式：{0}=数量。")]
         public string        ownedFormat = "持有：{0}";
 
@@ -55,7 +55,7 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("制作 / 停止 按钮。")]
         public Button        craftButton;
         [Tooltip("制作按钮上的文本。可空。")]
-        public InventoryText craftButtonLabel;
+        public UiText craftButtonLabel;
         [Tooltip("未制作时按钮文本。")]
         public string        craftText = "制作";
         [Tooltip("制作中按钮文本。")]

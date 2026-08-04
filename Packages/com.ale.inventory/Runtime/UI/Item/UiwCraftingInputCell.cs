@@ -1,7 +1,7 @@
 #if ATK_TMP
-using InventoryText = TMPro.TMP_Text;
+using UiText = TMPro.TMP_Text;
 #else
-using InventoryText = UnityEngine.UI.Text;
+using UiText = UnityEngine.UI.Text;
 #endif
 
 using Ale.Inventory.Runtime;
@@ -17,11 +17,11 @@ namespace Ale.Inventory.Runtime.UI
     {
         [Header("消耗信息")]
         [Tooltip("需求数量文本（制作一次需要的数量）。可空。")]
-        public InventoryText requireText;
+        public UiText requireText;
         [Tooltip("当前持有数量文本（制作仓库中的可用数量）。可空。")]
-        public InventoryText ownedText;
+        public UiText ownedText;
         [Tooltip("合并显示文本（持有/需求），格式见 amountFormat。可空。")]
-        public InventoryText amountText;
+        public UiText amountText;
         [Tooltip("合并显示格式：{0}=持有, {1}=需求。")]
         public string amountFormat = "{0}/{1}";
         [Tooltip("持有充足时颜色。")]

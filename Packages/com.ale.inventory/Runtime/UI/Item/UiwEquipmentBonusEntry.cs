@@ -1,7 +1,7 @@
 #if ATK_TMP
-using InventoryText = TMPro.TMP_Text;
+using UiText = TMPro.TMP_Text;
 #else
-using InventoryText = UnityEngine.UI.Text;
+using UiText = UnityEngine.UI.Text;
 #endif
 
 using UnityEngine;
@@ -17,9 +17,9 @@ namespace Ale.Inventory.Runtime.UI
     {
         [Header("属性加成条目")]
         [Tooltip("标签文本（属性名 / 分组标题）。")]
-        public InventoryText labelText;
+        public UiText labelText;
         [Tooltip("数值文本（分组标题行可留空）。")]
-        public InventoryText valueText;
+        public UiText valueText;
 
         /// <summary>填充标签与数值文本（value 传 null/空 用于分组标题行）。</summary>
         public void SetData(string label, string value)

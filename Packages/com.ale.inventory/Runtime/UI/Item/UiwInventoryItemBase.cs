@@ -1,7 +1,7 @@
 #if ATK_TMP
-using InventoryText = TMPro.TMP_Text;
+using UiText = TMPro.TMP_Text;
 #else
-using InventoryText = UnityEngine.UI.Text;
+using UiText = UnityEngine.UI.Text;
 #endif
 
 using Ale.Toolkit.Runtime.UI;
@@ -27,13 +27,13 @@ namespace Ale.Inventory.Runtime.UI
         
         [Header("道具信息")]
         [Tooltip("道具名称文本。预制体中未配置则不显示名称。")]
-        public InventoryText nameText;
+        public UiText nameText;
         [Tooltip("图标图片。")]
         public Image         iconImage;
         [Tooltip("品质背景框图片，Sprite 从对应品质枚举项的属性中读取。预制体中未配置则不显示品质背景。")]
         public Image         qualityBackground;
         [Tooltip("数量文本。")]
-        public InventoryText countText;
+        public UiText countText;
         
         [Header("道具信息-属性字段ID")]
         [Tooltip("名称属性 ID。")]

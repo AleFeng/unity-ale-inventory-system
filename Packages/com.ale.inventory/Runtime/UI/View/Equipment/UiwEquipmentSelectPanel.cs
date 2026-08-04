@@ -1,7 +1,7 @@
 #if ATK_TMP
-using InventoryText = TMPro.TMP_Text;
+using UiText = TMPro.TMP_Text;
 #else
-using InventoryText = UnityEngine.UI.Text;
+using UiText = UnityEngine.UI.Text;
 #endif
 
 using System;
@@ -29,9 +29,9 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("下一个槽位列表。")]
         public Button nextButton;
         [Tooltip("当前槽位列表名称文本。")]
-        public InventoryText slotListNameText;
+        public UiText slotListNameText;
         [Tooltip("当前槽位列表位置文本（如 1/3）。")]
-        public InventoryText positionText;
+        public UiText positionText;
 
         [Header("中间：当前槽位列表")]
         [Tooltip("当前槽位列表显示组件（复用 UiwEquipmentSlotList）。")]

@@ -1,7 +1,7 @@
 #if ATK_TMP
-using InventoryText = TMPro.TMP_Text;
+using UiText = TMPro.TMP_Text;
 #else
-using InventoryText = UnityEngine.UI.Text;
+using UiText = UnityEngine.UI.Text;
 #endif
 
 using Ale.Toolkit.Runtime.UI;
@@ -473,7 +473,7 @@ namespace Ale.Inventory.Runtime.UI
         #region 重量显示
         [Header("重量显示")]
         [Tooltip("重量文本: 显示格式 道具总重量/仓库重量上限。")]
-        public InventoryText weightLabel;
+        public UiText weightLabel;
         [Tooltip("超出重量上限 颜色。")]
         public Color overWeightColor = new Color(0.9f, 0.3f, 0.3f, 1f);
         [Tooltip("未超出重量上限 颜色。")]

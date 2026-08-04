@@ -1,7 +1,7 @@
 #if ATK_TMP
-using InventoryText = TMPro.TMP_Text;
+using UiText = TMPro.TMP_Text;
 #else
-using InventoryText = UnityEngine.UI.Text;
+using UiText = UnityEngine.UI.Text;
 #endif
 
 using Ale.Toolkit.Runtime.UI;
@@ -358,11 +358,11 @@ namespace Ale.Inventory.Runtime.UI
         #region 总价与结算
         [Header("总价与结算")]
         [Tooltip("总价 / 总收益文本。")]
-        public InventoryText totalLabel;
+        public UiText totalLabel;
         [Tooltip("结算按钮。")]
         public Button        settleButton;
         [Tooltip("提示文本（数量自动下调、不支持等，可空）。")]
-        public InventoryText hintLabel;
+        public UiText hintLabel;
         [Tooltip("售卖总价超出持有货币时的颜色。")]
         public Color  overBudgetColor    = new Color(0.9f, 0.3f, 0.3f, 1f);
         [Tooltip("正常颜色。")]

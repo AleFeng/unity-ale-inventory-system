@@ -1,7 +1,7 @@
 #if ATK_TMP
-using InventoryText = TMPro.TMP_Text;
+using UiText = TMPro.TMP_Text;
 #else
-using InventoryText = UnityEngine.UI.Text;
+using UiText = UnityEngine.UI.Text;
 #endif
 
 using Ale.Toolkit.Runtime.UI;
@@ -18,7 +18,7 @@ namespace Ale.Inventory.Runtime.UI
     {
         [Header("子组件引用")]
         [Tooltip("显示商品组名称的文本组件。")]
-        public InventoryText label;
+        public UiText label;
 
         [Tooltip("选中状态指示器（选中时激活，未选中时隐藏）。")]
         public GameObject selectedIndicator;

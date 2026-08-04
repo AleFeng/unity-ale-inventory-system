@@ -1,7 +1,7 @@
 #if ATK_TMP
-using InventoryText = TMPro.TMP_Text;
+using UiText = TMPro.TMP_Text;
 #else
-using InventoryText = UnityEngine.UI.Text;
+using UiText = UnityEngine.UI.Text;
 #endif
 
 using Ale.Toolkit.Runtime.UI;
@@ -39,7 +39,7 @@ namespace Ale.Inventory.Runtime.UI
 
         [Header("信息")]
         [Tooltip("描述文本。")]
-        public InventoryText descText;
+        public UiText descText;
         
         [Header("功能标签")]
         [Tooltip("道具标签 预制体。")]

@@ -1,7 +1,7 @@
 #if ATK_TMP
-using InventoryText = TMPro.TMP_Text;
+using UiText = TMPro.TMP_Text;
 #else
-using InventoryText = UnityEngine.UI.Text;
+using UiText = UnityEngine.UI.Text;
 #endif
 
 using Ale.Toolkit.Runtime.UI;
@@ -23,9 +23,9 @@ namespace Ale.Inventory.Runtime.UI
     {
         [Header("交易信息")]
         [Tooltip("剩余可交易次数（售卖）/ 持有量（回收）文本。")]
-        public InventoryText remainingText;
+        public UiText remainingText;
         [Tooltip("本行小计文本（单价 × 次数；次数为 0 时清空）。可空。")]
-        public InventoryText subtotalText;
+        public UiText subtotalText;
 
         [Header("单价")]
         [Tooltip("单价货币格子 Prefab（UiwInventoryItemSimple，多货币逐个显示）。可空。")]
@@ -33,7 +33,7 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("单价货币格子父容器。可空。")]
         public Transform priceContainer;
         [Tooltip("无货币图标容器时的单价文本回退。可空。")]
-        public InventoryText unitPriceText;
+        public UiText unitPriceText;
 
         [Header("购买次数")]
         [Tooltip("数字计数器组件（+/- 调整交易次数，含长按连发）。")]

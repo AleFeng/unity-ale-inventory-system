@@ -1,7 +1,7 @@
 #if ATK_TMP
-using InventoryText = TMPro.TMP_Text;
+using UiText = TMPro.TMP_Text;
 #else
-using InventoryText = UnityEngine.UI.Text;
+using UiText = UnityEngine.UI.Text;
 #endif
 
 using Ale.Toolkit.Runtime.UI;
@@ -47,7 +47,7 @@ namespace Ale.Inventory.Runtime.UI
 
         [Header("装备组")]
         [Tooltip("装备组名称文本（可选）。")]
-        public InventoryText groupNameText;
+        public UiText groupNameText;
 
         [Header("布局方式")]
         [Tooltip("槽位列表布局方式：自动按配置实例化，或手动摆放并按槽位列表 ID 绑定。")]
