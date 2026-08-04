@@ -21,7 +21,7 @@ namespace Ale.Inventory.Runtime.UI
     /// <see cref="InventoryRuntimeManager.ShowItemTooltip"/> / <see cref="InventoryRuntimeManager.HideItemTooltip"/> 统一调用；
     /// 进入 / 移出 / 停用三条路径由基类 <see cref="UiwHoverTooltipSource"/> 统一处理。</para>
     /// </summary>
-    public abstract class UiwInventoryItemBase : UiwHoverTooltipSource
+    public abstract class UiwInventoryItemBase : UiwListFadeCell
     {
         #region 道具信息
         
@@ -140,83 +140,23 @@ namespace Ale.Inventory.Runtime.UI
 
         #endregion
 
-        #region 淡入淡出（Tween）
+        #region 图片淡入（Tween）
 
-        [Header("淡入淡出（Tween）")]
-        [Tooltip("格子被分配（滚入）时，根 CanvasGroup 的淡入时长（秒）。")]
-        public float rootFadeInDuration  = 0.15f;
-        [Tooltip("格子被回收（滚出）时，根 CanvasGroup 的淡出时长（秒）。")]
-        public float rootFadeOutDuration = 0.12f;
+        [Header("图片淡入（Tween）")]
         [Tooltip("图标 / 背景框 图片就位（可能异步加载完成）后的淡入时长（秒）。")]
-        public float imageFadeDuration   = 0.15f;
+        public float imageFadeDuration = 0.15f;
 
-        // 根 / 图标 / 背景框 各自的在途淡入淡出句柄（打断旧动画、避免重叠写 alpha）。
-        private ToolkitTweenHandle _rootFade;
+        // 根淡入淡出（整格）已上提到 Toolkit 基类 UiwListFadeCell（rootFadeIn/OutDuration、PlayShowFade、
+        // FadeOutAndHide、CancelRootFade、ResetRootVisible），由列表引擎默认 hook 驱动；本处仅保留
+        // 图标 / 背景框 的「加载门控」逐图片淡入（inventory 专有）。
+
+        // 图标 / 背景框 各自的在途淡入句柄（打断旧动画、避免重叠写 alpha）。
         private ToolkitTweenHandle _iconFade;
         private ToolkitTweenHandle _qualityBgFade;
 
         // 缓存的图片就位回调（避免每次绑定分配闭包）。
         private System.Action<bool> _onIconApplied;
         private System.Action<bool> _onQualityBgApplied;
-
-        // 惰性根 CanvasGroup：预制体未挂则运行时补挂（默认 alpha=1 / 可交互 / 挡射线，不改变原有表现）。
-        private CanvasGroup _rootCanvasGroup;
-        /// <summary>本格根 CanvasGroup（惰性获取 / 补挂）。</summary>
-        protected CanvasGroup RootCanvasGroup
-        {
-            get
-            {
-                if (_rootCanvasGroup) return _rootCanvasGroup;
-                if (!TryGetComponent(out _rootCanvasGroup))
-                    _rootCanvasGroup = gameObject.AddComponent<CanvasGroup>();
-                return _rootCanvasGroup;
-            }
-        }
-
-        /// <summary>播放根淡入（alpha 0 → 1）。用于格子被分配（滚入）显示。</summary>
-        protected void PlayRootFadeIn()
-        {
-            var cg = RootCanvasGroup;
-            if (!cg) return;
-            _rootFade.Kill(false);
-            cg.blocksRaycasts = true;   // 恢复可点（淡出时被置 false）
-            cg.alpha = 0f;
-            _rootFade = ToolkitTween.FadeCanvasGroup(cg, 1f, rootFadeInDuration);
-        }
-
-        /// <summary>
-        /// 播放根淡出（alpha → 0），完成后回调 <paramref name="onComplete"/>（由列表引擎在此清空 / 归还格子）。
-        /// 淡出期间置 blocksRaycasts=false，避免对陈旧道具触发点击。CanvasGroup 缺失时立即回调。
-        /// </summary>
-        protected void PlayRootFadeOut(System.Action onComplete)
-        {
-            var cg = RootCanvasGroup;
-            if (!cg) { onComplete?.Invoke(); return; }
-            _rootFade.Kill(false);
-            cg.blocksRaycasts = false;
-            _rootFade = ToolkitTween.FadeCanvasGroup(cg, 0f, rootFadeOutDuration, onComplete: onComplete);
-        }
-
-        /// <summary>打断在途的根淡入 / 淡出（不触发其完成回调）。供列表回收动画钩子取消。</summary>
-        public void CancelRootFade() => _rootFade.Kill(false);
-
-        /// <summary>
-        /// 播放根淡出并在结束时回调 <paramref name="onComplete"/>（供列表回收动画钩子 <c>TryPlayRecycleAnim</c> 调用）。
-        /// 本方法只负责淡出动画；真正的清空 / 隐藏由列表引擎在 <paramref name="onComplete"/> 里经 ClearCell 完成，
-        /// 避免与格子清空逻辑（如明细的标签 / 价格池回收）重复执行。
-        /// </summary>
-        public void FadeOutAndHide(System.Action onComplete) => PlayRootFadeOut(onComplete);
-
-        /// <summary>
-        /// 复位根显示：打断在途根淡变并把根 CanvasGroup 复位为完全显示（alpha 1、可点）。
-        /// 仅当已存在根 CanvasGroup 时才处理（未淡过的格子无 CanvasGroup、本就完全显示）。
-        /// 供「淡出归还的实例被复用为可见空格」等场景复位，避免根 alpha 停在 0 而隐身（[B3]）。
-        /// </summary>
-        protected void ResetRootVisible()
-        {
-            CancelRootFade();
-            if (_rootCanvasGroup) { _rootCanvasGroup.alpha = 1f; _rootCanvasGroup.blocksRaycasts = true; }
-        }
 
         // 图标就位回调：有图 → 淡入；无图 → SpriteSlot 已禁用该 Image，复位 alpha 以防外部再启用。
         private void OnIconApplied(bool hasSprite)

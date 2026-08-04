@@ -1,4 +1,5 @@
 using Ale.Toolkit.Runtime;
+using Ale.Toolkit.Runtime.UI;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,7 +18,7 @@ namespace Ale.Inventory.Runtime.UI
     ///   <item>拖拽整理（<see cref="dragHandler"/>）</item>
     /// </list>
     /// </summary>
-    public abstract class UiwInventoryItemSlotBase : UiwInventoryItemBase, IPointerClickHandler
+    public abstract class UiwInventoryItemSlotBase : UiwInventoryItemBase, IPointerClickHandler, IUiwDiffCell<RuntimeItemSlot>
     {
         protected override void OnDisable()
         {

@@ -133,7 +133,8 @@ namespace Ale.Inventory.Runtime.UI
             ApplyItemLabels(item);
 
             gameObject.SetActive(true);
-            if (firstShow) PlayRootFadeIn();   // 根 CanvasGroup 淡入（整行）
+            // 根 CanvasGroup 淡入由列表引擎在生成后统一调 PlayShowFade 驱动（见 UiwListFadeCell / UiwVirtualListBase）；
+            // 本处仅按 firstShow 决定图标 / 背景框的加载门控淡入（上面 ApplyIcon/ApplyQualityBackground(animate)）。
 
             bool isFull = item != null && item.stackLimit > 0 && slot.count >= item.stackLimit;
             SetStackFull(isFull, animate: true);
