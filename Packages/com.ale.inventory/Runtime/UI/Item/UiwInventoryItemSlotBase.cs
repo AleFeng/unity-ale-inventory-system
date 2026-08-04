@@ -105,7 +105,7 @@ namespace Ale.Inventory.Runtime.UI
         {
             base.OnPointerEnter(eventData);   // 保留基类的悬停详情弹窗能力
             if (!hoverBorder) return;
-            _hoverFade.Kill(false);
+            _hoverFade.Kill();
             _hoverFade = ToolkitTween.FadeGraphic(hoverBorder, 1f, hoverFadeDuration);
         }
 
@@ -113,7 +113,7 @@ namespace Ale.Inventory.Runtime.UI
         {
             base.OnPointerExit(eventData);
             if (!hoverBorder) return;
-            _hoverFade.Kill(false);
+            _hoverFade.Kill();
             _hoverFade = ToolkitTween.FadeGraphic(hoverBorder, 0f, hoverFadeDuration);
         }
 
@@ -123,7 +123,7 @@ namespace Ale.Inventory.Runtime.UI
         /// </summary>
         public void ClearHoverHighlight()
         {
-            _hoverFade.Kill(false);
+            _hoverFade.Kill();
             if (!hoverBorder) return;
             var c = hoverBorder.color; c.a = 0f; hoverBorder.color = c;
         }
@@ -143,7 +143,7 @@ namespace Ale.Inventory.Runtime.UI
         protected void SetStackFull(bool isFull, bool animate)
         {
             if (!stackFullIcon) return;
-            _stackFullFade.Kill(false);
+            _stackFullFade.Kill();
             float target = isFull ? 1f : 0f;
             // GO 非激活时淡入不可见，直接设值
             if (animate && gameObject.activeInHierarchy)
@@ -158,7 +158,7 @@ namespace Ale.Inventory.Runtime.UI
         protected void ClearStackFull()
         {
             if (!stackFullIcon) return;
-            _stackFullFade.Kill(false);
+            _stackFullFade.Kill();
             var c = stackFullIcon.color; c.a = 0f; stackFullIcon.color = c;
         }
 

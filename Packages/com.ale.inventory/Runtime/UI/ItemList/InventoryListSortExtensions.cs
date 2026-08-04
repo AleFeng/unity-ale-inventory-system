@@ -24,7 +24,7 @@ namespace Ale.Inventory.Runtime.UI
             Action<List<SortPriority>> writeRuntime = null)
             where TCell : Component
         {
-            if (list == null) return;
+            if (!list) return;
             var ctx = new InventorySortContext<TData>(db, sortKeySelector);
             list.ConfigureSort(ctx, priorities, tiebreakers, writeRuntime);
         }

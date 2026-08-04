@@ -8,7 +8,7 @@ namespace Ale.Inventory.Runtime.UI
     /// 道具格子拖拽中转组件（挂在 <see cref="UiwInventoryItemCell"/> 或其子物体上，并关联到格子的 dragHandler 字段）。
     /// 按格子所处上下文自动切换两种拖拽：
     /// <list type="bullet">
-    ///   <item><b>已接入网格列表</b>（<see cref="UiwInventoryGridItemList"/> 设置了 <see cref="gridItemList"/>，
+    ///   <item><b>已接入网格列表</b>（<see cref="UiwInventoryItemGridList"/> 设置了 <see cref="itemGridList"/>，
     ///   并按仓库 dragSort 启停本组件）：把拖拽事件转发给网格列表整理；<b>结束拖拽</b>时按落点决定——
     ///   落到装备槽（<see cref="UiwEquipmentSlot"/>）则装备到该槽，落到道具格子（<see cref="UiwInventoryItemCell"/>）
     ///   或其它则交给网格列表做换位 / 移动。</item>
@@ -27,7 +27,7 @@ namespace Ale.Inventory.Runtime.UI
         IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
     {
         internal int                      itemCellIdx;
-        internal UiwInventoryGridItemList gridItemList;
+        internal UiwInventoryItemGridList itemGridList;
 
         private UiwInventoryItemCell _cell;
         private bool _draggingEquip;   // 本次拖拽是否由本组件驱动装备拖拽（否则转发给网格列表）
@@ -57,7 +57,7 @@ namespace Ale.Inventory.Runtime.UI
             _draggingEquip = false;
 
             // 已接入网格列表：转发给网格列表做整理拖拽（落点行为在 OnEndDrag 按悬停目标决定：装备槽→装备，道具格子→换位）。
-            if (gridItemList) { gridItemList.OnCellBeginDrag(itemCellIdx, eventData); return; }
+            if (itemGridList) { itemGridList.OnCellBeginDrag(itemCellIdx, eventData); return; }
 
             // 未接入网格列表：驱动装备拖拽（拖到装备槽装备）。
             var cell = OwnerCell;
@@ -75,7 +75,7 @@ namespace Ale.Inventory.Runtime.UI
         /// <param name="eventData"></param>
         public void OnDrag(PointerEventData eventData)
         {
-            if (gridItemList) { gridItemList.OnCellDrag(itemCellIdx, eventData); return; }
+            if (itemGridList) { itemGridList.OnCellDrag(itemCellIdx, eventData); return; }
             if (_draggingEquip) UiwEquipmentDragContext.UpdateGhost(eventData.position);
         }
 
@@ -85,10 +85,10 @@ namespace Ale.Inventory.Runtime.UI
             // · 落到装备槽（UiwEquipmentSlot）→ 装备到该槽（背包格子拖到装备槽装备）。
             // · 落到道具格子（UiwInventoryItemCell）或其它 → 交给网格列表整理（换位由目标格子的 OnCellDrop 完成）。
             // 无论何种落点，都要让网格列表清理拖拽表现（销毁幽灵 / 复位），故 OnCellEndDrag 总要调用（其本身只清理、不整理）。
-            if (gridItemList)
+            if (itemGridList)
             {
                 var slot = ResolveHoveredSlot(eventData);
-                gridItemList.OnCellEndDrag(itemCellIdx, eventData);
+                itemGridList.OnCellEndDrag(itemCellIdx, eventData);
                 if (slot) TryEquipToSlot(slot);
                 return;
             }
@@ -111,7 +111,7 @@ namespace Ale.Inventory.Runtime.UI
                 HandleEquipSlotDropOnCell();
                 return;
             }
-            gridItemList?.OnCellDrop(itemCellIdx, eventData);
+            itemGridList?.OnCellDrop(itemCellIdx, eventData);
         }
 
         /// <summary>
@@ -124,8 +124,8 @@ namespace Ale.Inventory.Runtime.UI
             string equipSlotId = UiwEquipmentDragContext.SourceSlotId;
             var eq             = EquipmentRuntimeManager.Instance;
 
-            if (eq != null && gridItemList
-                && gridItemList.TryGetCellSlot(itemCellIdx, out var invId, out var slotId, out var isEmpty))
+            if (eq != null && itemGridList
+                && itemGridList.TryGetCellSlot(itemCellIdx, out var invId, out var slotId, out var isEmpty))
             {
                 if (isEmpty) eq.UnequipToSlot(groupId, equipSlotId, invId, slotId);        // 空格 → 卸下到本格
                 else         eq.EquipFromSlotSwap(groupId, equipSlotId, invId, slotId);    // 有道具 → 可装入则交换，否则不改动

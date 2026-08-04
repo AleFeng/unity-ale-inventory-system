@@ -12,7 +12,7 @@ namespace Ale.Inventory.Runtime.UI
     /// 本类只负责"把 <see cref="RuntimeItemSlot"/> 显示到 <see cref="UiwInventoryItemDetail"/> 格子"，
     /// 并对接仓库上下文（仓库 ID）与数字格式。由 <see cref="UiwInventoryView"/> 驱动。</para>
     /// </summary>
-    public class UiwInventoryOrderItemList : UiwVirtualOrderList<RuntimeItemSlot, UiwInventoryItemDetail>
+    public class UiwInventoryItemOrderList : UiwVirtualOrderList<RuntimeItemSlot, UiwInventoryItemDetail>
     {
         private string             _inventoryId;   // 当前所属仓库 ID
         private NumberFormatLocale _numberFormat;  // 数字显示格式（千分位 / 万分位）

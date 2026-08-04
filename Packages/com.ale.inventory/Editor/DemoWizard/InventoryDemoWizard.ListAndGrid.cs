@@ -104,7 +104,7 @@ namespace Ale.Inventory.Editor
             rootRt.anchorMin = rootRt.anchorMax = rootRt.pivot = new Vector2(0.5f, 0.5f);
             rootRt.sizeDelta = Vector2.zero;
             SetLayoutElement(root, prefH: 9000, flexH: 1);
-            var listComp = root.AddComponent<UiwInventoryOrderItemList>();
+            var listComp = root.AddComponent<UiwInventoryItemOrderList>();
             listComp.bufferCount = 1;
             listComp.cellPrefab  = detailPrefab;
 
@@ -126,7 +126,7 @@ namespace Ale.Inventory.Editor
             rootRt.anchorMin = rootRt.anchorMax = rootRt.pivot = new Vector2(0.5f, 0.5f);
             rootRt.sizeDelta = Vector2.zero;
             SetLayoutElement(root, prefH: 9000, flexH: 1);
-            var comp = root.AddComponent<UiwInventoryGridItemList>();
+            var comp = root.AddComponent<UiwInventoryItemGridList>();
             comp.bufferCount     = 1;
             comp.cellPrefab      = cellPrefab;
             comp.scrollDirection = EListScrollDirection.Vertical;
