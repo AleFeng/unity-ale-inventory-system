@@ -23,7 +23,7 @@ namespace Ale.Inventory.Runtime.UI
     /// 可装备道具列表显示组件（虚拟滚动网格）。从装备组的「装备仓库」列表（可多个）取出全部道具，
     /// 按当前槽位列表的道具限制筛选，显示为候选格子；每个候选记录其真实来源仓库。
     ///
-    /// <para>虚拟滚动与网格布局（纵向 / 横向、自动跨轴数量）由基类 <see cref="UiwVirtualGridList{TData,TCell}"/>
+    /// <para>虚拟滚动与网格布局（纵向 / 横向、自动跨轴数量）由基类 <see cref="UiwVirtualItemList{TData,TCell}"/>
     /// 提供；本类只负责筛选候选与「把候选显示到 <see cref="UiwInventoryItemCell"/> 格子」。</para>
     ///
     /// <para>候选格子复用仓库格子 <see cref="UiwInventoryItemCell"/>（显示）+ <see cref="GridCellDragHandler"/>
@@ -31,7 +31,7 @@ namespace Ale.Inventory.Runtime.UI
     /// <b>右键</b>由 <see cref="UiwInventoryItemCell"/> 广播、<see cref="UiwEquipmentView"/> 订阅统一快速装备；
     /// <b>左键拖拽</b>到 <see cref="UiwEquipmentSlot"/> 装备。</para>
     /// </summary>
-    public class UiwEquipmentCandidateList : UiwVirtualGridList<EquipmentCandidateEntry, UiwInventoryItemCell>
+    public class UiwEquipmentCandidateList : UiwVirtualItemList<EquipmentCandidateEntry, UiwInventoryItemCell>
     {
         private IReadOnlyList<string> _sourceInventoryIds;
         private EquipmentSlotList      _slotListDef;

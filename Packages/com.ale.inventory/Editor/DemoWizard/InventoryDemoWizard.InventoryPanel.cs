@@ -202,14 +202,14 @@ namespace Ale.Inventory.Editor
             {
                 var listInst = (GameObject)PrefabUtility.InstantiatePrefab(listPanelPrefab, itemAreaGo.transform);
                 Stretch((RectTransform)listInst.transform);
-                viewComp.itemOrderList = listInst.GetComponent<UiwInventoryItemOrderList>();
+                viewComp.orderItemList = listInst.GetComponent<UiwInventoryOrderItemList>();
             }
             if (gridPrefab)
             {
                 var gridInst = (GameObject)PrefabUtility.InstantiatePrefab(gridPrefab, itemAreaGo.transform);
                 Stretch((RectTransform)gridInst.transform);
                 gridInst.SetActive(false);   // 默认列表模式，由 UiwInventoryView.ApplyViewMode 校正
-                viewComp.itemGridList = gridInst.GetComponent<UiwInventoryItemGridList>();
+                viewComp.gridItemList = gridInst.GetComponent<UiwInventoryGridItemList>();
             }
 
             SavePrefab(panelGo, panelPath);

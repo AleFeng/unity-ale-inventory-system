@@ -16,10 +16,10 @@ namespace Ale.Inventory.Runtime.UI
     /// 否则仅显示有道具的格子、不响应整理拖拽。</para>
     ///
     /// <para>虚拟滚动引擎与网格布局（纵向 / 横向、自动跨轴数量）由基类
-    /// <see cref="UiwVirtualGridList{TData,TCell}"/> 提供；本类只负责格子绑定、仓库上下文、数字格式与拖拽整理。
+    /// <see cref="UiwVirtualItemList{TData,TCell}"/> 提供；本类只负责格子绑定、仓库上下文、数字格式与拖拽整理。
     /// 由 <see cref="UiwInventoryView"/> 驱动。</para>
     /// </summary>
-    public class UiwInventoryItemGridList : UiwVirtualGridList<RuntimeItemSlot, UiwInventoryItemCell>
+    public class UiwInventoryGridItemList : UiwVirtualItemList<RuntimeItemSlot, UiwInventoryItemCell>
     {
         [Header("拖拽整理")]
         [Tooltip("拖拽中显示的幽灵图标：为 null 时退用复制源格子图标。")]
@@ -134,7 +134,7 @@ namespace Ale.Inventory.Runtime.UI
         protected override void InitCell(UiwInventoryItemCell cell)
         {
             cell.numberFormat = _numberFormat;
-            if (cell.dragHandler) cell.dragHandler.ItemGridList = this;
+            if (cell.dragHandler) cell.dragHandler.gridItemList = this;
         }
         
         /// <summary>
@@ -146,8 +146,8 @@ namespace Ale.Inventory.Runtime.UI
         {
             var handler = cell.dragHandler;
             if (!handler) return;
-            handler.ItemGridList = this;
-            handler.ItemCellIdx  = dataIndex;   // 关键：格子的数据索引随绑定动态更新（虚拟滚动复用）
+            handler.gridItemList = this;
+            handler.itemCellIdx  = dataIndex;   // 关键：格子的数据索引随绑定动态更新（虚拟滚动复用）
             // 过滤显示下禁用整理拖拽：格子按筛选顺序紧凑排列，索引无法对应真实槽位。
             handler.enabled = _dragSort && !_filtered;
         }

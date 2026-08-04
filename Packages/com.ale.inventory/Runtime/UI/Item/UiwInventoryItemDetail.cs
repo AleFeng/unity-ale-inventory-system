@@ -14,7 +14,7 @@ namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 道具格子详细信息显示组件（MonoBehaviour）。
-    /// 由虚拟列表 <see cref="UiwInventoryItemOrderList"/> 统一驱动 <see cref="SetSlot"/> / <see cref="SetEmpty"/>。
+    /// 由虚拟列表 <see cref="UiwInventoryOrderItemList"/> 统一驱动 <see cref="SetSlot"/> / <see cref="SetEmpty"/>。
     ///
     /// <para>显示内容：品质背景、图标、名称、描述、数量、价格货币列表、已购数量、悬停高亮、堆叠已满提示。</para>
     /// <para>图标 / 数量 / 数字格式 / 名称 / 品质 / 悬停 / 堆叠提示 等公共字段均继承自

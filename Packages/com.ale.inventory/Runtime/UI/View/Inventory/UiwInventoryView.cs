@@ -8,7 +8,6 @@ using Ale.Toolkit.Runtime.UI;
 using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Ale.Inventory.Runtime.UI
 {
@@ -26,7 +25,7 @@ namespace Ale.Inventory.Runtime.UI
             if (sortToolbar) { sortToolbar.OnSortChanged += OnSortChanged; sortToolbar.OnAutoSort += OnAutoSort; }
 
             // 视图模式（含无切换按钮时自动采用已配置的那个列表）由基类统一处理。
-            SetupViewModeToggle(itemOrderList, itemGridList);
+            SetupViewModeToggle(orderItemList, gridItemList);
             ApplyViewMode();
 
             base.Start();   // 接线 / 视图模式就绪后，由基类判断初始激活则自打开
@@ -114,9 +113,9 @@ namespace Ale.Inventory.Runtime.UI
         #region 道具列表
         [Header("道具列表")]
         [Tooltip("顺序道具列表。")]
-        public UiwInventoryItemOrderList itemOrderList;
+        public UiwInventoryOrderItemList orderItemList;
         [Tooltip("网格道具列表。")]
-        public UiwInventoryItemGridList itemGridList;
+        public UiwInventoryGridItemList gridItemList;
 
         /// <summary>
         /// 刷新 道具列表显示。
@@ -130,7 +129,7 @@ namespace Ale.Inventory.Runtime.UI
             if (_inventoryIdsActiveIndex < 0 || inventoryIds == null
                                  || _inventoryIdsActiveIndex >= inventoryIds.Length) return;
             if (!InventoryRuntimeManager.Instance) return;
-            if (!itemOrderList && !itemGridList) return;
+            if (!orderItemList && !gridItemList) return;
 
             string invId = inventoryIds[_inventoryIdsActiveIndex];
             var    itemSlotsDisplay = new List<RuntimeItemSlot>(InventoryRuntimeManager.Instance.GetSlots(invId));
@@ -162,20 +161,20 @@ namespace Ale.Inventory.Runtime.UI
             }
 
             // 按当前视图模式 分发到对应组件
-            if (!GridMode && itemOrderList)
+            if (!GridMode && orderItemList)
             {
                 // 内容变化走增量更新（保留滚动位置）；其余场景全量重建并回到顶部。
-                if (preserveScroll) itemOrderList.UpdateItemSlotList(invId, itemSlotsDisplay);
-                else                itemOrderList.SetItemSlotList(invId, itemSlotsDisplay);
+                if (preserveScroll) orderItemList.UpdateItemSlotList(invId, itemSlotsDisplay);
+                else                orderItemList.SetItemSlotList(invId, itemSlotsDisplay);
             }
-            else if (itemGridList)
+            else if (gridItemList)
             {
                 // 过滤页签非"全部"时，传入 filtered=true：网格仅显示筛选后的道具格，隐藏被过滤掉的格子与空格。
                 bool filtered = !string.IsNullOrEmpty(_activeFilter);
                 // 内容变化（拖拽换位 / 堆叠 / 数量增减）走增量差异刷新：保留滚动位置，只重绑数据变化的可见格；
                 // 切页 / 过滤 / 排序 / 切视图等则全量重建并回到起点。
-                if (preserveScroll) itemGridList.RefreshItemSlotList(invId, itemSlotsDisplay, filtered);
-                else                itemGridList.SetItemSlotList(invId, itemSlotsDisplay, filtered);
+                if (preserveScroll) gridItemList.RefreshItemSlotList(invId, itemSlotsDisplay, filtered);
+                else                gridItemList.SetItemSlotList(invId, itemSlotsDisplay, filtered);
             }
 
             RefreshWeightDisplay();
@@ -184,8 +183,8 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>激活当前模式对应的道具列表组件，隐藏另一个（基类 <see cref="UiwViewBase"/> 驱动）。</summary>
         protected override void OnApplyViewMode(bool gridMode)
         {
-            if (itemOrderList) itemOrderList.gameObject.SetActive(!gridMode);
-            if (itemGridList)  itemGridList.gameObject.SetActive(gridMode);
+            if (orderItemList) orderItemList.gameObject.SetActive(!gridMode);
+            if (gridItemList)  gridItemList.gameObject.SetActive(gridMode);
         }
 
         /// <summary>切换模式后刷新道具列表内容。</summary>
@@ -311,8 +310,8 @@ namespace Ale.Inventory.Runtime.UI
             {
                 var fmt = ResolveNumberFormatLocale(
                     InventoryDataManager.Instance.GetNumberFormatConfig(invDef?.numberFormatRef));
-                if (itemOrderList) itemOrderList.SetNumberFormat(fmt);
-                if (itemGridList) itemGridList.SetNumberFormat(fmt);
+                if (orderItemList) orderItemList.SetNumberFormat(fmt);
+                if (gridItemList) gridItemList.SetNumberFormat(fmt);
             }
 
             // 过滤页签栏 + 排序整理栏（通用工具栏组件）
@@ -392,7 +391,7 @@ namespace Ale.Inventory.Runtime.UI
                 : null;
 
             sortToolbar.SetSortPriorities(_currentSortPriorities,
-                db ? db.GetSortOption : (System.Func<string, SortOption>)null);
+                db ? db.GetSortOption : null);
         }
 
         /// <summary>排序整理栏：排序条件 / 方向变化回调。</summary>
