@@ -10,7 +10,9 @@
       "version": "file:../../unity-ale-toolkit/Packages/com.ale.toolkit",
       "depth": 0,
       "source": "local",
-      "dependencies": {}
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.2"
+      }
     },
     "com.unity.addressables": {
       "version": "2.9.1",
