@@ -99,7 +99,7 @@ Almost every game needs an "items + inventory + shop + crafting + equipment" dat
 
 ## 📦 Installation
 
-> ⚠️ **This plugin depends on the shared foundation package [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) — install it first, then this plugin.** It has depended on it since 1.8.0; Unity's Package Manager cannot auto-pull git-URL `dependencies`, so **the order must not be reversed**. Install toolkit the same way as below first: `https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.5.1`. If it is missing or the order is reversed you will get `Ale.Toolkit.* not found` compile errors — just install toolkit and wait for the recompile, no need to reinstall this plugin.
+> ⚠️ **This plugin depends on the shared foundation package [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) — install it first, then this plugin.** It has depended on it since 1.8.0; Unity's Package Manager cannot auto-pull git-URL `dependencies`, so **the order must not be reversed**. Install toolkit the same way as below first: `https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit`. If it is missing or the order is reversed you will get `Ale.Toolkit.* not found` compile errors — just install toolkit and wait for the recompile, no need to reinstall this plugin.
 
 ### Install via UPM (Recommended)
 `Window > Package Manager` → the `+` in the top-left → `Install package from git URL...` → paste:

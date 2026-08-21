@@ -99,7 +99,7 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
 
 ## 📦 インストール
 
-> ⚠️ **本プラグインは共通基盤パッケージ [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) に依存します。先に toolkit を、その後に本プラグインをインストールしてください。** 1.8.0 以降これに依存します。Unity の Package Manager は `package.json` の `dependencies` での git URL を自動取得できないため、**順序を逆にしないでください**。下と同じ方法でまず toolkit をインストール：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit#1.5.1`。未インストールや順序が逆だと `Ale.Toolkit.* が見つかりません` といったコンパイルエラーになります。toolkit を追加インストールして再コンパイルを待つだけでよく、本プラグインの再インストールは不要です。
+> ⚠️ **本プラグインは共通基盤パッケージ [`com.ale.toolkit`](https://github.com/AleFeng/unity-ale-toolkit) に依存します。先に toolkit を、その後に本プラグインをインストールしてください。** 1.8.0 以降これに依存します。Unity の Package Manager は `package.json` の `dependencies` での git URL を自動取得できないため、**順序を逆にしないでください**。下と同じ方法でまず toolkit をインストール：`https://github.com/AleFeng/unity-ale-toolkit.git?path=/Packages/com.ale.toolkit`。未インストールや順序が逆だと `Ale.Toolkit.* が見つかりません` といったコンパイルエラーになります。toolkit を追加インストールして再コンパイルを待つだけでよく、本プラグインの再インストールは不要です。
 
 ### UPM を使う（推奨）
 `Window > Package Manager` → 左上の `+` → `Install package from git URL...` → 次を貼り付け：
