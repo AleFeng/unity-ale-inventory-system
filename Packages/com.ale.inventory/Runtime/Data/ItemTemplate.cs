@@ -28,7 +28,7 @@ namespace Ale.Inventory.Runtime
         /// <summary>是否在仓库 UI 的道具仓库中隐藏（使用此模板的道具默认不显示）。</summary>
         public bool hideInInventory;
 
-        /// <summary>默认的「使用时施加的效果」id 列表（1.12.0；从模板创建道具时复制）。</summary>
+        /// <summary>默认的「使用时施加的效果」id 列表（1.12.0；从模板创建道具时复制；引用 toolkit 效果库中的效果 id）。</summary>
         public List<string> onUseEffectRefs = new List<string>();
 
         public ItemTemplate()

@@ -13,6 +13,7 @@
         "Ale.Toolkit.Editor",
         "Ale.Condition.Core",
         "Ale.Effect.Core",
+        "Ale.Effect.Runtime",
         "Ale.Effect.Editor",
         "Ale.GameplayTags.Core",
         "Ale.GameplayTags.Runtime",

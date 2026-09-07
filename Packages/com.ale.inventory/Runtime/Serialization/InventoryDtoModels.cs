@@ -48,10 +48,10 @@ namespace Ale.Inventory.Runtime.Serialization
         public EquipmentGroupTemplateDto[] equipmentGroupTemplates;
         public EquipmentGroupDto[]         equipmentGroups;
 
-        // ── 效果系统（v8 新增）────────────────────────────────────────────────────
-        /// <summary>效果定义（toolkit <see cref="EffectDefinition"/> 原样；JSON 导出直接内嵌，二进制以 Effect System JSON 串承载）。</summary>
+        // ── 效果系统（v8 独有；v9 起效果外移至 toolkit EffectDatabase，不再写出，仅读 v8 文件时填充 → legacy 字段）──────
+        /// <summary>v8：效果定义（toolkit <see cref="EffectDefinition"/> 原样；JSON 直接内嵌，二进制以 Effect System JSON 串承载）。</summary>
         public EffectDefinition[]      effects;
-        /// <summary>本库声明的 Gameplay 标签（名称 + 注释）。</summary>
+        /// <summary>v8：本库声明的 Gameplay 标签（名称 + 注释）。</summary>
         public GameplayTagDefinition[] gameplayTags;
     }
 

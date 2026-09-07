@@ -50,8 +50,7 @@ namespace Ale.Inventory.Runtime.Serialization
                 WriteCraftingBlock(w, dto);
                 WriteEquipmentBlock(w, dto);
 
-                // v8 追加：效果系统数据块（效果定义 JSON 串 + Gameplay 标签）
-                WriteEffectBlock(w, dto);
+                // v8 的效果系统数据块自 v9 起不再写出（效果外移至 toolkit EffectDatabase）。
             }
             return stream.ToArray();
         }
@@ -151,9 +150,9 @@ namespace Ale.Inventory.Runtime.Serialization
                 ReadCraftingBlock(r, dto);
                 ReadEquipmentBlock(r, dto);
 
-                // v8 追加：效果系统数据块；v6 / v7 文件在装备块之后可能还有旧的扩展数据块或数据库级本地化表 GUID 等尾部数据，
-                // 均未读、被忽略，向后兼容。
-                if (version >= InventoryDtoMapper.VersionWithEffects)
+                // v8 独有：效果系统数据块（v9 起不再写出；读到时灌入 legacy 字段供迁移）；v6 / v7 文件在装备块之后可能还有旧的
+                // 扩展数据块或数据库级本地化表 GUID 等尾部数据，均未读、被忽略，向后兼容。
+                if (version == InventoryDtoMapper.VersionWithEffects)
                     ReadEffectBlock(r, dto);
             }
 

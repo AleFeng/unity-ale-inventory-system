@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Ale.Toolkit.Runtime;
-using Ale.Effect;
-using Ale.GameplayTags;
 
 namespace Ale.Inventory.Runtime
 {
@@ -17,7 +15,7 @@ namespace Ale.Inventory.Runtime
     /// 下次查询时重建一次。构建按 <see cref="Databases"/> 顺序「先到先得」，
     /// 与旧的「第一个命中的数据库优先」语义完全一致。</para>
     /// </summary>
-    public class InventoryDataManager : ToolkitSingleton<InventoryDataManager>, IEffectDefinitionSource
+    public class InventoryDataManager : ToolkitSingleton<InventoryDataManager>
     {
         private readonly List<InventoryDatabase> _databases = new List<InventoryDatabase>();
 
@@ -31,17 +29,16 @@ namespace Ale.Inventory.Runtime
 
         #region 注册 / 加载
 
-        /// <summary>注册一个数据库（去重）。</summary>
+        /// <summary>
+        /// 注册一个数据库（去重）。效果与 Gameplay 标签自 1.13.0 起由 toolkit 效果库（<c>EffectDataManager</c>）承载，
+        /// 本管理器不再登记为效果定义源、也不再并入标签注册表。
+        /// </summary>
         public void Register(InventoryDatabase database)
         {
             if (!database) return;
             if (_databases.Contains(database)) return;
             _databases.Add(database);
             InvalidateIndex();
-            // 效果系统（1.12.0）：库里声明的 Gameplay 标签并入 toolkit 标签注册表；本管理器登记为全局效果定义来源，
-            // 使其它系统（如角色系统的效果上下文）也能按 id 解析本库定义的效果。
-            GameplayTagRuntime.Register(database.GameplayTags);
-            EffectDefinitionRegistry.Default.AddSource(this);
         }
 
         /// <summary>注销一个数据库。</summary>
@@ -50,7 +47,6 @@ namespace Ale.Inventory.Runtime
             if (!database) return;
             if (_databases.Remove(database))
                 InvalidateIndex();
-            if (_databases.Count == 0) EffectDefinitionRegistry.Default.RemoveSource(this);
         }
 
         /// <summary>清空所有已注册数据库。</summary>
@@ -58,7 +54,6 @@ namespace Ale.Inventory.Runtime
         {
             _databases.Clear();
             InvalidateIndex();
-            EffectDefinitionRegistry.Default.RemoveSource(this);
         }
 
         /// <summary>
@@ -99,7 +94,6 @@ namespace Ale.Inventory.Runtime
         private readonly Dictionary<string, EquipmentGroupTemplate>   _equipTmpls    = new Dictionary<string, EquipmentGroupTemplate>();
         private readonly Dictionary<string, EquipmentGroupTag>        _equipTags     = new Dictionary<string, EquipmentGroupTag>();
         private readonly Dictionary<string, NumberFormatConfig>       _numberFormats = new Dictionary<string, NumberFormatConfig>();
-        private readonly Dictionary<string, EffectDefinition>         _effects       = new Dictionary<string, EffectDefinition>();
 
         // 「条目 ID → 所属数据库」，供 FindDatabaseForXxx 使用。
         private readonly Dictionary<string, InventoryDatabase> _inventoryOwner  = new Dictionary<string, InventoryDatabase>();
@@ -133,7 +127,6 @@ namespace Ale.Inventory.Runtime
                 Index(_equipTmpls,    db, db.EquipmentGroupTemplates, x => x.name);
                 Index(_equipTags,     db, db.EquipmentGroupTags,      x => x.id);
                 Index(_numberFormats, db, db.NumberFormatConfigs,     x => x.name);
-                Index(_effects,       db, db.Effects,                 x => x.id);
             }
         }
 
@@ -142,7 +135,7 @@ namespace Ale.Inventory.Runtime
             _items.Clear();         _enumTypes.Clear();   _tags.Clear();        _itemTemplates.Clear();
             _inventories.Clear();   _shops.Clear();       _blueprints.Clear();  _craftTags.Clear();
             _equipGroups.Clear();   _equipTmpls.Clear();  _equipTags.Clear();
-            _numberFormats.Clear(); _effects.Clear();
+            _numberFormats.Clear();
             _inventoryOwner.Clear(); _shopOwner.Clear();  _equipGroupOwner.Clear();
         }
 
@@ -178,12 +171,6 @@ namespace Ale.Inventory.Runtime
 
         /// <summary>按 ID 跨所有已注册数据库查找道具，未找到返回 null。</summary>
         public Item GetItem(string itemId) => Lookup(_items, itemId);
-
-        /// <summary>按 id 跨库查找效果定义（1.12.0），未找到返回 null。</summary>
-        public EffectDefinition GetEffect(string effectId) => Lookup(_effects, effectId);
-
-        // 显式实现 IEffectDefinitionSource：全局效果定义注册表 / toolkit EffectApplier 按 id 取定义。
-        EffectDefinition IEffectDefinitionSource.GetEffect(string id) => GetEffect(id);
 
         /// <summary>按名称跨库查找枚举类型，未找到返回 null。</summary>
         public EnumType GetEnumType(string enumName) => Lookup(_enumTypes, enumName);

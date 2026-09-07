@@ -15,7 +15,8 @@ namespace Ale.Inventory.Editor
     /// <summary>
     /// 仓库系统配置编辑器主窗口（IMGUI）。顶部为系统页签（道具 / 仓库 / 商店 / 制作 / 装备），
     /// 五个页签均已实现，各自由对应的 <c>*SystemTab</c> 承载。所有编辑基于 ScriptableObject，
-    /// 支持 Undo/Redo；JSON / 二进制 仅用于单向导出。
+    /// 支持 Undo/Redo；JSON / 二进制 仅用于单向导出。效果 / Gameplay 标签自 1.13.0 起在 toolkit 的 Effect Editor
+    /// （Tools > Ale Toolkit > Effect System）中配置，本窗口不再设「效果系统」页签。
     /// </summary>
     public class InventoryEditorWindow : EditorWindow, IInventoryEditorContext
     {
@@ -28,7 +29,7 @@ namespace Ale.Inventory.Editor
         private const string PrefKeyDbPath = "InventorySystem.DatabasePath";
 
         private static readonly string[] SystemTabs =
-            { "道具系统", "仓库系统", "商店系统", "制作系统", "装备系统", "效果系统" };
+            { "道具系统", "仓库系统", "商店系统", "制作系统", "装备系统" };
 
         private InventoryDatabase _db;
         private SerializedObject _serialized;
@@ -39,7 +40,6 @@ namespace Ale.Inventory.Editor
         private readonly ShopSystemTab      _shopSystemTab      = new ShopSystemTab();
         private readonly CraftingSystemTab  _craftingSystemTab  = new CraftingSystemTab();
         private readonly EquipmentSystemTab _equipmentSystemTab = new EquipmentSystemTab();
-        private readonly EffectSystemTab    _effectSystemTab    = new EffectSystemTab();
 
         // 重复 ID 缓存。
         // 五类实体的重复 / 空 ID 缓存（种类 → 集合），由 EditorDuplicateIdScanner.ScanAll 整体刷新。
@@ -114,7 +114,6 @@ namespace Ale.Inventory.Editor
             _shopSystemTab.OnUndoRedo();
             _craftingSystemTab.OnUndoRedo();
             _equipmentSystemTab.OnUndoRedo();
-            _effectSystemTab.OnUndoRedo();
             _needDuplicateCheck = true;
             _rebuildPending     = true;
             Repaint();
@@ -133,7 +132,6 @@ namespace Ale.Inventory.Editor
             _shopSystemTab.OnDatabaseChanged(this);
             _craftingSystemTab.OnDatabaseChanged(this);
             _equipmentSystemTab.OnDatabaseChanged(this);
-            _effectSystemTab.OnDatabaseChanged(this);
         }
 
         #endregion
@@ -268,7 +266,6 @@ namespace Ale.Inventory.Editor
                 case 2: _shopSystemTab.OnGUI(inner, this);      break;
                 case 3: _craftingSystemTab.OnGUI(inner, this);  break;
                 case 4: _equipmentSystemTab.OnGUI(inner, this); break;
-                case 5: _effectSystemTab.OnGUI(inner, this);    break;
             }
             GUILayout.EndArea();
         }
@@ -341,10 +338,6 @@ namespace Ale.Inventory.Editor
                 bp.RebuildAttributes(db);
             foreach (var g in db.EquipmentGroups)
                 g.RebuildAttributes(db);
-            // 效果（1.12.0）：归一（补 null、空阶段改写；幂等）；本库 Gameplay 标签并入编辑器标签目录。
-            foreach (var e in db.Effects)
-                e?.Normalize();
-            InventoryGameplayTagSync.Sync(db);
         }
 
         #endregion

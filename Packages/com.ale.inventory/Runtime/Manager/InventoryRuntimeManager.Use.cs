@@ -11,7 +11,8 @@ namespace Ale.Inventory.Runtime
     ///
     /// <para><b>本包不认识任何领域系统</b>：目标上下文由业务层构造（如角色系统的 <c>ChronicleEffectContext.Create(characterId)</c>），
     /// 效果定义先经上下文的 <see cref="IEffectDefinitionSource"/> 解析，找不到再查全局 <see cref="EffectDefinitionRegistry.Default"/>
-    /// （<see cref="InventoryDataManager"/> 注册数据库时已把自身登记为来源，故本库定义的效果与其它系统定义的效果都能按 id 引用）。</para>
+    /// （1.13.0 起效果由 toolkit 效果库 <c>EffectDatabase</c> 承载，<c>EffectDataManager</c> 注册时登记为来源；本库不再持有效果定义，
+    /// 道具的效果引用与其它系统定义的效果都按 id 解析）。</para>
     /// </summary>
     public partial class InventoryRuntimeManager
     {

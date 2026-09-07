@@ -1,5 +1,6 @@
 using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
+using Ale.Effect.Editor;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
@@ -83,9 +84,9 @@ namespace Ale.Inventory.Editor
 
             EditorGUILayout.Space(6);
 
-            // ── 默认使用效果（1.12.0；从模板创建道具时复制）────────────────────
+            // ── 默认使用效果（1.12.0；从模板创建道具时复制；1.13.0 起引用 toolkit 效果库，绘制器由 toolkit 提供）──
             template.onUseEffectRefs ??= new List<string>();
-            InventoryEffectRefDrawer.Draw(ctx, template.onUseEffectRefs, _effectRefDrag,
+            EditorEffectRefListDrawer.Draw(ctx, template.onUseEffectRefs, _effectRefDrag,
                 Tr("默认使用效果（从模板创建时复制）"), "模板使用效果");
 
             EditorGUILayout.Space(6);

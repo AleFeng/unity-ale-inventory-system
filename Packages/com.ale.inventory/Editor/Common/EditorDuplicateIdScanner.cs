@@ -12,12 +12,11 @@ namespace Ale.Inventory.Editor
         Shop,
         Crafting,
         Equipment,
-        Effect,
     }
 
     /// <summary>
     /// 库存领域的重复 / 空 ID 扫描。通用的逐条扫描算法（<see cref="EditorIdScanner.Scan{T}"/> /
-    /// <see cref="EditorIdScanner.HasNonEmpty"/>）已下沉到 toolkit；本类只保留「六类实体种类」的领域枚举
+    /// <see cref="EditorIdScanner.HasNonEmpty"/>）已下沉到 toolkit；本类只保留「五类实体种类」的领域枚举
     /// 与整库扫描 <see cref="ScanAll"/>，并薄转发 <see cref="HasNonEmpty"/> 以保调用点不变。
     /// </summary>
     public static class EditorDuplicateIdScanner
@@ -30,7 +29,6 @@ namespace Ale.Inventory.Editor
             EInventoryEntityKind.Shop,
             EInventoryEntityKind.Crafting,
             EInventoryEntityKind.Equipment,
-            EInventoryEntityKind.Effect,
         };
 
         /// <summary>该种类的中文名词（状态栏与提示文案用）。</summary>
@@ -42,12 +40,11 @@ namespace Ale.Inventory.Editor
                 case EInventoryEntityKind.Inventory: return "仓库";
                 case EInventoryEntityKind.Shop:      return "商店";
                 case EInventoryEntityKind.Crafting:  return "蓝图";
-                case EInventoryEntityKind.Effect:    return "效果";
                 default:                             return "装备组";   // Equipment
             }
         }
 
-        /// <summary>扫描整库六类实体，返回「种类 → 重复/空 ID 集合」。</summary>
+        /// <summary>扫描整库五类实体，返回「种类 → 重复/空 ID 集合」（效果自 1.13.0 起在 toolkit 效果库，由 Effect Editor 查重）。</summary>
         public static Dictionary<EInventoryEntityKind, HashSet<string>> ScanAll(InventoryDatabase db)
         {
             var map = new Dictionary<EInventoryEntityKind, HashSet<string>>(AllKinds.Length);
@@ -59,7 +56,6 @@ namespace Ale.Inventory.Editor
             map[EInventoryEntityKind.Shop]      = EditorIdScanner.Scan(db.Shops,              x => x.id);
             map[EInventoryEntityKind.Crafting]  = EditorIdScanner.Scan(db.CraftingBlueprints, x => x.id);
             map[EInventoryEntityKind.Equipment] = EditorIdScanner.Scan(db.EquipmentGroups,    x => x.id);
-            map[EInventoryEntityKind.Effect]    = EditorIdScanner.Scan(db.Effects,            x => x.id);
             return map;
         }
 

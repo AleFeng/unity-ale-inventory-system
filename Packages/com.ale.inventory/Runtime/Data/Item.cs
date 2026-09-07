@@ -33,8 +33,8 @@ namespace Ale.Inventory.Runtime
         public bool hideInInventory;
 
         /// <summary>
-        /// 「使用」时按序对目标施加的效果 id 列表（1.12.0）。可引用本库 <see cref="InventoryDatabase.Effects"/>，也可引用其它库 / 其它系统
-        /// 定义的效果（运行时经 toolkit 全局效果注册表按 id 解析）。空 = 不可使用（<c>UseItem</c> 返回 NoEffects、不扣减）。
+        /// 「使用」时按序对目标施加的效果 id 列表（1.12.0）。引用 toolkit 效果库 <c>EffectDatabase</c>（1.13.0 起所有上层系统共用）
+        /// 或其它系统定义的效果 id（运行时经 toolkit 全局效果注册表按 id 解析）。空 = 不可使用（<c>UseItem</c> 返回 NoEffects、不扣减）。
         /// </summary>
         public List<string> onUseEffectRefs = new List<string>();
 

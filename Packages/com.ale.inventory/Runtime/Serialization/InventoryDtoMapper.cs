@@ -7,6 +7,8 @@ using Ale.Toolkit.Runtime.Serialization;
 using Ale.Effect;
 using Ale.GameplayTags;
 
+#pragma warning disable 618   // LegacyEffects / LegacyGameplayTags：v8 文件的效果 / 标签块读入 legacy 字段（迁移用）
+
 namespace Ale.Inventory.Runtime.Serialization
 {
     /// <summary>
@@ -29,12 +31,18 @@ namespace Ale.Inventory.Runtime.Serialization
         ///         商店 / 制作 / 装备 等），并补上道具系统此前静默丢弃的字段（模板色点、
         ///         weight / stackLimit / hideInInventory、功能标签的 UI 显示配置）。</item>
         ///   <item>v7：移除数据库级 localizationTableCollectionGuid（本地化表绑定已回归到各 Text 属性值的 tableRef）。</item>
+        ///   <item>v8：效果系统——尾部追加 效果 / Gameplay 标签 两块，道具 / 道具模板块尾追加 onUseEffectRefs。</item>
+        ///   <item>v9：效果 / Gameplay 标签外移至 toolkit 效果库（EffectDatabase，由 EffectConfigSerializer 单独导出）——不再写出 v8 的两块；
+        ///         读 v8 文件时两块读入 legacy 字段供迁移。onUseEffectRefs 保留。</item>
         /// </list>
         /// </summary>
-        public const int Version = 8;
+        public const int Version = 9;
 
-        /// <summary>v8：效果系统——尾部追加 效果 / Gameplay 标签 两块，道具 / 道具模板块尾追加 onUseEffectRefs。</summary>
+        /// <summary>v8：效果系统——尾部追加 效果 / Gameplay 标签 两块（v9 起不再写出，仅读 v8 文件时使用），道具 / 道具模板块尾追加 onUseEffectRefs。</summary>
         internal const int VersionWithEffects = 8;
+
+        /// <summary>v9：效果 / Gameplay 标签外移至 toolkit 效果库，二进制不再含效果块。</summary>
+        internal const int VersionWithSharedEffects = 9;
 
         /// <summary>首个包含仓库 / 商店 / 制作 / 装备 等扩展数据块的格式版本（二进制读取按此做向后兼容判断）。</summary>
         internal const int VersionWithAllSystems = 6;
@@ -70,8 +78,7 @@ namespace Ale.Inventory.Runtime.Serialization
                 equipmentGroupTemplates = ToArray(db.EquipmentGroupTemplates, t => ToDto(t, resolver)),
                 equipmentGroups         = ToArray(db.EquipmentGroups, g => ToDto(g, resolver)),
 
-                effects      = ToArrayFiltered(db.Effects, e => e != null && !string.IsNullOrWhiteSpace(e.id), CloneNormalized),
-                gameplayTags = ToArrayFiltered(db.GameplayTags, t => t != null && !string.IsNullOrWhiteSpace(t.name), t => t.Clone())
+                // 效果 / Gameplay 标签：v9 起不写出（外移至 toolkit EffectDatabase，由 EffectConfigSerializer 单独导出）。
             };
         }
 
@@ -107,14 +114,6 @@ namespace Ale.Inventory.Runtime.Serialization
                 backgroundColor = ToDto(t.backgroundColor),
                 hideInUI        = t.hideInUI
             };
-        }
-
-        /// <summary>效果定义深拷贝并归一（导出前补 null、空阶段改写），不改动配置本体。</summary>
-        private static EffectDefinition CloneNormalized(EffectDefinition e)
-        {
-            var c = e.Clone();
-            c.Normalize();
-            return c;
         }
 
         private static ItemTemplateDto ToDto(ItemTemplate t, IAssetRefResolver resolver)
@@ -171,8 +170,8 @@ namespace Ale.Inventory.Runtime.Serialization
             target.EquipmentGroupTags.Clear();
             target.EquipmentGroupTemplates.Clear();
             target.EquipmentGroups.Clear();
-            target.Effects.Clear();
-            target.GameplayTags.Clear();
+            target.LegacyEffects.Clear();
+            target.LegacyGameplayTags.Clear();
 
             if (dto == null) return;
 
@@ -215,12 +214,13 @@ namespace Ale.Inventory.Runtime.Serialization
             if (dto.equipmentGroups != null)
                 foreach (var g in dto.equipmentGroups) target.EquipmentGroups.Add(FromDto(g, resolver));
 
+            // v8 文件独有：效果 / Gameplay 标签读入 legacy 字段（运行时不读取；经 InventoryLegacyEffects / 迁移菜单迁入 toolkit 效果库）。
             if (dto.effects != null)
                 foreach (var e in dto.effects)
-                    if (e != null) { var c = e.Clone(); c.Normalize(); target.Effects.Add(c); }
+                    if (e != null) { var c = e.Clone(); c.Normalize(); target.LegacyEffects.Add(c); }
             if (dto.gameplayTags != null)
                 foreach (var t in dto.gameplayTags)
-                    if (t != null && !string.IsNullOrEmpty(t.name)) target.GameplayTags.Add(t.Clone());
+                    if (t != null && !string.IsNullOrEmpty(t.name)) target.LegacyGameplayTags.Add(t.Clone());
         }
 
         private static EnumType FromDto(EnumTypeDto dto, IAssetRefResolver resolver)

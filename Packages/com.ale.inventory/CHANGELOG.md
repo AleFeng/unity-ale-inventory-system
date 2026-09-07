@@ -6,6 +6,35 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.13.0] - 2026-09-07
+
+**效果与 Gameplay 标签外移至 toolkit 1.10.0 的共用效果库 `EffectDatabase`；库存库只保留道具的效果 id 引用。** 1.12.0 把效果存在库存库里、编辑器自带一份「效果系统」页签——角色系统（Chronicle）也有一份结构相同的，效果只能在各自库内定义。本版按 toolkit 1.10.0 的共用化方案改造：效果 / 标签在 Effect Editor 一处配置、所有上层系统按 id 引用；本包只保留「效果引用列表 + 跳转」。`UseItem` 的施加语义不变（Chronicle × Inventory 整合 Demo：回复药水 / 磨刀油 / 剑 三条断言与 1.12.0 一致，效果改由 toolkit 效果库承载）。
+
+### 破坏性变更
+
+- ⚠️ **`InventoryDatabase.Effects` / `GameplayTags` / `GetEffect` 与 `IEffectDefinitionSource` 实现移除**。1.12.0 资产里的效果 / 标签经 `FormerlySerializedAs` 落入隐藏字段 `legacyEffects` / `legacyGameplayTags`（`[Obsolete]` 访问器 `LegacyEffects` / `LegacyGameplayTags`，`HasLegacyEffectData`），运行时不再读取——请用迁移菜单搬入效果库（见下文「迁移指引」）。legacy 字段保留一个版本，下一版删除。`CloneFrom`（新建数据文件「使用模板」）不复制 legacy。
+- ⚠️ **`InventoryDataManager` 不再登记为 toolkit 效果定义源、不再并入 Gameplay 标签、删除 `GetEffect`**；效果按 id 经 toolkit `EffectDataManager`（注册效果库时登记为全局来源）/ `EffectDefinitionRegistry.Default` 解析。宿主须注册效果库：放在 `Resources` 下随启动自动登记，或 `EffectDataManager.Instance.Register(effectDatabase)`。
+- **导出格式 v9**：不再写出 v8 的效果 / Gameplay 标签两块（效果库改由 toolkit `EffectConfigSerializer` 单独导出）；道具 / 模板块的 `onUseEffectRefs` 保留。读 v8 文件（JSON / 二进制）时两块读入 legacy 字段（同样经迁移菜单进入效果库）；`LoadFromJson` / `LoadFromBinary` 的旧文件效果不再直接生效。
+- `InventoryDatabase.Validate` 不再校验效果 / 标签（效果库自身在 Effect Editor 校验）；道具的效果引用照旧不作悬空校验（编辑器标注「未找到」，不阻断）。
+- 编辑器删除「效果系统」页签（`Editor/EffectSystem`、`InventoryEffectRefDrawer`、`EInventoryEntityKind.Effect` 及重复 ID 扫描的效果种类）；效果在 toolkit 的 **Effect Editor**（`Tools > Ale Toolkit > Effect System > Effect Editor`）配置。
+
+### 新增
+
+- **迁移**：`Tools > Ale Toolkit > Inventory System > 迁移效果到 Effect Database`（`EditorInventoryEffectMigration` 窗口，三语：来源库存库 + 目标效果库（可就地新建）→ 迁移 → 报告 → 在 Effect Editor 打开）；`InventoryDatabase` 资产 Inspector 检测到 legacy 数据时给出提示与同一入口。纯数据部分 `InventoryLegacyEffects.MigrateInto(source, target)`（运行时程序集）：逐条 `EffectDefinition → EffectEntry`（定义深拷贝并归一，显示名取定义的 `displayName`，不挂模板）并从 legacy 移除；目标库已有同 id 的跳过、报告并留在 legacy（不覆盖，处理后可重跑）；标签按归一名去重并入。
+- **道具 / 模板 Inspector 的「使用效果」引用**改用 toolkit `EditorEffectRefListDrawer`：「+」从工程内全部效果库的目录选择（按库分组）、拖拽重排 / 删除、「打开」跳转到 Effect Editor 并定位、未找到标注（不阻断）、自由输入。译表 `InventoryEditorL10n.Table.Effect.cs` 改为只承载引用列表文案与迁移窗口 / 提示（列表本体译文由 toolkit 提供）。
+
+### 依赖
+
+- ⚠️ **最低 `com.ale.toolkit` 版本提至 1.10.0**（效果库 `EffectDatabase` / `EffectDataManager` / Effect Editor / `EditorEffectRefListDrawer`）。安装顺序不变：先 `com.ale.toolkit`、再本包。
+- 程序集引用：`Ale.Inventory.Editor` 新增 `Ale.Effect.Runtime`。
+
+### 迁移指引（1.12.0 → 1.13.0）
+
+1. 升级 toolkit 至 1.10.0，重新编译（旧资产的效果 / 标签自动落入 legacy 字段，Inspector 出现黄色提示）。
+2. 选中旧的 `InventoryDatabase` 资产 → 「迁移效果到 Effect Database…」→ 目标库「新建…」（或选已有效果库，如角色系统已在用的那份）→ 迁移。报告有同 id 冲突时在目标库处理后重跑。
+3. 把效果库放进 `Resources`，或在引导代码里 `EffectDataManager.Instance.Register(effectDatabase)`；`InventoryDataManager.Register` 照旧；`UseItem` 调用不变。
+4. 旧的 v8 JSON / 二进制：导入库存库后同样经迁移菜单进入效果库，再用 toolkit `EffectConfigSerializer` 导出效果库。
+
 ## [1.12.0] - 2026-09-07
 
 **道具「使用」接入 toolkit 1.9.0 的效果系统（GAS 式 GameplayEffect）与 Gameplay 标签。** 道具可引用效果 id，`UseItem` 把效果施加到调用方给定的目标上下文并扣减道具；本包仍不认识任何领域系统（角色 / 属性 / 特质由 toolkit 效果契约与业务层上下文承接）。

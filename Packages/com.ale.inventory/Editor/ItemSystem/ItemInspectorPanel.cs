@@ -1,5 +1,6 @@
 using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
+using Ale.Effect.Editor;
 using Ale.Inventory.Runtime;
 using UnityEditor;
 using UnityEngine;
@@ -151,11 +152,11 @@ namespace Ale.Inventory.Editor
 
             EditorGUILayout.Space(6);
 
-            // ── 使用时施加的效果（1.12.0）────────────────────────────────────────────
+            // ── 使用时施加的效果（1.12.0；1.13.0 起引用 toolkit 效果库，绘制器由 toolkit 提供：目录菜单 / 拖拽 / 打开跳转 / 未找到标注）──
             item.onUseEffectRefs ??= new List<string>();
-            InventoryEffectRefDrawer.Draw(ctx, item.onUseEffectRefs, _effectRefDrag,
+            EditorEffectRefListDrawer.Draw(ctx, item.onUseEffectRefs, _effectRefDrag,
                 Tr("使用时施加的效果"), "使用效果",
-                Tr("（按序对目标施加；可引用本库效果或其它系统的效果 id）"));
+                Tr("（按序对目标施加；引用 toolkit 效果库中的效果 id——「+」从目录选择，「打开」跳转到 Effect Editor）"));
 
             EditorGUILayout.Space(6);
 
