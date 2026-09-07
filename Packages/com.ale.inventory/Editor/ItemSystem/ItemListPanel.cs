@@ -117,6 +117,7 @@ namespace Ale.Inventory.Editor
                 item.weight          = tmpl.weight;
                 item.stackLimit      = tmpl.stackLimit;
                 item.hideInInventory = tmpl.hideInInventory;
+                item.onUseEffectRefs = tmpl.onUseEffectRefs != null ? new List<string>(tmpl.onUseEffectRefs) : new List<string>();
             }
             item.RebuildAttributes(db);
             db.Items.Add(item);

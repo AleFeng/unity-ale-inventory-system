@@ -32,6 +32,12 @@ namespace Ale.Inventory.Runtime
         /// <summary>是否在仓库 UI 的道具仓库中隐藏（数据仍然存在，仅不显示）。</summary>
         public bool hideInInventory;
 
+        /// <summary>
+        /// 「使用」时按序对目标施加的效果 id 列表（1.12.0）。可引用本库 <see cref="InventoryDatabase.Effects"/>，也可引用其它库 / 其它系统
+        /// 定义的效果（运行时经 toolkit 全局效果注册表按 id 解析）。空 = 不可使用（<c>UseItem</c> 返回 NoEffects、不扣减）。
+        /// </summary>
+        public List<string> onUseEffectRefs = new List<string>();
+
         public Item()
         {
             
@@ -168,6 +174,7 @@ namespace Ale.Inventory.Runtime
                 weight     = weight,
                 stackLimit = stackLimit,
                 hideInInventory = hideInInventory,
+                onUseEffectRefs = onUseEffectRefs != null ? new List<string>(onUseEffectRefs) : new List<string>(),
             };
             clone.tagRefs = new List<string>(tagRefs);
             foreach (var e in values)

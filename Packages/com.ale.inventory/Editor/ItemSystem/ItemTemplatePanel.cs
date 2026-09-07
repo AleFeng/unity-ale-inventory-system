@@ -15,6 +15,7 @@ namespace Ale.Inventory.Editor
     public class ItemTemplatePanel : EditorMasterListPanel<ItemTemplate>
     {
         private readonly AttributeDefinitionListDrawer _attrDefsDrawer = new AttributeDefinitionListDrawer();
+        private readonly EditorReorderableDrag _effectRefDrag = new EditorReorderableDrag("ItemTemplateUseEffectDrag");
 
         #region 主列表配置
 
@@ -79,6 +80,13 @@ namespace Ale.Inventory.Editor
                 template.hideInInventory = newHideInInventory;
                 ctx.MarkDirty();
             }
+
+            EditorGUILayout.Space(6);
+
+            // ── 默认使用效果（1.12.0；从模板创建道具时复制）────────────────────
+            template.onUseEffectRefs ??= new List<string>();
+            InventoryEffectRefDrawer.Draw(ctx, template.onUseEffectRefs, _effectRefDrag,
+                Tr("默认使用效果（从模板创建时复制）"), "模板使用效果");
 
             EditorGUILayout.Space(6);
 

@@ -49,6 +49,9 @@ namespace Ale.Inventory.Runtime.Serialization
                 WriteShopBlock(w, dto);
                 WriteCraftingBlock(w, dto);
                 WriteEquipmentBlock(w, dto);
+
+                // v8 追加：效果系统数据块（效果定义 JSON 串 + Gameplay 标签）
+                WriteEffectBlock(w, dto);
             }
             return stream.ToArray();
         }
@@ -78,6 +81,9 @@ namespace Ale.Inventory.Runtime.Serialization
             w.Write(t.weight);
             w.Write(t.stackLimit);
             w.Write(t.hideInInventory);
+
+            // v8 追加：默认使用效果
+            WriteStrArray(w, t.onUseEffectRefs);
         }
 
         private static void WriteItem(BinaryWriter w, ItemDto item)
@@ -91,6 +97,9 @@ namespace Ale.Inventory.Runtime.Serialization
             w.Write(item.weight);
             w.Write(item.stackLimit);
             w.Write(item.hideInInventory);
+
+            // v8 追加：使用效果
+            WriteStrArray(w, item.onUseEffectRefs);
         }
 
         #endregion
@@ -141,7 +150,11 @@ namespace Ale.Inventory.Runtime.Serialization
                 ReadShopBlock(r, dto);
                 ReadCraftingBlock(r, dto);
                 ReadEquipmentBlock(r, dto);
-                // 更早/旧版本文件在此之后可能还有旧的扩展数据块或数据库级本地化表 GUID（v6/v7）等尾部数据，均未读、被忽略，向后兼容。
+
+                // v8 追加：效果系统数据块；v6 / v7 文件在装备块之后可能还有旧的扩展数据块或数据库级本地化表 GUID 等尾部数据，
+                // 均未读、被忽略，向后兼容。
+                if (version >= InventoryDtoMapper.VersionWithEffects)
+                    ReadEffectBlock(r, dto);
             }
 
             InventoryDtoMapper.FromDto(dto, target, resolver);
@@ -179,6 +192,8 @@ namespace Ale.Inventory.Runtime.Serialization
             t.weight          = r.ReadSingle();
             t.stackLimit      = r.ReadInt32();
             t.hideInInventory = r.ReadBoolean();
+            if (version >= InventoryDtoMapper.VersionWithEffects)
+                t.onUseEffectRefs = ReadStrArray(r);
             return t;
         }
 
@@ -196,6 +211,8 @@ namespace Ale.Inventory.Runtime.Serialization
             item.weight          = r.ReadSingle();
             item.stackLimit      = r.ReadInt32();
             item.hideInInventory = r.ReadBoolean();
+            if (version >= InventoryDtoMapper.VersionWithEffects)
+                item.onUseEffectRefs = ReadStrArray(r);
             return item;
         }
 

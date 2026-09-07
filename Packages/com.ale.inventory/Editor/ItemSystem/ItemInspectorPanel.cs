@@ -37,6 +37,9 @@ namespace Ale.Inventory.Editor
         /// <summary>每个分组 key 对应的展开状态。默认展开。</summary>
         private readonly Dictionary<string, bool> _groupFoldouts = new Dictionary<string, bool>();
 
+        // 「使用时施加的效果」列表拖拽重排状态机
+        private readonly EditorReorderableDrag _effectRefDrag = new EditorReorderableDrag("ItemUseEffectDrag");
+
         private bool GetFoldout(string key)
         {
             if (!_groupFoldouts.TryGetValue(key, out bool v)) return true;
@@ -145,6 +148,14 @@ namespace Ale.Inventory.Editor
                 item.hideInInventory = newHideInInventory;
                 ctx.MarkDirty();
             }
+
+            EditorGUILayout.Space(6);
+
+            // ── 使用时施加的效果（1.12.0）────────────────────────────────────────────
+            item.onUseEffectRefs ??= new List<string>();
+            InventoryEffectRefDrawer.Draw(ctx, item.onUseEffectRefs, _effectRefDrag,
+                Tr("使用时施加的效果"), "使用效果",
+                Tr("（按序对目标施加；可引用本库效果或其它系统的效果 id）"));
 
             EditorGUILayout.Space(6);
 

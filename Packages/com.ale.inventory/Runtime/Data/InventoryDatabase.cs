@@ -1,4 +1,6 @@
 using Ale.Toolkit.Runtime;
+using Ale.Effect;
+using Ale.GameplayTags;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +13,7 @@ namespace Ale.Inventory.Runtime
     /// 编辑器始终且仅在该资产上工作；JSON / 二进制 仅作为单向导出格式（见 Serialization 目录）。
     /// 通过菜单 Assets/Create/InventorySystem/Inventory Database 创建（由编辑器菜单项处理，支持模板）。
     /// </summary>
-    public class InventoryDatabase : ScriptableObject, IEnumTypeSource
+    public class InventoryDatabase : ScriptableObject, IEnumTypeSource, IEffectDefinitionSource
     {
         [SerializeField] private List<EnumType>          enumTypes          = new List<EnumType>();
         [SerializeField] private List<Tag>               functionTags       = new List<Tag>();
@@ -30,6 +32,8 @@ namespace Ale.Inventory.Runtime
         [SerializeField] private List<EquipmentGroupTag>         equipmentGroupTags         = new List<EquipmentGroupTag>();
         [SerializeField] private List<EquipmentGroupTemplate>    equipmentGroupTemplates    = new List<EquipmentGroupTemplate>();
         [SerializeField] private List<EquipmentGroup>            equipmentGroups            = new List<EquipmentGroup>();
+        [SerializeField] private List<EffectDefinition>          effects                    = new List<EffectDefinition>();
+        [SerializeField] private List<GameplayTagDefinition>     gameplayTags               = new List<GameplayTagDefinition>();
 
         #region 访问器
         /// <summary>
@@ -120,6 +124,12 @@ namespace Ale.Inventory.Runtime
         /// </summary>
         public List<EquipmentGroup> EquipmentGroups => equipmentGroups;
 
+        /// <summary>效果 列表（1.12.0；toolkit GAS 式 <see cref="EffectDefinition"/>：时长 / 周期 / 叠加 / 标签 / 条件 / 修饰器 / 执行阶段）。道具经 <see cref="Item.onUseEffectRefs"/> 引用。</summary>
+        public List<EffectDefinition> Effects => effects;
+
+        /// <summary>本库声明的 Gameplay 标签（1.12.0；注册数据库时并入 toolkit 标签注册表，供编辑器下拉与校验；运行时匹配不依赖它）。</summary>
+        public List<GameplayTagDefinition> GameplayTags => gameplayTags;
+
         #endregion
 
         #region 按键查找
@@ -198,6 +208,12 @@ namespace Ale.Inventory.Runtime
 
         /// <summary>按 field 查找整理选项，未找到返回 null。</summary>
         public SortOption GetSortOption(string field) => Find(sortOptions, field, so => so.field);
+
+        /// <summary>按 id 查找效果定义（1.12.0），未找到返回 null。</summary>
+        public EffectDefinition GetEffect(string effectId) => Find(effects, effectId, e => e.id);
+
+        // 显式实现 IEffectDefinitionSource：供 toolkit 效果容器 / EffectApplier 按 id 取定义。
+        EffectDefinition IEffectDefinitionSource.GetEffect(string id) => GetEffect(id);
 
         #endregion
 
@@ -362,6 +378,32 @@ namespace Ale.Inventory.Runtime
             if (egDuplicates.Count > 0)
                 errors.Add("存在重复的装备组 ID：" + string.Join(", ", egDuplicates));
 
+            // 效果（1.12.0）：id 重复 / 定义自校验（toolkit「警告:」不阻断）。道具的效果引用允许指向其它库 / 其它系统
+            // （运行时经全局效果注册表按 id 解析），故不作悬空校验。
+            var fxSeen       = new HashSet<string>();
+            var fxDuplicates = new HashSet<string>();
+            var fxErrors     = new List<string>();
+            foreach (var e in effects)
+            {
+                if (e == null) continue;
+                if (!string.IsNullOrWhiteSpace(e.id) && !fxSeen.Add(e.id)) fxDuplicates.Add(e.id);
+                var msgs = new List<string>();
+                e.Validate(msgs);
+                foreach (var m in msgs)
+                    if (!EffectDefinition.IsWarning(m)) fxErrors.Add(m);
+            }
+            if (fxDuplicates.Count > 0)
+                errors.Add("存在重复的效果 ID：" + string.Join(", ", fxDuplicates));
+            if (fxErrors.Count > 0)
+                errors.Add("效果定义存在错误：" + string.Join("；", fxErrors));
+
+            // Gameplay 标签：名称须合法（层级匹配语义依赖归一后的点分名）
+            var badTags = new List<string>();
+            foreach (var t in gameplayTags)
+                if (t != null && !GameplayTag.IsValidName(t.name)) badTags.Add(t.name ?? "(null)");
+            if (badTags.Count > 0)
+                errors.Add("Gameplay 标签名不合法（段不能为空，段内不能含空白或 '/'）：" + string.Join(", ", badTags));
+
             return errors.Count == 0;
         }
 
@@ -393,6 +435,8 @@ namespace Ale.Inventory.Runtime
             equipmentGroupTags         = source.equipmentGroupTags.Select(t => t.Clone()).ToList();
             equipmentGroupTemplates    = source.equipmentGroupTemplates.Select(t => t.Clone()).ToList();
             equipmentGroups            = source.equipmentGroups.Select(g => g.Clone()).ToList();
+            effects                    = source.effects.Select(e => e.Clone()).ToList();
+            gameplayTags               = source.gameplayTags.Select(t => t.Clone()).ToList();
         }
 
         #endregion

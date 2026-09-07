@@ -6,6 +6,26 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.12.0] - 2026-09-07
+
+**道具「使用」接入 toolkit 1.9.0 的效果系统（GAS 式 GameplayEffect）与 Gameplay 标签。** 道具可引用效果 id，`UseItem` 把效果施加到调用方给定的目标上下文并扣减道具；本包仍不认识任何领域系统（角色 / 属性 / 特质由 toolkit 效果契约与业务层上下文承接）。
+
+### 新增
+
+- **效果系统页签**：`InventoryDatabase.Effects`（toolkit `EffectDefinition` 原样入库：时长策略 / 周期 / 叠加 / 资产·授予·免疫标签 / 施加条件 / 概率 / 修饰器 / 执行阶段）与 `InventoryDatabase.GameplayTags`（本库声明的层级标签，注册数据库时并入 toolkit 标签注册表）；编辑器新增「效果系统」页签（左列 Gameplay 标签目录、中列效果列表以时长策略充当过滤 / 新建入口、右列 ID / 显示名 + 内联 toolkit 效果定义绘制器 + 校验摘要）；`GetEffect` 查询；`Validate` 校验效果 id 重复、定义错误（toolkit 警告不阻断）、非法标签名。
+- **道具使用效果**：`Item.onUseEffectRefs` / `ItemTemplate.onUseEffectRefs`（模板默认值，从模板创建时复制）；道具 / 模板 Inspector 增「使用时施加的效果」列表（可选本库效果，也可自由输入其它库 / 其它系统的效果 id——运行时经全局效果注册表解析，编辑器标注「外部」）。
+- **`InventoryRuntimeManager.UseItem(inventoryId, itemId, targetContext)` / `UseItemInSlot(inventoryId, slotId, targetContext)`**：按序经 toolkit `EffectApplier` 施加使用效果，至少一个成功才扣减 1 个；返回 `ItemUseResult`（类别 / 是否扣减 / 逐效果结果），派发 `OnItemUsed(ItemUseEvent)`。无引用 → `NoEffects` 不扣减；未持有 → `NotOwned`。
+- **`InventoryDataManager`** 实现 toolkit `IEffectDefinitionSource`：注册数据库时把本库 Gameplay 标签并入注册表、把自身登记为 `EffectDefinitionRegistry.Default` 的来源（其它系统按 id 也能解析本库定义的效果）；`GetEffect` 跨库查询。
+
+### 变更
+
+- 导出格式 **v8**：道具 / 道具模板块尾追加 `onUseEffectRefs`；尾部追加 效果（Effect System JSON 串）/ Gameplay 标签 两块。JSON 导出直接内嵌 `EffectDefinition`。v7 及更早导出仍可导入。`CloneFrom` 同步拷贝两个新列表。
+- 编辑器重复 ID 扫描新增「效果」种类；状态栏 / 导出拦截一并覆盖。
+
+### 依赖
+
+- ⚠️ **最低 `com.ale.toolkit` 版本提至 1.9.0**（`Ale.Effect` GAS 层、`Ale.GameplayTags`、`Ale.Modifier.Core`、`Ale.Condition.Core`）。安装顺序不变：先 `com.ale.toolkit`、再本插件。
+
 ## [1.11.1] - 2026-08-04
 
 列表 UI 的一次「淡入淡出 + 去重下沉」迭代：为虚拟滚动列表的单元格加入**分配（滚入）淡入 / 回收（滚出）淡出**，并把该能力**下沉为 `com.ale.toolkit` 的通用基类与接口**，令所有列表（背包 / 商店 / 制作 / 装备候选）统一获得。**纯 UI / 运行时层改动，导出 DTO 与数据零变化。**

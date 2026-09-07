@@ -5,6 +5,9 @@
         "Ale.Toolkit.Runtime",
         "Ale.Toolkit.Runtime.UI",
         "Ale.Inventory.Runtime",
+        "Ale.Effect.Core",
+        "Ale.GameplayTags.Core",
+        "Ale.Condition.Core",
         "Unity.TextMeshPro",
         "Unity.Localization"
     ],

@@ -111,7 +111,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 This installs the latest commit on `main`. **To pin a version, append `#<tag>` to the very end of the URL** (it must come after `?path=`):
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.11.1
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.12.0
 ```
 
 See [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) for available tags.

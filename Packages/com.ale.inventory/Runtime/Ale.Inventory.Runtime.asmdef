@@ -3,7 +3,13 @@
     "rootNamespace": "Ale.Inventory.Runtime",
     "references": [
         "Ale.Toolkit.Runtime",
-        "Ale.Toolkit.Runtime.UI"
+        "Ale.Toolkit.Runtime.UI",
+        "Ale.Condition.Core",
+        "Ale.Effect.Core",
+        "Ale.Effect.Runtime",
+        "Ale.GameplayTags.Core",
+        "Ale.GameplayTags.Runtime",
+        "Ale.Modifier.Core"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

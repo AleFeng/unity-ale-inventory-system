@@ -12,6 +12,7 @@ namespace Ale.Inventory.Editor
         Shop,
         Crafting,
         Equipment,
+        Effect,
     }
 
     /// <summary>
@@ -29,6 +30,7 @@ namespace Ale.Inventory.Editor
             EInventoryEntityKind.Shop,
             EInventoryEntityKind.Crafting,
             EInventoryEntityKind.Equipment,
+            EInventoryEntityKind.Effect,
         };
 
         /// <summary>该种类的中文名词（状态栏与提示文案用）。</summary>
@@ -40,6 +42,7 @@ namespace Ale.Inventory.Editor
                 case EInventoryEntityKind.Inventory: return "仓库";
                 case EInventoryEntityKind.Shop:      return "商店";
                 case EInventoryEntityKind.Crafting:  return "蓝图";
+                case EInventoryEntityKind.Effect:    return "效果";
                 default:                             return "装备组";   // Equipment
             }
         }
@@ -56,6 +59,7 @@ namespace Ale.Inventory.Editor
             map[EInventoryEntityKind.Shop]      = EditorIdScanner.Scan(db.Shops,              x => x.id);
             map[EInventoryEntityKind.Crafting]  = EditorIdScanner.Scan(db.CraftingBlueprints, x => x.id);
             map[EInventoryEntityKind.Equipment] = EditorIdScanner.Scan(db.EquipmentGroups,    x => x.id);
+            map[EInventoryEntityKind.Effect]    = EditorIdScanner.Scan(db.Effects,            x => x.id);
             return map;
         }
 

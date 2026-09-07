@@ -4,6 +4,8 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 using Ale.Toolkit.Runtime;
 using Ale.Toolkit.Runtime.Serialization;
+using Ale.Effect;
+using Ale.GameplayTags;
 
 namespace Ale.Inventory.Runtime.Serialization
 {
@@ -29,7 +31,10 @@ namespace Ale.Inventory.Runtime.Serialization
         ///   <item>v7：移除数据库级 localizationTableCollectionGuid（本地化表绑定已回归到各 Text 属性值的 tableRef）。</item>
         /// </list>
         /// </summary>
-        public const int Version = 7;
+        public const int Version = 8;
+
+        /// <summary>v8：效果系统——尾部追加 效果 / Gameplay 标签 两块，道具 / 道具模板块尾追加 onUseEffectRefs。</summary>
+        internal const int VersionWithEffects = 8;
 
         /// <summary>首个包含仓库 / 商店 / 制作 / 装备 等扩展数据块的格式版本（二进制读取按此做向后兼容判断）。</summary>
         internal const int VersionWithAllSystems = 6;
@@ -63,7 +68,10 @@ namespace Ale.Inventory.Runtime.Serialization
 
                 equipmentGroupTags      = ToArray(db.EquipmentGroupTags, t => ToDto(t, resolver)),
                 equipmentGroupTemplates = ToArray(db.EquipmentGroupTemplates, t => ToDto(t, resolver)),
-                equipmentGroups         = ToArray(db.EquipmentGroups, g => ToDto(g, resolver))
+                equipmentGroups         = ToArray(db.EquipmentGroups, g => ToDto(g, resolver)),
+
+                effects      = ToArrayFiltered(db.Effects, e => e != null && !string.IsNullOrWhiteSpace(e.id), CloneNormalized),
+                gameplayTags = ToArrayFiltered(db.GameplayTags, t => t != null && !string.IsNullOrWhiteSpace(t.name), t => t.Clone())
             };
         }
 
@@ -101,6 +109,14 @@ namespace Ale.Inventory.Runtime.Serialization
             };
         }
 
+        /// <summary>效果定义深拷贝并归一（导出前补 null、空阶段改写），不改动配置本体。</summary>
+        private static EffectDefinition CloneNormalized(EffectDefinition e)
+        {
+            var c = e.Clone();
+            c.Normalize();
+            return c;
+        }
+
         private static ItemTemplateDto ToDto(ItemTemplate t, IAssetRefResolver resolver)
         {
             var dto = new ItemTemplateDto
@@ -108,7 +124,8 @@ namespace Ale.Inventory.Runtime.Serialization
                 tagRefs         = ToArray(t.tagRefs),
                 weight          = t.weight,
                 stackLimit      = t.stackLimit,
-                hideInInventory = t.hideInInventory
+                hideInInventory = t.hideInInventory,
+                onUseEffectRefs = ToArray(t.onUseEffectRefs)
             };
             FillTemplateDto(dto, t, resolver);   // 名称 / 色点 / 属性字段
             return dto;
@@ -124,7 +141,8 @@ namespace Ale.Inventory.Runtime.Serialization
                 values = ToDto(item.values, resolver),
                 weight          = item.weight,
                 stackLimit      = item.stackLimit,
-                hideInInventory = item.hideInInventory
+                hideInInventory = item.hideInInventory,
+                onUseEffectRefs = ToArray(item.onUseEffectRefs)
             };
         }
 
@@ -153,6 +171,8 @@ namespace Ale.Inventory.Runtime.Serialization
             target.EquipmentGroupTags.Clear();
             target.EquipmentGroupTemplates.Clear();
             target.EquipmentGroups.Clear();
+            target.Effects.Clear();
+            target.GameplayTags.Clear();
 
             if (dto == null) return;
 
@@ -194,6 +214,13 @@ namespace Ale.Inventory.Runtime.Serialization
                 foreach (var t in dto.equipmentGroupTemplates) target.EquipmentGroupTemplates.Add(FromDto(t, resolver));
             if (dto.equipmentGroups != null)
                 foreach (var g in dto.equipmentGroups) target.EquipmentGroups.Add(FromDto(g, resolver));
+
+            if (dto.effects != null)
+                foreach (var e in dto.effects)
+                    if (e != null) { var c = e.Clone(); c.Normalize(); target.Effects.Add(c); }
+            if (dto.gameplayTags != null)
+                foreach (var t in dto.gameplayTags)
+                    if (t != null && !string.IsNullOrEmpty(t.name)) target.GameplayTags.Add(t.Clone());
         }
 
         private static EnumType FromDto(EnumTypeDto dto, IAssetRefResolver resolver)
@@ -236,7 +263,8 @@ namespace Ale.Inventory.Runtime.Serialization
                 tagRefs         = FromDto(dto.tagRefs),
                 weight          = dto.weight,
                 stackLimit      = dto.stackLimit,
-                hideInInventory = dto.hideInInventory
+                hideInInventory = dto.hideInInventory,
+                onUseEffectRefs = FromDto(dto.onUseEffectRefs)
             };
             FillTemplate(t, dto, resolver);   // 名称 / 色点 / 属性字段
             return t;
@@ -249,7 +277,8 @@ namespace Ale.Inventory.Runtime.Serialization
                 tagRefs         = FromDto(dto.tagRefs),
                 weight          = dto.weight,
                 stackLimit      = dto.stackLimit,
-                hideInInventory = dto.hideInInventory
+                hideInInventory = dto.hideInInventory,
+                onUseEffectRefs = FromDto(dto.onUseEffectRefs)
             };
             FromDto(dto.values, item.values, resolver);
             return item;

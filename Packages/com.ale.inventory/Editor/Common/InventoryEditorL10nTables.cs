@@ -25,6 +25,7 @@ namespace Ale.Inventory.Editor
             RegisterShop();
             RegisterCrafting();
             RegisterEquipment();
+            RegisterEffect();
             RegisterDrawers();
             RegisterEnums();
             RegisterDemo();
@@ -39,6 +40,7 @@ namespace Ale.Inventory.Editor
         static partial void RegisterShop();
         static partial void RegisterCrafting();
         static partial void RegisterEquipment();
+        static partial void RegisterEffect();
         static partial void RegisterDrawers();
         static partial void RegisterEnums();
         static partial void RegisterDemo();

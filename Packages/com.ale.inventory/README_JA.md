@@ -26,12 +26,14 @@
 | **ショップシステム** | ショップテンプレート、ショップ、商品グループ、価格ソース、更新スケジュール | `ShopRuntimeManager`（取引 + 進捗セーブ） | [ショップシステム](Docs~/ShopSystem_JA.md) |
 | **クラフトシステム** | グループタグ、ブループリントテンプレート、ブループリント（レシピ）、クラフト倉庫 | `CraftingRuntimeManager`（消費 → 産出） | [クラフトシステム](Docs~/CraftingSystem_JA.md) |
 | **装備システム** | グループタグ、装備グループテンプレート、装備グループ（スロットリスト / 装備スロット / アイテム制限 / 属性ボーナス） | `EquipmentRuntimeManager`（装備 / 解除 + ボーナス + セーブ） | [装備システム](Docs~/EquipmentSystem_JA.md) |
+| **エフェクトシステム**（`1.12.0`） | エフェクト（toolkit の GAS 式 `EffectDefinition`：持続時間 / 周期 / スタック / タグ / 条件 / 修飾 / 実行フェーズ）、ゲームプレイタグ、アイテムの `onUseEffectRefs` | `InventoryRuntimeManager.UseItem`（呼び出し側が渡す対象コンテキストへ付与しアイテムを消費）。`InventoryDataManager` はエフェクト定義ソースを兼ねる | 下記「エフェクトシステム」参照 |
 
 ### アイテムシステム
 - **柔軟な属性システム**：フィールド型は Bool / Int / Float / String / Text（プレーンテキストのフォールバック + 任意のローカライズ参照）/ Vector2〜4 / VectorInt2〜4 / Color / Enum / StringIntPair / EnumIntPair / Sprite / Texture / Prefab / Material / AudioClip / AnimationClip / AnimationCurve / PhysicsMaterial(2D) に対応し、いずれも配列形式もサポートします。
 - **カスタム列挙型**：列挙値はシステムが自動採番（単調増加、再利用は決してしない）。表示順序はドラッグで並べ替え可能。列挙項目はカスタム属性フィールドを持てます。
 - **機能タグ**：各タグは一組の属性フィールドを定義します。アイテムへのタグの増減で、対応するフィールドが自動的に増減します。タグはアイテムテンプレートに固定できます。
 - **アイテムテンプレート / アイテム一覧 / アイテム Inspector**：テンプレートは作成のひな型になります。一覧はテンプレートフィルタのタグバー + 検索 + ドラッグ並べ替えに対応。Inspector はリアルタイムの ID 重複チェック、ソース別の属性グルーピング、列挙サブ属性の自動展開を行います。
+- **使用時に付与するエフェクト**（`1.12.0`）：アイテム / テンプレートの `onUseEffectRefs` がエフェクト id を順に参照します（このデータベースのエフェクト、または他データベース / 他システムのエフェクト id）。ランタイムの `UseItem` が付与し、アイテムを消費します。
 
 ### 倉庫システム
 - **倉庫テンプレート / 倉庫インスタンス**：テンプレートは容量、重量上限、格納/取り出し/操作の機能タグ制限、フィルタタグ、整理ソートルール、カスタム属性を定義します。インスタンスはテンプレートから作成され、上書きも可能です。
@@ -55,11 +57,17 @@
 - **属性ボーナス**：「装備属性フィールドリスト」は、どのアイテム属性を装備グループの合計ボーナスに集計するかを指定し、グループタグごとにグループ分けして表示します。
 - **ランタイム**：`EquipmentRuntimeManager` は各スロットの装備中アイテムを管理します。装備 / 解除 / 交換は `InventoryRuntimeManager` と連携してアイテムを移動し、スロットの自動検索、ボーナス集計、セーブデータ、`OnEquipmentChanged` イベントを提供します。
 
+### エフェクトシステム（`1.12.0`）
+- **エフェクト `EffectDefinition`**（toolkit `Ale.Effect` の GAS 層、そのまま格納）：持続ポリシー 即時 / 持続 / 無限、周期、スタック種別と上限 / 更新 / 期限切れポリシー、アセット / 付与 / 除去 / 免疫タグ、付与時 / 持続中のタグ要件、付与条件（`Ale.Condition`）、確率、修飾（大きさ：スケーラブル / 属性ベース / 呼び出し側指定）、フェーズ別実行（`onApply / onStack / onPeriod / onExpire / onRemove`。実行器は各ドメインシステムが提供）、キュータグ。エディタの「エフェクトシステム」タブ：左列にゲームプレイタグ一覧、中央にエフェクト一覧（持続ポリシーがフィルタ / 新規作成の入口）、右列に ID / 表示名 + インラインの toolkit エフェクト定義ドロワー + 検証サマリー。
+- **ゲームプレイタグ**：このデータベースが宣言する階層タグ（例：`Status.Regen`）。データベース登録時に toolkit のタグレジストリへ統合され、エフェクト欄のタグドロップダウンと検証に使われます。ランタイムのマッチングはレジストリに依存しません。
+- **アイテムの使用**：`InventoryRuntimeManager.UseItem(inventoryId, itemId, targetContext)` / `UseItemInSlot(inventoryId, slotId, targetContext)` —— 対象コンテキスト（toolkit `IEffectContext`、subject = エフェクト対象）はゲーム層が構築します（例：キャラクターシステムの `ChronicleEffectContext.Create(characterId)`）。定義はまずコンテキストの定義ソース、次にグローバルの `EffectDefinitionRegistry.Default` で解決されます（このデータベースのエフェクトも他システムのエフェクトも id で参照可能）。少なくとも 1 つのエフェクトが付与された場合のみ 1 個消費します。`ItemUseResult`（`Used / Blocked / NoEffects / NotOwned / UnknownItem / NoContext`、消費有無、エフェクトごとの結果）を返し、`OnItemUsed(ItemUseEvent)` を発火します。**本パッケージはどのドメインシステムも知りません**：属性 / 特性などの反映は相手システムが toolkit のエフェクト契約を実装して行います。
+- **検証**：エフェクト id の重複、定義エラー（toolkit の「警告:」はエクスポートを妨げません）、不正なタグ名。アイテムのエフェクト参照は他システムを指してよいため、未解決チェックは行いません（エディタでは「外部」と表示）。
+
 ### ランタイムとシリアライズ
-- **`InventoryDataManager`**（データクエリのシングルトン）：データベースを登録し、ID でアイテム / 倉庫 / ショップ / ブループリント / 列挙型などをクエリします。`.asset`、JSON、バイナリの 3 種類のソースからの読み込みに対応します。クエリは遅延構築される辞書インデックス（O(1)）を経由し、データベースの登録 / 登録解除時に無効化・再構築されます。
+- **`InventoryDataManager`**（データクエリのシングルトン）：データベースを登録し、ID でアイテム / 倉庫 / ショップ / ブループリント / 列挙型 / エフェクトなどをクエリします。toolkit の `IEffectDefinitionSource` を実装し、データベース登録時にゲームプレイタグをレジストリへ統合し、自身をグローバルのエフェクト定義ソースとして登録します（`1.12.0`）。`.asset`、JSON、バイナリの 3 種類のソースからの読み込みに対応します。クエリは遅延構築される辞書インデックス（O(1)）を経由し、データベースの登録 / 登録解除時に無効化・再構築されます。
 - **`InventoryRuntimeManager`**（MonoBehaviour シングルトン）：倉庫のスロット状態、整理ソート、セーブデータ、時間注入の入口、カバー UI のルートノード / Layer 設定（ポップアップ / ホバーポップアップ / ドラッグのゴーストアイコンなどはインスタンス化後に指定 Layer を再適用）を担い、データベースを `InventoryDataManager` に登録します。エディタのテストアイテム投入（`autoPopulateOnStart` / `testInventoryId` / `testItems`、`Init` のタイミングで投入、データのみで UI は開かない）と、ワンクリックの「すべての設定表アイテムを追加」（`addAllConfiguredItems` + `addAllItemCount`）を含みます。
 - **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager`**（軽量シングルトン）：取引 / クラフト / 装備のロジック（装備中状態はセーブ可能、ショップは取引進捗のセーブあり）。
-- **エクスポート**：`InventoryDtoMapper` → JSON / バイナリ。**データベースの全 17 リストを網羅**（5 サブシステムの設定データを一切取りこぼしません。フォーマットバージョン v6）。オブジェクト参照は AssetGUID として保持され、Addressables による非同期読み込みも任意で可能です。v5 以前にエクスポートした `.bytes` も引き続きインポートできます。
+- **エクスポート**：`InventoryDtoMapper` → JSON / バイナリ。**データベースの全 19 リストを網羅**（6 サブシステムの設定データを一切取りこぼしません。フォーマットバージョン v8：エフェクト定義は JSON に直接埋め込み、バイナリでは Effect System の JSON 文字列として保持し、アイテム / テンプレートブロック末尾に `onUseEffectRefs` を追加）。オブジェクト参照は AssetGUID として保持され、Addressables による非同期読み込みも任意で可能です。v5 ～ v7 でエクスポートした `.bytes` も引き続きインポートできます。
 - **セーブ契約**：倉庫 / 装備 / ショップの 3 マネージャが `IInventorySaveable<TState>` を実装 —— `GetSaveData` はディープコピーを返し、`LoadSaveData` は**マージではなく上書き**、いずれも変更イベントを発火しません。非ジェネリックの `IInventorySaveable` は `ResetAll` のみを持ち、「ニューゲーム」で全システムを一括リセットできます。
 
 ### UI コンポーネント
@@ -144,7 +152,7 @@ UI 言語切り替え（中 / English / 日本語）、「列挙値」翻訳ト�
 
 > ⚠️ **1.8.0 以降、本プラグインは [`com.ale.toolkit`](../com.ale.toolkit) に依存します。** Unity の Package Manager は `package.json` の `dependencies` での git URL 指定に対応していないため `dependencies` は空にしてあります。**必ず先に `com.ale.toolkit` を、その後に本プラグインをインストール**してください。さもないと大量の「型が見つからない」コンパイルエラーになります。
 
-- **`com.ale.toolkit`（必須、先にインストール）** —— 本プラグインが依存する共通基盤（属性システム、仮想スクロールリスト、エディタ 3 カラムフレームワーク、エディタ UI の 3 言語対応、ソートエンジン、タグシステムなど）。
+- **`com.ale.toolkit`（必須、先にインストール。`1.12.0` 以降は 1.9.0 以上）** —— 本プラグインが依存する共通基盤（属性システム、仮想スクロールリスト、エディタ 3 カラムフレームワーク、エディタ UI の 3 言語対応、ソートエンジン、タグシステム、`Ale.Effect` エフェクトシステム、`Ale.GameplayTags` 階層タグ、`Ale.Condition` 条件システムなど）。
 - Unity 2022.3+（`package.json` が宣言する最低バージョン。本プラグインは `Unity 6000.3` で開発・保守しています）
 - TextMeshPro（任意、`ATK_TMP` マクロ）
 - Unity Localization（任意、`ATK_LOCALIZATION` マクロ）
@@ -173,7 +181,7 @@ Project パネルで右クリック > Create > Inventory System > Inventory Data
 
 ### 3. データを設定
 
-「アイテムシステム / 倉庫システム / ショップシステム / クラフトシステム / 装備システム」の各タブを順に設定します。各タブの詳しい操作は、対応するサブシステムのドキュメントを参照してください。
+「アイテムシステム / 倉庫システム / ショップシステム / クラフトシステム / 装備システム / エフェクトシステム」の各タブを順に設定します。各タブの詳しい操作は、対応するサブシステムのドキュメントを参照してください。
 
 ### 4. エクスポート
 
@@ -199,6 +207,10 @@ InventoryRuntimeManager.Instance.LoadSaveData(saveData);
 
 // ニューゲーム：ランタイム状態をすべてクリア（固定容量の倉庫は事前確保の空スロットが復元されます）
 InventoryRuntimeManager.Instance.ResetAll();
+
+// アイテムを使用（1.12.0）：ゲーム層が渡す対象コンテキスト（toolkit IEffectContext）へエフェクトを付与し、成功時に 1 個消費
+var result = InventoryRuntimeManager.Instance.UseItem("backpack", "regen_draught", targetContext);
+if (result.IsUsed) Debug.Log($"{result.AppliedCount} 個のエフェクトを付与、消費={result.Consumed}");
 ```
 
 ### 6. ワンクリック Demo
@@ -213,7 +225,7 @@ InventoryRuntimeManager.Instance.ResetAll();
 InventorySystem/
 ├── Runtime/
 │   ├── Data/           データモデル（Item / Inventory / Shop / Crafting* / AttributeValue など）
-│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager
+│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager（Use 分部を含む）/ ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager
 │   ├── Serialization/  DTO 定義 + マッピング / JSON / バイナリ（マッピングとバイナリブロックはシステム別に分割）
 │   ├── Assets/         アセット読み込みの抽象化（直接読み込み）
 │   ├── Addressables/   Addressables アセット読み込みサポート
@@ -225,6 +237,7 @@ InventorySystem/
 │   ├── ShopSystem/     ショップシステムのパネル
 │   ├── CraftingSystem/ クラフトシステムのパネル
 │   ├── EquipmentSystem/装備システムのパネル
+│   ├── EffectSystem/   エフェクトシステムのパネル（エフェクト一覧 / インライン toolkit エフェクト定義 / ゲームプレイタグ）
 │   ├── Common/         共通の属性 / 設定ドロワー + ツールウィンドウ基底クラス
 │   ├── Addressables/   Addressables アセット参照の移行ツールウィンドウ
 │   ├── Localization/   ローカライズツールウィンドウ（テーブル作成 / キー生成）

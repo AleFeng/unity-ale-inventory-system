@@ -7,7 +7,7 @@
   <a href="./README_JA.md">日本語</a>
 </p>
 
-面向设计师的 Unity 静态数据配置工具插件。用一个 `InventoryDatabase` 资产集中配置 **道具 / 仓库 / 商店 / 制作 / 装备** 五大子系统的静态定义数据；动态运行时状态（拥有数量、实例 ID、交易进度、制作产出、已装备道具、存档）由对应的运行时管理器维护。配套一整套开箱即用的运行时 UI 组件（背包 / 商店 / 制作 / 装备界面）。
+面向设计师的 Unity 静态数据配置工具插件。用一个 `InventoryDatabase` 资产集中配置 **道具 / 仓库 / 商店 / 制作 / 装备 / 效果** 六大子系统的静态定义数据；动态运行时状态（拥有数量、实例 ID、交易进度、制作产出、已装备道具、存档）由对应的运行时管理器维护。配套一整套开箱即用的运行时 UI 组件（背包 / 商店 / 制作 / 装备界面）。
 
 - 编辑器始终且仅在 ScriptableObject 上工作；JSON / 二进制 仅作为单向导出格式。
 - 全程支持 Undo / Redo。
@@ -26,12 +26,14 @@
 | **商店系统** | 商店模板、商店、商品组、价格来源、刷新计划 | `ShopRuntimeManager`（交易 + 进度存档） | [商店系统](Docs~/ShopSystem.md) |
 | **制作系统** | 分组标签、蓝图模板、蓝图（配方）、制作仓库 | `CraftingRuntimeManager`（消耗 → 产出） | [制作系统](Docs~/CraftingSystem.md) |
 | **装备系统** | 分组标签、装备组模板、装备组（槽位列表 / 装备槽 / 道具限制 / 属性加成） | `EquipmentRuntimeManager`（装备 / 卸下 + 加成 + 存档） | [装备系统](Docs~/EquipmentSystem.md) |
+| **效果系统**（`1.12.0`） | 效果（toolkit GAS 式 `EffectDefinition`：时长 / 周期 / 叠加 / 标签 / 条件 / 修饰器 / 执行阶段）、Gameplay 标签；道具 `onUseEffectRefs` | `InventoryRuntimeManager.UseItem`（施加到调用方给定的目标上下文并扣减）；`InventoryDataManager` 充当效果定义源 | 见下文「效果系统」 |
 
 ### 道具系统
 - **灵活属性系统**：字段类型支持 Bool / Int / Float / String / Text（纯文本 fallback + 可选本地化引用）/ Vector2~4 / VectorInt2~4 / Color / Enum / StringIntPair / EnumIntPair / Sprite / Texture / Prefab / Material / AudioClip / AnimationClip / AnimationCurve / PhysicsMaterial(2D)，每种均支持数组形态。
 - **自定义枚举类型**：枚举值由系统自动分配（单调递增，永不复用）；可拖拽重排显示顺序；枚举项可携带自定义属性字段。
 - **功能标签**：每个标签定义一组属性字段；给道具增删标签会自动增删对应字段；支持把标签锁定到道具模板。
 - **道具模板 / 道具列表 / 道具 Inspector**：模板作为创建蓝本；列表支持模板过滤标签栏 + 搜索 + 拖拽重排；Inspector 实时重复 ID 检查、属性按来源分组、枚举子属性自动展开。
+- **使用时施加的效果**（`1.12.0`）：道具 / 模板的 `onUseEffectRefs` 按序引用效果 id（本库效果，或其它库 / 其它系统的效果 id）；运行时 `UseItem` 施加并扣减。
 
 ### 仓库系统
 - **仓库模板 / 仓库实例**：模板定义容量、重量上限、放入/取出/操作功能标签限制、过滤标签、整理排序规则及自定义属性；实例从模板创建并可覆盖。
@@ -55,11 +57,17 @@
 - **属性加成**：「装备属性字段列表」指定哪些道具属性汇总为装备组总加成，按分组标签分组显示。
 - **运行时**：`EquipmentRuntimeManager` 维护各槽已装备道具，装备 / 卸下 / 交换与 `InventoryRuntimeManager` 协作搬运道具，提供自动找槽、加成汇总、存档与 `OnEquipmentChanged` 事件。
 
+### 效果系统（`1.12.0`）
+- **效果 `EffectDefinition`**（toolkit `Ale.Effect` GAS 层，原样入库）：时长策略 瞬时 / 持续 / 无限、周期、叠加类型与上限 / 刷新 / 到期策略、资产 / 授予 / 移除 / 免疫标签、施加 / 持续标签要求、施加条件（`Ale.Condition`）、概率、修饰器（幅度 可缩放 / 基于属性 / 调用方给定）、按阶段执行（`onApply / onStack / onPeriod / onExpire / onRemove`，执行器由各领域系统提供）、线索标签。编辑器「效果系统」页签：左列 Gameplay 标签目录、中列效果列表（以时长策略充当过滤 / 新建入口）、右列 ID / 显示名 + 内联 toolkit 效果定义绘制器 + 校验摘要。
+- **Gameplay 标签**：本库声明的层级标签（如 `Status.Regen`），注册数据库时并入 toolkit 标签注册表，供效果标签字段下拉与校验；运行时匹配不依赖注册表。
+- **道具使用**：`InventoryRuntimeManager.UseItem(inventoryId, itemId, targetContext)` / `UseItemInSlot(inventoryId, slotId, targetContext)`——目标上下文（toolkit `IEffectContext`，主体 = 效果目标）由业务层构造（如角色系统的 `ChronicleEffectContext.Create(characterId)`），效果定义先经上下文的定义源解析、再查全局 `EffectDefinitionRegistry.Default`（本库与其它系统的定义都能按 id 引用）；至少一个效果施加成功才扣减 1 个；返回 `ItemUseResult`（`Used / Blocked / NoEffects / NotOwned / UnknownItem / NoContext`、是否扣减、逐效果结果），派发 `OnItemUsed(ItemUseEvent)`。**本包不认识任何领域系统**：属性 / 特质等落地由对方系统实现 toolkit 效果契约。
+- **校验**：效果 id 重复、定义错误（toolkit「警告:」不阻断导出）、非法标签名；道具的效果引用允许指向其它系统，不作悬空校验（编辑器标注「外部」）。
+
 ### 运行时与序列化
-- **`InventoryDataManager`**（数据查询单例）：注册数据库、按 ID 查询道具 / 仓库 / 商店 / 蓝图 / 枚举类型等；支持从 `.asset`、JSON、二进制三种来源加载。查询走惰性构建的字典索引（O(1)），注册 / 注销数据库后自动失效重建。
+- **`InventoryDataManager`**（数据查询单例）：注册数据库、按 ID 查询道具 / 仓库 / 商店 / 蓝图 / 枚举类型 / 效果等；实现 toolkit `IEffectDefinitionSource`，注册数据库时把 Gameplay 标签并入注册表、把自身登记为全局效果定义源（`1.12.0`）；支持从 `.asset`、JSON、二进制三种来源加载。查询走惰性构建的字典索引（O(1)），注册 / 注销数据库后自动失效重建。
 - **`InventoryRuntimeManager`**（MonoBehaviour 单例）：仓库格子状态、整理排序、存档、时间注入入口、覆盖式 UI 根节点 / Layer 配置（弹窗 / 悬停弹窗 / 拖拽幽灵图标等实例化后重新套用指定 Layer），并把数据库注册到 `InventoryDataManager`；含编辑器测试道具填充（`autoPopulateOnStart` / `testInventoryId` / `testItems`，`Init` 时机填入、仅数据不开 UI）与一键「添加所有配置表道具」（`addAllConfiguredItems` + `addAllItemCount`）。
 - **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager`**（轻量单例）：交易 / 制作 / 装备逻辑（装备已装备状态可存档，商店有交易进度存档）。
-- **导出**：`InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部 17 个列表**（五大子系统的配置数据无一遗漏，格式版本 v6）；对象引用以 AssetGUID 承载；可选 Addressable 异步加载。v5 及更早导出的 `.bytes` 仍可导入。
+- **导出**：`InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部 19 个列表**（六大子系统的配置数据无一遗漏，格式版本 v8：效果定义 JSON 直接内嵌、二进制以 Effect System JSON 串承载，道具 / 模板块尾追加 `onUseEffectRefs`）；对象引用以 AssetGUID 承载；可选 Addressable 异步加载。v5 ~ v7 导出的 `.bytes` 仍可导入。
 - **存档契约**：仓库 / 装备 / 商店三个管理器统一实现 `IInventorySaveable<TState>`——`GetSaveData` 返回深拷贝、`LoadSaveData` 为**覆盖而非合并**、三者都不触发变更事件；非泛型的 `IInventorySaveable` 只含 `ResetAll`，供「开新游戏」一次遍历重置。
 
 ### UI 组件
@@ -143,7 +151,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 
 > ⚠️ **自 1.8.0 起本插件依赖 [`com.ale.toolkit`](../com.ale.toolkit)。** Unity Package Manager 不支持在 `package.json` 的 `dependencies` 里写 git URL，故 `dependencies` 留空——**必须手动先安装 `com.ale.toolkit`、再安装本插件**，否则会报大量类型缺失编译错。
 
-- **`com.ale.toolkit`（必需，先安装）** —— 本插件的通用底层（属性系统、虚拟滚动列表、编辑器三列框架、编辑器界面三语、排序引擎、标签系统等）。
+- **`com.ale.toolkit`（必需，先安装；`1.12.0` 起最低 1.9.0）** —— 本插件的通用底层（属性系统、虚拟滚动列表、编辑器三列框架、编辑器界面三语、排序引擎、标签系统、`Ale.Effect` 效果系统、`Ale.GameplayTags` 层级标签、`Ale.Condition` 条件系统等）。
 - Unity 2022.3+（`package.json` 声明的最低版本；本插件基于 `Unity 6000.3` 开发与维护）
 - TextMeshPro（可选，`ATK_TMP` 宏）
 - Unity Localization（可选，`ATK_LOCALIZATION` 宏）
@@ -172,7 +180,7 @@ Project 面板右键 > Create > Inventory System > Inventory Database
 
 ### 3. 配置数据
 
-依次在「道具系统 / 仓库系统 / 商店系统 / 制作系统 / 装备系统」页签中配置。各页签的详细操作见对应子系统文档。
+依次在「道具系统 / 仓库系统 / 商店系统 / 制作系统 / 装备系统 / 效果系统」页签中配置。各页签的详细操作见对应子系统文档。
 
 ### 4. 导出
 
@@ -198,6 +206,10 @@ InventoryRuntimeManager.Instance.LoadSaveData(saveData);
 
 // 开新游戏：清空全部运行时状态（固定容量仓库恢复预分配空槽）
 InventoryRuntimeManager.Instance.ResetAll();
+
+// 使用道具（1.12.0）：把道具的使用效果施加到业务层给定的目标上下文（toolkit IEffectContext），成功则扣减 1 个
+var result = InventoryRuntimeManager.Instance.UseItem("backpack", "regen_draught", targetContext);
+if (result.IsUsed) Debug.Log($"生效 {result.AppliedCount} 个效果，已扣减 {result.Consumed}");
 ```
 
 ### 6. 一键 Demo
@@ -212,7 +224,7 @@ InventoryRuntimeManager.Instance.ResetAll();
 InventorySystem/
 ├── Runtime/
 │   ├── Data/           数据模型（Item / Inventory / Shop / Crafting* / AttributeValue 等）
-│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager
+│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager（含 Use 分部）/ ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager
 │   ├── Serialization/  DTO 定义 + 映射 / JSON / 二进制序列化（映射与二进制块按系统分部）
 │   ├── Assets/         资源加载抽象（直接加载）
 │   ├── Addressables/   Addressable 资源加载支持
@@ -224,6 +236,7 @@ InventorySystem/
 │   ├── ShopSystem/     商店系统面板
 │   ├── CraftingSystem/ 制作系统面板
 │   ├── EquipmentSystem/装备系统面板
+│   ├── EffectSystem/   效果系统面板（效果列表 / 内联 toolkit 效果定义 / Gameplay 标签）
 │   ├── Common/         通用属性 / 配置绘制器 + 工具窗口基类
 │   ├── Addressables/   Addressable 资源引用迁移工具窗口
 │   ├── Localization/   本地化工具窗口（建表 / 生成中文 Key）

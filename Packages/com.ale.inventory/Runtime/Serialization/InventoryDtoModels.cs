@@ -1,5 +1,7 @@
 using Ale.Toolkit.Runtime;
 using Ale.Toolkit.Runtime.Serialization;
+using Ale.Effect;
+using Ale.GameplayTags;
 using System;
 
 namespace Ale.Inventory.Runtime.Serialization
@@ -45,6 +47,12 @@ namespace Ale.Inventory.Runtime.Serialization
         public GroupTagDto[]               equipmentGroupTags;
         public EquipmentGroupTemplateDto[] equipmentGroupTemplates;
         public EquipmentGroupDto[]         equipmentGroups;
+
+        // ── 效果系统（v8 新增）────────────────────────────────────────────────────
+        /// <summary>效果定义（toolkit <see cref="EffectDefinition"/> 原样；JSON 导出直接内嵌，二进制以 Effect System JSON 串承载）。</summary>
+        public EffectDefinition[]      effects;
+        /// <summary>本库声明的 Gameplay 标签（名称 + 注释）。</summary>
+        public GameplayTagDefinition[] gameplayTags;
     }
 
     #region 道具系统
@@ -83,6 +91,9 @@ namespace Ale.Inventory.Runtime.Serialization
         public float weight;
         public int   stackLimit;
         public bool  hideInInventory;
+
+        /// <summary>v8 新增：默认的「使用时施加的效果」id 列表。</summary>
+        public string[] onUseEffectRefs;
     }
 
     [Serializable]
@@ -97,6 +108,9 @@ namespace Ale.Inventory.Runtime.Serialization
         public float weight;
         public int   stackLimit;
         public bool  hideInInventory;
+
+        /// <summary>v8 新增：「使用时施加的效果」id 列表（可引用其它库 / 其它系统的效果 id）。</summary>
+        public string[] onUseEffectRefs;
     }
 
     #endregion

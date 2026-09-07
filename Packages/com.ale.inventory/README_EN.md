@@ -26,12 +26,14 @@ A Unity plugin providing designer-facing static-data configuration tooling. A si
 | **Shop System** | Shop templates, shops, product groups, price sources, refresh schedules | `ShopRuntimeManager` (trades + progress save) | [Shop System](Docs~/ShopSystem_EN.md) |
 | **Crafting System** | Group tags, blueprint templates, blueprints (recipes), crafting warehouses | `CraftingRuntimeManager` (consume → produce) | [Crafting System](Docs~/CraftingSystem_EN.md) |
 | **Equipment System** | Group tags, equipment-group templates, equipment groups (slot lists / slots / item limits / attribute bonuses) | `EquipmentRuntimeManager` (equip / unequip + bonuses + save) | [Equipment System](Docs~/EquipmentSystem_EN.md) |
+| **Effect System** (`1.12.0`) | Effects (toolkit GAS-style `EffectDefinition`: duration / period / stacking / tags / conditions / modifiers / execution phases), gameplay tags; item `onUseEffectRefs` | `InventoryRuntimeManager.UseItem` (applies to a caller-supplied target context and consumes the item); `InventoryDataManager` acts as an effect-definition source | See "Effect System" below |
 
 ### Item System
 - **Flexible attribute system**: field types support Bool / Int / Float / String / Text (plain-text fallback + optional localization reference) / Vector2~4 / VectorInt2~4 / Color / Enum / StringIntPair / EnumIntPair / Sprite / Texture / Prefab / Material / AudioClip / AnimationClip / AnimationCurve / PhysicsMaterial(2D), each also supporting an array form.
 - **Custom enum types**: enum values are auto-assigned by the system (monotonically increasing, never reused); display order can be reordered by drag; enum items can carry custom attribute fields.
 - **Function tags**: each tag defines a group of attribute fields; adding/removing a tag on an item automatically adds/removes the corresponding fields; tags can be locked onto item templates.
 - **Item templates / item list / item Inspector**: templates act as blueprints for creation; the list supports a template-filter tag bar + search + drag-to-reorder; the Inspector does live duplicate-ID checking, groups attributes by source, and auto-expands enum sub-attributes.
+- **Effects on use** (`1.12.0`): `onUseEffectRefs` on items / templates references effect ids in order (effects of this database, or effect ids of other databases / systems); `UseItem` applies them at runtime and consumes the item.
 
 ### Warehouse System
 - **Warehouse templates / warehouse instances**: a template defines capacity, weight limit, put-in/take-out/operate function-tag restrictions, filter tags, sorting rules, and custom attributes; an instance is created from a template and can override it.
@@ -55,11 +57,17 @@ A Unity plugin providing designer-facing static-data configuration tooling. A si
 - **Attribute bonuses**: the "equipment attribute field list" specifies which item attributes are summed into the equipment group's total bonuses, displayed grouped by group tag.
 - **Runtime**: `EquipmentRuntimeManager` maintains the equipped items per slot; equipping / unequipping / swapping cooperates with `InventoryRuntimeManager` to move items, and it provides auto slot-finding, bonus aggregation, save data, and an `OnEquipmentChanged` event.
 
+### Effect System (`1.12.0`)
+- **Effect `EffectDefinition`** (toolkit `Ale.Effect` GAS layer, stored as-is): duration policy instant / duration / infinite, period, stacking type & limit / refresh / expiration policies, asset / granted / removal / immunity tags, application / ongoing tag requirements, application condition (`Ale.Condition`), chance, modifiers (magnitude scalable / attribute-based / set-by-caller), phased executions (`onApply / onStack / onPeriod / onExpire / onRemove`; executors are provided by the domain systems), cue tags. Editor "Effect System" tab: gameplay-tag catalog on the left, effect list in the middle (duration policy acts as filter / creation entry), ID / display name + inline toolkit effect-definition drawer + validation summary on the right.
+- **Gameplay tags**: hierarchical tags declared by this database (e.g. `Status.Regen`), merged into the toolkit tag registry when the database is registered to feed the tag dropdowns and validation of effect fields; runtime matching does not depend on the registry.
+- **Using items**: `InventoryRuntimeManager.UseItem(inventoryId, itemId, targetContext)` / `UseItemInSlot(inventoryId, slotId, targetContext)` — the target context (toolkit `IEffectContext`, subject = effect target) is built by the game layer (e.g. `ChronicleEffectContext.Create(characterId)` of the character system); definitions resolve through the context's definition source first, then the global `EffectDefinitionRegistry.Default` (effects of this database and of other systems can both be referenced by id); the item is consumed only when at least one effect applies; returns `ItemUseResult` (`Used / Blocked / NoEffects / NotOwned / UnknownItem / NoContext`, consumed flag, per-effect results) and raises `OnItemUsed(ItemUseEvent)`. **This package knows nothing about any domain system**: attributes / traits etc. are landed by the other system through the toolkit effect contracts.
+- **Validation**: duplicate effect ids, definition errors (toolkit "warning:" messages do not block export), invalid tag names; item effect references may point at other systems, so they are not checked for dangling (the editor marks them "external").
+
 ### Runtime and Serialization
-- **`InventoryDataManager`** (data-query singleton): registers databases, queries items / warehouses / shops / blueprints / enum types, etc. by ID; supports loading from `.asset`, JSON, and binary sources. Lookups go through a lazily built dictionary index (O(1)), invalidated and rebuilt when databases are registered / unregistered.
+- **`InventoryDataManager`** (data-query singleton): registers databases, queries items / warehouses / shops / blueprints / enum types / effects, etc. by ID; implements toolkit `IEffectDefinitionSource`, merges gameplay tags into the registry and registers itself as a global effect-definition source when a database is registered (`1.12.0`); supports loading from `.asset`, JSON, and binary sources. Lookups go through a lazily built dictionary index (O(1)), invalidated and rebuilt when databases are registered / unregistered.
 - **`InventoryRuntimeManager`** (MonoBehaviour singleton): warehouse slot state, sorting, save data, the time-injection entry point, the cover-UI root node / Layer config (popups / hover popups / drag ghost icons, etc., are re-assigned the specified Layer after instantiation), and registers databases into `InventoryDataManager`; includes editor test-item population (`autoPopulateOnStart` / `testInventoryId` / `testItems`, filled at `Init` time, data-only, no UI opened) and a one-click "add all configured items" (`addAllConfiguredItems` + `addAllItemCount`).
 - **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager`** (lightweight singletons): trade / craft / equip logic (equipped state can be saved, and shops have trade-progress save data).
-- **Export**: `InventoryDtoMapper` → JSON / binary, **covering all 17 database lists** (nothing from the five subsystems is left out; format version v6); object references are carried as AssetGUIDs; optional async loading via Addressables. `.bytes` exported by v5 and earlier still imports.
+- **Export**: `InventoryDtoMapper` → JSON / binary, **covering all 19 database lists** (nothing from the six subsystems is left out; format version v8: effect definitions are embedded directly in JSON and carried as Effect System JSON strings in binary, `onUseEffectRefs` is appended to the item / template blocks); object references are carried as AssetGUIDs; optional async loading via Addressables. `.bytes` exported by v5 ~ v7 still imports.
 - **Save contract**: the inventory / equipment / shop managers all implement `IInventorySaveable<TState>` — `GetSaveData` returns a deep copy, `LoadSaveData` **replaces rather than merges**, and none of them fires a change event; the non-generic `IInventorySaveable` carries only `ResetAll`, so "new game" can reset every system in one loop.
 
 ### UI Components
@@ -144,7 +152,7 @@ The "Show on Startup" toggle at the bottom of the window controls whether this w
 
 > ⚠️ **Since 1.8.0 this plugin depends on [`com.ale.toolkit`](../com.ale.toolkit).** Unity's Package Manager does not support git-URL entries in `package.json` `dependencies`, so `dependencies` is left empty — you **must install `com.ale.toolkit` first, then this plugin**, otherwise you will get many "type not found" compile errors.
 
-- **`com.ale.toolkit` (required, install first)** — the shared foundation this plugin builds on (attribute system, virtual-scroll lists, the three-column editor framework, trilingual editor UI, sorting engine, tag system, etc.).
+- **`com.ale.toolkit` (required, install first; 1.9.0 or newer since `1.12.0`)** — the shared foundation this plugin builds on (attribute system, virtual-scroll lists, the three-column editor framework, trilingual editor UI, sorting engine, tag system, `Ale.Effect` effect system, `Ale.GameplayTags` hierarchical tags, `Ale.Condition` condition system, etc.).
 - Unity 2022.3+ (the minimum declared in `package.json`; this plugin is developed and maintained on `Unity 6000.3`)
 - TextMeshPro (optional, `ATK_TMP` macro)
 - Unity Localization (optional, `ATK_LOCALIZATION` macro)
@@ -173,7 +181,7 @@ The editor is top system tabs + a three-column layout (left: definitions / middl
 
 ### 3. Configure Data
 
-Configure each of the "Item System / Warehouse System / Shop System / Crafting System / Equipment System" tabs in turn. See the corresponding subsystem docs for detailed operations.
+Configure each of the "Item System / Warehouse System / Shop System / Crafting System / Equipment System / Effect System" tabs in turn. See the corresponding subsystem docs for detailed operations.
 
 ### 4. Export
 
@@ -199,6 +207,10 @@ InventoryRuntimeManager.Instance.LoadSaveData(saveData);
 
 // New game: clear all runtime state (fixed-capacity inventories get their pre-allocated empty slots back)
 InventoryRuntimeManager.Instance.ResetAll();
+
+// Use an item (1.12.0): apply its effects to a game-layer target context (toolkit IEffectContext); consumes 1 on success
+var result = InventoryRuntimeManager.Instance.UseItem("backpack", "regen_draught", targetContext);
+if (result.IsUsed) Debug.Log($"{result.AppliedCount} effect(s) applied, consumed={result.Consumed}");
 ```
 
 ### 6. One-Click Demo
@@ -213,7 +225,7 @@ In the **Welcome Window**, "Test Tools – Prefab Generation → Generate All" p
 InventorySystem/
 ├── Runtime/
 │   ├── Data/           Data models (Item / Inventory / Shop / Crafting* / AttributeValue, etc.)
-│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager
+│   ├── Manager/        InventoryDataManager / InventoryRuntimeManager (incl. Use partial) / ShopRuntimeManager / CraftingRuntimeManager / EquipmentRuntimeManager
 │   ├── Serialization/  DTO definitions + mapping / JSON / binary (mapping and binary blocks split per system)
 │   ├── Assets/         Asset-loading abstraction (direct loading)
 │   ├── Addressables/   Addressables asset-loading support
@@ -225,6 +237,7 @@ InventorySystem/
 │   ├── ShopSystem/     Shop System panel
 │   ├── CraftingSystem/ Crafting System panel
 │   ├── EquipmentSystem/Equipment System panel
+│   ├── EffectSystem/   Effect System panel (effect list / inline toolkit effect definition / gameplay tags)
 │   ├── Common/         Shared attribute / config drawers + tool-window base class
 │   ├── Addressables/   Addressables asset-reference migration tool window
 │   ├── Localization/   Localization tool window (table creation / key generation)

@@ -10,7 +10,14 @@
         "Unity.Localization.Editor",
         "Ale.Toolkit.Runtime",
         "Ale.Toolkit.Runtime.UI",
-        "Ale.Toolkit.Editor"
+        "Ale.Toolkit.Editor",
+        "Ale.Condition.Core",
+        "Ale.Effect.Core",
+        "Ale.Effect.Editor",
+        "Ale.GameplayTags.Core",
+        "Ale.GameplayTags.Runtime",
+        "Ale.GameplayTags.Editor",
+        "Ale.Modifier.Core"
     ],
     "includePlatforms": [
         "Editor"
