@@ -20,6 +20,23 @@ namespace Ale.Inventory.Runtime
         public event Action<ItemUseEvent> OnItemUsed;
 
         /// <summary>
+        /// 「使用」的目标上下文提供者：由<b>宿主注入</b>，按仓库 ID 返回该仓库所属主体的效果上下文
+        /// （如角色系统的 <c>ChronicleEffectContext.Create(characterId)</c>）。
+        ///
+        /// <para>存在的理由：本包不认识任何领域系统，构造不出 <see cref="IEffectContext"/>；但 UI 层的
+        /// 「右键 → 使用」需要一个不必逐次传参的取用点。未注入时 <see cref="ResolveUseTargetContext"/> 返回 null，
+        /// 对有使用效果的道具即得到 <see cref="EItemUseOutcome.NoContext"/>（不施加、不扣减）。</para>
+        ///
+        /// <para>直接调用 <see cref="UseItem"/> / <see cref="UseItemInSlot"/> 的业务代码不受影响——
+        /// 它们照旧显式传入上下文，本提供者只服务于「调用方拿不到上下文」的通用 UI 路径。</para>
+        /// </summary>
+        public Func<string, IEffectContext> UseTargetContextProvider { get; set; }
+
+        /// <summary>按仓库 ID 解析「使用」的目标上下文；未注入提供者时返回 null。</summary>
+        public IEffectContext ResolveUseTargetContext(string inventoryId)
+            => UseTargetContextProvider?.Invoke(inventoryId);
+
+        /// <summary>
         /// 按道具 id 使用：仓库须持有该道具；按序施加其使用效果，至少一个成功则从仓库扣减 1 个（<see cref="TryRemoveItemById"/>）。
         /// <paramref name="sourceTag"/> 空 → <c>item:{itemId}</c>（活动效果的来源标记，供按来源移除）。
         /// </summary>

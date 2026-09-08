@@ -72,12 +72,48 @@ namespace Ale.Inventory.Runtime
             CoverUiUtil.SetLayerRecursively(go, coverUiLayer);
         }
 
+        #region 覆盖式UI挂件的惰性实例化
+
+        /// <summary>
+        /// 覆盖式 UI 挂件（悬停弹窗 / 右键菜单 / 各类弹窗）的惰性实例化通用实现：
+        /// 按预制体实例化到 <see cref="coverUiRoot"/>、置于最上层、按需强制 Layer，再取其根节点上的接口实现。
+        ///
+        /// <para><paramref name="resolved"/> 使「未配置预制体」也只判定一次——否则每次调用都会重新尝试并重复告警。</para>
+        ///
+        /// <para>预制体根节点<b>允许以未激活状态保存</b>（弹窗正是如此）：<c>Instantiate</c> 出的实例同样未激活，
+        /// <c>GetComponent</c> 照常取得到，实际的初始化在挂件自己首次显示时进行。</para>
+        /// </summary>
+        /// <param name="prefab">挂件预制体（可空）。</param>
+        /// <param name="cache">缓存字段。</param>
+        /// <param name="resolved">「是否已解析过」标记字段。</param>
+        /// <param name="prefabField">预制体字段名，仅用于告警文案。</param>
+        private T EnsureCoverUiWidget<T>(GameObject prefab, ref T cache, ref bool resolved, string prefabField)
+            where T : class
+        {
+            if (resolved) return cache;
+            resolved = true;
+
+            if (!prefab) return cache = null;
+
+            var parent = coverUiRoot ? coverUiRoot : CoverUiUtil.FindCanvasTransform();
+            var go     = parent ? Instantiate(prefab, parent) : Instantiate(prefab);
+            go.transform.SetAsLastSibling();   // 置于父级最上层渲染
+            ApplyCoverUiLayer(go);             // 覆盖式UI：按需强制到指定 Layer（如 UI）
+
+            cache = go.GetComponent<T>();
+            if (cache == null)
+                Debug.LogWarning($"[InventoryRuntimeManager] {prefabField} 根节点未实现 {typeof(T).Name}，该挂件不可用。");
+            return cache;
+        }
+
+        #endregion
+
         #region 道具悬停弹窗
 
         [Header("道具悬停弹窗")]
         [Tooltip("道具悬停详情弹窗预制体：运行时由本管理器全局实例化一次。其根节点需实现 IItemTooltip（如 UI 层 UiwItemTooltip）。可空。")]
         [SerializeField] private GameObject itemTooltipPrefab;
-        
+
         private IItemTooltip _itemTooltip;
         private bool         _itemTooltipResolved;
 
@@ -88,21 +124,7 @@ namespace Ale.Inventory.Runtime
         public IItemTooltip ItemTooltip => EnsureItemTooltip();
 
         private IItemTooltip EnsureItemTooltip()
-        {
-            if (_itemTooltipResolved) return _itemTooltip;
-            _itemTooltipResolved = true;
-
-            if (!itemTooltipPrefab) return _itemTooltip = null;
-
-            var parent = coverUiRoot ? coverUiRoot : CoverUiUtil.FindCanvasTransform();
-            var go     = parent ? Instantiate(itemTooltipPrefab, parent) : Instantiate(itemTooltipPrefab);
-            go.transform.SetAsLastSibling();   // 置于父级最上层渲染
-            ApplyCoverUiLayer(go);             // 覆盖式UI：按需强制到指定 Layer（如 UI）
-            _itemTooltip = go.GetComponent<IItemTooltip>();
-            if (_itemTooltip == null)
-                Debug.LogWarning("[InventoryRuntimeManager] itemTooltipPrefab 根节点未实现 IItemTooltip（如 UiwItemTooltip），悬停弹窗不可用。");
-            return _itemTooltip;
-        }
+            => EnsureCoverUiWidget(itemTooltipPrefab, ref _itemTooltip, ref _itemTooltipResolved, nameof(itemTooltipPrefab));
 
         /// <summary>在光标处（屏幕坐标）显示指定道具的悬停详情弹窗（全局统一入口）。count 为持有数量（显示在数量文本）。</summary>
         public void ShowItemTooltip(string itemId, int count, Vector2 screenPos)
@@ -112,6 +134,71 @@ namespace Ale.Inventory.Runtime
         public void HideItemTooltip()
         {
             if (_itemTooltipResolved) _itemTooltip?.Hide();
+        }
+
+        #endregion
+
+        #region 道具操作：右键菜单 / 详情弹窗 / 丢弃弹窗
+
+        [Header("道具操作弹窗")]
+        [Tooltip("道具右键操作菜单预制体（查看 / 使用 / 丢弃）。根节点需实现 IItemContextMenu（如 UI 层 UiwItemContextMenu）。可空。")]
+        [SerializeField] private GameObject itemContextMenuPrefab;
+        [Tooltip("道具详情弹窗预制体（右键菜单「查看」）。根节点需实现 IItemDetailPopup（如 UI 层 UiwItemDetailPopup）。可空。")]
+        [SerializeField] private GameObject itemDetailPopupPrefab;
+        [Tooltip("道具丢弃弹窗预制体（右键菜单「丢弃」）。根节点需实现 IItemDiscardPopup（如 UI 层 UiwItemDiscardPopup）。可空。")]
+        [SerializeField] private GameObject itemDiscardPopupPrefab;
+
+        private IItemContextMenu  _itemContextMenu;
+        private bool              _itemContextMenuResolved;
+        private IItemDetailPopup  _itemDetailPopup;
+        private bool              _itemDetailPopupResolved;
+        private IItemDiscardPopup _itemDiscardPopup;
+        private bool              _itemDiscardPopupResolved;
+
+        /// <summary>全局道具右键操作菜单（懒实例化；未配置预制体时为 null）。</summary>
+        public IItemContextMenu ItemContextMenu => EnsureItemContextMenu();
+        /// <summary>全局道具详情弹窗（懒实例化；未配置预制体时为 null）。</summary>
+        public IItemDetailPopup ItemDetailPopup => EnsureItemDetailPopup();
+        /// <summary>全局道具丢弃弹窗（懒实例化；未配置预制体时为 null）。</summary>
+        public IItemDiscardPopup ItemDiscardPopup => EnsureItemDiscardPopup();
+
+        private IItemContextMenu EnsureItemContextMenu()
+            => EnsureCoverUiWidget(itemContextMenuPrefab, ref _itemContextMenu, ref _itemContextMenuResolved, nameof(itemContextMenuPrefab));
+
+        private IItemDetailPopup EnsureItemDetailPopup()
+            => EnsureCoverUiWidget(itemDetailPopupPrefab, ref _itemDetailPopup, ref _itemDetailPopupResolved, nameof(itemDetailPopupPrefab));
+
+        private IItemDiscardPopup EnsureItemDiscardPopup()
+            => EnsureCoverUiWidget(itemDiscardPopupPrefab, ref _itemDiscardPopup, ref _itemDiscardPopupResolved, nameof(itemDiscardPopupPrefab));
+
+        /// <summary>在光标处弹出道具右键操作菜单（道具格子右键的统一入口）。目标无效时由菜单自行忽略。</summary>
+        public void ShowItemContextMenu(ItemContextTarget target, Vector2 screenPos)
+            => EnsureItemContextMenu()?.Show(target, screenPos);
+
+        /// <summary>关闭道具右键操作菜单。未实例化时为无操作。</summary>
+        public void HideItemContextMenu()
+        {
+            if (_itemContextMenuResolved) _itemContextMenu?.Hide();
+        }
+
+        /// <summary>显示道具详情弹窗（右键菜单「查看」）。</summary>
+        public void ShowItemDetailPopup(string itemId, int count)
+            => EnsureItemDetailPopup()?.Show(itemId, count);
+
+        /// <summary>关闭道具详情弹窗。未实例化时为无操作。</summary>
+        public void HideItemDetailPopup()
+        {
+            if (_itemDetailPopupResolved) _itemDetailPopup?.Hide();
+        }
+
+        /// <summary>对指定槽位弹出丢弃数量选择弹窗（右键菜单「丢弃」）。</summary>
+        public void ShowItemDiscardPopup(ItemContextTarget target)
+            => EnsureItemDiscardPopup()?.Show(target);
+
+        /// <summary>关闭道具丢弃弹窗。未实例化时为无操作。</summary>
+        public void HideItemDiscardPopup()
+        {
+            if (_itemDiscardPopupResolved) _itemDiscardPopup?.Hide();
         }
 
         #endregion
