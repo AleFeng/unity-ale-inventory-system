@@ -1,5 +1,7 @@
+using Ale.Toolkit.Runtime;
 using Ale.Toolkit.Runtime.UI;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Ale.Inventory.Runtime.UI
@@ -26,6 +28,10 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("要显示的装备组 ID。可在 Inspector 预设：本视图始终使用该值，直到经 Open(groupId) 或 Inspector 改动。" +
                  "装备取出 / 卸下放入的仓库取自该装备组配置的「装备仓库」。")]
         [SerializeField] private string groupId = "角色装备";
+
+        [Header("道具右键菜单")]
+        [Tooltip("本视图往道具右键菜单里贡献的「装备」条目文案。仅在本界面显示、且该道具能装入本装备组时出现。")]
+        public TextValue equipMenuLabel = new TextValue("装备");
 
         /// <summary>当前打开的装备组 ID（供背包桥接等读取）。</summary>
         public string CurrentGroupId => groupId;
@@ -79,10 +85,14 @@ namespace Ale.Inventory.Runtime.UI
             if (EquipmentRuntimeManager.Instance != null)
                 EquipmentRuntimeManager.Instance.OnEquipmentChanged += HandleEquipmentChanged;
 
-            // 背包 / 仓库道具右键 → 自动装备到本装备组：直接订阅通用「道具右键」事件（无需单独的桥接组件接线）。
-            // 兼容网格格子（UiwInventoryItemCell）与顺序 / 明细行（UiwInventoryItemDetail）——两者右键都经此事件广播。
-            UiwInventoryItemEvents.ItemRightClicked -= HandleItemRightClicked;
-            UiwInventoryItemEvents.ItemRightClicked += HandleItemRightClicked;
+            // 背包 / 仓库道具右键 → 菜单里出现「装备」→ 自动装备到本装备组。
+            // 两条订阅分工：CollectingItemMenu 负责「该不该出现这个条目」，ItemRightClicked 负责「点了之后做什么」。
+            // 后者保持独立（而非把逻辑直接写进条目回调），使包外既有的 ItemRightClicked 订阅方不受影响。
+            // 兼容网格格子（UiwInventoryItemCell）与顺序 / 明细行（UiwInventoryItemDetail）——两者右键都经此路径。
+            UiwInventoryItemEvents.CollectingItemMenu -= HandleCollectItemMenu;
+            UiwInventoryItemEvents.CollectingItemMenu += HandleCollectItemMenu;
+            UiwInventoryItemEvents.ItemRightClicked   -= HandleItemRightClicked;
+            UiwInventoryItemEvents.ItemRightClicked   += HandleItemRightClicked;
         }
 
         /// <summary>取消本视图按打开订阅的运行时事件（由基类 <see cref="UiwViewBase.Close"/> 与 OnDestroy 调用）。</summary>
@@ -90,7 +100,8 @@ namespace Ale.Inventory.Runtime.UI
         {
             if (EquipmentRuntimeManager.Instance != null)
                 EquipmentRuntimeManager.Instance.OnEquipmentChanged -= HandleEquipmentChanged;
-            UiwInventoryItemEvents.ItemRightClicked -= HandleItemRightClicked;
+            UiwInventoryItemEvents.CollectingItemMenu -= HandleCollectItemMenu;
+            UiwInventoryItemEvents.ItemRightClicked   -= HandleItemRightClicked;
             if (groupPanel)
             {
                 groupPanel.SlotClicked      -= HandleSlotClicked;
@@ -162,21 +173,57 @@ namespace Ale.Inventory.Runtime.UI
         /// </summary>
         private void HandleItemRightClicked(string inventoryId, string itemId)
         {
-            if (!gameObject.activeInHierarchy) return;             // 界面未显示时不响应
-            if (string.IsNullOrEmpty(groupId) || string.IsNullOrEmpty(itemId)) return;
+            if (!CanQuickEquipFrom(inventoryId, itemId)) return;
 
             var eq = EquipmentRuntimeManager.Instance;
-            if (eq == null) return;
-
-            // 装备组配置了「装备仓库」时，仅处理来自其中仓库的右键；未配置则不限制来源仓库。
-            if (eq.GetEquipmentInventories(groupId).Count > 0 && !eq.IsEquipmentInventory(groupId, inventoryId))
-                return;
 
             // 装备选择面板打开时，优先装入其当前选中的装备槽（占用则替换）；否则走空槽 / Index0 回退。
             string preferredSlotId = selectPanel && selectPanel.gameObject.activeInHierarchy
                 ? selectPanel.SelectedSlotId : null;
 
             eq.TryAutoEquipOrReplace(groupId, itemId, inventoryId, preferredSlotId);
+        }
+
+        /// <summary>
+        /// 往道具右键菜单里贡献「装备」条目——仅在本界面显示、来源仓库匹配、且该道具确实装得进本装备组时才加。
+        /// <para>点击后走 <see cref="UiwInventoryItemEvents.RaiseItemRightClicked"/> 而非直接调
+        /// <see cref="HandleItemRightClicked"/>：让包外既有的 <c>ItemRightClicked</c> 订阅方也能照常收到。</para>
+        /// </summary>
+        private void HandleCollectItemMenu(ItemContextTarget target, List<UiwContextMenuItem> entries)
+        {
+            if (!CanQuickEquipFrom(target.InventoryId, target.ItemId)) return;
+
+            string inventoryId = target.InventoryId;
+            string itemId      = target.ItemId;
+            entries.Add(new UiwContextMenuItem
+            {
+                Label   = equipMenuLabel,
+                OnClick = () => UiwInventoryItemEvents.RaiseItemRightClicked(inventoryId, itemId),
+            });
+        }
+
+        /// <summary>
+        /// 该道具此刻能否从 <paramref name="inventoryId"/> 快速装备到本装备组。
+        /// 供「是否显示『装备』条目」与「点击后是否执行」共用同一判据，避免两处判断漂移
+        /// （显示了却点不动，或反之）。
+        /// <para>「装得进」复用管理器自己的两个查找：先找空槽（<c>TryFindEquipSlot</c>），
+        /// 再找可替换的已占用槽（<c>TryFindReplaceableSlot</c>）——与 <c>TryAutoEquipOrReplace</c> 的回退顺序一致，
+        /// 不在 UI 层另写一遍装备限制规则。</para>
+        /// </summary>
+        private bool CanQuickEquipFrom(string inventoryId, string itemId)
+        {
+            if (!gameObject.activeInHierarchy) return false;        // 界面未显示时不响应
+            if (string.IsNullOrEmpty(groupId) || string.IsNullOrEmpty(itemId)) return false;
+
+            var eq = EquipmentRuntimeManager.Instance;
+            if (eq == null) return false;
+
+            // 装备组配置了「装备仓库」时，仅处理来自其中仓库的道具；未配置则不限制来源仓库。
+            if (eq.GetEquipmentInventories(groupId).Count > 0 && !eq.IsEquipmentInventory(groupId, inventoryId))
+                return false;
+
+            return eq.TryFindEquipSlot(groupId, itemId, out _, out _)
+                || eq.TryFindReplaceableSlot(groupId, itemId, out _, out _);
         }
 
         private void RefreshBonus()

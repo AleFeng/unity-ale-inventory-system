@@ -98,15 +98,28 @@ namespace Ale.Inventory.Runtime.UI
         }
 
         /// <summary>
-        /// 右键点击：广播通用「道具右键」事件（携带 仓库 ID + 道具 ID），供上层统一处理（右键快速装备）——
-        /// 装备界面打开时由 <see cref="UiwEquipmentView"/> 订阅本事件自动装备到当前装备组，
+        /// 右键点击：在光标处弹出道具操作菜单（查看 / 使用 / 丢弃，外加上层贡献的条目如「装备」），
         /// 使格子在背包网格 / 明细列表 / 装备候选列表中的右键交互一致。
         /// 子类可覆写以改用其它点击语义（如 <see cref="UiwEquipmentSlot"/> 的选中 / 卸下事件）。
+        ///
+        /// <para><b>拖拽中不弹菜单</b>：松手落点等于拖拽源时，Unity 会在 Drop / EndDrag <b>之前</b>先派发
+        /// PointerClick（<see cref="UiwEquipmentSlot.OnPointerClick"/> 处也有同款注释）。此时弹出菜单会抢走
+        /// EventSystem 的选中态、并让玩家在收尾拖拽的同时看到一个菜单。</para>
+        ///
+        /// <para><b>空槽不弹</b>：菜单的每一项都要求真实槽位与道具，空格子右键无事可做。</para>
         /// </summary>
         public virtual void OnPointerClick(PointerEventData eventData)
         {
-            if (eventData != null && eventData.button == PointerEventData.InputButton.Right)
-                UiwInventoryItemEvents.RaiseItemRightClicked(_inventoryId, _itemId);
+            if (eventData == null || eventData.button != PointerEventData.InputButton.Right) return;
+            if (eventData.dragging) return;
+            if (string.IsNullOrEmpty(_itemId)) return;
+
+            var mgr = InventoryRuntimeManager.Instance;
+            if (mgr == null) return;
+
+            mgr.ShowItemContextMenu(
+                new ItemContextTarget(_inventoryId, _slotId, _itemId, _displayedCount),
+                eventData.position);
         }
 
         #endregion
