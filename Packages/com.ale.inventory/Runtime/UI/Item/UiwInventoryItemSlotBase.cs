@@ -31,9 +31,10 @@ namespace Ale.Inventory.Runtime.UI
 
         #region 道具标识 + 右键
 
-        // 当前绑定的仓库 / 道具 ID 与显示数量（供右键事件携带 + 悬停弹窗 + 列表增量差异刷新；空槽时道具 ID 为空、数量 0）。
+        // 当前绑定的仓库 / 槽位 / 道具 ID 与显示数量（供右键事件携带 + 悬停弹窗 + 列表增量差异刷新；空槽时道具 ID 为空、数量 0）。
         // 由子类在绑定 / 清空道具时经 SetBoundSlot / ClearBoundSlot 维护。
         private string _inventoryId;
+        private string _slotId;
         private string _itemId;
         private int    _displayedCount;
 
@@ -41,25 +42,43 @@ namespace Ale.Inventory.Runtime.UI
         public string ItemId => _itemId;
         /// <summary>当前绑定的仓库 ID。供装备槽在拖拽落点时读取（装备道具来源仓库）。</summary>
         public string InventoryId => _inventoryId;
+        /// <summary>
+        /// 当前绑定的<b>仓库槽位</b> ID（空槽 / 无对应真实槽位时为空）。
+        /// <para>运行时的按槽位操作（<c>UseItemInSlot</c> / <c>TryRemoveItem</c>）都以它定位，故右键菜单必须拿得到它。
+        /// <b>可能为空</b>：悬停弹窗内的详情行绑的是临时构造的 <c>new RuntimeItemSlot(null, itemId, count)</c>，
+        /// 网格的补位空格也没有真实槽位——读取方须自行判空。</para>
+        /// <para>不叫 <c>SlotId</c> 是因为 <see cref="UiwEquipmentSlot"/> 已用该名表示<b>装备槽</b>配置 ID
+        /// （<c>EquipmentSlot.id</c>），两者是完全不同的概念；同名会静默隐藏基类成员并让调用方取错值。</para>
+        /// </summary>
+        public string BoundSlotId => _slotId;
         /// <summary>当前格子正显示的数量（空槽为 0）。供列表做增量差异刷新时判断本格数据是否变化。</summary>
         public int DisplayedCount => _displayedCount;
 
         /// <summary>
-        /// 子类绑定道具时调用：记录来源仓库 / 道具 ID 与显示数量，并同步悬停弹窗的目标道具
+        /// 子类绑定道具时调用：记录来源仓库 / 槽位 / 道具 ID 与显示数量，并同步悬停弹窗的目标道具
         /// （<see cref="UiwInventoryItemBase.showDetailTooltip"/> 启用时据此弹窗）。
         /// </summary>
-        protected void SetBoundSlot(string inventoryId, string itemId, int count = 0)
+        protected void SetBoundSlot(string inventoryId, string itemId, int count = 0, string slotId = null)
         {
             _inventoryId    = inventoryId;
+            _slotId         = slotId;
             _itemId         = itemId;
             _displayedCount = count;
             SetTooltipItemId(itemId, count);
         }
 
-        /// <summary>子类清空道具时调用：清除来源仓库 / 道具 ID / 显示数量 与悬停弹窗目标道具。</summary>
+        /// <summary>
+        /// 子类绑定道具时调用（槽位重载）：直接从 <paramref name="slot"/> 取槽位 / 道具 ID 与数量，
+        /// 免得各处逐字段拆包时漏掉 <see cref="RuntimeItemSlot.slotId"/>。
+        /// </summary>
+        protected void SetBoundSlot(string inventoryId, RuntimeItemSlot slot)
+            => SetBoundSlot(inventoryId, slot?.itemId, slot?.count ?? 0, slot?.slotId);
+
+        /// <summary>子类清空道具时调用：清除来源仓库 / 槽位 / 道具 ID / 显示数量 与悬停弹窗目标道具。</summary>
         protected void ClearBoundSlot()
         {
             _inventoryId    = null;
+            _slotId         = null;
             _itemId         = null;
             _displayedCount = 0;
             SetTooltipItemId(null);

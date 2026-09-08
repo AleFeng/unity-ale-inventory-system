@@ -27,7 +27,7 @@ namespace Ale.Inventory.Runtime.UI
             // 池化实例首次显示（滚入，GO 尚未激活）→ 播放淡入；就地刷新（已激活）→ 不淡，直接换。
             bool firstShow = !gameObject.activeSelf;
 
-            SetBoundSlot(inventoryId, slot.itemId, slot.count);   // 记录来源仓库 / 道具 ID / 数量 + 悬停弹窗目标（基类共用）
+            SetBoundSlot(inventoryId, slot);   // 记录来源仓库 / 槽位 / 道具 ID / 数量 + 悬停弹窗目标（基类共用）
 
             var item = InventoryDataManager.Instance.GetItem(slot.itemId);
 

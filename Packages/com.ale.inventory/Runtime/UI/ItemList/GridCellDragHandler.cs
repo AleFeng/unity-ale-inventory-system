@@ -49,11 +49,24 @@ namespace Ale.Inventory.Runtime.UI
         }
         
         /// <summary>
+        /// 本次指针事件是否来自「拖拽键」（左键）。
+        ///
+        /// <para>Unity 的输入模块对<b>右键 / 中键同样跑 ProcessDrag</b>，而拖拽接口本身不带按键过滤。
+        /// 不判断的话，右键按住轻移就会起拖（生成跟随光标的幽灵），松手时 <see cref="OnEndDrag"/> 还会按落点
+        /// 执行换位 / 装备——右键本该只弹操作菜单。三个拖拽回调都要判：
+        /// 只在 <see cref="OnBeginDrag"/> 里判会漏掉「起拖被拦下、但 OnDrag / OnEndDrag 照常派发」的情形。</para>
+        /// </summary>
+        private static bool IsDragButton(PointerEventData eventData)
+            => eventData == null || eventData.button == PointerEventData.InputButton.Left;
+
+        /// <summary>
         /// 拖拽开始：按格子所处上下文自动切换两种拖拽行为（见类注释）。
         /// </summary>
         /// <param name="eventData"></param>
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if (!IsDragButton(eventData)) return;
+
             _draggingEquip = false;
 
             // 已接入网格列表：转发给网格列表做整理拖拽（落点行为在 OnEndDrag 按悬停目标决定：装备槽→装备，道具格子→换位）。
@@ -75,12 +88,16 @@ namespace Ale.Inventory.Runtime.UI
         /// <param name="eventData"></param>
         public void OnDrag(PointerEventData eventData)
         {
+            if (!IsDragButton(eventData)) return;
+
             if (itemGridList) { itemGridList.OnCellDrag(itemCellIdx, eventData); return; }
             if (_draggingEquip) UiwEquipmentDragContext.UpdateGhost(eventData.position);
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
+            if (!IsDragButton(eventData)) return;
+
             // 已接入网格列表：按落点决定行为。
             // · 落到装备槽（UiwEquipmentSlot）→ 装备到该槽（背包格子拖到装备槽装备）。
             // · 落到道具格子（UiwInventoryItemCell）或其它 → 交给网格列表整理（换位由目标格子的 OnCellDrop 完成）。
