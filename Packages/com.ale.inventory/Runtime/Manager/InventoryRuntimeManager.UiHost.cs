@@ -150,10 +150,13 @@ namespace Ale.Inventory.Runtime
 
         private IItemContextMenu  _itemContextMenu;
         private bool              _itemContextMenuResolved;
+        private bool              _itemContextMenuWarned;
         private IItemDetailPopup  _itemDetailPopup;
         private bool              _itemDetailPopupResolved;
+        private bool              _itemDetailPopupWarned;
         private IItemDiscardPopup _itemDiscardPopup;
         private bool              _itemDiscardPopupResolved;
+        private bool              _itemDiscardPopupWarned;
 
         /// <summary>全局道具右键操作菜单（懒实例化；未配置预制体时为 null）。</summary>
         public IItemContextMenu ItemContextMenu => EnsureItemContextMenu();
@@ -173,7 +176,37 @@ namespace Ale.Inventory.Runtime
 
         /// <summary>在光标处弹出道具右键操作菜单（道具格子右键的统一入口）。目标无效时由菜单自行忽略。</summary>
         public void ShowItemContextMenu(ItemContextTarget target, Vector2 screenPos)
-            => EnsureItemContextMenu()?.Show(target, screenPos);
+        {
+            var menu = EnsureItemContextMenu();
+            if (menu == null)
+            {
+                WarnWidgetPrefabMissing(nameof(itemContextMenuPrefab), "道具右键操作菜单", "PF_UiwItemContextMenu",
+                                        "道具右键菜单", ref _itemContextMenuWarned);
+                return;
+            }
+            menu.Show(target, screenPos);
+        }
+
+
+        /// <summary>
+        /// 「玩家点了、但挂件预制体没配」时告警一次（每个挂件各一次，不刷屏）。
+        ///
+        /// <para>为什么必须响：这几个 <c>Show*</c> 都是<b>玩家操作触发</b>的。预制体没配时若静默返回，
+        /// 右键道具就是「什么都不发生」——没有报错、没有日志，只能靠手动测试才能发现，
+        /// 且第一反应必然是怀疑代码有 bug 而不是「没生成预制体」。
+        /// 惰性实例化本身仍保持静默（悬停弹窗等属可选能力，未配置是合法状态）。</para>
+        /// </summary>
+        private void WarnWidgetPrefabMissing(string fieldName, string widgetName, string prefabName,
+            string wizardItemName, ref bool warned)
+        {
+            if (warned) return;
+            warned = true;
+
+            Debug.LogWarning(
+                $"[InventoryRuntimeManager] {widgetName}未显示：本管理器的「{fieldName}」未配置预制体。" +
+                $"请在 Tools > Ale Toolkit > Inventory System > Welcome 的「预制体生成」中生成「{wizardItemName}」" +
+                $"（产出 {prefabName}）与「管理器」项，或手动把该预制体拖到本组件的对应字段上。", this);
+        }
 
         /// <summary>关闭道具右键操作菜单。未实例化时为无操作。</summary>
         public void HideItemContextMenu()
@@ -183,7 +216,16 @@ namespace Ale.Inventory.Runtime
 
         /// <summary>显示道具详情弹窗（右键菜单「查看」）。</summary>
         public void ShowItemDetailPopup(string itemId, int count)
-            => EnsureItemDetailPopup()?.Show(itemId, count);
+        {
+            var popup = EnsureItemDetailPopup();
+            if (popup == null)
+            {
+                WarnWidgetPrefabMissing(nameof(itemDetailPopupPrefab), "道具详情弹窗", "PF_UiwItemDetailPopup",
+                                        "道具详情弹窗", ref _itemDetailPopupWarned);
+                return;
+            }
+            popup.Show(itemId, count);
+        }
 
         /// <summary>关闭道具详情弹窗。未实例化时为无操作。</summary>
         public void HideItemDetailPopup()
@@ -193,7 +235,16 @@ namespace Ale.Inventory.Runtime
 
         /// <summary>对指定槽位弹出丢弃数量选择弹窗（右键菜单「丢弃」）。</summary>
         public void ShowItemDiscardPopup(ItemContextTarget target)
-            => EnsureItemDiscardPopup()?.Show(target);
+        {
+            var popup = EnsureItemDiscardPopup();
+            if (popup == null)
+            {
+                WarnWidgetPrefabMissing(nameof(itemDiscardPopupPrefab), "道具丢弃弹窗", "PF_UiwItemDiscardPopup",
+                                        "道具丢弃弹窗", ref _itemDiscardPopupWarned);
+                return;
+            }
+            popup.Show(target);
+        }
 
         /// <summary>关闭道具丢弃弹窗。未实例化时为无操作。</summary>
         public void HideItemDiscardPopup()
