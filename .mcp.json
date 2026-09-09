@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "unity": {
+      "command": "C:\\Users\\qw470\\.local\\bin\\mcp-for-unity.exe",
+      "args": [
+        "--transport",
+        "stdio",
+        "--default-instance",
+        "unity-ale-inventory-system"
+      ]
+    }
+  }
+}

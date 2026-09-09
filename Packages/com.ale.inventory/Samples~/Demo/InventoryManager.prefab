@@ -44,13 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5acfbbdf47d84eb47bbaa9b14c969ba3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: InventorySystem.Runtime::InventorySystem.Runtime.InventoryRuntimeManager
-  databases:
-  - {fileID: 11400000, guid: 4f57aed696d57c24a8a897eeecf03a0b, type: 2}
-  coverUiRoot: {fileID: 0}
-  applyCoverUiLayer: 0
-  coverUiLayer: 0
-  itemTooltipPrefab: {fileID: 8435185310791491822, guid: b87e821e39d056144aa3482f12a917b7, type: 3}
-  skillTooltipPrefab: {fileID: 5373138738588705772, guid: 046c7e6e53f55fa4ca502298b4d44938, type: 3}
   autoPopulateOnStart: 1
   testInventoryId: "\u73A9\u5BB6\u80CC\u5305"
   testItems:
@@ -116,3 +109,13 @@ MonoBehaviour:
     count: 1
   addAllConfiguredItems: 1
   addAllItemCount: 1
+  demoEffectDatabase: {fileID: 11400000, guid: 7db244ab6d50b36418f76a147dd28a56, type: 2}
+  coverUiRoot: {fileID: 0}
+  applyCoverUiLayer: 0
+  coverUiLayer: 0
+  itemTooltipPrefab: {fileID: 8435185310791491822, guid: b87e821e39d056144aa3482f12a917b7, type: 3}
+  itemContextMenuPrefab: {fileID: 567448590683366556, guid: 86b9beb86f1f2054789d6b8d597fb7dd, type: 3}
+  itemDetailPopupPrefab: {fileID: 8389916221390301000, guid: 4219850aa9f48a045bb4a7855774daa6, type: 3}
+  itemDiscardPopupPrefab: {fileID: 2882326937227850269, guid: 6309d35735d4c184e88022fb7d5429dd, type: 3}
+  databases:
+  - {fileID: 11400000, guid: 4f57aed696d57c24a8a897eeecf03a0b, type: 2}
