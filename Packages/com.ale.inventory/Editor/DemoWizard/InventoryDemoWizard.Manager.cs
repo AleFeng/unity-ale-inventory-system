@@ -26,7 +26,8 @@ namespace Ale.Inventory.Editor
         /// </summary>
         static void BuildInventoryManagerPrefab(InventoryDatabase db, GameObject panelPrefab,
             GameObject shopPanelPrefab, GameObject craftViewPrefab, GameObject tooltipPrefab,
-            GameObject equipViewPrefab)
+            GameObject equipViewPrefab, GameObject contextMenuPrefab, GameObject detailPopupPrefab,
+            GameObject discardPopupPrefab)
         {
             string path = BeginPrefab(KPfInventoryManager);
 
@@ -111,6 +112,11 @@ namespace Ale.Inventory.Editor
             if (!tooltipPrefab)
                 Debug.LogWarning("[InventoryDemoWizard] 缺少 PF_UiwItemTooltip，请先生成「道具悬停弹窗」项。");
 
+            // ── 道具操作弹窗（右键菜单 / 详情 / 丢弃）：同样由管理器持有预制体并全局实例化一次 ──────
+            WriteCoverUiPrefab(mgr, "itemContextMenuPrefab", contextMenuPrefab, KPfItemContextMenu, "道具右键菜单");
+            WriteCoverUiPrefab(mgr, "itemDetailPopupPrefab", detailPopupPrefab, KPfItemDetailPopup, "道具详情弹窗");
+            WriteCoverUiPrefab(mgr, "itemDiscardPopupPrefab", discardPopupPrefab, KPfItemDiscardPopup, "道具丢弃弹窗");
+
             // ── 保存主 Prefab ─────────────────────────────────────────────────
             // 不走 SavePrefab：根节点上没有 Uiw 组件（无需上移），且子节点全是嵌套预制体实例
             // （字体事件由各自的源预制体承担，不应在此重复挂）。就地覆盖保 GUID 的语义与 SavePrefab 相同。
@@ -121,6 +127,28 @@ namespace Ale.Inventory.Editor
             else       Debug.LogError("[InventoryDemoWizard] 主 Prefab 保存失败：" + path);
         }
         
+
+        /// <summary>
+        /// 把一个覆盖式 UI 预制体写到管理器的指定序列化字段上；预制体缺失时给出「请先生成 X 项」的告警。
+        /// 三个道具操作弹窗的接线完全同形，故收口为一个方法。
+        /// </summary>
+        static void WriteCoverUiPrefab(InventoryRuntimeManager mgr, string fieldName, GameObject prefab,
+            string prefabName, string displayName)
+        {
+            var so   = new SerializedObject(mgr);
+            var prop = so.FindProperty(fieldName);
+            if (prop == null)
+            {
+                Debug.LogWarning($"[InventoryDemoWizard] InventoryRuntimeManager 上未找到字段 {fieldName}，跳过接线。");
+                return;
+            }
+            prop.objectReferenceValue = prefab;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            if (!prefab)
+                Debug.LogWarning($"[InventoryDemoWizard] 缺少 {prefabName}，请先生成「{displayName}」项。");
+        }
+
         /// <summary>
         /// 写入 测试道具列表（写到运行时管理器上，进入 Play 后由管理器 Init 自动填充）。
         /// </summary>

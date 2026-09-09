@@ -92,7 +92,11 @@ namespace Ale.Inventory.Editor
                 case KPfCraftingBlueprintList:
                 case KPfInventoryGridList:  return "ItemList";
                 case KPfItemTooltip:
-                case KPfNumberCounter:      return "Tool";
+                case KPfNumberCounter:
+                case KPfContextMenuRow:
+                case KPfItemContextMenu:
+                case KPfItemDetailPopup:
+                case KPfItemDiscardPopup:   return "Tool";
                 case KPfItemLabel:          return "Common";
                 case KPfInventoryPanel:
                 case KPfShopPanel:
@@ -147,6 +151,18 @@ namespace Ale.Inventory.Editor
                 new GenItem { Category = CatItem, Key = "Tooltip",  DisplayName = Fmt("道具悬停弹窗 {0}", KPfItemTooltip), AssetPath = Pfb(KPfItemTooltip),         DepKeys = new[] { "Detail" },
                     Build = () => BuildItemTooltipPrefab(
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemDetail))) },
+                // 道具操作弹窗：预制体均由 InventoryManager 持有，运行时全局实例化一次（见 BuildInventoryManagerPrefab）。
+                new GenItem { Category = CatItem, Key = "MenuRow",  DisplayName = Fmt("右键菜单条目行 {0}", KPfContextMenuRow), AssetPath = Pfb(KPfContextMenuRow), DepKeys = new string[0],
+                    Build = () => BuildContextMenuRowPrefab() },
+                new GenItem { Category = CatItem, Key = "CtxMenu",  DisplayName = Fmt("道具右键菜单 {0}", KPfItemContextMenu), AssetPath = Pfb(KPfItemContextMenu), DepKeys = new[] { "MenuRow" },
+                    Build = () => BuildItemContextMenuPrefab(
+                        LoadPrefabComp<UiwContextMenuRow>(Pfb(KPfContextMenuRow))) },
+                new GenItem { Category = CatItem, Key = "DetailPopup", DisplayName = Fmt("道具详情弹窗 {0}", KPfItemDetailPopup), AssetPath = Pfb(KPfItemDetailPopup), DepKeys = new[] { "Detail" },
+                    Build = () => BuildItemDetailPopupPrefab(
+                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemDetail))) },
+                new GenItem { Category = CatItem, Key = "DiscardPopup", DisplayName = Fmt("道具丢弃弹窗 {0}", KPfItemDiscardPopup), AssetPath = Pfb(KPfItemDiscardPopup), DepKeys = new[] { "Simple" },
+                    Build = () => BuildItemDiscardPopupPrefab(
+                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemSimple))) },
                 new GenItem { Category = CatInventory, Key = "ListPanel",DisplayName = Fmt("列表面板 {0}", KPfInventoryOrderList), AssetPath = Pfb(KPfInventoryOrderList), DepKeys = new[] { "Detail" },
                     Build = () => BuildInventoryListPanelPrefab(LoadPrefabComp<UiwInventoryItemDetail>(Pfb(KPfItemDetail))) },
                 new GenItem { Category = CatInventory, Key = "Grid",     DisplayName = Fmt("网格面板 {0}", KPfInventoryGridList),  AssetPath = Pfb(KPfInventoryGridList),  DepKeys = new[] { "Cell" },
@@ -211,14 +227,17 @@ namespace Ale.Inventory.Editor
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipGroupPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipBonusPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipSelectPanel))) },
-                new GenItem { Category = CatCommon, Key = "Manager",  DisplayName = Fmt("管理器 {0}", KPfInventoryManager), AssetPath = Pfb(KPfInventoryManager),  DepKeys = new[] { "DB", "Panel", "ShopPanel", "CraftView", "EquipView", "Tooltip" },
+                new GenItem { Category = CatCommon, Key = "Manager",  DisplayName = Fmt("管理器 {0}", KPfInventoryManager), AssetPath = Pfb(KPfInventoryManager),  DepKeys = new[] { "DB", "Panel", "ShopPanel", "CraftView", "EquipView", "Tooltip", "CtxMenu", "DetailPopup", "DiscardPopup" },
                     Build = () => BuildInventoryManagerPrefab(
                         AssetDatabase.LoadAssetAtPath<InventoryDatabase>(DatabasePath),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfInventoryPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfShopPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfCraftingView)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemTooltip)),
-                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipView))) },
+                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipView)),
+                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemContextMenu)),
+                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemDetailPopup)),
+                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemDiscardPopup))) },
             };
         }
 

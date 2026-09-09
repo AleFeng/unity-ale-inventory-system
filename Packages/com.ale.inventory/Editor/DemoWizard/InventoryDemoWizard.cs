@@ -163,6 +163,10 @@ namespace Ale.Inventory.Editor
         private const string KPfEquipBonusPanel        = "PF_UiwEquipmentBonusPanel";   // 属性加成面板 UiwEquipmentBonusPanel  → View/
         private const string KPfEquipSelectPanel       = "PF_UiwEquipmentSelectPanel";  // 装备选择面板 UiwEquipmentSelectPanel  → View/
         private const string KPfEquipView              = "PF_UiwEquipmentView";         // 装备主界面 UiwEquipmentView          → View/
+        private const string KPfContextMenuRow         = "PF_UiwContextMenuRow";   // 右键菜单条目行 UiwContextMenuRow  -> Tool/
+        private const string KPfItemContextMenu        = "PF_UiwItemContextMenu";  // 道具右键操作菜单 UiwItemContextMenu -> Tool/
+        private const string KPfItemDetailPopup        = "PF_UiwItemDetailPopup";  // 道具详情弹窗 UiwItemDetailPopup    -> Tool/
+        private const string KPfItemDiscardPopup       = "PF_UiwItemDiscardPopup"; // 道具丢弃弹窗 UiwItemDiscardPopup   -> Tool/
         private const string KPfInventoryManager       = "InventoryManager";            // 管理器（Demo 入口）
     }
 }
