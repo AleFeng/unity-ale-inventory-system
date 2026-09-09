@@ -79,6 +79,12 @@
   - **生成 / 分配限速**（`spawnPerSecond`，默认 30 个/秒）——把实例化与绑定分摊到多帧，避免单帧峰值卡顿或资源加载堵塞（含预算封顶防"打开界面那一帧"爆发）。
   - **逐格浮现跟随滚动方向**——格子按进入视口的先后出现（下滚从上往下、上滚从下往上）。
   - **分配 / 回收淡入淡出**——格子被分配（滚入）整格根 `CanvasGroup` 淡入、被回收（滚出）淡出后再清空归还；道具格的图标 / 品质背景框在 Sprite（可能经 Addressable 异步加载）就位后逐图片淡入。该能力由 toolkit `UiwListFadeCell` + `UiwVirtualListBase` 默认 hook 通用驱动（经 `IUiwRecycleFadeCell` / `IUiwDiffCell` 接口），所有系统列表统一具备。
+- **道具右键操作菜单**（`1.14.0`）：右键任意道具格子（网格 / 明细行 / 装备候选）在光标处弹出菜单——
+  **查看**（可关闭的道具详情弹窗，复用 `UiwInventoryItemDetail` 渲染）/ **使用**（仅当道具 `onUseEffectRefs` 非空时出现，
+  经 `UseItemInSlot` 消耗 1 个）/ **丢弃**（Slider 选数量，范围 `[1, 该格堆叠数]`，确认后 `TryRemoveItem` 按槽位扣减）。
+  条目可由上层系统贡献：`UiwInventoryItemEvents.CollectingItemMenu`——装备界面打开时据此注入「装备」，
+  原「右键即快速装备」并入菜单（`ItemRightClicked` 事件保留，改由该条目触发，包外订阅方不受影响）。
+  菜单 `UiwContextMenu` 与模态弹窗基类 `UiwModalPopupBase` 下沉 toolkit `1.13.0` 通用。
 - **可复用构件**：页签条 `UiwTabStrip`、子项实例池 `UiwWidgetPool`、悬停弹窗基类 `UiwTooltipBase` /
   `UiwHoverTooltipSource`、图标槽位 `SpriteSlot`、数值 / 价格格式化 `UIFormat`——扩展 UI 时优先复用，
   见 [UI 组件指南 - 可复用构件](Docs~/UIComponentGuide.md#106-可复用构件扩展-ui-时优先复用)。
@@ -151,7 +157,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 
 > ⚠️ **自 1.8.0 起本插件依赖 [`com.ale.toolkit`](../com.ale.toolkit)。** Unity Package Manager 不支持在 `package.json` 的 `dependencies` 里写 git URL，故 `dependencies` 留空——**必须手动先安装 `com.ale.toolkit`、再安装本插件**，否则会报大量类型缺失编译错。
 
-- **`com.ale.toolkit`（必需，先安装；`1.13.0` 起最低 1.10.0——共用效果库 / Effect Editor）** —— 本插件的通用底层（属性系统、虚拟滚动列表、编辑器三列框架、编辑器界面三语、排序引擎、标签系统、`Ale.Effect` 效果系统、`Ale.GameplayTags` 层级标签、`Ale.Condition` 条件系统等）。
+- **`com.ale.toolkit`（必需，先安装；`1.14.0` 起最低 1.13.0——右键菜单 `UiwContextMenu` / 模态弹窗基类 `UiwModalPopupBase`）** —— 本插件的通用底层（属性系统、虚拟滚动列表、编辑器三列框架、编辑器界面三语、排序引擎、标签系统、`Ale.Effect` 效果系统、`Ale.GameplayTags` 层级标签、`Ale.Condition` 条件系统等）。
 - Unity 2022.3+（`package.json` 声明的最低版本；本插件基于 `Unity 6000.3` 开发与维护）
 - TextMeshPro（可选，`ATK_TMP` 宏）
 - Unity Localization（可选，`ATK_LOCALIZATION` 宏）

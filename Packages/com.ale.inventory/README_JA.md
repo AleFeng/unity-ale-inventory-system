@@ -79,6 +79,14 @@
   - **生成 / 割り当てのレート制限**（`spawnPerSecond`、既定 30 個/秒） —— インスタンス化とバインドを複数フレームに分散し、単一フレームのピークによるカクつきやアセット読み込みの詰まりを回避します（「画面を開いた最初のフレーム」の一斉インスタンス化を防ぐ予算上限付き）。
   - **スクロール方向に追従するセルの順次表示** —— セルはビューポートに入る順に出現します（下スクロールは上から下へ、上スクロールは下から上へ）。
   - **割り当て / 回収時のフェードイン・アウト** —— セルは割り当て（スクロールイン）時にルート `CanvasGroup` 全体がフェードインし、回収（スクロールアウト）時はフェードアウトしてからクリア / 返却されます。アイテムセルはさらに、アイコン / 品質背景のスプライト（Addressables で非同期読み込みされる場合あり）が揃ってから画像ごとにフェードインします。toolkit の `UiwListFadeCell` + `UiwVirtualListBase` の既定フック（`IUiwRecycleFadeCell` / `IUiwDiffCell` インターフェース経由）で汎用的に駆動され、すべてのシステムのリストが備えます。
+- **アイテム右クリックメニュー**（`1.14.0`）：任意のアイテムセル（グリッド / 明細行 / 装備候補）を右クリックすると
+  カーソル位置にメニューを表示——**表示**（`UiwInventoryItemDetail` を再利用した閉じられる詳細ポップアップ）/
+  **使用**（`onUseEffectRefs` が空でない場合のみ表示。`UseItemInSlot` で 1 個消費）/
+  **破棄**（`[1, そのセルのスタック数]` のスライダーで数量を選び、`TryRemoveItem` でそのスロットから減算）。
+  上位システムは `UiwInventoryItemEvents.CollectingItemMenu` で項目を追加できます——装備画面が「装備」を注入し、
+  従来の「右クリックで即装備」はメニューに統合されました（`ItemRightClicked` イベントは維持され、その項目から発火するため
+  パッケージ外の購読者に影響しません）。メニュー `UiwContextMenu` とモーダルポップアップ基底 `UiwModalPopupBase` は
+  toolkit `1.13.0` の汎用部品です。
 - **再利用可能な構成部品**：タブストリップ `UiwTabStrip`、子アイテムプール `UiwWidgetPool`、ホバーポップアップ基底
   `UiwTooltipBase` / `UiwHoverTooltipSource`、アイコンスロット `SpriteSlot`、数値 / 価格フォーマッタ `UIFormat` ——
   UI を拡張する際はこれらを優先して再利用してください。
@@ -152,7 +160,7 @@ UI 言語切り替え（中 / English / 日本語）、「列挙値」翻訳ト�
 
 > ⚠️ **1.8.0 以降、本プラグインは [`com.ale.toolkit`](../com.ale.toolkit) に依存します。** Unity の Package Manager は `package.json` の `dependencies` での git URL 指定に対応していないため `dependencies` は空にしてあります。**必ず先に `com.ale.toolkit` を、その後に本プラグインをインストール**してください。さもないと大量の「型が見つからない」コンパイルエラーになります。
 
-- **`com.ale.toolkit`（必須、先にインストール。`1.13.0` 以降は 1.10.0 以上——共用エフェクトライブラリ / Effect Editor）** —— 本プラグインが依存する共通基盤（属性システム、仮想スクロールリスト、エディタ 3 カラムフレームワーク、エディタ UI の 3 言語対応、ソートエンジン、タグシステム、`Ale.Effect` エフェクトシステム、`Ale.GameplayTags` 階層タグ、`Ale.Condition` 条件システムなど）。
+- **`com.ale.toolkit`（必須、先にインストール。`1.14.0` 以降は 1.13.0 以上——コンテキストメニュー `UiwContextMenu` / モーダルポップアップ基底 `UiwModalPopupBase`）** —— 本プラグインが依存する共通基盤（属性システム、仮想スクロールリスト、エディタ 3 カラムフレームワーク、エディタ UI の 3 言語対応、ソートエンジン、タグシステム、`Ale.Effect` エフェクトシステム、`Ale.GameplayTags` 階層タグ、`Ale.Condition` 条件システムなど）。
 - Unity 2022.3+（`package.json` が宣言する最低バージョン。本プラグインは `Unity 6000.3` で開発・保守しています）
 - TextMeshPro（任意、`ATK_TMP` マクロ）
 - Unity Localization（任意、`ATK_LOCALIZATION` マクロ）

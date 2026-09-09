@@ -74,6 +74,7 @@ Almost every game needs an "items + inventory + shop + crafting + equipment" dat
 | Custom enums + function tags | Enum values are auto-assigned by the system, never reused, and can be reordered by drag; a function tag defines a group of attribute fields, and adding/removing a tag adds/removes the item's corresponding fields — tags can be locked onto templates. |
 | Five subsystems, unified | Item / Warehouse / Shop / Crafting / Equipment share the same data and attribute system, and entries cross-reference each other (e.g. shop prices sourced from item attributes, equipment bonuses aggregated from item attributes). |
 | Unified virtual-scroll UI | Both grid and ordered lists are virtual-scrolling (object pooling + only visible cells rendered); incremental diff refresh, spawn rate limiting (`spawnPerSecond`), per-cell staggered reveal, and assign / recycle fade in-out (shared via toolkit) keep huge lists smooth. |
+| Item right-click menu | Right-click an item to open a cursor-anchored menu: **View** (detail popup) / **Use** (only shown when the item has on-use effects; consumes 1) / **Discard** (quantity slider). Upper systems can contribute entries (the equipment view injects "Equip"). The menu and modal-popup shells are sunk into the toolkit as generic widgets. |
 | Runtime managers | `InventoryDataManager` (queries) plus dedicated runtime managers for Warehouse / Shop / Crafting / Equipment — equipment state and shop progress can all be saved. |
 | One-way export | `InventoryDtoMapper` → JSON / binary, **covering every piece of database config** (all 17 lists across the five subsystems); object references are carried as AssetGUIDs and can be loaded asynchronously via Addressables. |
 | Three optional macros | TextMeshPro (`ATK_TMP`) / Unity Localization (`ATK_LOCALIZATION`) / Unity Addressables (`ATK_ADDRESSABLE`), toggled in the **Ale Toolkit Welcome Window** (project-level global settings, sunk to toolkit; it also detects whether the corresponding package is installed); the package itself has zero hard dependencies. |
@@ -111,7 +112,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 This installs the latest commit on `main`. **To pin a version, append `#<tag>` to the very end of the URL** (it must come after `?path=`):
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.13.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.14.0
 ```
 
 See [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) for available tags.

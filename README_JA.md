@@ -74,6 +74,7 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
 | カスタム列挙 + 機能タグ | 列挙値はシステムが自動採番し、再利用されず、ドラッグで並べ替え可能。機能タグは一組の属性フィールドを定義し、タグの増減でアイテム側の対応フィールドも自動で増減、タグはテンプレートに固定できます。 |
 | 5 サブシステム一体化 | アイテム / 倉庫 / ショップ / クラフト / 装備が同じデータと属性システムを共有し、エントリ同士が相互参照します（例：アイテム属性から取得するショップ価格、アイテム属性から集計する装備ボーナス）。 |
 | 統一された仮想スクロール UI | グリッドも順序リストも仮想スクロール（オブジェクトプール + 可視セルのみ描画）。差分による増分リフレッシュ、生成レート制限（`spawnPerSecond`）、セルの順次表示、割り当て / 回収時のフェードイン・アウト（toolkit に共通化）で大量のエントリでも快適です。 |
+| アイテム右クリックメニュー | アイテムを右クリックするとカーソル位置にメニューを表示：**表示**（詳細ポップアップ）/ **使用**（使用エフェクトが設定されている場合のみ表示、1 個消費）/ **破棄**（数量スライダー）。上位システムが項目を追加できます（装備画面が「装備」を注入）。メニューとモーダルポップアップの外殻は toolkit に汎用部品として下ろしています。 |
 | ランタイムマネージャー | `InventoryDataManager`（クエリ）に加え、倉庫 / ショップ / クラフト / 装備それぞれの専用ランタイムマネージャー。装備の状態やショップの進捗はいずれもセーブ可能です。 |
 | 一方向エクスポート | `InventoryDtoMapper` → JSON / バイナリ。**データベースの設定データを全て網羅**（5 サブシステムの 17 リスト）。オブジェクト参照は AssetGUID として保持され、Addressables 経由で非同期読み込みも可能です。 |
 | 3 つのオプションマクロ | TextMeshPro（`ATK_TMP`）/ Unity Localization（`ATK_LOCALIZATION`）/ Unity Addressables（`ATK_ADDRESSABLE`）。いずれも **Ale Toolkit ウェルカムウィンドウ**からワンクリックで切り替え可能（プロジェクト単位のグローバル設定で toolkit に集約。対応パッケージの導入有無も検出）。パッケージ本体はハード依存ゼロ。 |
@@ -111,7 +112,7 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 これで `main` の最新コミットが入ります。**バージョンを固定するには、URL の末尾に `#<tag>` を付けます**（必ず `?path=` の後ろに）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.13.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.14.0
 ```
 
 利用可能なタグは [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) を参照してください。

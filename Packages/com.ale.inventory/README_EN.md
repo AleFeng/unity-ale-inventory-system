@@ -79,6 +79,13 @@ Located under `Runtime/UI/`, assembly `Ale.Inventory.Runtime.UI`, namespace `Ale
   - **Spawn / assignment rate limiting** (`spawnPerSecond`, default 30/sec) — amortizes instantiation and binding across multiple frames to avoid single-frame spikes or asset-loading congestion (with a budget cap to prevent an "opening-frame" burst).
   - **Per-cell staggered reveal following scroll direction** — cells appear in the order they enter the viewport (top-down when scrolling down, bottom-up when scrolling up).
   - **Assign / recycle fade in-out** — a cell fades its whole root `CanvasGroup` in when assigned (scrolled in) and out before being cleared / returned when recycled (scrolled out); item cells additionally fade their icon / quality-background in per-image once the sprite (possibly loaded asynchronously via Addressables) is ready. Driven generically by the toolkit `UiwListFadeCell` + `UiwVirtualListBase` default hooks (via the `IUiwRecycleFadeCell` / `IUiwDiffCell` interfaces), so every system's list has it.
+- **Item right-click menu** (`1.14.0`): right-clicking any item cell (grid / detail row / equipment candidate) opens a
+  cursor-anchored menu — **View** (a closable item-detail popup reusing `UiwInventoryItemDetail`) / **Use** (shown only when
+  the item has a non-empty `onUseEffectRefs`; consumes 1 via `UseItemInSlot`) / **Discard** (a slider over `[1, stack count]`,
+  then `TryRemoveItem` on that exact slot). Upper systems contribute entries through
+  `UiwInventoryItemEvents.CollectingItemMenu` — the equipment view injects "Equip", folding the former "right-click to
+  quick-equip" into the menu (the `ItemRightClicked` event is kept and now raised by that entry, so external subscribers are
+  unaffected). The menu `UiwContextMenu` and the modal-popup base `UiwModalPopupBase` are generic parts of toolkit `1.13.0`.
 - **Reusable building blocks**: the tab strip `UiwTabStrip`, child-item pool `UiwWidgetPool`, hover-tooltip bases
   `UiwTooltipBase` / `UiwHoverTooltipSource`, icon slot `SpriteSlot` and number / price formatter `UIFormat` — prefer
   reusing these when extending the UI; see
@@ -152,7 +159,7 @@ The "Show on Startup" toggle at the bottom of the window controls whether this w
 
 > ⚠️ **Since 1.8.0 this plugin depends on [`com.ale.toolkit`](../com.ale.toolkit).** Unity's Package Manager does not support git-URL entries in `package.json` `dependencies`, so `dependencies` is left empty — you **must install `com.ale.toolkit` first, then this plugin**, otherwise you will get many "type not found" compile errors.
 
-- **`com.ale.toolkit` (required, install first; 1.10.0 or newer since `1.13.0` — shared effect library / Effect Editor)** — the shared foundation this plugin builds on (attribute system, virtual-scroll lists, the three-column editor framework, trilingual editor UI, sorting engine, tag system, `Ale.Effect` effect system, `Ale.GameplayTags` hierarchical tags, `Ale.Condition` condition system, etc.).
+- **`com.ale.toolkit` (required, install first; 1.13.0 or newer since `1.14.0` — context menu `UiwContextMenu` / modal-popup base `UiwModalPopupBase`)** — the shared foundation this plugin builds on (attribute system, virtual-scroll lists, the three-column editor framework, trilingual editor UI, sorting engine, tag system, `Ale.Effect` effect system, `Ale.GameplayTags` hierarchical tags, `Ale.Condition` condition system, etc.).
 - Unity 2022.3+ (the minimum declared in `package.json`; this plugin is developed and maintained on `Unity 6000.3`)
 - TextMeshPro (optional, `ATK_TMP` macro)
 - Unity Localization (optional, `ATK_LOCALIZATION` macro)
