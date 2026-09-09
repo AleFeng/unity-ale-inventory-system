@@ -28,7 +28,6 @@ namespace Ale.Inventory.Editor
             RegisterEffect();
             RegisterDrawers();
             RegisterEnums();
-            RegisterDemo();
             RegisterComponentInspectors();
         }
 
@@ -43,7 +42,6 @@ namespace Ale.Inventory.Editor
         static partial void RegisterEffect();
         static partial void RegisterDrawers();
         static partial void RegisterEnums();
-        static partial void RegisterDemo();
         static partial void RegisterComponentInspectors();
     }
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Ale.Inventory.Runtime;
@@ -28,12 +27,6 @@ namespace Ale.Inventory.Editor
         // Logo 纹理缓存（从磁盘加载，FilterMode.Point 保持像素锐利）
         private Texture2D _logoTexture;
         private bool _logoLoadAttempted;
-
-        // 测试工具：预制体生成列表 折叠状态（默认折叠）与滚动位置
-        private bool    _genFoldout;
-        private Vector2 _genListScroll;
-        // 预制体生成列表内：各子系统分类的折叠状态（默认折叠，按 InventoryDemoWizard.Categories 分组）
-        private readonly Dictionary<string, bool> _genCategoryFoldouts = new Dictionary<string, bool>();
 
         #region 打开窗口
 
@@ -177,50 +170,6 @@ namespace Ale.Inventory.Editor
                 OpenDocumentation();
 
             EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.Space(4);
-            _genFoldout = EditorGUILayout.Foldout(_genFoldout, Tr("预制体生成"), true);
-            if (_genFoldout)
-            {
-                // 生成全部（列表最上方）
-                var demoStyle = new GUIStyle(GUI.skin.button)
-                {
-                    fontStyle = FontStyle.Normal,
-                    normal    = { textColor = new Color(0.85f, 1f, 0.85f) }
-                };
-                if (GUILayout.Button(Tr("生成全部（数据库 + 全部 Prefab）"), demoStyle, GUILayout.Height(26)))
-                    InventoryDemoWizard.GenerateAll();
-
-                // 滚动列表：按子系统分类折叠，逐项「生成」
-                _genListScroll = EditorGUILayout.BeginScrollView(_genListScroll, GUILayout.Height(130));
-                foreach (var category in InventoryDemoWizard.Categories)
-                {
-                    // 统计该分类下的可生成项数量；为空则跳过该分组
-                    int count = 0;
-                    foreach (var it in InventoryDemoWizard.Items)
-                        if (it.Category == category) count++;
-                    if (count == 0) continue;
-
-                    _genCategoryFoldouts.TryGetValue(category, out bool catOpen);
-                    catOpen = EditorGUILayout.Foldout(catOpen, Fmt("{0}（{1}）", Tr(category), count), true);
-                    _genCategoryFoldouts[category] = catOpen;
-                    if (!catOpen) continue;
-
-                    EditorGUI.indentLevel++;
-                    foreach (var item in InventoryDemoWizard.Items)
-                    {
-                        if (item.Category != category) continue;
-                        EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-                        // DisplayName 已由 InventoryDemoWizard 目录按当前语言构建，此处无需再翻译。
-                        EditorGUILayout.LabelField(item.DisplayName, GUILayout.ExpandWidth(true));
-                        if (GUILayout.Button(Tr("生成"), GUILayout.Width(64), GUILayout.Height(20)))
-                            InventoryDemoWizard.GenerateItem(item.Key);
-                        EditorGUILayout.EndHorizontal();
-                    }
-                    EditorGUI.indentLevel--;
-                }
-                EditorGUILayout.EndScrollView();
-            }
         }
 
         private void DrawTemplateSection()

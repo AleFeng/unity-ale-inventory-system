@@ -48,7 +48,7 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
     - [2. エディタを開いて設定](#2-エディタを開いて設定)
     - [3. エクスポート（任意）](#3-エクスポート任意)
     - [4. ランタイムのセットアップ](#4-ランタイムのセットアップ)
-    - [5. ワンクリック Demo](#5-ワンクリック-demo)
+    - [5. Demo の実行](#5-demo-の実行)
   - [🖥️ ウェルカムウィンドウ](#️-ウェルカムウィンドウ)
   - [🧩 オプションのマクロ](#-オプションのマクロ)
   - [📖 ドキュメント](#-ドキュメント)
@@ -79,7 +79,7 @@ Ale Inventory System は `Unity` 向けの**データ駆動インベントリプ
 | 一方向エクスポート | `InventoryDtoMapper` → JSON / バイナリ。**データベースの設定データを全て網羅**（5 サブシステムの 17 リスト）。オブジェクト参照は AssetGUID として保持され、Addressables 経由で非同期読み込みも可能です。 |
 | 3 つのオプションマクロ | TextMeshPro（`ATK_TMP`）/ Unity Localization（`ATK_LOCALIZATION`）/ Unity Addressables（`ATK_ADDRESSABLE`）。いずれも **Ale Toolkit ウェルカムウィンドウ**からワンクリックで切り替え可能（プロジェクト単位のグローバル設定で toolkit に集約。対応パッケージの導入有無も検出）。パッケージ本体はハード依存ゼロ。 |
 | ローカライズツール | `InventoryDatabase` 向けの多言語テーブルをワンクリックで生成 / 関連付けし、データベース内のすべての `Text` フィールドを走査してキーを自動生成、エントリへ書き戻します（プログレスバー + ログ + キャンセル対応）。 |
-| ウェルカムウィンドウのウィザード | データ作成、エディタ / ツールウィンドウの起動、サンプルプレハブ生成、そして「完全に動作するサンプルをワンクリック生成」（データベース + 全 UI プレハブ + マネージャー）を一箇所にまとめた入口です。エディタ言語やマクロなどのグローバル設定は Ale Toolkit ウェルカムウィンドウへ移動します。 |
+| ウェルカムウィンドウ | データ作成、エディタ / ツールウィンドウの起動、ドキュメント表示、データテンプレートの指定を一箇所にまとめた入口です。エディタ言語やマクロなどのグローバル設定は Ale Toolkit ウェルカムウィンドウへ移動します。 |
 | エディタ UI の 3 言語対応 | **Ale Toolkit ウェルカムウィンドウ**から **中文 / English / 日本語** をワンクリックで切り替え。`Inventory Editor` 設定エディタ（5 サブシステムの全パネル）が一括で切り替わります。選択は永続化され、ランタイムのコンテンツローカライズとは無関係です。 |
 
 ### 5 つのサブシステム
@@ -112,13 +112,13 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 これで `main` の最新コミットが入ります。**バージョンを固定するには、URL の末尾に `#<tag>` を付けます**（必ず `?path=` の後ろに）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.14.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.15.0
 ```
 
 利用可能なタグは [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) を参照してください。
 
 ### デモ Sample のインポート（任意）
-インストール後、Package Manager でパッケージを選択 → `Samples` → **Inventory System Demo**（`InventoryDatabase` アセット + マネージャープレハブ + UI サンプルシーン）をインポートすれば、そのまま Play で体験できます。あるいは[ウェルカムウィンドウ](#️-ウェルカムウィンドウ)の「ワンクリック生成」ウィザードで、その場で一式を生成することもできます。
+インストール後、Package Manager でパッケージを選択 → `Samples` → **Inventory System Demo**（`InventoryDatabase` アセット + マネージャープレハブ + UI サンプルシーン）をインポートすれば、そのまま Play で体験できます。
 
 ### その他の方法
 リポジトリをダウンロードし、`Packages/com.ale.inventory` フォルダをまるごとプロジェクトの **`Packages/` ディレクトリ**（`Assets/` ではありません）にコピーする方法もあります。Unity が自動的にローカルパッケージとして認識します。
@@ -164,11 +164,11 @@ InventoryRuntimeManager.Instance.LoadSaveData(saveData);
 InventoryRuntimeManager.Instance.ResetAll();
 ```
 
-### 5. ワンクリック Demo
-**ウェルカムウィンドウ**で「テストツール-プレハブ生成 → すべて生成」を展開すると、完全に動作するサンプルをワンクリックで生成できます（データベース + 全 UI プレハブ + バックパック / ショップ / クラフト / 装備画面 + マネージャー）。
+### 5. Demo の実行
+Package Manager から本パッケージの **Inventory System Demo** サンプルをインポートし、含まれているサンプルシーンを開いて Play するだけです。サンプルにはデータベース、エフェクトライブラリ、全 UI プレハブ、マネージャープレハブが含まれています。
 
 ## 🖥️ ウェルカムウィンドウ
-プラグインの統一入口パネルで、「データ作成 / エディタ起動 / ドキュメント表示 / サンプル生成」といったインベントリ領域のよく使う操作を集約しています。Unity セッションで最初の一度は自動的に表示され、いつでも手動で開けます：
+プラグインの統一入口パネルで、「データ作成 / エディタ起動 / ドキュメント表示」といったインベントリ領域のよく使う操作を集約しています。Unity セッションで最初の一度は自動的に表示され、いつでも手動で開けます：
 
 ```
 Tools > Ale Toolkit > Inventory System > Welcome Window
@@ -178,7 +178,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 
 > **エディタ UI 言語、列挙翻訳、オプション機能マクロはいずれもプロジェクト単位のグローバル設定で、1.10.0 以降は Ale Toolkit ウェルカムウィンドウ（`Tools > Ale Toolkit > Welcome`）に集約されています。** 本ウィンドウ上部の「Ale Toolkit 設定を開く」ボタンから移動でき、言語を切り替えると `Inventory Editor`（5 サブシステムの全パネル）も更新されます。エディタ UI の文言のみに影響し、ランタイムのコンテンツローカライズとは無関係です。
 
-ヘッダーの下は上から順に：**「Ale Toolkit 設定を開く」への移動**、**クイック操作**（データ作成 / 各エディタ・ツールウィンドウの起動 / サンプルプレハブのワンクリック生成）、**データテンプレート**（新規作成のひな型となる `InventoryDatabase` を指定）、**ウィザードフォント**（`ATK_TMP` 有効時、ウィザードの Prefab 生成用）、**起動時に自動表示**。
+ヘッダーの下は上から順に：**「Ale Toolkit 設定を開く」への移動**、**クイック操作**（データ作成 / 各エディタ・ツールウィンドウの起動 / ドキュメント表示）、**データテンプレート**（新規作成のひな型となる `InventoryDatabase` を指定）、**起動時に自動表示**。
 
 ## 🧩 オプションのマクロ
 3 つのマクロはいずれも **Ale Toolkit ウェルカムウィンドウ**（`Tools > Ale Toolkit > Welcome`）の「プラグインサポート（マクロ）」領域からワンクリックで切り替えでき、対応パッケージの導入有無もリアルタイムに検出します（未導入のマクロにチェックを入れると確認ダイアログが表示されます）。インベントリのウェルカムウィンドウには移動ボタンがあります：
@@ -204,7 +204,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 - [クラフトシステム](Packages/com.ale.inventory/Docs~/CraftingSystem_JA.md) — グループタグ / ブループリントテンプレート / ブループリントのレシピ / クラフト倉庫 / クラフト API
 - [装備システム](Packages/com.ale.inventory/Docs~/EquipmentSystem_JA.md) — グループタグ / 装備グループテンプレート / スロットリスト / 装備スロット / アイテム制限 / 属性ボーナス / 装備 API
 - [属性システム](Packages/com.ale.inventory/Docs~/AttributeSystem_JA.md) — フィールド型リファレンス、`AttributeValue` の取得 / 表示 / ソート比較
-- [UI コンポーネントガイド](Packages/com.ale.inventory/Docs~/UIComponentGuide_JA.md) — UI コンポーネント、プレハブ作成、機能マクロ、デモウィザード
+- [UI コンポーネントガイド](Packages/com.ale.inventory/Docs~/UIComponentGuide_JA.md) — UI コンポーネント、プレハブ作成、機能マクロ
 - [アーキテクチャ](Packages/com.ale.inventory/Docs~/Architecture_JA.md) — 設計目標、データフロー、エディタ・ランタイムのアーキテクチャ、拡張ガイド
 
 ## 📁 ディレクトリ構成
@@ -224,8 +224,7 @@ Packages/com.ale.inventory/          ← パッケージルート
 │   ├── Common/         共通の属性 / 設定ドロワー + ツールウィンドウ基底クラス
 │   ├── Addressables/   Addressables アセット参照の移行ツールウィンドウ
 │   ├── Localization/   ローカライズツールウィンドウ（テーブル作成 / キー生成）
-│   ├── Create/         データファイル作成メニュー
-│   └── DemoWizard/     テストデータとプレハブのワンクリック生成
+│   └── Create/         データファイル作成メニュー
 ├── Docs~/              詳細ドキュメント
 └── Samples~/Demo/      デモ Sample（データベース + マネージャープレハブ + UI サンプルシーン）
 ```

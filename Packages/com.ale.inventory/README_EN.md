@@ -97,7 +97,7 @@ Located under `Runtime/UI/`, assembly `Ale.Inventory.Runtime.UI`, namespace `Ale
 ## Documentation
 
 - [Attribute System](Docs~/AttributeSystem_EN.md) — field-type reference, `AttributeValue` retrieval / display / sort comparison
-- [UI Component Guide](Docs~/UIComponentGuide_EN.md) — UI components, prefab authoring, feature macros, demo wizard
+- [UI Component Guide](Docs~/UIComponentGuide_EN.md) — UI components, prefab authoring, feature macros
 - [Architecture](Docs~/Architecture_EN.md) — design goals, data flow, editor & runtime architecture, extension guide
 
 ---
@@ -129,23 +129,11 @@ UI language switching (中 / English / 日本語), the "Enum Values" translation
 | Open Localization Tool Window | (When `ATK_LOCALIZATION` is enabled) Opens the toolkit's generic localization window to generate / link tables and keys for this library |
 | View Documentation | Opens this README with the system default application |
 
-Expand the "**Test Tools – Prefab Generation**" foldout:
-
-- **Generate All (Database + All Prefabs)**: one click to generate a complete runnable sample (database + all UI prefabs + inventory / shop / crafting screens + managers).
-- The list below lets you **generate individual prefabs**; when generating a dependent prefab it asks whether to generate child prefabs as well, and confirms before overwriting an existing asset.
-
 ### Data Template
 
 Once you designate an `InventoryDatabase` as a template, "Create New Data File" deep-copies all its data (enums / tags / templates / items…); leaving it empty creates default empty data. The panel shows the number of enum types / function tags / item templates / items the template contains.
 
 > Since 1.10.0 this template choice is stored in the project-level `ProjectSettings/AleInventorySettings.asset` (a `ScriptableSingleton`, committed with the repo, referenced by GUID, shared across the team; a setting saved by an older version in EditorPrefs is migrated in automatically the first time you open the window). Per-user preferences such as "auto-show on startup" remain in EditorPrefs.
-
-### Wizard Fonts (when `ATK_TMP` is enabled)
-
-Font settings used by the "Test Tools – Prefab Generation" wizard (inventory-domain config, hence kept in this window):
-
-- **Default font**: applied to all TMP text nodes when the wizard generates prefabs (leave empty to use the TMP default font).
-- **Localization font** (when `ATK_LOCALIZATION` is also enabled): assigned to `LocalizedFontEvent` when the wizard generates prefabs.
 
 > The three optional feature-macro toggles themselves have moved to the Ale Toolkit Welcome Window — see "Editor Language & Macros" above. After toggling a macro, wait for Unity to recompile for it to take effect.
 
@@ -222,7 +210,7 @@ if (result.IsUsed) Debug.Log($"{result.AppliedCount} effect(s) applied, consumed
 
 ### 6. One-Click Demo
 
-In the **Welcome Window**, "Test Tools – Prefab Generation → Generate All" produces a complete runnable sample in one click (database + all UI prefabs + inventory / shop / crafting screens + managers). See [Welcome Window](#welcome-window) and the [UI Component Guide](Docs~/UIComponentGuide_EN.md).
+Import the **Inventory System Demo** sample from Package Manager and open its sample scene, then press Play; the sample already contains the database, the effect library, every UI prefab and the manager prefab. See the [UI Component Guide](Docs~/UIComponentGuide_EN.md).
 
 ---
 
@@ -248,8 +236,7 @@ InventorySystem/
 │   ├── Common/         Shared attribute / config drawers + tool-window base class
 │   ├── Addressables/   Addressables asset-reference migration tool window
 │   ├── Localization/   Localization tool window (table creation / key generation)
-│   ├── Create/         Data-file creation menu
-│   └── DemoWizard/     One-click generation of test data and prefabs
+│   └── Create/         Data-file creation menu
 ├── Resources/Data/     Sample data files
 └── Docs~/              Detailed docs (this folder)
 ```

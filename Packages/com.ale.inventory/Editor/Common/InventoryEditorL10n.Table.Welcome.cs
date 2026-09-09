@@ -30,13 +30,7 @@ namespace Ale.Inventory.Editor
                 "Open Ale Toolkit Settings (Language / Defines)",
                 "Ale Toolkit 設定を開く（言語 / マクロ）");
 
-            // ── 预制体生成 ────────────────────────────────────────────────────────
-            Add("预制体生成",            "Prefab Generation",       "プレハブ生成");
-            Add("生成全部（数据库 + 全部 Prefab）",
-                "Generate All (Database + All Prefabs)",
-                "すべて生成（データベース + 全 Prefab）");
             Add("{0}（{1}）", "{0} ({1})", "{0}（{1}）");
-            Add("生成", "Generate", "生成");
 
             // ── 数据模板 ──────────────────────────────────────────────────────────
             Add("数据模板", "Data Template", "データテンプレート");

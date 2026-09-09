@@ -79,7 +79,7 @@ Almost every game needs an "items + inventory + shop + crafting + equipment" dat
 | One-way export | `InventoryDtoMapper` → JSON / binary, **covering every piece of database config** (all 17 lists across the five subsystems); object references are carried as AssetGUIDs and can be loaded asynchronously via Addressables. |
 | Three optional macros | TextMeshPro (`ATK_TMP`) / Unity Localization (`ATK_LOCALIZATION`) / Unity Addressables (`ATK_ADDRESSABLE`), toggled in the **Ale Toolkit Welcome Window** (project-level global settings, sunk to toolkit; it also detects whether the corresponding package is installed); the package itself has zero hard dependencies. |
 | Localization tooling | One click to generate / link localization tables for an `InventoryDatabase`, then walk every `Text` field in the database to auto-generate keys and write them back to entries (progress bar + log + cancel). |
-| Welcome Window wizard | A single entry point: create data, open the editor / tool windows, generate sample prefabs, and "generate a complete runnable sample in one click" (database + all UI prefabs + managers); global settings such as editor language and feature macros jump to the Ale Toolkit Welcome Window. |
+| Welcome Window | A single entry point: create data, open the editor / tool windows, view the docs, pick a data template; global settings such as editor language and feature macros jump to the Ale Toolkit Welcome Window. |
 | Trilingual editor UI | Switch between **中文 / English / 日本語** in the **Ale Toolkit Welcome Window**; the `Inventory Editor` configuration window (every panel across all five subsystems) switches together. The choice is persisted, and it is unrelated to runtime content localization. |
 
 ### The Five Subsystems
@@ -112,13 +112,13 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 This installs the latest commit on `main`. **To pin a version, append `#<tag>` to the very end of the URL** (it must come after `?path=`):
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.14.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.15.0
 ```
 
 See [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases) for available tags.
 
 ### Import the Demo Sample (Optional)
-After installing, select the package in Package Manager → `Samples` → import **Inventory System Demo** (the `InventoryDatabase` asset + manager prefab + a UI sample scene) and press Play right away. Alternatively, use the "one-click generate" wizard in the [Welcome Window](#️-welcome-window) to build a full sample on the spot.
+After installing, select the package in Package Manager → `Samples` → import **Inventory System Demo** (the `InventoryDatabase` asset + manager prefab + a UI sample scene) and press Play right away.
 
 ### Other Methods
 You can also download the repository and copy the entire `Packages/com.ale.inventory` folder into your project's **`Packages/` directory** (not `Assets/`) — Unity will recognize it as a local package automatically.
@@ -165,7 +165,7 @@ InventoryRuntimeManager.Instance.ResetAll();
 ```
 
 ### 5. One-Click Demo
-In the **Welcome Window**, expand "Test Tools – Prefab Generation → Generate All" to produce a complete runnable sample in one click (database + all UI prefabs + inventory / shop / crafting / equipment screens + managers).
+Import the **Inventory System Demo** sample from Package Manager and open its sample scene, then press Play. The sample already contains the database, the effect library, every UI prefab and the manager prefab.
 
 ## 🖥️ Welcome Window
 The plugin's unified entry panel, gathering common inventory-domain actions such as "create data / open editors / view docs / generate samples". It pops up automatically the first time each Unity session, and can be opened manually at any time:
@@ -178,14 +178,14 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 
 > **Editor UI language, enum translation, and the optional feature macros are all project-level global settings; since 1.10.0 they live in the Ale Toolkit Welcome Window (`Tools > Ale Toolkit > Welcome`).** This window offers an "Open Ale Toolkit Settings" button at the top for quick access; switching the language refreshes the `Inventory Editor` (all five subsystem panels). It affects editor UI text only and is unrelated to runtime content localization.
 
-Below the header, top to bottom: the **"Open Ale Toolkit Settings" jump**, **Quick Actions** (create data / open the various editor and tool windows / generate sample prefabs in one click), **Data Template** (pick an `InventoryDatabase` as the blueprint for new files), **Wizard Fonts** (when `ATK_TMP` is enabled; for wizard-generated prefabs), and **Show on Startup**.
+Below the header, top to bottom: the **"Open Ale Toolkit Settings" jump**, **Quick Actions** (create data / open the various editor and tool windows / view the docs), **Data Template** (pick an `InventoryDatabase` as the blueprint for new files), and **Show on Startup**.
 
 ## 🧩 Optional Feature Macros
 All three macros are toggled in the "Plugin Support (Defines)" area of the **Ale Toolkit Welcome Window** (`Tools > Ale Toolkit > Welcome`), which also detects in real time whether the corresponding package is installed (checking a macro whose package is missing pops up a confirmation dialog); the inventory Welcome Window provides a jump button:
 
 | Toggle | Macro | Effect |
 | --- | --- | --- |
-| TextMeshPro | `ATK_TMP` | When on, UI text components use `TMP_Text`; otherwise `UnityEngine.UI.Text`. A "default font" can be configured and applied to wizard-generated prefabs. |
+| TextMeshPro | `ATK_TMP` | When on, UI text components use `TMP_Text`; otherwise `UnityEngine.UI.Text`. The default font is configured in the Ale Toolkit Welcome Window. |
 | Unity Localization | `ATK_LOCALIZATION` | When on, `Text` fields can carry a localization reference (table + entry); combined with the "Localization Tool Window" for one-click table creation / key generation, enabling multi-language support. |
 | Unity Addressables | `ATK_ADDRESSABLE` | When on, runtime assets are loaded asynchronously on demand via Addressables with reference-counted auto-unloading; referenced assets are registered automatically on export. |
 
@@ -204,7 +204,7 @@ Subsystem and reference docs (under `Packages/com.ale.inventory/Docs~/`):
 - [Crafting System](Packages/com.ale.inventory/Docs~/CraftingSystem_EN.md) — group tags / blueprint templates / blueprint recipes / crafting warehouses / crafting API
 - [Equipment System](Packages/com.ale.inventory/Docs~/EquipmentSystem_EN.md) — group tags / equipment-group templates / slot lists / slots / item limits / attribute bonuses / equip API
 - [Attribute System](Packages/com.ale.inventory/Docs~/AttributeSystem_EN.md) — field-type reference, `AttributeValue` retrieval / display / sort comparison
-- [UI Component Guide](Packages/com.ale.inventory/Docs~/UIComponentGuide_EN.md) — UI components, prefab authoring, feature macros, demo wizard
+- [UI Component Guide](Packages/com.ale.inventory/Docs~/UIComponentGuide_EN.md) — UI components, prefab authoring, feature macros
 - [Architecture](Packages/com.ale.inventory/Docs~/Architecture_EN.md) — design goals, data flow, editor & runtime architecture, extension guide
 
 ## 📁 Directory Structure
@@ -224,8 +224,7 @@ Packages/com.ale.inventory/          ← package root
 │   ├── Common/         Shared attribute / config drawers + tool-window base class
 │   ├── Addressables/   Addressables asset-reference migration tool window
 │   ├── Localization/   Localization tool window (table creation / key generation)
-│   ├── Create/         Data-file creation menu
-│   └── DemoWizard/     One-click generation of test data and prefabs
+│   └── Create/         Data-file creation menu
 ├── Docs~/              Detailed documentation
 └── Samples~/Demo/      Demo sample (database + manager prefab + UI sample scene)
 ```

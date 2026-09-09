@@ -95,7 +95,7 @@
 ## 详细文档
 
 - [属性系统](Docs~/AttributeSystem.md) — 字段类型参考、`AttributeValue` 取值 / 显示 / 排序比较
-- [UI 组件指南](Docs~/UIComponentGuide.md) — UI 组件、预制体制作、宏开关、Demo 向导
+- [UI 组件指南](Docs~/UIComponentGuide.md) — UI 组件、预制体制作、宏开关、Demo 样本
 - [架构说明](Docs~/Architecture.md) — 设计目标、数据流、编辑器与运行时架构、扩展指南
 
 ---
@@ -127,23 +127,11 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 | 打开 本地化工具窗口 | （启用 `ATK_LOCALIZATION` 时）打开 toolkit 通用本地化窗口，为本库生成 / 关联多语言表、一键生成 Key |
 | 查看文档 | 用系统默认程序打开本 README |
 
-展开「**测试工具-预制体生成**」折叠栏：
-
-- **生成全部（数据库 + 全部 Prefab）**：一键生成完整可运行示例（数据库 + 全部 UI 预制体 + 背包 / 商店 / 制作面板 + 管理器）。
-- 下方列表可**逐项生成**单个预制体；生成依赖型预制体时会询问是否一并生成子预制体，已存在资产覆盖前会确认。
-
 ### 数据模板
 
 指定一个 `InventoryDatabase` 作为模板后，「创建新数据文件」会从该模板深拷贝全部数据（枚举 / 标签 / 模板 / 道具…）；留空则新建为默认空数据。面板会显示模板包含的枚举类型 / 功能标签 / 道具模板 / 道具数量。
 
 > 自 1.10.0 起，该模板选择存于项目级 `ProjectSettings/AleInventorySettings.asset`（`ScriptableSingleton`，随仓库入库、按 GUID 引用、团队共享；旧版本存于 EditorPrefs 的设置在首次打开时自动迁入）。「启动时自动显示」等每人偏好仍存 EditorPrefs。
-
-### 向导字体（启用 `ATK_TMP` 时）
-
-供「测试工具-预制体生成」向导使用的字体设置（属库存领域配置，故保留在本窗口）：
-
-- **默认字体**：向导生成 Prefab 时应用于所有 TMP 文本节点（留空用 TMP 默认字体）。
-- **本地化字体**（同时启用 `ATK_LOCALIZATION` 时）：向导生成 Prefab 时赋给 `LocalizedFontEvent`。
 
 > 三个可选依赖宏（`ATK_TMP` / `ATK_LOCALIZATION` / `ATK_ADDRESSABLE`）的开关本身已下沉到 Ale Toolkit 欢迎窗口，见上方「界面语言与插件宏」。切换宏后需等待 Unity 重新编译生效。
 
@@ -220,7 +208,7 @@ if (result.IsUsed) Debug.Log($"生效 {result.AppliedCount} 个效果，已扣�
 
 ### 6. 一键 Demo
 
-在 **欢迎窗口** 的「测试工具-预制体生成 → 生成全部」一键生成完整可运行示例（数据库 + 全部 UI 预制体 + 背包 / 商店 / 制作面板 + 管理器）。详见 [欢迎窗口](#欢迎窗口welcome-window) 与 [UI 组件指南](Docs~/UIComponentGuide.md)。
+在 Package Manager 里导入本包的 **Inventory System Demo** 样本，打开其中的示例场景直接进 Play；样本内已含数据库、效果库、全部 UI 预制体与管理器预制体。详见 [UI 组件指南](Docs~/UIComponentGuide.md)。
 
 ---
 
@@ -246,8 +234,7 @@ InventorySystem/
 │   ├── Common/         通用属性 / 配置绘制器 + 工具窗口基类
 │   ├── Addressables/   Addressable 资源引用迁移工具窗口
 │   ├── Localization/   本地化工具窗口（建表 / 生成中文 Key）
-│   ├── Create/         数据文件创建菜单
-│   └── DemoWizard/     一键生成测试数据与预制体
+│   └── Create/         数据文件创建菜单
 ├── Resources/Data/     示例数据文件
 └── Docs~/              详细文档（本文件夹）
 ```

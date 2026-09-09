@@ -77,7 +77,7 @@ Ale Inventory System 是一款面向 `Unity` 的**数据驱动库存系统插件
 | 单向导出 | `InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部配置数据**（五大子系统 17 个列表）；对象引用以 AssetGUID 承载，可选经 Addressable 异步加载。 |
 | 三个可选宏 | TextMeshPro（`ATK_TMP`）/ Unity Localization（`ATK_LOCALIZATION`）/ Unity Addressables（`ATK_ADDRESSABLE`），在 **Ale Toolkit 欢迎窗口**一键开关并检测对应包是否安装（宏为项目级全局设定，已下沉 toolkit）；插件包本身零硬依赖。 |
 | 本地化工具 | 一键为 `InventoryDatabase` 生成 / 关联多语言表，遍历全库 `Text` 字段自动生成中文 Key 并回填条目（进度条 + 日志 + 取消）。 |
-| 欢迎窗口向导 | 统一入口：创建数据、打开编辑器 / 工具窗口、生成示例预制体，以及「一键生成完整可运行示例」（数据库 + 全部 UI 预制体 + 管理器）；界面语言与插件宏等全局设定跳转到 Ale Toolkit 欢迎窗口。 |
+| 欢迎窗口 | 统一入口：创建数据、打开编辑器 / 工具窗口、查看文档、指定数据模板；界面语言与插件宏等全局设定跳转到 Ale Toolkit 欢迎窗口。 |
 | 编辑器界面三语 | 在 **Ale Toolkit 欢迎窗口**一键切换 **中文 / English / 日本語**，`Inventory Editor` 配置编辑器（五大系统全部面板）整体切换；选择持久化保存，与运行时内容本地化互不相关。 |
 
 ### 五大子系统
@@ -110,13 +110,13 @@ https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale
 这样装的是 `main` 的最新提交。**要固定版本，把 `#<tag>` 加在整条 URL 的最末尾**（必须在 `?path=` 之后）：
 
 ```
-https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.14.0
+https://github.com/AleFeng/unity-ale-inventory-system.git?path=/Packages/com.ale.inventory#1.15.0
 ```
 
 可用的 tag 见 [Releases](https://github.com/AleFeng/unity-ale-inventory-system/releases)。
 
 ### 导入演示 Sample（可选）
-装好后在 Package Manager 里选中本包 → `Samples` → 导入 **Inventory System Demo**（数据库资产 `InventoryDatabase` + 管理器预制体 + UI 示例场景），可直接进 Play 体验。也可以直接用[欢迎窗口](#️-欢迎窗口)的「一键生成」向导现场生成一套完整示例。
+装好后在 Package Manager 里选中本包 → `Samples` → 导入 **Inventory System Demo**（数据库资产 `InventoryDatabase` + 管理器预制体 + UI 示例场景），可直接进 Play 体验。
 
 ### 其他方式
 也可以下载仓库，把 `Packages/com.ale.inventory` 整个文件夹拷进你项目的 **`Packages/` 目录**（不是 `Assets/`）—— Unity 会自动把它识别为本地包。
@@ -162,11 +162,11 @@ InventoryRuntimeManager.Instance.LoadSaveData(saveData);
 InventoryRuntimeManager.Instance.ResetAll();
 ```
 
-### 5. 一键 Demo
-在**欢迎窗口**展开「测试工具-预制体生成 → 生成全部」，一键生成完整可运行示例（数据库 + 全部 UI 预制体 + 背包 / 商店 / 制作 / 装备面板 + 管理器）。
+### 5. 运行 Demo
+在 Package Manager 里导入本包的 **Inventory System Demo** 样本，打开其中的示例场景直接进 Play。样本内已包含数据库、效果库、全部 UI 预制体与管理器预制体。
 
 ## 🖥️ 欢迎窗口
-插件的统一入口面板，集中了「创建数据 / 打开编辑器 / 查看文档 / 生成示例」等库存领域操作。每次 Unity 会话首次会自动弹出一次，也可随时手动打开：
+插件的统一入口面板，集中了「创建数据 / 打开编辑器 / 查看文档」等库存领域操作。每次 Unity 会话首次会自动弹出一次，也可随时手动打开：
 
 ```
 Tools > Ale Toolkit > Inventory System > Welcome Window
@@ -176,7 +176,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 
 > **界面语言、枚举翻译、可选依赖宏均为项目级全局设定，自 1.10.0 起已下沉到 Ale Toolkit 欢迎窗口（`Tools > Ale Toolkit > Welcome`）统一配置。** 本窗口顶部提供「打开 Ale Toolkit 设置」按钮一键跳转；语言切换后 `Inventory Editor`（五大系统全部面板）随之刷新，仅影响编辑器界面文案，与运行时内容本地化无关。
 
-页眉之下自上而下：**「打开 Ale Toolkit 设置」跳转**、**快捷操作**（创建数据 / 打开各编辑器与工具窗口 / 一键生成示例预制体）、**数据模板**（指定一个 `InventoryDatabase` 作为新建蓝本）、**向导字体**（启用 `ATK_TMP` 时，供向导生成 Prefab）、**启动时自动显示**。
+页眉之下自上而下：**「打开 Ale Toolkit 设置」跳转**、**快捷操作**（创建数据 / 打开各编辑器与工具窗口 / 查看文档）、**数据模板**（指定一个 `InventoryDatabase` 作为新建蓝本）、**启动时自动显示**。
 
 ## 🧩 可选宏开关
 三个宏均在 **Ale Toolkit 欢迎窗口**（`Tools > Ale Toolkit > Welcome`）的「插件支持（编译宏）」区一键开关，并实时检测对应 Package 是否已安装（未安装时勾选会弹确认对话框）；库存欢迎窗口提供跳转按钮：
@@ -202,7 +202,7 @@ Tools > Ale Toolkit > Inventory System > Welcome Window
 - [制作系统](Packages/com.ale.inventory/Docs~/CraftingSystem.md) — 分组标签 / 蓝图模板 / 蓝图配方 / 制作仓库 / 制作 API
 - [装备系统](Packages/com.ale.inventory/Docs~/EquipmentSystem.md) — 分组标签 / 装备组模板 / 槽位列表 / 装备槽 / 道具限制 / 属性加成 / 装备 API
 - [属性系统](Packages/com.ale.inventory/Docs~/AttributeSystem.md) — 字段类型参考、`AttributeValue` 取值 / 显示 / 排序比较
-- [UI 组件指南](Packages/com.ale.inventory/Docs~/UIComponentGuide.md) — UI 组件、预制体制作、宏开关、Demo 向导
+- [UI 组件指南](Packages/com.ale.inventory/Docs~/UIComponentGuide.md) — UI 组件、预制体制作、宏开关、Demo 样本
 - [架构说明](Packages/com.ale.inventory/Docs~/Architecture.md) — 设计目标、数据流、编辑器与运行时架构、扩展指南
 
 ## 📁 目录结构
@@ -222,8 +222,7 @@ Packages/com.ale.inventory/          ← 包根
 │   ├── Common/         通用属性 / 配置绘制器 + 工具窗口基类
 │   ├── Addressables/   Addressable 资源引用迁移工具窗口
 │   ├── Localization/   本地化工具窗口（建表 / 生成中文 Key）
-│   ├── Create/         数据文件创建菜单
-│   └── DemoWizard/     一键生成测试数据与预制体
+│   └── Create/         数据文件创建菜单
 ├── Docs~/              详细文档
 └── Samples~/Demo/      演示 Sample（数据库 + 管理器预制体 + UI 示例场景）
 ```

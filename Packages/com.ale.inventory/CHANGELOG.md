@@ -6,6 +6,21 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.15.0] - 2026-09-09
+
+**移除 Demo 预制体生成向导，改为「以样本内的预制体与配置数据为准」。** 向导（`InventoryDemoWizard`，约 3600 行编辑器代码）诞生于插件早期——那时 Demo 资产还没成形，用代码把数据库与全部 UI 预制体现场生成出来是最快的路子。但随着样本被手工调整（自定义道具数据、面板布局微调），**生成器与样本资产成了两份会互相覆盖的事实来源**：跑一次「生成全部」就会把定制过的 `InventoryDatabase` 整份盖掉。本版删掉生成器这一侧，样本成为唯一事实来源。
+
+### 破坏性变更
+
+- ⚠️ **删除 `InventoryDemoWizard`**（`Editor/DemoWizard/`，13 个分部文件）及其三语译表 `InventoryEditorL10n.Table.Demo.cs`。外部若有代码调用 `InventoryDemoWizard.GenerateAll()` / `GenerateItem(key)` / `Items` / `Categories`，需自行移除。
+- ⚠️ **欢迎窗口移除「预制体生成」折叠区**（生成全部 / 逐项生成列表）与随之失效的「向导字体」文档段落。窗口其余部分（创建数据文件、打开 Inventory Editor、查看文档、数据模板、启动时自动显示、跳转 Ale Toolkit 设置）不变。
+- 获取可运行示例的方式改为：Package Manager 选中本包 → `Samples` → 导入 **Inventory System Demo** → 打开示例场景 Play。样本内已含数据库、效果库、全部 UI 预制体与接好线的 `InventoryManager` 预制体。
+
+### 变更
+
+- **Demo 数据**：`InventoryDatabase` 中 8 个「消耗品」模板道具（粗糙的面包 / 劣质治疗药水 / 初级治疗药水 / 初级法力药水 / 初级体力药水 / 初级迅捷药水 / 初级迟缓药水 / 初级毒素药水）统一挂上 `onUseEffectRefs = ["演示·道具使用"]`，使右键菜单的「使用」在样本中可直接验证（消耗品显示「使用」并扣减 1，装备 / 材料等不显示）。该效果由样本内的 `EffectDatabase` 提供，执行项为 toolkit 内置 `Effect.NoOp`，只保证施加成功以触发扣减，不改动任何数值。
+- 文档：仓库根与包内共 6 个 README、以及三语 UI 组件指南的 10.5 节，均由「一键生成」改述为「导入样本」。
+
 ## [1.14.0] - 2026-09-09
 
 **道具右键从「即刻快速装备」改为弹出操作菜单：查看 / 使用 / 丢弃。** 此前道具格子的右键是**唯一**的点击交互，且被「快速装备」独占（`UiwInventoryItemSlotBase.OnPointerClick` 直接广播 `ItemRightClicked`，装备界面订阅后自动装备）；左键完全没有处理。1.12.0 加进来的 `UseItemInSlot` 其文档注释就写着「右键槽位『使用』的入口」，但一直没有调用方；「丢弃」则从来没有 UI。本版把右键改成统一的菜单入口，把快速装备降级为菜单里的一个条目，并补上「查看」「丢弃」两条路径。菜单与模态弹窗的外壳下沉到 toolkit（`1.13.0`）作为通用件，本包只负责组装条目与内容。**纯 UI / 运行时层改动，导出 DTO 与数据结构零变化。**

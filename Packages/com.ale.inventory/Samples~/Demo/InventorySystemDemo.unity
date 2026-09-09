@@ -577,6 +577,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!224 &1799752958 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7686961412249753487, guid: 7d6ed5664144d9d4b89de33651e1f7c5, type: 3}
+  m_PrefabInstance: {fileID: 3894571925740000443}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2144219082
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -833,6 +838,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4218109776647130148, guid: 0bad2422c411b764b99d98d80e00f4c8, type: 3}
+      propertyPath: coverUiRoot
+      value: 
+      objectReference: {fileID: 1799752958}
     - target: {fileID: 4351144932715717248, guid: 0bad2422c411b764b99d98d80e00f4c8, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25

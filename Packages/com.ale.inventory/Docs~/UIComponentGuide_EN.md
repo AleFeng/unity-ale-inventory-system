@@ -666,23 +666,18 @@ Behavior (recipes, crafting warehouses, craftable count) — see [Crafting Syste
 
 Behavior (equip / unequip / swap, item limits, attribute bonuses, save) — see [Equipment System](EquipmentSystem_EN.md).
 
-### 10.5 One-Click Generate All Prefabs (Demo Wizard)
+### 10.5 Running the Demo Sample
 
-Open the **Welcome Window** (`Tools > Ale Toolkit > Inventory System > Welcome Window`) → expand "Test Tools – Prefab Generation":
+In Package Manager select this package → `Samples` → import **Inventory System Demo**, open the sample scene it
+contains and press Play.
 
-- "Generate All (Database + All Prefabs)" generates the sample database + all UI prefabs + inventory / shop / crafting / equipment panels + managers in one click (the equipment panel auto-opens "Character Equipment" and attaches the backpack right-click equip bridge);
-- The list lets you generate individual prefabs (when generating a dependent prefab it asks whether to generate child prefabs as well, and confirms before overwriting an existing asset).
+The sample ships the complete asset set: the `InventoryDatabase`, the `EffectDatabase`, every UI prefab (item cells /
+lists / tabs / hover tooltip / the right-click menu and its three action popups / inventory · shop · crafting ·
+equipment panels) and the `InventoryManager` prefab, already wired to the database and to every cover-UI prefab.
 
-> **Regenerating is safe (since 1.6.0)**: prefabs and the database are **overwritten in place**, so asset GUIDs stay
-> the same — regenerating a single depended-upon prefab (e.g. `PF_UiwInventoryItemCell`) or the database will not
-> break the references held by prefabs / managers that depend on it. Previously it was "delete then create", which
-> changed the GUID and silently broke those references (the dependency dialog only walks dependencies downward,
-> so it never warned).
->
-> **Demo items' random attributes are reproducible (since 1.6.0)**: quality / attack and friends are derived from a
-> fixed seed based on the item ID, so the same ID yields the same values every time.
-
-> The Welcome Window's "Plugin Support" area can also toggle the three macros `ATK_TMP` / `ATK_LOCALIZATION` / `ATK_ADDRESSABLE` in one click, and configure the default TMP font used by the wizard when generating prefabs.
+> **The sample is the source of truth**: earlier versions generated these assets on the fly through the Welcome
+> Window's "Prefab Generation" wizard. That wizard has been removed — keeping a generator and hand-tuned prefabs in
+> parallel just meant the two kept overwriting each other. Edit the sample assets directly instead.
 
 ---
 
