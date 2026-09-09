@@ -209,7 +209,6 @@ GameObject:
   - component: {fileID: 2437818018809448245}
   - component: {fileID: 3632929983158574861}
   - component: {fileID: 6030103644172425407}
-  - component: {fileID: 2393008761537261526}
   m_Layer: 0
   m_Name: Label
   m_TagString: Untagged
@@ -264,7 +263,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: X
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9d2ec58c21fc1f448bdaa2561bea343f, type: 2}
   m_sharedMaterial: {fileID: 629922519631163190, guid: 9d2ec58c21fc1f448bdaa2561bea343f, type: 2}
@@ -286,7 +285,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -336,37 +335,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!114 &2393008761537261526
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6543951480284178397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fecbb2647f9ce6a4eb114f87a56e12f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedTextEvent
-  m_StringReference:
-    m_TableReference:
-      m_TableCollectionName: 
-    m_TableEntryReference:
-      m_KeyId: 0
-      m_Key: 
-    m_FallbackState: 0
-    m_WaitForCompletion: 0
-    m_LocalVariables: []
-  m_FormatArguments: []
-  m_UpdateString:
-    m_PersistentCalls:
-      m_Calls: []
-  _text: {fileID: 6030103644172425407}
-  _fontEvent: {fileID: 7416007847779709401}
-  passiveUpdate: 1
-  references:
-    version: 2
-    RefIds: []
 --- !u!1 &7325872446432681234
 GameObject:
   m_ObjectHideFlags: 0
@@ -460,7 +428,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6621289361443410887
 RectTransform:
   m_ObjectHideFlags: 0
@@ -510,7 +478,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8389916221390301000}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
@@ -543,12 +511,7 @@ MonoBehaviour:
   - {fileID: 8427419892111108648}
   - {fileID: 4736438455582897339}
   - {fileID: 6030103644172425407}
-  textEvents:
-  - {fileID: 5045951604021001263}
-  - {fileID: 2283962383109437827}
-  - {fileID: 930454677638867647}
-  - {fileID: 3528782643988753203}
-  - {fileID: 2393008761537261526}
+  textEvents: []
   fontMaterial:
     m_TableReference:
       m_TableCollectionName: 
@@ -581,6 +544,14 @@ PrefabInstance:
       propertyPath: _fontEvent
       value: 
       objectReference: {fileID: 4953691364471291725}
+    - target: {fileID: 4379257930495767040, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 9d2ec58c21fc1f448bdaa2561bea343f, type: 2}
+    - target: {fileID: 4379257930495767040, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 629922519631163190, guid: 9d2ec58c21fc1f448bdaa2561bea343f, type: 2}
     - target: {fileID: 4549882438395328372, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -661,37 +632,39 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6533378740565922604, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 9d2ec58c21fc1f448bdaa2561bea343f, type: 2}
+    - target: {fileID: 6533378740565922604, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 629922519631163190, guid: 9d2ec58c21fc1f448bdaa2561bea343f, type: 2}
     - target: {fileID: 6560185519184298646, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
       propertyPath: _fontEvent
       value: 
       objectReference: {fileID: 4953691364471291725}
+    - target: {fileID: 6680969552322038274, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 9d2ec58c21fc1f448bdaa2561bea343f, type: 2}
+    - target: {fileID: 6680969552322038274, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 629922519631163190, guid: 9d2ec58c21fc1f448bdaa2561bea343f, type: 2}
+    - target: {fileID: 7636014225026471057, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 9d2ec58c21fc1f448bdaa2561bea343f, type: 2}
+    - target: {fileID: 7636014225026471057, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 629922519631163190, guid: 9d2ec58c21fc1f448bdaa2561bea343f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
---- !u!114 &930454677638867647 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1289441671571592198, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
-  m_PrefabInstance: {fileID: 2093232400579411641}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fecbb2647f9ce6a4eb114f87a56e12f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedTextEvent
---- !u!114 &2283962383109437827 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 197846571550246714, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
-  m_PrefabInstance: {fileID: 2093232400579411641}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fecbb2647f9ce6a4eb114f87a56e12f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedTextEvent
 --- !u!114 &2434925835574873273 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4379257930495767040, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
@@ -718,18 +691,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c9ea0a4c282c62e40b3c2dc91c8abe97, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Ale.Inventory.Runtime.UI::Ale.Inventory.Runtime.UI.UiwInventoryItemDetail
---- !u!114 &3528782643988753203 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3311384710170334602, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
-  m_PrefabInstance: {fileID: 2093232400579411641}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fecbb2647f9ce6a4eb114f87a56e12f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedTextEvent
+  m_EditorClassIdentifier: InventorySystem.UI::InventorySystem.Runtime.UI.UiwInventoryItemDetail
 --- !u!114 &4736438455582897339 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6680969552322038274, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
@@ -752,17 +714,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b70b13b28634234f9734ffa4ebd582e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedFontEvent
---- !u!114 &5045951604021001263 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6560185519184298646, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}
-  m_PrefabInstance: {fileID: 2093232400579411641}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fecbb2647f9ce6a4eb114f87a56e12f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Ale.Toolkit.UI.Localization::Ale.Toolkit.Runtime.UI.LocalizedTextEvent
 --- !u!114 &5163269900358839701 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6533378740565922604, guid: 4da5ecd8237e7364b86c72e4834b70b4, type: 3}

@@ -6,21 +6,6 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
-## [1.15.0] - 2026-09-09
-
-**移除 Demo 预制体生成向导，改为「以样本内的预制体与配置数据为准」。** 向导（`InventoryDemoWizard`，约 3600 行编辑器代码）诞生于插件早期——那时 Demo 资产还没成形，用代码把数据库与全部 UI 预制体现场生成出来是最快的路子。但随着样本被手工调整（自定义道具数据、面板布局微调），**生成器与样本资产成了两份会互相覆盖的事实来源**：跑一次「生成全部」就会把定制过的 `InventoryDatabase` 整份盖掉。本版删掉生成器这一侧，样本成为唯一事实来源。
-
-### 破坏性变更
-
-- ⚠️ **删除 `InventoryDemoWizard`**（`Editor/DemoWizard/`，13 个分部文件）及其三语译表 `InventoryEditorL10n.Table.Demo.cs`。外部若有代码调用 `InventoryDemoWizard.GenerateAll()` / `GenerateItem(key)` / `Items` / `Categories`，需自行移除。
-- ⚠️ **欢迎窗口移除「预制体生成」折叠区**（生成全部 / 逐项生成列表）与随之失效的「向导字体」文档段落。窗口其余部分（创建数据文件、打开 Inventory Editor、查看文档、数据模板、启动时自动显示、跳转 Ale Toolkit 设置）不变。
-- 获取可运行示例的方式改为：Package Manager 选中本包 → `Samples` → 导入 **Inventory System Demo** → 打开示例场景 Play。样本内已含数据库、效果库、全部 UI 预制体与接好线的 `InventoryManager` 预制体。
-
-### 变更
-
-- **Demo 数据**：`InventoryDatabase` 中 8 个「消耗品」模板道具（粗糙的面包 / 劣质治疗药水 / 初级治疗药水 / 初级法力药水 / 初级体力药水 / 初级迅捷药水 / 初级迟缓药水 / 初级毒素药水）统一挂上 `onUseEffectRefs = ["演示·道具使用"]`，使右键菜单的「使用」在样本中可直接验证（消耗品显示「使用」并扣减 1，装备 / 材料等不显示）。该效果由样本内的 `EffectDatabase` 提供，执行项为 toolkit 内置 `Effect.NoOp`，只保证施加成功以触发扣减，不改动任何数值。
-- 文档：仓库根与包内共 6 个 README、以及三语 UI 组件指南的 10.5 节，均由「一键生成」改述为「导入样本」。
-
 ## [1.14.0] - 2026-09-09
 
 **道具右键从「即刻快速装备」改为弹出操作菜单：查看 / 使用 / 丢弃。** 此前道具格子的右键是**唯一**的点击交互，且被「快速装备」独占（`UiwInventoryItemSlotBase.OnPointerClick` 直接广播 `ItemRightClicked`，装备界面订阅后自动装备）；左键完全没有处理。1.12.0 加进来的 `UseItemInSlot` 其文档注释就写着「右键槽位『使用』的入口」，但一直没有调用方；「丢弃」则从来没有 UI。本版把右键改成统一的菜单入口，把快速装备降级为菜单里的一个条目，并补上「查看」「丢弃」两条路径。菜单与模态弹窗的外壳下沉到 toolkit（`1.13.0`）作为通用件，本包只负责组装条目与内容。**纯 UI / 运行时层改动，导出 DTO 与数据结构零变化。**
@@ -29,6 +14,15 @@
 
 - ⚠️ **右键道具不再直接快速装备**。装备界面打开、且该道具确实装得进当前装备组时，菜单里会出现「装备」条目，点它才装备。`UiwInventoryItemEvents.ItemRightClicked` 事件与 `RaiseItemRightClicked` **原样保留**、语义不变，只是触发时机由「右键即触发」变为「右键 → 点『装备』」——包外的订阅方无需改动。
 - ⚠️ **最低 `com.ale.toolkit` 版本提至 1.13.0**（`UiwContextMenu` / `UiwModalPopupBase` / `UiPrefabBuilder.MakeSlider` / `MakeFullScreenBlocker`）。安装顺序不变：先 `com.ale.toolkit`、再本包。
+
+
+#### 移除 Demo 预制体生成向导
+
+向导（`InventoryDemoWizard`，约 3600 行编辑器代码）诞生于插件早期，那时 Demo 资产还没成形。随着样本被手工调整（自定义道具数据、面板布局微调），**生成器与样本资产成了两份会互相覆盖的事实来源**——跑一次「生成全部」就会把定制过的 `InventoryDatabase` 整份盖掉。本版删掉生成器这一侧，**样本内的预制体与配置数据成为唯一事实来源**。
+
+- ⚠️ **删除 `InventoryDemoWizard`**（`Editor/DemoWizard/`，13 个分部文件）及其三语译表 `InventoryEditorL10n.Table.Demo.cs`。外部若有代码调用 `InventoryDemoWizard.GenerateAll()` / `GenerateItem(key)` / `Items` / `Categories`，需自行移除。
+- ⚠️ **欢迎窗口移除「预制体生成」折叠区**（生成全部 / 逐项生成列表）与随之失效的「向导字体」文档段落。窗口其余部分（创建数据文件、打开 Inventory Editor、查看文档、数据模板、启动时自动显示、跳转 Ale Toolkit 设置）不变。
+- 获取可运行示例的方式改为：Package Manager 选中本包 → `Samples` → 导入 **Inventory System Demo** → 打开示例场景 Play。样本内已含数据库、效果库、全部 UI 预制体与接好线的 `InventoryManager` 预制体。
 
 ### 新增
 
@@ -43,8 +37,8 @@
 - **管理器宿主**：`InventoryRuntimeManager` 新增 `itemContextMenuPrefab` / `itemDetailPopupPrefab` / `itemDiscardPopupPrefab` 三个预制体字段与 `ShowItemContextMenu` / `ShowItemDetailPopup` / `ShowItemDiscardPopup`（及对应 `Hide`），沿用悬停弹窗那套「接口持有 + 惰性全局实例化到 `coverUiRoot`」的依赖倒置模式（新接口 `IItemContextMenu` / `IItemDetailPopup` / `IItemDiscardPopup` 与载荷 `ItemContextTarget` 定义在 `Ale.Inventory.Runtime`，管理器因而不反向依赖 UI 程序集）。四个挂件的实例化逻辑收口为泛型 `EnsureCoverUiWidget<T>`。
 - **`InventoryRuntimeManager.UseTargetContextProvider`**（`Func<string, IEffectContext>`）与 `ResolveUseTargetContext(inventoryId)`：UI 的「使用」需要一个不必逐次传参的效果目标上下文取用点，而本包不认识任何领域系统、构造不出 `IEffectContext`，故由宿主注入。未注入时对有使用效果的道具得到 `NoContext`（不施加、不扣减）。直接调用 `UseItem` / `UseItemInSlot` 的业务代码照旧显式传上下文，不受影响。
 - **格子暴露槽位 ID**：`UiwInventoryItemSlotBase` 新增 `BoundSlotId`，`SetBoundSlot` 增加 `slotId` 参数并添加 `SetBoundSlot(inventoryId, RuntimeItemSlot)` 重载（此前 `slot.slotId` 在绑定时被丢弃，而 `UseItemInSlot` / `TryRemoveItem` 都按槽位定位）。**不叫 `SlotId`**：`UiwEquipmentSlot` 已用该名表示**装备槽**配置 ID，同名会静默隐藏基类成员。悬停弹窗内的详情行与网格补位空格没有真实槽位，该值为空，右键不弹菜单。
-- **Demo**：向导新增 **演示用效果库** `Demo/Data/EffectDatabase.asset`（一条 Instant 效果，执行项为 toolkit 内置 `Effect.NoOp`）并给治疗 / 法力 / 体力药水配上 `onUseEffectRefs`，使「使用」可端到端验证（`UseItemCore` 要至少一个效果施加成功才扣减）；`InventoryRuntimeManager` 的测试分部新增 `demoEffectDatabase`，启动时登记效果库并注入演示用 `UseTargetContextProvider`（已由宿主注入过则不覆盖）。该效果**不改动任何数值**，只为证明链路通畅——真实数值效果需要角色系统提供属性 Sink。整份测试分部仍由 `UNITY_EDITOR || DEVELOPMENT_BUILD` 门控。
-- **Demo 预制体**：向导新增 `PF_UiwContextMenuRow` / `PF_UiwItemContextMenu` / `PF_UiwItemDetailPopup` / `PF_UiwItemDiscardPopup` 四个预制体（均归 `Tool/`）与管理器接线。
+- **Demo**：新增 **演示用效果库** `Demo/Data/EffectDatabase.asset`（一条 Instant 效果 `演示·道具使用`，执行项为 toolkit 内置 `Effect.NoOp`），样本中的消耗品据此获得 `onUseEffectRefs`，使「使用」可端到端验证（`UseItemCore` 要至少一个效果施加成功才扣减）；`InventoryRuntimeManager` 的测试分部新增 `demoEffectDatabase`，启动时登记效果库并注入演示用 `UseTargetContextProvider`（已由宿主注入过则不覆盖）。该效果**不改动任何数值**，只为证明链路通畅——真实数值效果需要角色系统提供属性 Sink。整份测试分部仍由 `UNITY_EDITOR || DEVELOPMENT_BUILD` 门控。
+- **Demo 预制体**：新增 `PF_UiwContextMenuRow` / `PF_UiwItemContextMenu` / `PF_UiwItemDetailPopup` / `PF_UiwItemDiscardPopup` 四个预制体（均归 `Tool/`）与管理器接线。
 
 ### 修复
 
@@ -53,6 +47,8 @@
 ### 变更
 
 - `UiwInventoryItemSlotBase.OnPointerClick` 右键改为调用 `ShowItemContextMenu`；新增两条守卫——拖拽进行中（`eventData.dragging`）不弹菜单（松手落点等于拖拽源时，点击会先于 `Drop` / `EndDrag` 派发），空槽不弹菜单。
+- **Demo 数据**：`InventoryDatabase` 中 8 个「消耗品」模板道具（粗糙的面包 / 劣质治疗药水 / 初级治疗药水 / 初级法力药水 / 初级体力药水 / 初级迅捷药水 / 初级迟缓药水 / 初级毒素药水）统一挂上 `onUseEffectRefs = ["演示·道具使用"]`，使右键菜单的「使用」在样本中可直接验证（消耗品显示「使用」并扣减 1，装备 / 材料等不显示）。该效果由样本内的 `EffectDatabase` 提供，执行项为 toolkit 内置 `Effect.NoOp`，只保证施加成功以触发扣减，不改动任何数值。
+- 文档：仓库根与包内共 6 个 README、以及三语 UI 组件指南的 10.5 节，均由「一键生成」改述为「导入样本」。
 
 ## [1.13.0] - 2026-09-07
 
