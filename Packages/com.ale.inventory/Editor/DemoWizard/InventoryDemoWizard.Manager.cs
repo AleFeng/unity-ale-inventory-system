@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Ale.Effect;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,7 +28,7 @@ namespace Ale.Inventory.Editor
         static void BuildInventoryManagerPrefab(InventoryDatabase db, GameObject panelPrefab,
             GameObject shopPanelPrefab, GameObject craftViewPrefab, GameObject tooltipPrefab,
             GameObject equipViewPrefab, GameObject contextMenuPrefab, GameObject detailPopupPrefab,
-            GameObject discardPopupPrefab)
+            GameObject discardPopupPrefab, EffectDatabase effectDb)
         {
             string path = BeginPrefab(KPfInventoryManager);
 
@@ -116,6 +117,17 @@ namespace Ale.Inventory.Editor
             WriteCoverUiPrefab(mgr, "itemContextMenuPrefab", contextMenuPrefab, KPfItemContextMenu, "道具右键菜单");
             WriteCoverUiPrefab(mgr, "itemDetailPopupPrefab", detailPopupPrefab, KPfItemDetailPopup, "道具详情弹窗");
             WriteCoverUiPrefab(mgr, "itemDiscardPopupPrefab", discardPopupPrefab, KPfItemDiscardPopup, "道具丢弃弹窗");
+
+            // ── 演示用效果库：登记后药水的「使用」才会真正施加效果并扣减（见 SetupDemoUseContext）──────
+            var effSo   = new SerializedObject(mgr);
+            var effProp = effSo.FindProperty("demoEffectDatabase");
+            if (effProp != null)
+            {
+                effProp.objectReferenceValue = effectDb;
+                effSo.ApplyModifiedPropertiesWithoutUndo();
+            }
+            if (!effectDb)
+                Debug.LogWarning("[InventoryDemoWizard] 缺少 EffectDatabase，请先生成「效果库」项；否则右键菜单不会出现「使用」。");
 
             // ── 保存主 Prefab ─────────────────────────────────────────────────
             // 不走 SavePrefab：根节点上没有 Uiw 组件（无需上移），且子节点全是嵌套预制体实例

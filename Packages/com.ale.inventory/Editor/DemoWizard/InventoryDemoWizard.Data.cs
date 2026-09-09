@@ -136,6 +136,11 @@ namespace Ale.Inventory.Editor
             AddItem(db, "体力药水", "消耗品", weight: 0.1f, stackLimit: 99, goldPrice: 40);
             AddItem(db, "复苏药水", "消耗品", weight: 0.3f, stackLimit: 10, goldPrice: 200);
             AddItem(db, "面包",    "消耗品", weight: 0.5f, stackLimit: 20, goldPrice: 10);
+
+            // 三种药水挂上演示用「使用效果」：这是本包判定「道具可使用」的唯一依据（Item.onUseEffectRefs 非空），
+            // 右键菜单的「使用」据此显示。效果定义在 Demo/Data/EffectDatabase.asset（见 GetOrCreateEffectDatabase）。
+            // 引用悬空不阻断校验，故本库与效果库的生成顺序无所谓。
+            SetUseEffect(db, KDemoUseEffectId, "治疗药水", "法力药水", "体力药水");
             // 材料
             AddItem(db, "药草",  "材料",   weight: 0.05f, stackLimit: 99);
             AddItem(db, "铁矿",     "材料",   weight: 1.0f,  stackLimit: 50);
@@ -336,6 +341,22 @@ namespace Ale.Inventory.Editor
             else
             {
                 AssetDatabase.CreateAsset(db, path);
+            }
+        }
+
+
+        /// <summary>给若干道具追加一条「使用时施加的效果」引用（已存在则跳过）。</summary>
+        static void SetUseEffect(InventoryDatabase db, string effectId, params string[] itemIds)
+        {
+            foreach (string id in itemIds)
+            {
+                var item = db.Items.Find(i => i != null && i.id == id);
+                if (item == null)
+                {
+                    Debug.LogWarning($"[InventoryDemoWizard] 未找到道具「{id}」，跳过使用效果配置。");
+                    continue;
+                }
+                if (!item.onUseEffectRefs.Contains(effectId)) item.onUseEffectRefs.Add(effectId);
             }
         }
 

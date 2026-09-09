@@ -2,6 +2,7 @@ using Ale.Toolkit.Runtime.UI;
 using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
 using System.Linq;
+using Ale.Effect;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -129,6 +130,9 @@ namespace Ale.Inventory.Editor
             {
                 new GenItem { Category = CatCommon, Key = "DB",       DisplayName = Fmt("数据库 {0}", "InventoryDatabase"), AssetPath = DatabasePath,             DepKeys = new string[0],
                     Build = () => GetOrCreateDatabase() },
+                // 演示用效果库：道具的「可使用」判定依赖 onUseEffectRefs，而效果定义自 1.13.0 起由 toolkit 效果库承载。
+                new GenItem { Category = CatCommon, Key = "EffectDB", DisplayName = Fmt("效果库 {0}", "EffectDatabase"), AssetPath = EffectDatabasePath,     DepKeys = new string[0],
+                    Build = () => GetOrCreateEffectDatabase() },
                 new GenItem { Category = CatInventory, Key = "Tab",      DisplayName = Fmt("仓库页签 {0}", KPfInventoryTab), AssetPath = Pfb(KPfInventoryTab),           DepKeys = new string[0],
                     Build = () => BuildTabPrefab() },
                 new GenItem { Category = CatInventory, Key = "Filter",   DisplayName = Fmt("过滤按钮 {0}", KPfFilterButton), AssetPath = Pfb(KPfFilterButton),           DepKeys = new string[0],
@@ -227,7 +231,7 @@ namespace Ale.Inventory.Editor
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipGroupPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipBonusPanel)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipSelectPanel))) },
-                new GenItem { Category = CatCommon, Key = "Manager",  DisplayName = Fmt("管理器 {0}", KPfInventoryManager), AssetPath = Pfb(KPfInventoryManager),  DepKeys = new[] { "DB", "Panel", "ShopPanel", "CraftView", "EquipView", "Tooltip", "CtxMenu", "DetailPopup", "DiscardPopup" },
+                new GenItem { Category = CatCommon, Key = "Manager",  DisplayName = Fmt("管理器 {0}", KPfInventoryManager), AssetPath = Pfb(KPfInventoryManager),  DepKeys = new[] { "DB", "EffectDB", "Panel", "ShopPanel", "CraftView", "EquipView", "Tooltip", "CtxMenu", "DetailPopup", "DiscardPopup" },
                     Build = () => BuildInventoryManagerPrefab(
                         AssetDatabase.LoadAssetAtPath<InventoryDatabase>(DatabasePath),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfInventoryPanel)),
@@ -237,7 +241,8 @@ namespace Ale.Inventory.Editor
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfEquipView)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemContextMenu)),
                         AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemDetailPopup)),
-                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemDiscardPopup))) },
+                        AssetDatabase.LoadAssetAtPath<GameObject>(Pfb(KPfItemDiscardPopup)),
+                        AssetDatabase.LoadAssetAtPath<EffectDatabase>(EffectDatabasePath)) },
             };
         }
 
