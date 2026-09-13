@@ -85,10 +85,19 @@ namespace Ale.Inventory.Runtime.UI
 
         #region 对外接口
 
-        /// <summary>对该槽位弹出丢弃数量选择。目标无效、或该槽位已空时不弹。</summary>
+        /// <summary>
+        /// 对该槽位弹出丢弃数量选择。目标无效、道具禁止丢弃、或该槽位已空时不弹。
+        ///
+        /// <para>禁止丢弃在此<b>再查一次</b>（右键菜单已把条目置灰、管理器的
+        /// <c>ShowItemDiscardPopup</c> 也已拦过）：本弹窗是唯一真正执行不可撤销扣减的地方，
+        /// 而它可被任何代码经 <see cref="Instance"/> 直接打开，最后一道闸必须设在这里。</para>
+        /// </summary>
         public void Show(ItemContextTarget target)
         {
             if (!target.IsValid) { Hide(); return; }
+
+            var data = InventoryDataManager.Instance;
+            if (data != null && !data.IsItemDiscardable(target.ItemId)) { Hide(); return; }
 
             var mgr = InventoryRuntimeManager.Instance;
             if (mgr == null) return;

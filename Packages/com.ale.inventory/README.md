@@ -67,7 +67,7 @@
 - **`InventoryDataManager`**（数据查询单例）：注册数据库、按 ID 查询道具 / 仓库 / 商店 / 蓝图 / 枚举类型等；`1.13.0` 起不再登记为 toolkit 效果定义源、不再并入 Gameplay 标签（效果经 toolkit `EffectDataManager` / 全局注册表解析）；支持从 `.asset`、JSON、二进制三种来源加载。查询走惰性构建的字典索引（O(1)），注册 / 注销数据库后自动失效重建。
 - **`InventoryRuntimeManager`**（MonoBehaviour 单例）：仓库格子状态、整理排序、存档、时间注入入口、覆盖式 UI 根节点 / Layer 配置（弹窗 / 悬停弹窗 / 拖拽幽灵图标等实例化后重新套用指定 Layer），并把数据库注册到 `InventoryDataManager`；含编辑器测试道具填充（`autoPopulateOnStart` / `testInventoryId` / `testItems`，`Init` 时机填入、仅数据不开 UI）与一键「添加所有配置表道具」（`addAllConfiguredItems` + `addAllItemCount`）。
 - **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager`**（轻量单例）：交易 / 制作 / 装备逻辑（装备已装备状态可存档，商店有交易进度存档）。
-- **导出**：`InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部 17 个列表**（五大子系统的配置数据无一遗漏，格式版本 v9：效果 / Gameplay 标签外移至 toolkit 效果库、不再写出（由 `EffectConfigSerializer` 单独导出），道具 / 模板块保留 `onUseEffectRefs`；读 v8 文件时效果 / 标签读入 legacy 字段供迁移）；对象引用以 AssetGUID 承载；可选 Addressable 异步加载。v5 ~ v8 导出的 `.bytes` 仍可导入。
+- **导出**：`InventoryDtoMapper` → JSON / 二进制，**覆盖数据库全部 17 个列表**（五大子系统的配置数据无一遗漏，格式版本 v10：道具 / 道具模板块尾追加 `noDiscard`；v9 起效果 / Gameplay 标签外移至 toolkit 效果库、不再写出（由 `EffectConfigSerializer` 单独导出），道具 / 模板块保留 `onUseEffectRefs`；读 v8 文件时效果 / 标签读入 legacy 字段供迁移）；对象引用以 AssetGUID 承载；可选 Addressable 异步加载。v5 ~ v9 导出的 `.bytes` 仍可导入。
 - **存档契约**：仓库 / 装备 / 商店三个管理器统一实现 `IInventorySaveable<TState>`——`GetSaveData` 返回深拷贝、`LoadSaveData` 为**覆盖而非合并**、三者都不触发变更事件；非泛型的 `IInventorySaveable` 只含 `ResetAll`，供「开新游戏」一次遍历重置。
 
 ### UI 组件
@@ -82,6 +82,8 @@
 - **道具右键操作菜单**（`1.14.0`）：右键任意道具格子（网格 / 明细行 / 装备候选）在光标处弹出菜单——
   **查看**（可关闭的道具详情弹窗，复用 `UiwInventoryItemDetail` 渲染）/ **使用**（仅当道具 `onUseEffectRefs` 非空时出现，
   经 `UseItemInSlot` 消耗 1 个）/ **丢弃**（Slider 选数量，范围 `[1, 该格堆叠数]`，确认后 `TryRemoveItem` 按槽位扣减）。
+  道具勾选 **不可丢弃**（`Item.noDiscard`）时「丢弃」条目置灰保留（菜单上可切换为隐藏），丢弃弹窗也不会打开——
+  供重要剧情 / 任务道具使用；出售、制作消耗、装备替换等业务发起的扣减不受此标志影响。
   条目可由上层系统贡献：`UiwInventoryItemEvents.CollectingItemMenu`——装备界面打开时据此注入「装备」，
   原「右键即快速装备」并入菜单（`ItemRightClicked` 事件保留，改由该条目触发，包外订阅方不受影响）。
   菜单 `UiwContextMenu` 与模态弹窗基类 `UiwModalPopupBase` 下沉 toolkit `1.13.0` 通用。

@@ -67,7 +67,7 @@
 - **`InventoryDataManager`**（データクエリのシングルトン）：データベースを登録し、ID でアイテム / 倉庫 / ショップ / ブループリント / 列挙型 / エフェクトなどをクエリします。`1.13.0` 以降は toolkit のエフェクト定義ソースとして登録せず、ゲームプレイタグの統合も行いません（エフェクトは toolkit `EffectDataManager` / グローバルレジストリで解決）。`.asset`、JSON、バイナリの 3 種類のソースからの読み込みに対応します。クエリは遅延構築される辞書インデックス（O(1)）を経由し、データベースの登録 / 登録解除時に無効化・再構築されます。
 - **`InventoryRuntimeManager`**（MonoBehaviour シングルトン）：倉庫のスロット状態、整理ソート、セーブデータ、時間注入の入口、カバー UI のルートノード / Layer 設定（ポップアップ / ホバーポップアップ / ドラッグのゴーストアイコンなどはインスタンス化後に指定 Layer を再適用）を担い、データベースを `InventoryDataManager` に登録します。エディタのテストアイテム投入（`autoPopulateOnStart` / `testInventoryId` / `testItems`、`Init` のタイミングで投入、データのみで UI は開かない）と、ワンクリックの「すべての設定表アイテムを追加」（`addAllConfiguredItems` + `addAllItemCount`）を含みます。
 - **`ShopRuntimeManager` / `CraftingRuntimeManager` / `EquipmentRuntimeManager`**（軽量シングルトン）：取引 / クラフト / 装備のロジック（装備中状態はセーブ可能、ショップは取引進捗のセーブあり）。
-- **エクスポート**：`InventoryDtoMapper` → JSON / バイナリ。**データベースの全 17 リストを網羅**（5 サブシステムの設定データを一切取りこぼしません。フォーマットバージョン v9：エフェクト / ゲームプレイタグは toolkit エフェクトライブラリへ移り書き出されません（`EffectConfigSerializer` が別途エクスポート）。アイテム / テンプレートブロックの `onUseEffectRefs` は維持。v8 ファイルのエフェクト / タグは移行用に legacy フィールドへ読み込み）。オブジェクト参照は AssetGUID として保持され、Addressables による非同期読み込みも任意で可能です。v5 ～ v8 でエクスポートした `.bytes` も引き続きインポートできます。
+- **エクスポート**：`InventoryDtoMapper` → JSON / バイナリ。**データベースの全 17 リストを網羅**（5 サブシステムの設定データを一切取りこぼしません。フォーマットバージョン v10：アイテム / アイテムテンプレートブロックの末尾に `noDiscard` を追加。v9 からエフェクト / ゲームプレイタグは toolkit エフェクトライブラリへ移り書き出されません（`EffectConfigSerializer` が別途エクスポート）。アイテム / テンプレートブロックの `onUseEffectRefs` は維持。v8 ファイルのエフェクト / タグは移行用に legacy フィールドへ読み込み）。オブジェクト参照は AssetGUID として保持され、Addressables による非同期読み込みも任意で可能です。v5 ～ v9 でエクスポートした `.bytes` も引き続きインポートできます。
 - **セーブ契約**：倉庫 / 装備 / ショップの 3 マネージャが `IInventorySaveable<TState>` を実装 —— `GetSaveData` はディープコピーを返し、`LoadSaveData` は**マージではなく上書き**、いずれも変更イベントを発火しません。非ジェネリックの `IInventorySaveable` は `ResetAll` のみを持ち、「ニューゲーム」で全システムを一括リセットできます。
 
 ### UI コンポーネント
@@ -83,6 +83,9 @@
   カーソル位置にメニューを表示——**表示**（`UiwInventoryItemDetail` を再利用した閉じられる詳細ポップアップ）/
   **使用**（`onUseEffectRefs` が空でない場合のみ表示。`UseItemInSlot` で 1 個消費）/
   **破棄**（`[1, そのセルのスタック数]` のスライダーで数量を選び、`TryRemoveItem` でそのスロットから減算）。
+  アイテムに **破棄不可**（`Item.noDiscard`）が設定されている場合、「破棄」項目はグレーアウトして残り（メニュー側で非表示に切替可）、
+  破棄ポップアップも開きません——重要なストーリー / クエストアイテム向けです。売却・クラフト消費・装備の入れ替えなど
+  ゲーム側コードによる減算はこのフラグの影響を受けません。
   上位システムは `UiwInventoryItemEvents.CollectingItemMenu` で項目を追加できます——装備画面が「装備」を注入し、
   従来の「右クリックで即装備」はメニューに統合されました（`ItemRightClicked` イベントは維持され、その項目から発火するため
   パッケージ外の購読者に影響しません）。メニュー `UiwContextMenu` とモーダルポップアップ基底 `UiwModalPopupBase` は

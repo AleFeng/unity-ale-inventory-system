@@ -94,6 +94,9 @@ namespace Ale.Inventory.Runtime.Serialization
 
         /// <summary>v8 新增：默认的「使用时施加的效果」id 列表。</summary>
         public string[] onUseEffectRefs;
+
+        /// <summary>v10 新增：默认是否禁止丢弃。</summary>
+        public bool noDiscard;
     }
 
     [Serializable]
@@ -111,6 +114,9 @@ namespace Ale.Inventory.Runtime.Serialization
 
         /// <summary>v8 新增：「使用时施加的效果」id 列表（可引用其它库 / 其它系统的效果 id）。</summary>
         public string[] onUseEffectRefs;
+
+        /// <summary>v10 新增：禁止丢弃（重要剧情道具）。</summary>
+        public bool noDiscard;
     }
 
     #endregion

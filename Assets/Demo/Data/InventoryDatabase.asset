@@ -2873,6 +2873,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 10
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - name: "\u6750\u6599"
     color: {r: 0, g: 1, b: 0.01956582, a: 1}
@@ -2884,6 +2885,7 @@ MonoBehaviour:
     weight: 0.2
     stackLimit: 50
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - name: "\u88C5\u5907"
     color: {r: 0, g: 0.85651875, b: 1, a: 1}
@@ -2895,6 +2897,7 @@ MonoBehaviour:
     weight: 1.5
     stackLimit: 1
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - name: "\u6B66\u5668"
     color: {r: 1, g: 0.2688679, b: 0.28429413, a: 1}
@@ -2906,6 +2909,7 @@ MonoBehaviour:
     weight: 1
     stackLimit: 3
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - name: "\u4EFB\u52A1\u7269\u54C1"
     color: {r: 1, g: 0.24056602, b: 0.89257085, a: 1}
@@ -2916,6 +2920,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 1
     hideInInventory: 0
+    noDiscard: 1
     onUseEffectRefs: []
   - name: "\u8D27\u5E01"
     color: {r: 1, g: 0.79510856, b: 0, a: 1}
@@ -2926,6 +2931,7 @@ MonoBehaviour:
     weight: 0
     stackLimit: 0
     hideInInventory: 1
+    noDiscard: 0
     onUseEffectRefs: []
   items:
   - id: "\u7C97\u7CD9\u7684\u9762\u5305"
@@ -3021,6 +3027,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 10
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs:
     - "\u6F14\u793A\xB7\u9053\u5177\u4F7F\u7528"
   - id: "\u52A3\u8D28\u6CBB\u7597\u836F\u6C34"
@@ -3116,6 +3123,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 10
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs:
     - "\u6F14\u793A\xB7\u9053\u5177\u4F7F\u7528"
   - id: "\u521D\u7EA7\u6CBB\u7597\u836F\u6C34"
@@ -3211,6 +3219,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 10
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs:
     - "\u6F14\u793A\xB7\u9053\u5177\u4F7F\u7528"
   - id: "\u521D\u7EA7\u6CD5\u529B\u836F\u6C34"
@@ -3306,6 +3315,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 10
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs:
     - "\u6F14\u793A\xB7\u9053\u5177\u4F7F\u7528"
   - id: "\u521D\u7EA7\u4F53\u529B\u836F\u6C34"
@@ -3401,6 +3411,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 10
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs:
     - "\u6F14\u793A\xB7\u9053\u5177\u4F7F\u7528"
   - id: "\u521D\u7EA7\u8FC5\u6377\u836F\u6C34"
@@ -3495,6 +3506,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 10
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs:
     - "\u6F14\u793A\xB7\u9053\u5177\u4F7F\u7528"
   - id: "\u521D\u7EA7\u8FDF\u7F13\u836F\u6C34"
@@ -3589,6 +3601,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 10
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs:
     - "\u6F14\u793A\xB7\u9053\u5177\u4F7F\u7528"
   - id: "\u521D\u7EA7\u6BD2\u7D20\u836F\u6C34"
@@ -3683,6 +3696,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 10
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs:
     - "\u6F14\u793A\xB7\u9053\u5177\u4F7F\u7528"
   - id: "\u5E03\u5E3D"
@@ -3800,6 +3814,7 @@ MonoBehaviour:
     weight: 0.5
     stackLimit: 1
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u94C1\u76D4"
     templateRef: "\u88C5\u5907"
@@ -3916,6 +3931,7 @@ MonoBehaviour:
     weight: 3
     stackLimit: 1
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u732A\u76AE\u7532"
     templateRef: "\u88C5\u5907"
@@ -4032,6 +4048,7 @@ MonoBehaviour:
     weight: 1.5
     stackLimit: 1
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u7834\u635F\u7684\u9879\u94FE"
     templateRef: "\u4EFB\u52A1\u7269\u54C1"
@@ -4115,6 +4132,7 @@ MonoBehaviour:
     weight: 0.2
     stackLimit: 1
     hideInInventory: 0
+    noDiscard: 1
     onUseEffectRefs: []
   - id: "\u5947\u602A\u7684\u96D5\u50CF"
     templateRef: "\u4EFB\u52A1\u7269\u54C1"
@@ -4198,6 +4216,7 @@ MonoBehaviour:
     weight: 1.2
     stackLimit: 1
     hideInInventory: 0
+    noDiscard: 1
     onUseEffectRefs: []
   - id: "\u91D1\u5E01"
     templateRef: "\u8D27\u5E01"
@@ -4280,6 +4299,7 @@ MonoBehaviour:
     weight: 0
     stackLimit: 0
     hideInInventory: 1
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u94BB\u77F3"
     templateRef: "\u8D27\u5E01"
@@ -4363,6 +4383,7 @@ MonoBehaviour:
     weight: 0
     stackLimit: 0
     hideInInventory: 1
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u795E\u8840\u6676"
     templateRef: "\u8D27\u5E01"
@@ -4446,6 +4467,7 @@ MonoBehaviour:
     weight: 0
     stackLimit: 0
     hideInInventory: 1
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u788E\u77F3\u5757"
     templateRef: "\u6750\u6599"
@@ -4540,6 +4562,7 @@ MonoBehaviour:
     weight: 0.2
     stackLimit: 50
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u836F\u8349"
     templateRef: "\u6750\u6599"
@@ -4634,6 +4657,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 50
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u94C1\u77FF"
     templateRef: "\u6750\u6599"
@@ -4728,6 +4752,7 @@ MonoBehaviour:
     weight: 1
     stackLimit: 50
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u94C1\u952D"
     templateRef: "\u6750\u6599"
@@ -4822,6 +4847,7 @@ MonoBehaviour:
     weight: 1.5
     stackLimit: 50
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u94A2\u952D"
     templateRef: "\u6750\u6599"
@@ -4916,6 +4942,7 @@ MonoBehaviour:
     weight: 2
     stackLimit: 50
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u79D8\u94F6\u77FF"
     templateRef: "\u6750\u6599"
@@ -5010,6 +5037,7 @@ MonoBehaviour:
     weight: 1.5
     stackLimit: 50
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u6E90\u8D28\u77FF"
     templateRef: "\u6750\u6599"
@@ -5104,6 +5132,7 @@ MonoBehaviour:
     weight: 2.5
     stackLimit: 50
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u6C2A\u91D1\u952D"
     templateRef: "\u6750\u6599"
@@ -5198,6 +5227,7 @@ MonoBehaviour:
     weight: 5
     stackLimit: 50
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u6CF0\u5766\u795E\u94C1"
     templateRef: "\u6750\u6599"
@@ -5292,6 +5322,7 @@ MonoBehaviour:
     weight: 7
     stackLimit: 50
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u6728\u5315\u9996"
     templateRef: "\u6B66\u5668"
@@ -5419,6 +5450,7 @@ MonoBehaviour:
     weight: 0.5
     stackLimit: 3
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u94C1\u5251"
     templateRef: "\u6B66\u5668"
@@ -5546,6 +5578,7 @@ MonoBehaviour:
     weight: 5
     stackLimit: 3
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u94A2\u5251"
     templateRef: "\u6B66\u5668"
@@ -5673,6 +5706,7 @@ MonoBehaviour:
     weight: 8
     stackLimit: 3
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u6A61\u6728\u6CD5\u6756"
     templateRef: "\u6B66\u5668"
@@ -5800,6 +5834,7 @@ MonoBehaviour:
     weight: 1
     stackLimit: 3
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u6728\u5F13"
     templateRef: "\u6B66\u5668"
@@ -5927,6 +5962,7 @@ MonoBehaviour:
     weight: 1.5
     stackLimit: 3
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u94DC\u6212\u6307"
     templateRef: "\u88C5\u5907"
@@ -6043,6 +6079,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 5
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u6C34\u84DD\u77F3\u6212\u6307"
     templateRef: "\u88C5\u5907"
@@ -6159,6 +6196,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 5
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   - id: "\u6CD5\u529B\u6212\u6307"
     templateRef: "\u88C5\u5907"
@@ -6275,6 +6313,7 @@ MonoBehaviour:
     weight: 0.1
     stackLimit: 5
     hideInInventory: 0
+    noDiscard: 0
     onUseEffectRefs: []
   inventoryTemplates:
   - name: "\u80CC\u5305"

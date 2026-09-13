@@ -106,7 +106,7 @@ InventoryDatabase (SO)  ──edit──▶  still an SO
 The DTO layer is a flat structure that mirrors the data model one-to-one, the only difference being that object references are carried as GUID strings.
 `InventoryDtoModels.cs` holds only the DTO definitions; the two-way mapping lives in `InventoryDtoMapper*.cs`, split into per-system partials, and the binary block read/write is split the same way across `InventoryBinarySerializer*.cs`.
 
-**Format version** (`InventoryDtoMapper.Version`): since v5 attribute values carry `curveData` (AnimationCurve); **since v6 the export covers all 17 database lists** (adding inventories / sort options / number formats / shops / crafting / equipment), and fills in the Item System fields that used to be dropped silently (template colour, `weight` / `stackLimit` / `hideInInventory`, function-tag UI settings). The binary reader skips the new blocks based on the version in the header, so `.bytes` exported by v5 still imports.
+**Format version** (`InventoryDtoMapper.Version`): since v5 attribute values carry `curveData` (AnimationCurve); **since v6 the export covers all 17 database lists** (adding inventories / sort options / number formats / shops / crafting / equipment), and fills in the Item System fields that used to be dropped silently (template colour, `weight` / `stackLimit` / `hideInInventory`, function-tag UI settings). **Since v10 the item / item-template blocks carry one extra trailing `noDiscard` bit** (discard forbidden). The binary reader skips the new blocks and fields based on the version in the header, so `.bytes` exported by v5 still imports.
 
 ---
 

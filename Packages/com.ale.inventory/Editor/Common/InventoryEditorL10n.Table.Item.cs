@@ -27,6 +27,15 @@ namespace Ale.Inventory.Editor
             Add("重量",         "Weight",              "重量");
             Add("堆叠上限",     "Stack Limit",         "スタック上限");
             Add("仓库中隐藏",   "Hide in Warehouse",   "倉庫で非表示");
+            Add("不可丢弃",     "Cannot Discard",      "破棄不可");
+            Add("勾选后玩家无法丢弃该道具：右键菜单的「丢弃」置灰、丢弃弹窗也不会打开。用于重要剧情 / 任务道具。出售、制作消耗、装备替换等由业务代码发起的扣减不受影响。",
+                "When ticked the player cannot discard this item: the Discard entry in the right-click menu is greyed out and the discard popup will not open. "
+                + "Use it for key story / quest items. Removals driven by gameplay code (selling, crafting consumption, equipment replacement) are unaffected.",
+                "チェックするとプレイヤーはこのアイテムを破棄できません：右クリックメニューの「破棄」がグレーアウトし、破棄ポップアップも開きません。"
+                + "重要なストーリー / クエストアイテム向けです。売却・クラフト消費・装備の入れ替えなどゲーム側コードによる減算には影響しません。");
+            Add("从本模板创建道具时复制到道具的「不可丢弃」。",
+                "Copied to the item's Cannot Discard flag when an item is created from this template.",
+                "このテンプレートからアイテムを作成するとき、アイテムの「破棄不可」にコピーされます。");
 
             // ── 道具列表（中列）──────────────────────────────────────────────────
             Add("（无可用模板）", "(No templates available)", "（利用可能なテンプレートがありません）");

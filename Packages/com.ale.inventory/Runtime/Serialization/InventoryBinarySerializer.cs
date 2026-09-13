@@ -83,6 +83,9 @@ namespace Ale.Inventory.Runtime.Serialization
 
             // v8 追加：默认使用效果
             WriteStrArray(w, t.onUseEffectRefs);
+
+            // v10 追加：禁止丢弃
+            w.Write(t.noDiscard);
         }
 
         private static void WriteItem(BinaryWriter w, ItemDto item)
@@ -99,6 +102,9 @@ namespace Ale.Inventory.Runtime.Serialization
 
             // v8 追加：使用效果
             WriteStrArray(w, item.onUseEffectRefs);
+
+            // v10 追加：禁止丢弃
+            w.Write(item.noDiscard);
         }
 
         #endregion
@@ -193,6 +199,8 @@ namespace Ale.Inventory.Runtime.Serialization
             t.hideInInventory = r.ReadBoolean();
             if (version >= InventoryDtoMapper.VersionWithEffects)
                 t.onUseEffectRefs = ReadStrArray(r);
+            if (version >= InventoryDtoMapper.VersionWithNoDiscard)
+                t.noDiscard = r.ReadBoolean();
             return t;
         }
 
@@ -212,6 +220,8 @@ namespace Ale.Inventory.Runtime.Serialization
             item.hideInInventory = r.ReadBoolean();
             if (version >= InventoryDtoMapper.VersionWithEffects)
                 item.onUseEffectRefs = ReadStrArray(r);
+            if (version >= InventoryDtoMapper.VersionWithNoDiscard)
+                item.noDiscard = r.ReadBoolean();
             return item;
         }
 

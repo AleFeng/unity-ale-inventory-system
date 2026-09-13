@@ -110,13 +110,14 @@ namespace Ale.Inventory.Editor
             var db  = ctx.Database;
             ctx.RecordUndo("从模板添加道具");
             var item = new Item(GenerateItemId(db), templateName);
-            // 复制模板的基础字段（重量 / 堆叠上限 / 隐藏）；自定义属性字段值由 RebuildAttributes 按定义默认值填充。
+            // 复制模板的基础字段（重量 / 堆叠上限 / 隐藏 / 不可丢弃）；自定义属性字段值由 RebuildAttributes 按定义默认值填充。
             var tmpl = db.GetTemplate(templateName);
             if (tmpl != null)
             {
                 item.weight          = tmpl.weight;
                 item.stackLimit      = tmpl.stackLimit;
                 item.hideInInventory = tmpl.hideInInventory;
+                item.noDiscard       = tmpl.noDiscard;
                 item.onUseEffectRefs = tmpl.onUseEffectRefs != null ? new List<string>(tmpl.onUseEffectRefs) : new List<string>();
             }
             item.RebuildAttributes(db);

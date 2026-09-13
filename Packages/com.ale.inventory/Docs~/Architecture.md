@@ -106,7 +106,7 @@ InventoryDatabase (SO)  ──编辑──▶  仍是 SO
 DTO 层是与数据模型一一镜像的扁平结构，唯一区别是对象引用以 GUID 字符串承载。
 `InventoryDtoModels.cs` 只放 DTO 定义；双向映射在 `InventoryDtoMapper*.cs` 中按系统分部，二进制块读写在 `InventoryBinarySerializer*.cs` 中同法分部。
 
-**格式版本**（`InventoryDtoMapper.Version`）：v5 起属性值带 `curveData`（AnimationCurve）；**v6 起导出覆盖数据库的全部 17 个列表**（新增仓库 / 整理选项 / 数字格式 / 商店 / 制作 / 装备），并补上道具系统此前静默丢弃的字段（模板色点、`weight` / `stackLimit` / `hideInInventory`、功能标签的 UI 显示配置）。二进制读取按文件头版本号跳过新增块，v5 导出的 `.bytes` 仍可导入。
+**格式版本**（`InventoryDtoMapper.Version`）：v5 起属性值带 `curveData`（AnimationCurve）；**v6 起导出覆盖数据库的全部 17 个列表**（新增仓库 / 整理选项 / 数字格式 / 商店 / 制作 / 装备），并补上道具系统此前静默丢弃的字段（模板色点、`weight` / `stackLimit` / `hideInInventory`、功能标签的 UI 显示配置）。**v10 起道具 / 道具模板块尾多一位 `noDiscard`**（禁止丢弃）。二进制读取按文件头版本号跳过新增块与新增字段，v5 导出的 `.bytes` 仍可导入。
 
 ---
 

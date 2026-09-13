@@ -33,6 +33,14 @@ namespace Ale.Inventory.Runtime
         public bool hideInInventory;
 
         /// <summary>
+        /// 是否禁止丢弃（1.14.0）。勾选后右键菜单的「丢弃」不可点、丢弃弹窗也不会打开——用于重要剧情道具 / 任务道具。
+        /// <para><b>只管「丢弃」这一条玩家主动路径</b>：出售、制作消耗、装备替换等由业务代码发起的
+        /// <c>TryRemoveItem</c> 一律不受影响（否则本该合法的消耗也会被连带拦下）。
+        /// 默认 <c>false</c>（可丢弃），与旧数据的反序列化默认值一致。</para>
+        /// </summary>
+        public bool noDiscard;
+
+        /// <summary>
         /// 「使用」时按序对目标施加的效果 id 列表（1.12.0）。引用 toolkit 效果库 <c>EffectDatabase</c>（1.13.0 起所有上层系统共用）
         /// 或其它系统定义的效果 id（运行时经 toolkit 全局效果注册表按 id 解析）。空 = 不可使用（<c>UseItem</c> 返回 NoEffects、不扣减）。
         /// </summary>
@@ -174,6 +182,7 @@ namespace Ale.Inventory.Runtime
                 weight     = weight,
                 stackLimit = stackLimit,
                 hideInInventory = hideInInventory,
+                noDiscard       = noDiscard,
                 onUseEffectRefs = onUseEffectRefs != null ? new List<string>(onUseEffectRefs) : new List<string>(),
             };
             clone.tagRefs = new List<string>(tagRefs);

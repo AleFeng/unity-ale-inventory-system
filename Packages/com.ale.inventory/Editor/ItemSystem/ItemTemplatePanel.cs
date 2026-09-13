@@ -73,12 +73,16 @@ namespace Ale.Inventory.Editor
             float newWeight     = EditorGUILayout.FloatField(Tr("重量"), template.weight);
             int   newStackLimit = EditorGUILayout.IntField(Tr("堆叠上限"), template.stackLimit);
             bool  newHideInInventory = EditorGUILayout.Toggle(Tr("仓库中隐藏"), template.hideInInventory);
+            bool  newNoDiscard  = EditorGUILayout.Toggle(
+                new GUIContent(Tr("不可丢弃"), Tr("从本模板创建道具时复制到道具的「不可丢弃」。")),
+                template.noDiscard);
             if (EditorGUI.EndChangeCheck())
             {
                 ctx.RecordUndo("修改模板仓库属性");
                 template.weight     = Mathf.Max(0f, newWeight);
                 template.stackLimit = Mathf.Max(0, newStackLimit);
                 template.hideInInventory = newHideInInventory;
+                template.noDiscard  = newNoDiscard;
                 ctx.MarkDirty();
             }
 

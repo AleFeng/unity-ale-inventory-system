@@ -233,9 +233,18 @@ namespace Ale.Inventory.Runtime
             if (_itemDetailPopupResolved) _itemDetailPopup?.Hide();
         }
 
-        /// <summary>对指定槽位弹出丢弃数量选择弹窗（右键菜单「丢弃」）。</summary>
+        /// <summary>
+        /// 对指定槽位弹出丢弃数量选择弹窗（右键菜单「丢弃」）。
+        ///
+        /// <para>道具勾了 <see cref="Item.noDiscard"/> 时<b>直接静默返回</b>（连「预制体未配置」告警也不发）：
+        /// 这是配置好的游戏规则、不是配置错误，且此处拦在实现之前，换用自定义
+        /// <see cref="IItemDiscardPopup"/> 的项目同样受这条规则约束。</para>
+        /// </summary>
         public void ShowItemDiscardPopup(ItemContextTarget target)
         {
+            var data = InventoryDataManager.Instance;
+            if (data != null && !data.IsItemDiscardable(target.ItemId)) return;
+
             var popup = EnsureItemDiscardPopup();
             if (popup == null)
             {

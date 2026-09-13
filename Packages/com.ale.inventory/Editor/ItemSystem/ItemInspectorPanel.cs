@@ -150,6 +150,17 @@ namespace Ale.Inventory.Editor
                 ctx.MarkDirty();
             }
 
+            EditorGUI.BeginChangeCheck();
+            bool newNoDiscard = EditorGUILayout.Toggle(
+                new GUIContent(Tr("不可丢弃"), Tr("勾选后玩家无法丢弃该道具：右键菜单的「丢弃」置灰、丢弃弹窗也不会打开。用于重要剧情 / 任务道具。出售、制作消耗、装备替换等由业务代码发起的扣减不受影响。")),
+                item.noDiscard);
+            if (EditorGUI.EndChangeCheck())
+            {
+                ctx.RecordUndo("修改道具 不可丢弃");
+                item.noDiscard = newNoDiscard;
+                ctx.MarkDirty();
+            }
+
             EditorGUILayout.Space(6);
 
             // ── 使用时施加的效果（1.12.0；1.13.0 起引用 toolkit 效果库，绘制器由 toolkit 提供：目录菜单 / 拖拽 / 打开跳转 / 未找到标注）──

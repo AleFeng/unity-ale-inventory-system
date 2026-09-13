@@ -136,12 +136,18 @@
 
 # 仓库属性：重量与堆叠
 
-道具 Inspector 中还有两个供仓库系统使用的字段：
+道具 Inspector 中还有几个供仓库系统使用的字段：
 
 | 字段 | 说明 |
 |------|------|
 | 重量 | 浮点；0 = 无重量（不参与仓库重量上限计算） |
 | 堆叠上限 | 整数；0 = 无限堆叠，1 = 不可堆叠，>1 = 具体上限 |
+| 仓库中隐藏 | 勾选后该道具不在仓库 UI 列表中显示（数据仍然存在） |
+| 不可丢弃 | 勾选后玩家无法丢弃该道具：右键菜单的「丢弃」置灰、丢弃弹窗也不会打开。用于重要剧情 / 任务道具（`1.14.0`） |
+
+> **「不可丢弃」只管玩家主动丢弃这一条路径。** 出售、制作消耗、装备替换等由业务代码发起的
+> `TryRemoveItem` 一律不受影响——否则本该合法的消耗也会被连带拦下。
+> 该标志同时存在于道具模板上，从模板创建道具时复制。
 
 # 运行时查询
 
@@ -163,6 +169,9 @@ string qName = quality?.GetItemByValue(item.GetAttributeValue<int>("品质"))?.n
 
 // 判断标签
 bool isEquip = InventoryDataManager.Instance.ItemHasTag("sword_01", "装备");
+
+// 判断是否允许玩家丢弃（读取 noDiscard 取反；道具不存在时返回 true）
+bool canDrop = InventoryDataManager.Instance.IsItemDiscardable("sword_01");
 ```
 
 属性读取的完整 API、显示字符串与排序折算见 [属性系统](AttributeSystem.md)。

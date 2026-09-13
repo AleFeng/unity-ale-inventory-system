@@ -8,7 +8,7 @@
 
 ## [1.14.0] - 2026-09-09
 
-**道具右键从「即刻快速装备」改为弹出操作菜单：查看 / 使用 / 丢弃。** 此前道具格子的右键是**唯一**的点击交互，且被「快速装备」独占（`UiwInventoryItemSlotBase.OnPointerClick` 直接广播 `ItemRightClicked`，装备界面订阅后自动装备）；左键完全没有处理。1.12.0 加进来的 `UseItemInSlot` 其文档注释就写着「右键槽位『使用』的入口」，但一直没有调用方；「丢弃」则从来没有 UI。本版把右键改成统一的菜单入口，把快速装备降级为菜单里的一个条目，并补上「查看」「丢弃」两条路径。菜单与模态弹窗的外壳下沉到 toolkit（`1.13.0`）作为通用件，本包只负责组装条目与内容。**纯 UI / 运行时层改动，导出 DTO 与数据结构零变化。**
+**道具右键从「即刻快速装备」改为弹出操作菜单：查看 / 使用 / 丢弃。** 此前道具格子的右键是**唯一**的点击交互，且被「快速装备」独占（`UiwInventoryItemSlotBase.OnPointerClick` 直接广播 `ItemRightClicked`，装备界面订阅后自动装备）；左键完全没有处理。1.12.0 加进来的 `UseItemInSlot` 其文档注释就写着「右键槽位『使用』的入口」，但一直没有调用方；「丢弃」则从来没有 UI。本版把右键改成统一的菜单入口，把快速装备降级为菜单里的一个条目，并补上「查看」「丢弃」两条路径。菜单与模态弹窗的外壳下沉到 toolkit（`1.13.0`）作为通用件，本包只负责组装条目与内容。另为「丢弃」补上数据侧的开关：道具配置新增 **不可丢弃**，让重要剧情道具丢不掉。**除这一个布尔字段外均为纯 UI / 运行时层改动；导出格式版本随之 v9 → v10（向后兼容，旧文件该位取默认 false）。**
 
 ### 破坏性变更
 
@@ -34,6 +34,11 @@
 - **菜单条目贡献点 `UiwInventoryItemEvents.CollectingItemMenu`**：上层系统在自己打开时挂上去，按目标道具往菜单里追加条目。`UiwEquipmentView` 据此贡献「装备」，其显示条件与执行条件共用同一个判据 `CanQuickEquipFrom`（界面显示中 + 来源仓库匹配 + `TryFindEquipSlot` 或 `TryFindReplaceableSlot` 命中），避免「显示了却点不动」。
 - **`UiwItemDetailPopup`**（右键「查看」）：内嵌一个 `UiwInventoryItemDetail` 渲染详情（与悬停弹窗 `UiwItemTooltip` 同一渲染组件），右上角关闭按钮 / 点击遮罩 / ESC 收起。**常驻显示**，不随光标移开消失。内嵌详情的悬停弹窗被强制关闭——本弹窗拦截射线，否则鼠标停在详情上会弹出一个内容完全相同的悬停弹窗压在其上。
 - **`UiwItemDiscardPopup`**（右键「丢弃」）：道具预览 + `Slider`（`wholeNumbers`，范围 `[1, 该槽堆叠数]`）+ 数量文本 + 丢弃 / 取消；确认后 `TryRemoveItem(仓库, slotId, n)` 按槽位精确扣减（刷新由其派发的 `OnInventoryChanged` 自动完成）。**上限取打开那一刻的实时槽位数量**而非格子的显示值——菜单弹出后仓库仍可能被其它逻辑改动，按过时上限丢弃会与玩家预期不符。**默认值取 1** 而非全部：丢弃不可撤销，默认值应当最保守。
+- **道具配置新增「不可丢弃」`Item.noDiscard`**（默认 `false`）：勾选后玩家丢不掉该道具——右键菜单的「丢弃」**置灰保留**（`UiwItemContextMenu.hideDiscardWhenLocked` 可改为整条隐藏），丢弃弹窗也不会打开。供重要剧情 / 任务道具使用。
+  - **只拦「丢弃」这一条玩家主动路径**：出售、制作消耗、装备替换等由业务代码发起的 `TryRemoveItem` 一律不受影响——否则本该合法的消耗会被连带拦下。
+  - 判据收口为 `InventoryDataManager.IsItemDiscardable(itemId)`（读 `noDiscard` 取反）。**道具查不到时返回 `true`**：拿不到配置就无法证明它受保护，与该字段默认 `false` 的语义一致，不因数据缺失把普通道具锁死。
+  - 三层设闸：菜单条目置灰 → `InventoryRuntimeManager.ShowItemDiscardPopup` 直接静默返回（拦在实现之前，换用自定义 `IItemDiscardPopup` 的项目同样受约束）→ `UiwItemDiscardPopup.Show` 再查一次（它是唯一真正执行不可撤销扣减的地方，且可被任何代码经 `Instance` 直接打开）。
+  - 道具模板上同有该字段，从模板创建道具时复制；道具 / 模板的 Inspector 均在「仓库属性」下多一个勾选项（带说明 Tooltip，三语）。
 - **管理器宿主**：`InventoryRuntimeManager` 新增 `itemContextMenuPrefab` / `itemDetailPopupPrefab` / `itemDiscardPopupPrefab` 三个预制体字段与 `ShowItemContextMenu` / `ShowItemDetailPopup` / `ShowItemDiscardPopup`（及对应 `Hide`），沿用悬停弹窗那套「接口持有 + 惰性全局实例化到 `coverUiRoot`」的依赖倒置模式（新接口 `IItemContextMenu` / `IItemDetailPopup` / `IItemDiscardPopup` 与载荷 `ItemContextTarget` 定义在 `Ale.Inventory.Runtime`，管理器因而不反向依赖 UI 程序集）。四个挂件的实例化逻辑收口为泛型 `EnsureCoverUiWidget<T>`。
 - **`InventoryRuntimeManager.UseTargetContextProvider`**（`Func<string, IEffectContext>`）与 `ResolveUseTargetContext(inventoryId)`：UI 的「使用」需要一个不必逐次传参的效果目标上下文取用点，而本包不认识任何领域系统、构造不出 `IEffectContext`，故由宿主注入。未注入时对有使用效果的道具得到 `NoContext`（不施加、不扣减）。直接调用 `UseItem` / `UseItemInSlot` 的业务代码照旧显式传上下文，不受影响。
 - **格子暴露槽位 ID**：`UiwInventoryItemSlotBase` 新增 `BoundSlotId`，`SetBoundSlot` 增加 `slotId` 参数并添加 `SetBoundSlot(inventoryId, RuntimeItemSlot)` 重载（此前 `slot.slotId` 在绑定时被丢弃，而 `UseItemInSlot` / `TryRemoveItem` 都按槽位定位）。**不叫 `SlotId`**：`UiwEquipmentSlot` 已用该名表示**装备槽**配置 ID，同名会静默隐藏基类成员。悬停弹窗内的详情行与网格补位空格没有真实槽位，该值为空，右键不弹菜单。
@@ -48,6 +53,8 @@
 
 - `UiwInventoryItemSlotBase.OnPointerClick` 右键改为调用 `ShowItemContextMenu`；新增两条守卫——拖拽进行中（`eventData.dragging`）不弹菜单（松手落点等于拖拽源时，点击会先于 `Drop` / `EndDrag` 派发），空槽不弹菜单。
 - **Demo 数据**：`InventoryDatabase` 中 8 个「消耗品」模板道具（粗糙的面包 / 劣质治疗药水 / 初级治疗药水 / 初级法力药水 / 初级体力药水 / 初级迅捷药水 / 初级迟缓药水 / 初级毒素药水）统一挂上 `onUseEffectRefs = ["演示·道具使用"]`，使右键菜单的「使用」在样本中可直接验证（消耗品显示「使用」并扣减 1，装备 / 材料等不显示）。该效果由样本内的 `EffectDatabase` 提供，执行项为 toolkit 内置 `Effect.NoOp`，只保证施加成功以触发扣减，不改动任何数值。
+- **导出格式 v9 → v10**：道具 / 道具模板块尾各追加一位 `noDiscard`（JSON 为同名布尔字段）。二进制读取按文件头版本号判断该位是否存在，**v5 ~ v9 导出的 `.bytes` 仍可导入**（缺该位时取默认 `false`）；旧 JSON 同理由 `JsonUtility` 取默认值。
+- **Demo 数据**：「任务物品」模板及其两个道具（破损的项链 / 奇怪的雕像）勾上 **不可丢弃**，使该功能在样本中可直接验证——右键这两个道具时「丢弃」置灰，右键药水 / 材料时「丢弃」可点。
 - 文档：仓库根与包内共 6 个 README、以及三语 UI 组件指南的 10.5 节，均由「一键生成」改述为「导入样本」。
 
 ## [1.13.0] - 2026-09-07

@@ -226,6 +226,21 @@ namespace Ale.Inventory.Runtime
         }
 
         /// <summary>
+        /// 判断道具是否允许被玩家丢弃（读取 <see cref="Item.noDiscard"/> 取反）。
+        ///
+        /// <para><b>道具不存在时返回 true</b>：查不到配置就无法证明它受保护，与 <c>noDiscard</c> 默认 false
+        /// 的语义保持一致（未勾选 = 可丢弃），不因数据缺失把普通道具锁死。</para>
+        ///
+        /// <para>仅供「丢弃」这条玩家主动路径判断（右键菜单条目的可点状态、丢弃弹窗的开启条件）。
+        /// 出售 / 制作消耗 / 装备替换等业务发起的扣减不查此标志。</para>
+        /// </summary>
+        public bool IsItemDiscardable(string itemId)
+        {
+            var item = GetItem(itemId);
+            return item == null || !item.noDiscard;
+        }
+
+        /// <summary>
         /// 判断道具是否拥有指定功能标签。
         /// 有效来源：道具自身 <see cref="Item.tagRefs"/> 或其模板的 <see cref="ItemTemplate.tagRefs"/>。
         /// </summary>

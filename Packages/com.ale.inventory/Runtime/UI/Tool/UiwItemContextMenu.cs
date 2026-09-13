@@ -17,6 +17,10 @@ namespace Ale.Inventory.Runtime.UI
     /// <para><b>「使用」的显示条件</b>是道具的 <see cref="Item.onUseEffectRefs"/> 非空 —— 这是本包内唯一的
     /// 「可使用」信号（没有 IsUsable 标志、也没有道具类型枚举）；空列表时 <c>UseItem</c> 只会返回
     /// <see cref="EItemUseOutcome.NoEffects"/> 且不扣减，条目显示出来也没有意义。</para>
+    ///
+    /// <para><b>「丢弃」与不可丢弃道具</b>：道具勾了 <see cref="Item.noDiscard"/> 时，「丢弃」默认<b>置灰保留</b>
+    /// 而非隐藏——菜单条目数不随道具跳动，且玩家能直接看出「这个丢不掉」而不是以为菜单少了一项；
+    /// 想改成隐藏就打开 <see cref="hideDiscardWhenLocked"/>。</para>
     /// </summary>
     public class UiwItemContextMenu : UiwContextMenu, IItemContextMenu
     {
@@ -40,6 +44,8 @@ namespace Ale.Inventory.Runtime.UI
         public bool enableUse = true;
         [Tooltip("显示「丢弃」（弹出数量选择弹窗）。")]
         public bool enableDiscard = true;
+        [Tooltip("道具禁止丢弃（道具配置勾了「不可丢弃」）时，直接隐藏「丢弃」条目而不是置灰保留。")]
+        public bool hideDiscardWhenLocked;
 
         #endregion
 
@@ -78,7 +84,16 @@ namespace Ale.Inventory.Runtime.UI
                 _entries.Add(new UiwContextMenuItem { Label = useLabel, OnClick = () => Use(target) });
 
             if (enableDiscard)
-                _entries.Add(new UiwContextMenuItem { Label = discardLabel, OnClick = () => Discard(target) });
+            {
+                bool canDiscard = IsDiscardable(target.ItemId);
+                if (canDiscard || !hideDiscardWhenLocked)
+                    _entries.Add(new UiwContextMenuItem
+                    {
+                        Label        = discardLabel,
+                        Interactable = canDiscard,
+                        OnClick      = () => Discard(target)
+                    });
+            }
 
             // 上层贡献的额外条目（如装备界面打开时的「装备」），排在内置条目之后。
             UiwInventoryItemEvents.CollectItemMenuEntries(target, _entries);
@@ -102,6 +117,18 @@ namespace Ale.Inventory.Runtime.UI
             return item?.onUseEffectRefs != null && item.onUseEffectRefs.Count > 0;
         }
 
+        /// <summary>
+        /// 道具是否允许丢弃：未勾选 <see cref="Item.noDiscard"/>。
+        /// 数据管理器缺席（未注册任何数据库）时按<b>可丢弃</b>处理，与
+        /// <see cref="InventoryDataManager.IsItemDiscardable"/> 查不到道具时的口径一致——
+        /// 拿不到配置就不该把普通道具锁死。
+        /// </summary>
+        private static bool IsDiscardable(string itemId)
+        {
+            var data = InventoryDataManager.Instance;
+            return data == null || data.IsItemDiscardable(itemId);
+        }
+
         /// <summary>查看：弹出可关闭的道具详情弹窗。</summary>
         private static void View(ItemContextTarget target)
         {
@@ -122,7 +149,7 @@ namespace Ale.Inventory.Runtime.UI
             mgr.UseItemInSlot(target.InventoryId, target.SlotId, mgr.ResolveUseTargetContext(target.InventoryId));
         }
 
-        /// <summary>丢弃：弹出数量选择弹窗（真正的扣减在弹窗里确认后进行）。</summary>
+        /// <summary>丢弃：弹出数量选择弹窗（真正的扣减在弹窗里确认后进行）。不可丢弃的道具走不到这里——条目已置灰/隐藏。</summary>
         private static void Discard(ItemContextTarget target)
         {
             var mgr = InventoryRuntimeManager.Instance;

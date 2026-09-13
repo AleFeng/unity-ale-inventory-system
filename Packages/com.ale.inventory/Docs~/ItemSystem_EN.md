@@ -136,12 +136,18 @@ When same-named fields come from multiple sources, a conflict warning is shown, 
 
 # Warehouse Attributes: Weight and Stacking
 
-The item Inspector also has two fields used by the Warehouse System:
+The item Inspector also has a few fields used by the Warehouse System:
 
 | Field | Description |
 |------|------|
 | Weight | Float; 0 = weightless (does not count toward a warehouse's weight limit) |
 | Stack limit | Integer; 0 = unlimited stacking, 1 = not stackable, >1 = a specific limit |
+| Hide in Warehouse | When ticked the item is not listed in the warehouse UI (the data still exists) |
+| Cannot Discard | When ticked the player cannot discard the item: the Discard entry in the right-click menu is greyed out and the discard popup will not open. For key story / quest items (`1.14.0`) |
+
+> **Cannot Discard only governs the player-initiated discard path.** `TryRemoveItem` calls driven by gameplay code
+> (selling, crafting consumption, equipment replacement) are never affected — otherwise perfectly legal consumption
+> would be blocked too. The same flag exists on the item template and is copied when an item is created from it.
 
 # Runtime Queries
 
@@ -163,6 +169,9 @@ string qName = quality?.GetItemByValue(item.GetAttributeValue<int>("quality"))?.
 
 // Check a tag
 bool isEquip = InventoryDataManager.Instance.ItemHasTag("sword_01", "equipment");
+
+// Check whether the player may discard it (reads noDiscard inverted; true when the item is unknown)
+bool canDrop = InventoryDataManager.Instance.IsItemDiscardable("sword_01");
 ```
 
 For the full attribute-read API, display strings, and sort conversion, see [Attribute System](AttributeSystem_EN.md).

@@ -98,6 +98,7 @@ MonoBehaviour:
   enableView: 1
   enableUse: 1
   enableDiscard: 1
+  hideDiscardWhenLocked: 0
   references:
     version: 2
     RefIds: []

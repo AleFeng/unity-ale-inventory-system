@@ -34,9 +34,10 @@ namespace Ale.Inventory.Runtime.Serialization
         ///   <item>v8：效果系统——尾部追加 效果 / Gameplay 标签 两块，道具 / 道具模板块尾追加 onUseEffectRefs。</item>
         ///   <item>v9：效果 / Gameplay 标签外移至 toolkit 效果库（EffectDatabase，由 EffectConfigSerializer 单独导出）——不再写出 v8 的两块；
         ///         读 v8 文件时两块读入 legacy 字段供迁移。onUseEffectRefs 保留。</item>
+        ///   <item>v10：道具 / 道具模板块尾追加 noDiscard（禁止丢弃）。</item>
         /// </list>
         /// </summary>
-        public const int Version = 9;
+        public const int Version = 10;
 
         /// <summary>v8：效果系统——尾部追加 效果 / Gameplay 标签 两块（v9 起不再写出，仅读 v8 文件时使用），道具 / 道具模板块尾追加 onUseEffectRefs。</summary>
         internal const int VersionWithEffects = 8;
@@ -46,6 +47,9 @@ namespace Ale.Inventory.Runtime.Serialization
 
         /// <summary>首个包含仓库 / 商店 / 制作 / 装备 等扩展数据块的格式版本（二进制读取按此做向后兼容判断）。</summary>
         internal const int VersionWithAllSystems = 6;
+
+        /// <summary>v10：道具 / 道具模板块尾追加 noDiscard（二进制读取按此判断是否有这一位可读）。</summary>
+        internal const int VersionWithNoDiscard = 10;
 
         #region 导出：DB -> DTO
 
@@ -124,6 +128,7 @@ namespace Ale.Inventory.Runtime.Serialization
                 weight          = t.weight,
                 stackLimit      = t.stackLimit,
                 hideInInventory = t.hideInInventory,
+                noDiscard       = t.noDiscard,
                 onUseEffectRefs = ToArray(t.onUseEffectRefs)
             };
             FillTemplateDto(dto, t, resolver);   // 名称 / 色点 / 属性字段
@@ -141,6 +146,7 @@ namespace Ale.Inventory.Runtime.Serialization
                 weight          = item.weight,
                 stackLimit      = item.stackLimit,
                 hideInInventory = item.hideInInventory,
+                noDiscard       = item.noDiscard,
                 onUseEffectRefs = ToArray(item.onUseEffectRefs)
             };
         }
@@ -264,6 +270,7 @@ namespace Ale.Inventory.Runtime.Serialization
                 weight          = dto.weight,
                 stackLimit      = dto.stackLimit,
                 hideInInventory = dto.hideInInventory,
+                noDiscard       = dto.noDiscard,
                 onUseEffectRefs = FromDto(dto.onUseEffectRefs)
             };
             FillTemplate(t, dto, resolver);   // 名称 / 色点 / 属性字段
@@ -278,6 +285,7 @@ namespace Ale.Inventory.Runtime.Serialization
                 weight          = dto.weight,
                 stackLimit      = dto.stackLimit,
                 hideInInventory = dto.hideInInventory,
+                noDiscard       = dto.noDiscard,
                 onUseEffectRefs = FromDto(dto.onUseEffectRefs)
             };
             FromDto(dto.values, item.values, resolver);
