@@ -6,6 +6,14 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.15.0] - 2026-11-18
+
+**跟进 `com.ale.toolkit` 2.0.0 的存档接口改名。** 行为没有变化。
+
+### 破坏性变更
+
+- ⚠️ **最低 `com.ale.toolkit` 版本提至 2.0.0**：`InventoryRuntimeManager`、`EquipmentRuntimeManager`、`ShopRuntimeManager` 改为实现 `ISaveableRuntime<TState>`。宿主若按 `ISaveable` 引用这三个管理器，改用 `ISaveableRuntime`。
+
 ## [1.14.0] - 2026-09-09
 
 **道具右键从「即刻快速装备」改为弹出操作菜单：查看 / 使用 / 丢弃。** 此前道具格子的右键是**唯一**的点击交互，且被「快速装备」独占（`UiwInventoryItemSlotBase.OnPointerClick` 直接广播 `ItemRightClicked`，装备界面订阅后自动装备）；左键完全没有处理。1.12.0 加进来的 `UseItemInSlot` 其文档注释就写着「右键槽位『使用』的入口」，但一直没有调用方；「丢弃」则从来没有 UI。本版把右键改成统一的菜单入口，把快速装备降级为菜单里的一个条目，并补上「查看」「丢弃」两条路径。菜单与模态弹窗的外壳下沉到 toolkit（`1.13.0`）作为通用件，本包只负责组装条目与内容。另为「丢弃」补上数据侧的开关：道具配置新增 **不可丢弃**，让重要剧情道具丢不掉。**除这一个布尔字段外均为纯 UI / 运行时层改动；导出格式版本随之 v9 → v10（向后兼容，旧文件该位取默认 false）。**

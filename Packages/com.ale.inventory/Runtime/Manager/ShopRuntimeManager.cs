@@ -22,7 +22,7 @@ namespace Ale.Inventory.Runtime
     /// <see cref="ShopTradeFailReason.NotSupported"/>。</para>
     /// </summary>
     public class ShopRuntimeManager
-        : ToolkitSingleton<ShopRuntimeManager>, ISaveable<ShopRuntimeState>
+        : ToolkitSingleton<ShopRuntimeManager>, ISaveableRuntime<ShopRuntimeState>
     {
         /// <summary>shopId → 每玩家运行时状态（交易进度）。按需创建。</summary>
         private readonly Dictionary<string, ShopRuntimeState> _shopStates
@@ -435,7 +435,7 @@ namespace Ale.Inventory.Runtime
 
         #region 存档
 
-        /// <inheritdoc cref="ISaveable{TState}.GetSaveData"/>
+        /// <inheritdoc cref="ISaveableRuntime{TState}.GetSaveData"/>
         public List<ShopRuntimeState> GetSaveData()
         {
             var result = new List<ShopRuntimeState>(_shopStates.Count);
@@ -444,7 +444,7 @@ namespace Ale.Inventory.Runtime
             return result;
         }
 
-        /// <inheritdoc cref="ISaveable{TState}.LoadSaveData"/>
+        /// <inheritdoc cref="ISaveableRuntime{TState}.LoadSaveData"/>
         public void LoadSaveData(List<ShopRuntimeState> data)
         {
             _shopStates.Clear();
@@ -456,7 +456,7 @@ namespace Ale.Inventory.Runtime
             }
         }
 
-        /// <inheritdoc cref="ISaveable.ResetAll"/>
+        /// <inheritdoc cref="ISaveableRuntime.ResetAll"/>
         public void ResetAll() => _shopStates.Clear();
 
         #endregion
