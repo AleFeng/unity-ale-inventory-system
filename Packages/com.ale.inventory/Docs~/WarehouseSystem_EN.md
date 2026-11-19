@@ -149,13 +149,13 @@ using Ale.Inventory.Runtime;
 
 var rm = InventoryRuntimeManager.Instance;
 
-// Add (returns false = capacity/weight/tag restriction not satisfied)
+// Add (returns false = capacity/weight/tag restriction not satisfied, or the item is not defined in any registered database — logs a warning and adds nothing)
 bool ok = rm.TryAddItem("backpack", "potion_hp", 3);
 
 // Queries
 int  total = rm.GetTotalCount("backpack", "potion_hp");   // accumulated across slots
 bool has   = rm.HasItem("backpack", "potion_hp", 1);
-int  free  = rm.GetFreeSpaceFor("backpack", "potion_hp"); // how much more can be added
+int  free  = rm.GetFreeSpaceFor("backpack", "potion_hp"); // how much more can be added (0 for an undefined item)
 float w    = rm.GetTotalWeight("backpack");
 float wMax = rm.GetWeightLimit("backpack");
 

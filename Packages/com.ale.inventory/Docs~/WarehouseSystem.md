@@ -149,13 +149,13 @@ using Ale.Inventory.Runtime;
 
 var rm = InventoryRuntimeManager.Instance;
 
-// 添加（返回 false = 容量/重量/标签限制不满足）
+// 添加（返回 false = 容量/重量/标签限制不满足，或道具不在任何已注册数据库里——此时打警告、不放入）
 bool ok = rm.TryAddItem("backpack", "potion_hp", 3);
 
 // 查询
 int  total = rm.GetTotalCount("backpack", "potion_hp");   // 跨格累计
 bool has   = rm.HasItem("backpack", "potion_hp", 1);
-int  free  = rm.GetFreeSpaceFor("backpack", "potion_hp"); // 还能再放多少
+int  free  = rm.GetFreeSpaceFor("backpack", "potion_hp"); // 还能再放多少（道具未定义时为 0）
 float w    = rm.GetTotalWeight("backpack");
 float wMax = rm.GetWeightLimit("backpack");
 

@@ -6,6 +6,16 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.15.1] - 2026-11-19
+
+**未定义的道具放不进仓库。** 此前 `TryAddItem` 不查道具定义：写错的道具 ID 也会被收下，仓库里多出一个白图标、显示原始 ID 的格子；`GetFreeSpaceFor` 对它还答「无限可放」。
+
+### 修复
+
+- `InventoryRuntimeManager.TryAddItem`：道具不在任何已注册数据库里时返回 `false`、不放入，并打一条警告。
+- `InventoryRuntimeManager.GetFreeSpaceFor`：同样情况返回 `0`。商店与制作都是「先查空间、再放入」且不看放入结果，两者不一致时会扣了钱或材料却拿不到东西。
+- 读档（`LoadSaveData`）与格子内容的直接写入（`SetSlotContent`，拖拽与装备换位用）不变：它们搬运的是已在仓库里的内容，丢弃会造成数据丢失。
+
 ## [1.15.0] - 2026-11-18
 
 **跟进 `com.ale.toolkit` 2.0.0 的存档接口改名。** 行为没有变化。

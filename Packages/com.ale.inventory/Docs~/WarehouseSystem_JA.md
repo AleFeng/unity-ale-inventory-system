@@ -149,13 +149,13 @@ using Ale.Inventory.Runtime;
 
 var rm = InventoryRuntimeManager.Instance;
 
-// 追加（false を返す = 容量/重量/タグ制限を満たさない）
+// 追加（false を返す = 容量/重量/タグ制限を満たさない、またはアイテムが登録済みのどのデータベースにも定義されていない——この場合は警告を出し、追加しない）
 bool ok = rm.TryAddItem("backpack", "potion_hp", 3);
 
 // クエリ
 int  total = rm.GetTotalCount("backpack", "potion_hp");   // スロットをまたいで累計
 bool has   = rm.HasItem("backpack", "potion_hp", 1);
-int  free  = rm.GetFreeSpaceFor("backpack", "potion_hp"); // あといくつ入れられるか
+int  free  = rm.GetFreeSpaceFor("backpack", "potion_hp"); // あといくつ入れられるか（未定義のアイテムは 0）
 float w    = rm.GetTotalWeight("backpack");
 float wMax = rm.GetWeightLimit("backpack");
 

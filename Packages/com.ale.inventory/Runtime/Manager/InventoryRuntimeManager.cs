@@ -111,6 +111,19 @@ namespace Ale.Inventory.Runtime
         private static int GetCapacity(string inventoryId)
             => FindInventoryDef(inventoryId)?.capacity ?? 0;
 
+        /// <summary>
+        /// 查找 道具定义；已注册数据库里没有该道具时打警告并返回 null。
+        /// 放入类操作（<see cref="TryAddItem"/> / <see cref="GetFreeSpaceFor"/>）一律拒收未定义的道具：
+        /// 写错的道具 ID 不会悄悄进仓库，也不会让「先查空间、再放入」的调用方（商店、制作）在扣款 / 扣料后放不进去。
+        /// </summary>
+        private static Item FindItemDefOrWarn(string itemId)
+        {
+            var itemDef = InventoryDataManager.Instance.GetItem(itemId);
+            if (itemDef == null)
+                Debug.LogWarning($"[Inventory] 道具「{itemId}」不在任何已注册的数据库里，拒绝放入仓库。");
+            return itemDef;
+        }
+
 
         // 仓库不存在时返回的共享空列表：避免每次未命中都分配一个新 List
         // （UI 刷新可能高频调用）。调用方<b>不得</b>写入 GetSlots 的返回值。
@@ -175,7 +188,7 @@ namespace Ale.Inventory.Runtime
 
         /// <summary>
         /// 向仓库添加道具。自动合并可堆叠的已有格，满了再开新格。
-        /// 返回 false 当仓库容量已满且无法放入任何数量。
+        /// 返回 false 当仓库容量已满且无法放入任何数量，或道具未在任何已注册数据库中定义（此时打警告、不放入）。
         /// </summary>
         public bool TryAddItem(string inventoryId, string itemId, int count = 1)
         {
@@ -185,8 +198,9 @@ namespace Ale.Inventory.Runtime
             if (!_inventoryStates.TryGetValue(inventoryId, out var state))
                 return false;
 
-            var itemDef  = InventoryDataManager.Instance.GetItem(itemId);
-            int stackMax = itemDef?.stackLimit ?? 0;    // 0 = 无限制
+            var itemDef  = FindItemDefOrWarn(itemId);
+            if (itemDef == null) return false;
+            int stackMax = itemDef.stackLimit;          // 0 = 无限制
             int capMax   = GetCapacity(inventoryId);    // 0 = 无限制
 
             int remaining = count;
@@ -320,7 +334,7 @@ namespace Ale.Inventory.Runtime
 
         /// <summary>
         /// 计算指定仓库还能再容纳多少个指定道具（考虑容量与堆叠上限）。
-        /// 无限容量、或容量内仍可无限堆叠时返回 <see cref="int.MaxValue"/>。
+        /// 无限容量、或容量内仍可无限堆叠时返回 <see cref="int.MaxValue"/>；道具未定义时返回 0（与 <see cref="TryAddItem"/> 拒收一致）。
         /// 供商店等上层在交易前做「能否放下」校验，避免实际写入再回滚。
         /// </summary>
         public int GetFreeSpaceFor(string inventoryId, string itemId)
@@ -328,8 +342,9 @@ namespace Ale.Inventory.Runtime
             if (string.IsNullOrEmpty(itemId)) return 0;
             if (!_inventoryStates.TryGetValue(inventoryId, out var state)) return 0;
 
-            var itemDef  = InventoryDataManager.Instance.GetItem(itemId);
-            int stackMax = itemDef?.stackLimit ?? 0;    // 0 = 无限堆叠
+            var itemDef  = FindItemDefOrWarn(itemId);
+            if (itemDef == null) return 0;
+            int stackMax = itemDef.stackLimit;          // 0 = 无限堆叠
             int capMax   = GetCapacity(inventoryId);     // 0 = 无限容量
 
             // 无限容量：总能开新格放入
