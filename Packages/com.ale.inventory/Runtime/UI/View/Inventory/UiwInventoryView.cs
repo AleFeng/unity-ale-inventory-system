@@ -400,7 +400,7 @@ namespace Ale.Inventory.Runtime.UI
         /// <summary>
         /// 从 UI 当前状态构建排序优先级列表（主条件 + tiebreakers）。
         /// 与 <see cref="UiwVirtualListBase{TData,TCell}.CurrentSortPriorities"/> 语义一致：
-        /// <b>有排序栏</b>时主条件取下拉选中项、全部使用排序栏当前方向；
+        /// <b>有排序栏</b>时主条件取下拉选中项与排序栏当前方向，各 tiebreaker 沿用配置的升降序；
         /// <b>无排序栏</b>（合法配置：不想要整理栏）时以第一条排序条件为默认，主条件与各 tiebreaker
         /// <b>各自沿用配置的升降序</b>——而非一律降序。
         /// </summary>
@@ -420,12 +420,11 @@ namespace Ale.Inventory.Runtime.UI
                 return def;
             }
 
-            // 有排序栏：主条件取下拉选中项，全部使用排序栏当前方向。
+            // 有排序栏：主条件取下拉选中项与排序栏当前方向；tiebreakers 沿用各自配置的方向（1.16.0 起，此前一律跟随排序栏）。
             int  idx = Mathf.Clamp(sortToolbar.SortIndex, 0, _currentSortPriorities.Count - 1);
-            bool asc = sortToolbar.Ascending;
-            var  all = new List<SortPriority> { new SortPriority(_currentSortPriorities[idx].field, asc) };
+            var  all = new List<SortPriority> { new SortPriority(_currentSortPriorities[idx].field, sortToolbar.Ascending) };
             foreach (var tb in tiebreakers)
-                all.Add(new SortPriority(tb.field, asc));
+                all.Add(new SortPriority(tb.field, tb.ascending));
             return all;
         }
 

@@ -533,7 +533,7 @@ The UI's sort is a **local view sort** (it doesn't modify runtime warehouse data
 
 - The user picks the primary sort field in the dropdown;
 - The secondary sort (tiebreakers) comes from the current warehouse definition (`Inventory.sortTiebreakers`) and takes effect automatically;
-- Ascending/descending is controlled by the toggle button.
+- Ascending/descending is controlled by the toggle button and applies only to the main rule selected in the dropdown; the tiebreakers keep their own configured direction, and the toolbar starts from — and resets to, when the selection changes — that rule's configured direction (1.16.0).
 
 For **persistent sorting** (preserved after saving), call `InventoryRuntimeManager.SortInventory` in the game logic layer to write to the runtime state.
 

@@ -53,7 +53,7 @@ A warehouse template defines a warehouse's default configuration; warehouses cre
 | **Take-out function tags** | Only items carrying these tags may be taken out; empty = no restriction |
 | **Operate function tags** | Restricts the operations allowed on items in the warehouse; empty = no restriction |
 | **Filter tags** | The function-tag filter buttons in the warehouse UI ("All" always exists and needs no configuration) |
-| Auto sort | When checked, automatically sorts by the sort rules on every item change. **Where the direction comes from**: if the view has a sort toolbar (`UiwSortToolbar`), its current direction applies to every rule; without a toolbar each rule uses its own ascending / descending setting (fixed in 1.6.0 — previously everything was forced to descending when there was no toolbar) |
+| Auto sort | When checked, automatically sorts by the sort rules on every item change. **Where the direction comes from**: if the view has a sort toolbar (`UiwSortToolbar`), its current direction applies to the main rule (the dropdown selection) while the tiebreakers keep their own configured direction (since 1.16.0; previously the toolbar direction applied to every rule), and the toolbar starts from — and resets to, when the selection changes — the selected rule's configured direction; without a toolbar each rule uses its own ascending / descending setting (fixed in 1.6.0 — previously everything was forced to descending when there was no toolbar) |
 | Drag sort | When checked, allows the player to drag-reorder items in the UI |
 | **Sort list** | The primary sort rules; each entry picks a sort field + ascending/descending |
 | **Sort priority** | The secondary sort rules; compared in turn when the primary sort values are equal |

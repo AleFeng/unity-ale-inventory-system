@@ -117,6 +117,7 @@ namespace Ale.Inventory.Runtime.UI
                         var cell = _pricePool.Next();
                         if (!cell) break;
                         var (currencyId, amount) = av.GetStringIntPair(i);
+                        cell.numberFormat = numberFormat;   // 与商店详情行一致：价格按本行的数字格式显示（1.16.0）
                         cell.SetItem(currencyId, amount);
                     }
                     _pricePool.End();

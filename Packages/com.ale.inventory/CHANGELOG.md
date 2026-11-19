@@ -6,6 +6,20 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.16.0] - 2026-11-19
+
+**排序整理栏的升降序只管主条件。** 此前界面接了 `UiwSortToolbar` 时，主条件和全部整理优先级（tiebreaker）一律跟随排序栏的方向，且排序栏默认降序：配了「部位升序 → 品质降序 → 名称升序」的仓库，点「整理」后部位、名称也被倒过来，无法表达「各条件方向不同」的整理规则。
+
+### 变更
+
+- `UiwInventoryView`：有排序栏时，主条件（下拉选中项）取排序栏当前方向，各 tiebreaker 沿用自己配置的升 / 降序。无排序栏时不变（各自沿用配置）。
+- 最低 `com.ale.toolkit` 版本提至 2.1.0：列表基类 `UiwVirtualListBase.CurrentSortPriorities`（商店、制作等列表的排序）同一口径；`UiwSortToolbar` 的初始方向与切换条件时的方向取该条件配置的升 / 降序。
+- ⚠️ 行为变化：排序条件配成升序的界面，排序栏初始从「降序」变为「升序」。
+
+### 修复
+
+- `UiwInventoryItemDetail`：价格格子沿用本行的数字格式（`numberFormat`），与 `UiwShopItemDetail` 一致。此前价格总按原始数字显示（如 `1024000`），不走仓库配置的「万 / 亿」等格式。
+
 ## [1.15.1] - 2026-11-19
 
 **未定义的道具放不进仓库。** 此前 `TryAddItem` 不查道具定义：写错的道具 ID 也会被收下，仓库里多出一个白图标、显示原始 ID 的格子；`GetFreeSpaceFor` 对它还答「无限可放」。
