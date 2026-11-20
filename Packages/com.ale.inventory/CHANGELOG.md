@@ -6,6 +6,15 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.18.0] - 2026-11-20
+
+**卸下装备也经过宿主校验。** 1.17.0 只在换上时校验，卸下能把装备组变成宿主不允许的状态（如卸下提供负载上限的芯片后负载超限）。
+
+### 变更
+
+- `Unequip`（含经它的 `UnequipToConfigured`）与 `UnequipToSlot` 在搬运道具之前调用 `EquipValidator(groupId, slotId, null)`：itemId 为 null 表示该槽将被清空，返回 false 即拒绝、不改动任何状态。
+- ⚠ 已赋值 `EquipValidator` 的宿主要处理 itemId 为 null 的情况。未赋值时行为不变。
+
 ## [1.17.0] - 2026-11-20
 
 **换装前可以加一道宿主校验。** 槽位过滤（`EquipmentSlotFilter`）只做等值判定，表达不了「全身负载总和 ≤ 上限」这类跨槽位的规则；此前宿主只能在换装后再回滚，而回滚时已经搬过的仓库道具很难复原。

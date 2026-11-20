@@ -33,8 +33,9 @@ namespace Ale.Inventory.Runtime
 
         /// <summary>
         /// 换装前的附加校验，由宿主注入：槽位过滤只能做等值判定，表达不了「全身负载总和 ≤ 上限」这类跨槽位的规则。
-        /// 参数为 (groupId, slotId, 待装入的 itemId)，返回 false 即拒绝（不改动任何状态，拒绝提示由宿主自己给）。
-        /// 只在真正换上新道具时调用（<see cref="Equip"/>、<see cref="EquipFromSlotSwap"/>，含经它们的自动装备）；
+        /// 参数为 (groupId, slotId, 换完后槽里的 itemId)，卸下时 itemId 为 null；返回 false 即拒绝（不改动任何状态，拒绝提示由宿主自己给）。
+        /// 只在槽里的道具真正变化时调用：换上（<see cref="Equip"/>、<see cref="EquipFromSlotSwap"/>，含经它们的自动装备）
+        /// 与卸下（<see cref="Unequip"/>、<see cref="UnequipToSlot"/>，含 <see cref="UnequipToConfigured"/>）；
         /// <see cref="ItemMatchesSlot"/> 等查找不调用，UI 照常显示可装入的槽位。同组槽位互换（<see cref="SwapSlots"/>）不换道具，也不调用。
         /// </summary>
         public Func<string, string, string, bool> EquipValidator { get; set; }
@@ -334,6 +335,7 @@ namespace Ale.Inventory.Runtime
         {
             string itemId = GetEquipped(groupId, slotId);
             if (string.IsNullOrEmpty(itemId)) return false;
+            if (EquipValidator != null && !EquipValidator(groupId, slotId, null)) return false;
 
             if (!string.IsNullOrEmpty(toInventoryId))
             {
@@ -460,6 +462,7 @@ namespace Ale.Inventory.Runtime
         {
             string itemId = GetEquipped(groupId, equipSlotId);
             if (string.IsNullOrEmpty(itemId)) return false;
+            if (EquipValidator != null && !EquipValidator(groupId, equipSlotId, null)) return false;
 
             var invMgr = InventoryRuntimeManager.Instance;
             if (!invMgr) return false;
