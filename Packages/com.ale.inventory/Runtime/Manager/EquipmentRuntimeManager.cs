@@ -31,6 +31,14 @@ namespace Ale.Inventory.Runtime
         /// <summary>某装备组的已装备状态发生变化时触发。参数为 groupId。供装备 UI 刷新。</summary>
         public event Action<string> OnEquipmentChanged;
 
+        /// <summary>
+        /// 换装前的附加校验，由宿主注入：槽位过滤只能做等值判定，表达不了「全身负载总和 ≤ 上限」这类跨槽位的规则。
+        /// 参数为 (groupId, slotId, 待装入的 itemId)，返回 false 即拒绝（不改动任何状态，拒绝提示由宿主自己给）。
+        /// 只在真正换上新道具时调用（<see cref="Equip"/>、<see cref="EquipFromSlotSwap"/>，含经它们的自动装备）；
+        /// <see cref="ItemMatchesSlot"/> 等查找不调用，UI 照常显示可装入的槽位。同组槽位互换（<see cref="SwapSlots"/>）不换道具，也不调用。
+        /// </summary>
+        public Func<string, string, string, bool> EquipValidator { get; set; }
+
         protected override void Init()
         {
             // 装备组目录来自已注册数据库；槽位初始为空，无需预初始化。
@@ -296,6 +304,7 @@ namespace Ale.Inventory.Runtime
             if (slotList == null || slot == null) return false;
 
             if (!ItemMatchesSlot(slotList, slot, itemId)) return false;
+            if (EquipValidator != null && !EquipValidator(groupId, slotId, itemId)) return false;
 
             var invMgr = InventoryRuntimeManager.Instance;
             if (!string.IsNullOrEmpty(fromInventoryId))
@@ -483,6 +492,7 @@ namespace Ale.Inventory.Runtime
 
             string newItem = src.itemId;                        // 待装备道具（悬停格中的道具）
             if (!ItemMatchesSlot(slotList, slot, newItem)) return false;   // 不可装入 → 不改动（调用方取消拖拽）
+            if (EquipValidator != null && !EquipValidator(groupId, equipSlotId, newItem)) return false;
 
             string oldItem = GetEquipped(groupId, equipSlotId); // 原已装备道具（拖拽源装备槽）
 

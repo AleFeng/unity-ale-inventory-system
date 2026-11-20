@@ -6,6 +6,15 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.17.0] - 2026-11-20
+
+**换装前可以加一道宿主校验。** 槽位过滤（`EquipmentSlotFilter`）只做等值判定，表达不了「全身负载总和 ≤ 上限」这类跨槽位的规则；此前宿主只能在换装后再回滚，而回滚时已经搬过的仓库道具很难复原。
+
+### 新增
+
+- `EquipmentRuntimeManager.EquipValidator`（`Func<groupId, slotId, itemId, bool>`）：`Equip` 与 `EquipFromSlotSwap` 在通过槽位限制之后、搬运道具之前调用它，返回 false 即拒绝、不改动任何状态。经这两个方法的自动装备（`TryAutoEquip`、`TryAutoEquipOrReplace`）同样受它约束。
+- 查找类方法（`ItemMatchesSlot`、`TryFindEquipSlot` 等）与同组互换 `SwapSlots` 不调用它：界面照常显示可装入的槽位，点下去再由宿主拒绝并提示。未赋值时行为不变。
+
 ## [1.16.0] - 2026-11-19
 
 **排序整理栏的升降序只管主条件。** 此前界面接了 `UiwSortToolbar` 时，主条件和全部整理优先级（tiebreaker）一律跟随排序栏的方向，且排序栏默认降序：配了「部位升序 → 品质降序 → 名称升序」的仓库，点「整理」后部位、名称也被倒过来，无法表达「各条件方向不同」的整理规则。

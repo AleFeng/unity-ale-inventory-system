@@ -205,6 +205,7 @@ eq.ResetAll();                        // 清空（如开始新游戏）
 > （批量替换后由调用方自行刷新界面）。四个可存档管理器语义一致，见 [架构说明](Architecture.md#子系统运行时管理器)。
 
 - **装备**：`Equip` 先校验限制，从来源仓库取出 1 个道具；槽位已占用则把旧道具放回来源仓库（先取后放，净占用不变；放不回则回滚，不丢失道具）。未提供来源仓库时仅设置槽位（旧道具直接替换，调用方自负）。
+- **换装前的附加校验（1.17.0）**：宿主可给 `EquipValidator`（`Func<groupId, slotId, itemId, bool>`）赋值，表达槽位过滤做不了的跨槽位规则（如「全身负载总和 ≤ 上限」）。返回 false 即拒绝换装、不改动任何状态，拒绝提示由宿主自己给。只在 `Equip` / `EquipFromSlotSwap`（含经它们的自动装备）真正换上新道具时调用；`ItemMatchesSlot` 等查找与同组互换 `SwapSlots` 不调用。
 - **卸下**：`Unequip` 把道具放回指定目标仓库；放不下则返回 false、不卸下。UI 右键卸下走 `UnequipToConfigured(groupId, slotId)`——从装备组「装备仓库」列表 Index0 起找第一个放得下的仓库；都放不下（或未配置且无回退仓库）则不卸下，不会丢弃道具。
 - **属性加成**：`GetTotalBonuses` 对每条装备属性字段，跨全部已装备道具汇总，**记录方式随源属性 `AttributeValue.Type` 而不同**：
   - **`EnumIntPair`**：按枚举 Key 拆分——每个枚举 Key 单独成一条 `EquipmentBonus`，其整数值累加进 `Total`；`EnumTypeRef`/`EnumValue` 记录来源枚举，显示名经装备属性字段的「显示名来源（枚举字段）」（`EquipmentAttributeDisplay.enumLabelAttrId`）从对应枚举项的 String / Text 属性解析，未配置则回退枚举项名称。典型用于「角色属性值加成」（如 力量 +13、敏捷 +5）。**无法解析到实际枚举项的 Key（枚举类型缺失 / 枚举项被删除）不显示。**
