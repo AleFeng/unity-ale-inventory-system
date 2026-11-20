@@ -219,7 +219,7 @@ eq.ResetAll();                        // 清空（如开始新游戏）
 
 | 组件 | 说明 |
 |------|------|
-| `UiwEquipmentView` | 装备主界面：整合装备组面板 + 属性加成面板 + 装备选择面板。`Open(groupId)`（仓库取自装备组「装备仓库」，无需传入）；右键装备槽卸下到装备仓库；左键装备槽打开选择面板。`_groupId` 可在 Inspector 预设（默认「角色装备」）：无参 `Open()` 用该值，`Open(groupId)` 覆盖，编辑器 `autoOpenOnStart` 亦用当前 `_groupId` |
+| `UiwEquipmentView` | 装备主界面：整合装备组面板 + 属性加成面板 + 装备选择面板。`Open(groupId)`（仓库取自装备组「装备仓库」，无需传入）；右键装备槽卸下到装备仓库；左键装备槽打开选择面板。`_groupId` 可在 Inspector 预设（默认「角色装备」）：无参 `Open()` 用该值，`Open(groupId)` 覆盖，编辑器 `autoOpenOnStart` 亦用当前 `_groupId`；`hideGroupPanelOnSelect`（1.19.0，默认开）关掉后打开选择面板时不隐藏装备组面板，可做成贴在槽位旁的下拉 |
 | `UiwEquipmentGroupPanel` | 装备组面板：显示装备组名称 + 展示全部槽位列表。**布局方式**（`displayMode`）：`Auto` 自动按配置实例化各槽位列表；`Manual` 手动模式——用户在层级中自行摆放槽位列表物体，用 `manualSlotLists`（槽位列表 ID → 槽位列表）逐一绑定，实现自由排版（可在 Inspector 配 `groupId` + `bindOnStart` 独立使用） |
 | `UiwEquipmentSlotList` | 槽位列表：显示名称 + 展示全部装备槽。**布局方式**（`displayMode`）：`Auto` 在 HorizontalLayoutGroup 下实例化各装备槽；`Manual` 手动模式——用户在层级中自行摆放装备槽物体，用 `manualSlots`（槽位 ID → 装备槽）逐一绑定 |
 | `UiwEquipmentSlot` | 装备槽：继承 `UiwInventoryItemSlotBase`；显示已装备道具；左键 / 右键事件；拖拽源（拖出交换）+ 放置目标（装备 / 交换）+ 绿/红有效性叠加 |

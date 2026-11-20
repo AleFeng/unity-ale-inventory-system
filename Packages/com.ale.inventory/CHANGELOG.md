@@ -6,6 +6,14 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.19.0] - 2026-11-20
+
+**选择面板可以和装备组面板同时显示。** 此前左键点装备槽总会先隐藏装备组面板再打开选择面板，做不出「候选列表贴在槽位旁边展开」的下拉式布局。
+
+### 新增
+
+- `UiwEquipmentView.hideGroupPanelOnSelect`（默认 true，行为不变）：关掉后点槽位只打开选择面板，装备组面板保持显示，宿主可在 `OnSlotClicked` 里把选择面板挪到槽位旁。
+
 ## [1.18.0] - 2026-11-20
 
 **卸下装备也经过宿主校验。** 1.17.0 只在换上时校验，卸下能把装备组变成宿主不允许的状态（如卸下提供负载上限的芯片后负载超限）。

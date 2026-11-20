@@ -24,6 +24,9 @@ namespace Ale.Inventory.Runtime.UI
         [Tooltip("装备选择面板：左键点击装备槽时打开，替换装备组面板。为空则左键仅触发 OnSlotClicked。")]
         public UiwEquipmentSelectPanel selectPanel;
 
+        [Tooltip("打开选择面板时隐藏装备组面板（默认）。关掉后两者同时显示，适合把选择面板做成贴在槽位旁的下拉（1.19.0）。")]
+        public bool hideGroupPanelOnSelect = true;
+
         [Header("装备组")]
         [Tooltip("要显示的装备组 ID。可在 Inspector 预设：本视图始终使用该值，直到经 Open(groupId) 或 Inspector 改动。" +
                  "装备取出 / 卸下放入的仓库取自该装备组配置的「装备仓库」。")]
@@ -140,8 +143,8 @@ namespace Ale.Inventory.Runtime.UI
             OnSlotClicked?.Invoke(slot);
             if (slot == null || !selectPanel) return;
 
-            // 打开装备选择面板，定位到该槽所属槽位列表并选中该槽；隐藏装备组面板。
-            if (groupPanel) groupPanel.gameObject.SetActive(false);
+            // 打开装备选择面板，定位到该槽所属槽位列表并选中该槽；默认隐藏装备组面板。
+            if (groupPanel && hideGroupPanelOnSelect) groupPanel.gameObject.SetActive(false);
             selectPanel.OnExit -= HandleSelectExit;
             selectPanel.OnExit += HandleSelectExit;
             selectPanel.Open(groupId, slot.SlotListId, slot.SlotId);

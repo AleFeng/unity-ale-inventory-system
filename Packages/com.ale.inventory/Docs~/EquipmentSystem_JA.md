@@ -220,7 +220,7 @@ eq.ResetAll();                        // クリア（新規ゲーム開始など
 
 | コンポーネント | 説明 |
 |------|------|
-| `UiwEquipmentView` | 装備メイン画面：装備グループパネル + 属性ボーナスパネル + 装備選択パネルを統合。`Open(groupId)`（倉庫は装備グループの「装備倉庫」から取得、渡す必要なし）。装備スロットを右クリックで装備倉庫へ解除、左クリックで選択パネルを開く。`_groupId` は Inspector で事前設定可能（既定「キャラクター装備」）：引数なしの `Open()` はその値を使い、`Open(groupId)` が上書き、エディタの `autoOpenOnStart` も現在の `_groupId` を使う |
+| `UiwEquipmentView` | 装備メイン画面：装備グループパネル + 属性ボーナスパネル + 装備選択パネルを統合。`Open(groupId)`（倉庫は装備グループの「装備倉庫」から取得、渡す必要なし）。装備スロットを右クリックで装備倉庫へ解除、左クリックで選択パネルを開く。`_groupId` は Inspector で事前設定可能（既定「キャラクター装備」）：引数なしの `Open()` はその値を使い、`Open(groupId)` が上書き、エディタの `autoOpenOnStart` も現在の `_groupId` を使う。`hideGroupPanelOnSelect`（1.19.0、既定オン）をオフにすると、選択パネルを開いても装備グループパネルを隠さず、スロット横のドロップダウンとして使えます |
 | `UiwEquipmentGroupPanel` | 装備グループパネル：装備グループ名 + すべてのスロットリストを表示。**レイアウト方式**（`displayMode`）：`Auto` は設定に従って各スロットリストを自動インスタンス化。`Manual` はユーザーが階層でスロットリストのオブジェクトを自分で配置し、`manualSlotLists`（スロットリスト ID → スロットリスト）で 1 つずつバインドして自由なレイアウトを実現（Inspector で `groupId` + `bindOnStart` を設定して単独使用可） |
 | `UiwEquipmentSlotList` | スロットリスト：名称 + すべての装備スロットを表示。**レイアウト方式**（`displayMode`）：`Auto` は HorizontalLayoutGroup 下に各装備スロットをインスタンス化。`Manual` はユーザーが階層で装備スロットのオブジェクトを自分で配置し、`manualSlots`（スロット ID → 装備スロット）で 1 つずつバインド |
 | `UiwEquipmentSlot` | 装備スロット：`UiwInventoryItemSlotBase` を継承。装備中アイテムを表示。左 / 右クリックイベント。ドラッグソース（ドラッグアウトで交換）+ ドロップ対象（装備 / 交換）+ 緑/赤の有効性オーバーレイ |
