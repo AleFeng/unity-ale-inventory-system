@@ -41,7 +41,7 @@
 Runtime/UI/
 ├── Item/      单个格子（UiwInventoryItemBase / SlotBase / Cell / Simple / Detail、UiwShopItemDetail、UiwCraftingBlueprintCell、UiwCraftingInputCell、UiwEquipmentSlot、UiwEquipmentBonusEntry、UiwInventoryItemEvents）
 ├── ItemList/  虚拟滚动列表族：基类 UiwVirtualListBase + 通用 UiwVirtualGridList / UiwVirtualOrderList + 叶子（仓库 UiwInventoryItemGridList / UiwInventoryItemOrderList、制作 UiwCraftingBlueprintList）+ GridCellDragHandler + ViewportSizeWatcher（装备候选列表在 View/Equipment/、商店商品列表在 View/Shop/）
-├── Tab/       页签 / 过滤（UiwTabButton、UiwShopGroupTab、UiwFoldTab、UiwFilterTabBar、UiwCraftingGroupFilter）
+├── Tab/       页签 / 过滤（UiwTabButton、UiwShopGroupTab、UiwFoldTab、UiwFilterTabBar、UiwCraftingGroupFilter、UiwGroupTagMultiFilter）
 ├── Tool/      通用工具类组件（UiwCurrencyBar、UiwSortToolbar、UiwItemTooltip、UiwNumberCounter）
 ├── View/      主界面：UiwViewBase 基类
 │   ├── Inventory/  UiwInventoryView
@@ -642,6 +642,7 @@ public class InventoryUIController : MonoBehaviour
 | `UiwCraftingInputCell` | 消耗道具行（图标 / 名称 / 需求 / 持有） |
 | `UiwCraftingBlueprintList` | 蓝图虚拟滚动列表（继承 `UiwVirtualOrderList`，额外支持选中高亮 + 选中事件） |
 | `UiwCraftingGroupFilter` | 分组折叠页签（主分组折叠出副分组，复用 `UiwFoldTab`） |
+| `UiwGroupTagMultiFilter` | 多维过滤：`dimensions` 每项配名称、比对字段（主分组 / 副分组）、`multiSelect`、`tagPrefix` 或 `tagIds`、页签容器 `container`；`tabPrefab` 需带 `Button`。配在 `UiwCraftingView.multiFilter` 上即代替分组折叠页签 |
 
 行为（配方、制作仓库、可制作次数）见 [制作系统](CraftingSystem.md)。
 

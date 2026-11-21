@@ -41,7 +41,7 @@
 Runtime/UI/
 ├── Item/      単一セル（UiwInventoryItemBase / SlotBase / Cell / Simple / Detail、UiwShopItemDetail、UiwCraftingBlueprintCell、UiwCraftingInputCell、UiwEquipmentSlot、UiwEquipmentBonusEntry、UiwInventoryItemEvents）
 ├── ItemList/  仮想スクロールリスト族：基底 UiwVirtualListBase + 汎用 UiwVirtualGridList / UiwVirtualOrderList + リーフ（倉庫 UiwInventoryItemGridList / UiwInventoryItemOrderList、クラフト UiwCraftingBlueprintList）+ GridCellDragHandler + ViewportSizeWatcher（装備候補リストは View/Equipment/、ショップ商品リストは View/Shop/）
-├── Tab/       タブ / フィルタ（UiwTabButton、UiwShopGroupTab、UiwFoldTab、UiwFilterTabBar、UiwCraftingGroupFilter）
+├── Tab/       タブ / フィルタ（UiwTabButton、UiwShopGroupTab、UiwFoldTab、UiwFilterTabBar、UiwCraftingGroupFilter、UiwGroupTagMultiFilter）
 ├── Tool/      汎用ユーティリティコンポーネント（UiwCurrencyBar、UiwSortToolbar、UiwItemTooltip、UiwNumberCounter）
 ├── View/      メイン画面：UiwViewBase 基底クラス
 │   ├── Inventory/  UiwInventoryView
@@ -642,6 +642,7 @@ public class InventoryUIController : MonoBehaviour
 | `UiwCraftingInputCell` | 消費アイテム行（アイコン / 名称 / 要求 / 保有） |
 | `UiwCraftingBlueprintList` | ブループリント仮想スクロールリスト（`UiwVirtualOrderList` を継承、選択ハイライト + 選択イベントを追加サポート） |
 | `UiwCraftingGroupFilter` | グループ折りたたみタブ（主グループから副グループを展開、`UiwFoldTab` を再利用） |
+| `UiwGroupTagMultiFilter` | 多次元フィルタ：`dimensions` の各項目で名前・比較フィールド（主グループ / 副グループ）・`multiSelect`・`tagPrefix` または `tagIds`・タブの `container` を設定。`tabPrefab` には `Button` が必要。`UiwCraftingView.multiFilter` に設定するとグループ折りたたみタブの代わりに使用 |
 
 挙動（レシピ、クラフト倉庫、作成可能回数）は [クラフトシステム](CraftingSystem_JA.md) を参照。
 

@@ -165,5 +165,6 @@ bool ok = cm.CraftOnce(bp);          // 或 cm.CraftOnce("craft_sword")
 | `UiwCraftingInputCell` | 消耗道具行（图标 / 名称 / 需求 / 持有） |
 | `UiwCraftingBlueprintList` | 蓝图虚拟滚动列表 |
 | `UiwCraftingGroupFilter` | 分组折叠页签（主分组可折叠出副分组，复用 `UiwFoldTab`） |
+| `UiwGroupTagMultiFilter` | 多维过滤（可选，配在 `UiwCraftingView.multiFilter` 上即代替分组折叠页签）：维度、比对字段、单选 / 多选由调用方配置，各维取与 |
 
 过滤管线：模板 → 分组（主 / 副）→ 名称搜索；再按所选模板的整理设置排序。预制体制作与参数见 [UI 组件指南](UIComponentGuide.md)。

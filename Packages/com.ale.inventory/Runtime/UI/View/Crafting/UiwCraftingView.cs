@@ -7,8 +7,9 @@ using UnityEngine.UI;
 namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
-    /// 制作主界面（MonoBehaviour）。整合 蓝图模板页签 + 蓝图名搜索 + 分组折叠页签 + 排序整理栏 +
-    /// 蓝图虚拟列表 + 蓝图详情。过滤管线：模板 → 分组（主/副）→ 名称搜索；再按所选模板的「整理设置」排序。
+    /// 制作主界面（MonoBehaviour）。整合 蓝图模板页签 + 蓝图名搜索 + 分组折叠页签（或多维过滤）+ 排序整理栏 +
+    /// 蓝图虚拟列表 + 蓝图详情。过滤管线：模板 → 分组（主/副；配了 <see cref="multiFilter"/> 时改用多维过滤）→ 名称搜索；
+    /// 再按所选模板的「整理设置」排序。
     /// 结构与 <see cref="UiwInventoryView"/> 对称。
     /// </summary>
     public class UiwCraftingView : UiwViewBase
@@ -16,6 +17,7 @@ namespace Ale.Inventory.Runtime.UI
         protected override void Start()
         {
             if (groupFilter)  groupFilter.OnGroupChanged += OnGroupChanged;
+            if (multiFilter)  multiFilter.OnFilterChanged += RefilterAndShow;
             if (searchInput)  searchInput.onValueChanged.AddListener(OnSearchChanged);
             // 排序栏事件已下沉到蓝图列表组件（UiwVirtualListBase）自管，此处不再订阅。
             if (blueprintList) blueprintList.OnBlueprintSelected += OnBlueprintSelected;
@@ -28,6 +30,7 @@ namespace Ale.Inventory.Runtime.UI
             base.OnDestroy();   // 取消按打开订阅的 OnInventoryChanged
             // 工具栏 / 搜索 / 列表事件随组件生命周期订阅（Start），此处一并取消
             if (groupFilter)   groupFilter.OnGroupChanged -= OnGroupChanged;
+            if (multiFilter)   multiFilter.OnFilterChanged -= RefilterAndShow;
             if (searchInput)   searchInput.onValueChanged.RemoveListener(OnSearchChanged);
             if (blueprintList) blueprintList.OnBlueprintSelected -= OnBlueprintSelected;
         }
@@ -51,6 +54,7 @@ namespace Ale.Inventory.Runtime.UI
                 _currentTemplate = null;
                 _currentTemplateObj = null;
                 if (groupFilter) groupFilter.SetBlueprints(CollectTemplateBlueprints(), autoApply: false);
+                if (multiFilter) multiFilter.SetTags(_groupTags);
                 ConfigureBlueprintSort();
                 _activePrimary = null; _activeSub = null;
                 RefilterAndShow();
@@ -79,6 +83,7 @@ namespace Ale.Inventory.Runtime.UI
         {
             _allBlueprints.Clear();
             _templates.Clear();
+            _groupTags.Clear();
             _db = null;
 
             var dm = InventoryDataManager.Instance;
@@ -90,6 +95,7 @@ namespace Ale.Inventory.Runtime.UI
                 if (_db == null && db.CraftingBlueprints.Count > 0) _db = db;
                 _templates.AddRange(db.CraftingBlueprintTemplates);
                 _allBlueprints.AddRange(db.CraftingBlueprints);
+                _groupTags.AddRange(db.CraftingGroupTags);
             }
             if (_db == null && dm.Databases.Count > 0) _db = dm.Databases[0];
         }
@@ -163,6 +169,7 @@ namespace Ale.Inventory.Runtime.UI
             if (searchInput) searchInput.SetTextWithoutNotify(string.Empty);
             _activePrimary = null; _activeSub = null;
             if (groupFilter) groupFilter.SetBlueprints(CollectTemplateBlueprints(), autoApply: false);
+            if (multiFilter) multiFilter.SetTags(_groupTags);
 
             ConfigureBlueprintSort();
             RefilterAndShow();
@@ -216,6 +223,12 @@ namespace Ale.Inventory.Runtime.UI
         private string _activePrimary; // null = 全部
         private string _activeSub;     // null = 整个主分组 / 全部
 
+        [Tooltip("多维过滤（UiwGroupTagMultiFilter）。配了它就用它代替分组折叠页签。")]
+        public UiwGroupTagMultiFilter multiFilter;
+
+        // 全部数据库的制作分组标签（多维过滤据此建页签）
+        private readonly List<CraftingGroupTag> _groupTags = new List<CraftingGroupTag>();
+
         private void OnGroupChanged(string primary, string sub)
         {
             _activePrimary = primary;
@@ -252,7 +265,11 @@ namespace Ale.Inventory.Runtime.UI
             {
                 if (bp == null) continue;
                 if (!string.IsNullOrEmpty(_currentTemplate) && bp.templateRef != _currentTemplate) continue;
-                if (!string.IsNullOrEmpty(_activePrimary))
+                if (multiFilter)
+                {
+                    if (!multiFilter.Matches(bp.primaryGroupTag, bp.secondaryGroupTags)) continue;
+                }
+                else if (!string.IsNullOrEmpty(_activePrimary))
                 {
                     if (bp.primaryGroupTag != _activePrimary) continue;
                     if (!string.IsNullOrEmpty(_activeSub) &&

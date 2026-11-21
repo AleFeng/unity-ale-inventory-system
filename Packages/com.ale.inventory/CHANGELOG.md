@@ -6,6 +6,16 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.22.0] - 2026-11-22
+
+**按分组标签做多维正交过滤。** 此前制作界面只有两级单选树 `UiwCraftingGroupFilter`（主分组折叠出副分组），做不出「部位 × 品质 × 技能」这种各维独立、某一维还能多选的筛选。
+
+### 新增
+
+- `UiwGroupTagMultiFilter`：维度数、每一维比对主分组还是副分组、单选还是多选、收哪些标签（ID 前缀或显式 ID 列表）都由调用方配置；各维取与，选中集合为空 = 不限，多选维取并集。单选维首个页签「全部」，多选维首个页签「清空」。对外是 `SetTags` / `Matches` / `Select` / `Clear` / `OnFilterChanged`，不认具体数据类型，商店等别处也能用。
+- `UiwCraftingView.multiFilter`（可选）：配了就用多维过滤代替分组折叠页签，切模板时按全部制作分组标签重建页签；不配则行为不变。
+- Demo：制作界面换成三维过滤（类别 / 品质 / 子类多选），道具库补「品质-粗糙 / 普通 / 优秀」三个分组标签并给每个蓝图挂上产出的品质。
+
 ## [1.21.0] - 2026-11-22
 
 **未配置商品组的回收店也能打折回收。** 此前回收店没配商品组时，视图把交易仓库里的道具临时合成商品，倍率固定 1，结算走的 `RecycleItem` 也没有倍率 —— 想要「一律按基准价 × 0.4 回收」只能把全部道具逐个配成商品。

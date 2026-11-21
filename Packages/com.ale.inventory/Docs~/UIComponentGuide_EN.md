@@ -41,7 +41,7 @@ Scripts are placed by type into subfolders under `Runtime/UI/` (the namespace is
 Runtime/UI/
 ├── Item/      Single cells (UiwInventoryItemBase / SlotBase / Cell / Simple / Detail, UiwShopItemDetail, UiwCraftingBlueprintCell, UiwCraftingInputCell, UiwEquipmentSlot, UiwEquipmentBonusEntry, UiwInventoryItemEvents)
 ├── ItemList/  Virtual-scroll list family: base UiwVirtualListBase + generic UiwVirtualGridList / UiwVirtualOrderList + leaves (warehouse UiwInventoryItemGridList / UiwInventoryItemOrderList, crafting UiwCraftingBlueprintList) + GridCellDragHandler + ViewportSizeWatcher (the equipment candidate list is in View/Equipment/, the shop product list in View/Shop/)
-├── Tab/       Tabs / filters (UiwTabButton, UiwShopGroupTab, UiwFoldTab, UiwFilterTabBar, UiwCraftingGroupFilter)
+├── Tab/       Tabs / filters (UiwTabButton, UiwShopGroupTab, UiwFoldTab, UiwFilterTabBar, UiwCraftingGroupFilter, UiwGroupTagMultiFilter)
 ├── Tool/      Common utility components (UiwCurrencyBar, UiwSortToolbar, UiwItemTooltip, UiwNumberCounter)
 ├── View/      Main screens: the UiwViewBase base class
 │   ├── Inventory/  UiwInventoryView
@@ -642,6 +642,7 @@ Sections 2–9 focus on the backpack UI. The shop and crafting screens and other
 | `UiwCraftingInputCell` | Input item row (icon / name / requirement / holdings) |
 | `UiwCraftingBlueprintList` | Blueprint virtual-scroll list (inherits `UiwVirtualOrderList`, additionally supporting selection highlight + selection event) |
 | `UiwCraftingGroupFilter` | Collapsible group tabs (a primary group unfolds its secondary groups, reusing `UiwFoldTab`) |
+| `UiwGroupTagMultiFilter` | Multi-dimension filter: each `dimensions` entry sets a name, the compared field (primary / secondary group), `multiSelect`, `tagPrefix` or `tagIds`, and the tab `container`; `tabPrefab` needs a `Button`. Assigned to `UiwCraftingView.multiFilter` it replaces the collapsible group tabs |
 
 Behavior (recipes, crafting warehouses, craftable count) — see [Crafting System](CraftingSystem_EN.md).
 

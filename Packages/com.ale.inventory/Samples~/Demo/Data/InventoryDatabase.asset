@@ -7813,6 +7813,81 @@ MonoBehaviour:
       curves: []
       objAddresses: []
     color: {r: 1, g: 0.69803923, b: 0.43137255, a: 1}
+  - id: "\u54C1\u8D28-\u7C97\u7CD9"
+    displayName:
+      type: 10
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings:
+      - "\u7C97\u7CD9"
+      - 
+      - 
+      objRefs: []
+      curves: []
+      objAddresses: []
+    description:
+      type: 10
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses: []
+    color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  - id: "\u54C1\u8D28-\u666E\u901A"
+    displayName:
+      type: 10
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings:
+      - "\u666E\u901A"
+      - 
+      - 
+      objRefs: []
+      curves: []
+      objAddresses: []
+    description:
+      type: 10
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses: []
+    color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  - id: "\u54C1\u8D28-\u4F18\u79C0"
+    displayName:
+      type: 10
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings:
+      - "\u4F18\u79C0"
+      - 
+      - 
+      objRefs: []
+      curves: []
+      objAddresses: []
+    description:
+      type: 10
+      isArray: 0
+      enumTypeRef: 
+      ints: 
+      floats: []
+      strings: []
+      objRefs: []
+      curves: []
+      objAddresses: []
+    color: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   craftingBlueprintTemplates:
   - name: "\u953B\u9020"
     color: {r: 0.24056602, g: 0.76779246, b: 1, a: 1}
@@ -7930,6 +8005,7 @@ MonoBehaviour:
     primaryGroupTag: "\u88C5\u5907"
     secondaryGroupTags:
     - "\u88C5\u5907-\u5934\u90E8"
+    - "\u54C1\u8D28-\u7C97\u7CD9"
     outputs:
     - itemId: "\u5E03\u5E3D"
       count: 1
@@ -7981,6 +8057,7 @@ MonoBehaviour:
     primaryGroupTag: "\u88C5\u5907"
     secondaryGroupTags:
     - "\u88C5\u5907-\u5934\u90E8"
+    - "\u54C1\u8D28-\u666E\u901A"
     outputs:
     - itemId: "\u94C1\u76D4"
       count: 1
@@ -8030,6 +8107,7 @@ MonoBehaviour:
     primaryGroupTag: "\u88C5\u5907"
     secondaryGroupTags:
     - "\u88C5\u5907-\u80F8\u90E8"
+    - "\u54C1\u8D28-\u666E\u901A"
     outputs:
     - itemId: "\u732A\u76AE\u7532"
       count: 1
@@ -8081,6 +8159,7 @@ MonoBehaviour:
     primaryGroupTag: "\u836F\u5242"
     secondaryGroupTags:
     - "\u836F\u5242-\u6062\u590D"
+    - "\u54C1\u8D28-\u666E\u901A"
     outputs:
     - itemId: "\u521D\u7EA7\u6CBB\u7597\u836F\u6C34"
       count: 1
@@ -8131,6 +8210,7 @@ MonoBehaviour:
     primaryGroupTag: "\u836F\u5242"
     secondaryGroupTags:
     - "\u836F\u5242-\u6062\u590D"
+    - "\u54C1\u8D28-\u666E\u901A"
     outputs:
     - itemId: "\u521D\u7EA7\u6CD5\u529B\u836F\u6C34"
       count: 1
@@ -8181,6 +8261,7 @@ MonoBehaviour:
     primaryGroupTag: "\u836F\u5242"
     secondaryGroupTags:
     - "\u836F\u5242-\u6062\u590D"
+    - "\u54C1\u8D28-\u666E\u901A"
     outputs:
     - itemId: "\u521D\u7EA7\u4F53\u529B\u836F\u6C34"
       count: 1
@@ -8231,6 +8312,7 @@ MonoBehaviour:
     primaryGroupTag: "\u836F\u5242"
     secondaryGroupTags:
     - "\u836F\u5242-\u5F3A\u5316"
+    - "\u54C1\u8D28-\u7C97\u7CD9"
     outputs:
     - itemId: "\u521D\u7EA7\u8FC5\u6377\u836F\u6C34"
       count: 1
@@ -8281,6 +8363,7 @@ MonoBehaviour:
     primaryGroupTag: "\u836F\u5242"
     secondaryGroupTags:
     - "\u836F\u5242-\u5F31\u5316"
+    - "\u54C1\u8D28-\u7C97\u7CD9"
     outputs:
     - itemId: "\u521D\u7EA7\u8FDF\u7F13\u836F\u6C34"
       count: 1
@@ -8331,6 +8414,7 @@ MonoBehaviour:
     primaryGroupTag: "\u836F\u5242"
     secondaryGroupTags:
     - "\u836F\u6C34-\u4F24\u5BB3"
+    - "\u54C1\u8D28-\u7C97\u7CD9"
     outputs:
     - itemId: "\u521D\u7EA7\u6BD2\u7D20\u836F\u6C34"
       count: 1
@@ -8381,6 +8465,7 @@ MonoBehaviour:
     primaryGroupTag: "\u901F\u98DF"
     secondaryGroupTags:
     - "\u901F\u98DF-\u9762\u5305"
+    - "\u54C1\u8D28-\u7C97\u7CD9"
     outputs:
     - itemId: "\u7C97\u7CD9\u7684\u9762\u5305"
       count: 1
@@ -8431,6 +8516,7 @@ MonoBehaviour:
     primaryGroupTag: "\u6B66\u5668"
     secondaryGroupTags:
     - "\u6B66\u5668-\u5315\u9996"
+    - "\u54C1\u8D28-\u7C97\u7CD9"
     outputs:
     - itemId: "\u6728\u5315\u9996"
       count: 1
@@ -8482,6 +8568,7 @@ MonoBehaviour:
     primaryGroupTag: "\u6B66\u5668"
     secondaryGroupTags:
     - "\u6B66\u5668-\u5251"
+    - "\u54C1\u8D28-\u4F18\u79C0"
     outputs:
     - itemId: "\u94A2\u5251"
       count: 1
@@ -8533,6 +8620,7 @@ MonoBehaviour:
     primaryGroupTag: "\u6B66\u5668"
     secondaryGroupTags:
     - "\u6B66\u5668-\u6CD5\u6756"
+    - "\u54C1\u8D28-\u666E\u901A"
     outputs:
     - itemId: "\u6A61\u6728\u6CD5\u6756"
       count: 1
@@ -8584,6 +8672,7 @@ MonoBehaviour:
     primaryGroupTag: "\u6B66\u5668"
     secondaryGroupTags:
     - "\u6B66\u5668-\u5F13"
+    - "\u54C1\u8D28-\u7C97\u7CD9"
     outputs:
     - itemId: "\u6728\u5F13"
       count: 1

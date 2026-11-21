@@ -165,5 +165,6 @@ bool ok = cm.CraftOnce(bp);          // または cm.CraftOnce("craft_sword")
 | `UiwCraftingInputCell` | 消費アイテム行（アイコン / 名称 / 要求 / 保有） |
 | `UiwCraftingBlueprintList` | ブループリント仮想スクロールリスト |
 | `UiwCraftingGroupFilter` | グループ折りたたみタブ（主グループから副グループを展開でき、`UiwFoldTab` を再利用） |
+| `UiwGroupTagMultiFilter` | 多次元フィルタ（任意。`UiwCraftingView.multiFilter` に設定するとグループ折りたたみタブの代わりに使用）：次元・比較フィールド・単一 / 複数選択は呼び出し側で設定、各次元は AND |
 
 フィルタパイプライン：テンプレート → グループ（主 / 副）→ 名称検索。その後、選択したテンプレートの整理設定でソート。プレハブ作成とパラメータは [UI コンポーネントガイド](UIComponentGuide_JA.md) を参照してください。

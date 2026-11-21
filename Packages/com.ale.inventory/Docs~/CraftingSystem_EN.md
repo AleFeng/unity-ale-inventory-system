@@ -165,5 +165,6 @@ The crafting UI is under `Runtime/UI/View/Crafting/`, with a structure symmetric
 | `UiwCraftingInputCell` | Input item row (icon / name / requirement / holdings) |
 | `UiwCraftingBlueprintList` | Blueprint virtual-scroll list |
 | `UiwCraftingGroupFilter` | Collapsible group tabs (a primary group can unfold its secondary groups, reusing `UiwFoldTab`) |
+| `UiwGroupTagMultiFilter` | Multi-dimension filter (optional; assigned to `UiwCraftingView.multiFilter` it replaces the collapsible group tabs): dimensions, compared field and single / multi select are set by the caller; dimensions are ANDed |
 
 Filter pipeline: template → group (primary / secondary) → name search; then sorted by the selected template's sort settings. For prefab authoring and parameters, see the [UI Component Guide](UIComponentGuide_EN.md).

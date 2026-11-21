@@ -1,0 +1,27 @@
+{
+    "name": "Ale.Inventory.Tests",
+    "rootNamespace": "Ale.Inventory.Tests",
+    "references": [
+        "Ale.Toolkit.Runtime",
+        "Ale.Toolkit.Runtime.UI",
+        "Ale.Inventory.Runtime",
+        "Ale.Inventory.Runtime.UI",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
