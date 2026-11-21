@@ -246,15 +246,15 @@ namespace Ale.Inventory.Runtime
 
         /// <summary>
         /// 在回收店按道具 ID 回收 <paramref name="times"/> 次（用于「未配置商品组」的默认回收：
-        /// 倍率 1、不限次数、不刷新）。价格仍取自该道具的 <see cref="Shop.priceAttrSource"/> 属性。
+        /// 不限次数、不刷新，倍率默认 1）。价格仍取自该道具的 <see cref="Shop.priceAttrSource"/> 属性，再乘 <paramref name="priceMultiplier"/>。
         /// </summary>
-        public ShopTradeResult RecycleItem(string shopId, string itemId, int times)
+        public ShopTradeResult RecycleItem(string shopId, string itemId, int times, float priceMultiplier = 1f)
         {
             var shop = ResolveShop(shopId);
             if (shop == null) return ShopTradeResult.Fail(ShopTradeFailReason.ShopNotFound);
             if (string.IsNullOrEmpty(itemId))
                 return ShopTradeResult.Fail(ShopTradeFailReason.CommodityInvalid);
-            var tmp = new ShopCommodity { itemId = itemId, count = 1, priceMultiplier = 1f, tradeLimit = -1 };
+            var tmp = new ShopCommodity { itemId = itemId, count = 1, priceMultiplier = priceMultiplier, tradeLimit = -1 };
             return RecycleInternal(shop, null, -1, tmp, -1, times);
         }
 

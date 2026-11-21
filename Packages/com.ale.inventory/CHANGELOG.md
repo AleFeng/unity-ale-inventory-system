@@ -6,6 +6,15 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.21.0] - 2026-11-22
+
+**未配置商品组的回收店也能打折回收。** 此前回收店没配商品组时，视图把交易仓库里的道具临时合成商品，倍率固定 1，结算走的 `RecycleItem` 也没有倍率 —— 想要「一律按基准价 × 0.4 回收」只能把全部道具逐个配成商品。
+
+### 新增
+
+- `UiwRecycleShopView.syntheticPriceMultiplierAttrId`：合成商品的价格倍率取商店的哪个自定义属性（Float）；空或取不到时为 1，行为不变。
+- `ShopRuntimeManager.RecycleItem` 新增可选参数 `priceMultiplier`（默认 1，已有调用不受影响），回收视图结算合成商品时把倍率传进去。
+
 ## [1.20.0] - 2026-11-22
 
 **商店商品格显示功能标签，总价写货币名称。** 此前功能标签只有仓库的详情行显示，商店里看不出商品带什么标签（如宿主给黑市商品打的「恶堕」）；总价写的是货币道具 ID（「950 credit」）。

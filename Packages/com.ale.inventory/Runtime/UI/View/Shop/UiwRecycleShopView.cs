@@ -1,4 +1,6 @@
+using Ale.Toolkit.Runtime;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Ale.Inventory.Runtime.UI
 {
@@ -10,6 +12,10 @@ namespace Ale.Inventory.Runtime.UI
     {
         protected override ShopType ExpectedType => ShopType.Recycle;
 
+        [Header("合成商品")]
+        [Tooltip("未配置商品组时，合成商品的价格倍率取商店的哪个自定义属性（Float；空 / 取不到 = 1）。")]
+        public string syntheticPriceMultiplierAttrId;
+
         /// <summary>回收店总价文本使用「总收益」前缀。</summary>
         protected override string TotalPrefix => recycleTotalPrefix;
 
@@ -20,6 +26,7 @@ namespace Ale.Inventory.Runtime.UI
             if (!ShopHasNoCommodities()) return;
             if (!InventoryRuntimeManager.Instance) return;
 
+            float multiplier = SyntheticPriceMultiplier();
             var seen = new HashSet<string>();
             foreach (var invId in shop.tradeInventoryRefs)
             {
@@ -31,7 +38,7 @@ namespace Ale.Inventory.Runtime.UI
                     {
                         itemId          = slot.itemId,
                         count           = 1,
-                        priceMultiplier = 1f,
+                        priceMultiplier = multiplier,
                         tradeLimit      = -1,
                     });
                 }
@@ -58,7 +65,7 @@ namespace Ale.Inventory.Runtime.UI
             foreach (var e in entries)
             {
                 if (e.commodity == null || e.times <= 0) continue;
-                if (e.synthetic) shopMgr.RecycleItem(ShopId, e.commodity.itemId, e.times);
+                if (e.synthetic) shopMgr.RecycleItem(ShopId, e.commodity.itemId, e.times, e.commodity.priceMultiplier);
                 else             shopMgr.Recycle(ShopId, e.commodity, e.times);
             }
             settling = false;
@@ -72,6 +79,14 @@ namespace Ale.Inventory.Runtime.UI
         /// </summary>
         protected override bool IsCommodityTradeable(ShopCommodity commodity)
             => commodity != null && MatchesTradeTags(commodity.itemId);
+
+        /// <summary>合成商品的价格倍率：商店自定义属性 <see cref="syntheticPriceMultiplierAttrId"/>（Float），空 / 取不到 = 1。</summary>
+        private float SyntheticPriceMultiplier()
+        {
+            if (string.IsNullOrEmpty(syntheticPriceMultiplierAttrId) || shop == null) return 1f;
+            var value = shop.GetAttributeValue(syntheticPriceMultiplierAttrId);
+            return value != null && value.Type == EFieldType.Float ? value.AsFloat : 1f;
+        }
 
         /// <summary>道具是否满足本店「交易功能标签」限制（空列表 = 不限制）。</summary>
         private bool MatchesTradeTags(string itemId)
