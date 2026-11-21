@@ -13,7 +13,7 @@ namespace Ale.Inventory.Runtime.UI
 {
     /// <summary>
     /// 商店道具明细显示组件（MonoBehaviour），对应背包列表项 <see cref="UiwInventoryItemDetail"/>。
-    /// 在 <see cref="UiwInventoryItemBase"/>（图标 / 名称 / 品质背景 / 数字格式）基础上，增加单价（多货币）、
+    /// 在 <see cref="UiwInventoryItemBase"/>（图标 / 名称 / 品质背景 / 功能标签 / 数字格式）基础上，增加单价（多货币）、
     /// 剩余可交易次数 / 持有量、以及购买/回收次数的 +/- 选择。由 <see cref="UiwShopViewBase"/> 统一驱动。
     ///
     /// <para>「售卖」按可交易次数（货币是否充足由商店总价栏体现，不在行内钳制）选择次数；
@@ -116,6 +116,7 @@ namespace Ale.Inventory.Runtime.UI
         {
             _commodity = null;
             _entry     = null;
+            ClearItemLabels();
             if (counter) counter.SetValue(0, notify: false);
             gameObject.SetActive(false);
         }
@@ -147,6 +148,7 @@ namespace Ale.Inventory.Runtime.UI
             ApplyQualityBackground(item);
             ApplyIcon(item);
             ApplyName(item, _commodity.itemId);
+            ApplyItemLabels(item);
             if (countText) countText.text = "×" + _commodity.count;
 
             // 单价（多货币）
@@ -207,13 +209,13 @@ namespace Ale.Inventory.Runtime.UI
             }
 
             if (unitPriceText)
-                unitPriceText.text = UIFormat.PriceString(numberFormat, _unitPrice);
+                unitPriceText.text = ShopPriceText.Format(numberFormat, _unitPrice, nameAttrId);
         }
 
         private void UpdateSubtotal()
         {
             if (subtotalText)
-                subtotalText.text = Times > 0 ? UIFormat.PriceString(numberFormat, _unitPrice, Times) : string.Empty;
+                subtotalText.text = Times > 0 ? ShopPriceText.Format(numberFormat, _unitPrice, nameAttrId, Times) : string.Empty;
         }
 
         private void ApplyGray(bool disabled)

@@ -6,6 +6,8 @@ using UiText = UnityEngine.UI.Text;
 
 using Ale.Toolkit.Runtime.UI;
 using Ale.Toolkit.Runtime;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -181,6 +183,85 @@ namespace Ale.Inventory.Runtime.UI
         {
             if (!img) return;
             var c = img.color; c.a = a; img.color = c;
+        }
+
+        #endregion
+
+        #region 功能标签
+
+        [Header("功能标签")]
+        [Tooltip("道具标签 预制体。")]
+        public UiwTextLabel textTagsPrefab;
+        [Tooltip("道具标签 容器。用于放置 多个功能标签的UI显示。未配置则不显示功能标签。")]
+        public Transform itemTagsContainer;
+
+        /// <summary>功能标签 UI 实例池（只增不减，多余的实例 SetActive(false) 复用）。</summary>
+        private readonly UiwWidgetPool<UiwTextLabel> _labelPool = new UiwWidgetPool<UiwTextLabel>();
+
+        private static readonly Action<UiwTextLabel> RecycleLabel = lbl =>
+        {
+            InventoryAssets.Release(lbl.gameObject);
+            lbl.gameObject.SetActive(false);
+        };
+
+        // 功能标签背景异步加载世代号：每次刷新自增，回调据此丢弃过期结果（标签实例池化复用）。
+        private int _tagGen;
+
+        /// <summary>
+        /// 显示道具的功能标签（item.tagRefs ∪ template.tagRefs，跳过 hideInUI 的标签）。
+        /// 预制体未配置 <see cref="itemTagsContainer"/> / <see cref="textTagsPrefab"/> 时静默跳过。
+        /// </summary>
+        protected void ApplyItemLabels(Item item)
+        {
+            if (!itemTagsContainer || !textTagsPrefab) return;
+
+            // 合并 item.tagRefs ∪ template.tagRefs（保序去重，item 自身优先）
+            var tagNames = new List<string>();
+            var seen     = new HashSet<string>();
+            if (item?.tagRefs != null)
+                foreach (var t in item.tagRefs) if (seen.Add(t)) tagNames.Add(t);
+            var tmpl = item != null
+                ? InventoryDataManager.Instance.GetTemplate(item.templateRef)
+                : null;
+            if (tmpl?.tagRefs != null)
+                foreach (var t in tmpl.tagRefs) if (seen.Add(t)) tagNames.Add(t);
+
+            int gen = ++_tagGen;
+            _labelPool.Configure(textTagsPrefab, itemTagsContainer);
+            _labelPool.Begin();
+            foreach (var tagName in tagNames)
+            {
+                var functionTag = InventoryDataManager.Instance.GetTag(tagName);
+                if (functionTag == null || functionTag.hideInUI) continue;
+
+                string resolved = functionTag.displayNameText != null ? functionTag.displayNameText.ResolveText() : null;
+                string text = string.IsNullOrEmpty(resolved) ? functionTag.name : resolved;
+
+                var label = _labelPool.Next();
+                if (!label) break;
+                InventoryAssets.Release(label.gameObject);
+                // 先按直接引用设背景 + 色 + 文本（直接模式即正确）；授权模式 backgroundSprite 为空，随后异步回填。
+                label.Setup(functionTag.backgroundSpriteValue.GetObject(0) as Sprite, functionTag.backgroundColor, text);
+                var ft = functionTag;
+                InventoryAssets.Bind<Sprite>(ft.backgroundSpriteValue, label.gameObject, s =>
+                {
+                    if (gen != _tagGen || !label || !s) return;   // 过期 / 空结果丢弃（保留 Setup 已设的底图）
+                    label.SetBackgroundSprite(s);
+                });
+            }
+
+            int shown = _labelPool.ActiveCount;
+            _labelPool.End(RecycleLabel);
+
+            itemTagsContainer.gameObject.SetActive(shown > 0);
+        }
+
+        /// <summary>清空功能标签显示（空态 / 对象池回收时调用）。</summary>
+        protected void ClearItemLabels()
+        {
+            if (itemTagsContainer) itemTagsContainer.gameObject.SetActive(false);
+            _tagGen++;
+            _labelPool.RecycleAll(RecycleLabel);
         }
 
         #endregion

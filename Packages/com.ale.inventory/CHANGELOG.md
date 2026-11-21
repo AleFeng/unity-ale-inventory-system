@@ -6,6 +6,21 @@
 
 > 迁移说明（2026-07-22）：包标识 `com.fs.inventorysystem` → `com.ale.inventory`；程序集 `Fs.InventorySystem.*` → `Ale.Inventory.*`、命名空间 `InventorySystem.*` → `Ale.Inventory.*`；插件位置由 `Assets/Plugins/InventorySystem` 迁移至内嵌 UPM 包 `Packages/com.ale.inventory`。版本号保持 1.4.0。
 
+## [1.20.0] - 2026-11-22
+
+**商店商品格显示功能标签，总价写货币名称。** 此前功能标签只有仓库的详情行显示，商店里看不出商品带什么标签（如宿主给黑市商品打的「恶堕」）；总价写的是货币道具 ID（「950 credit」）。
+
+### 新增
+
+- `UiwShopItemDetail` 显示道具的功能标签（item.tagRefs ∪ template.tagRefs，跳过 `hideInUI`）：在预制体上配 `textTagsPrefab` 与 `itemTagsContainer` 即可，未配置时不显示。
+- `ShopPriceText.Format`：「金额 货币名」，货币名取货币道具的显示名称属性，取不到时回退为道具 ID。
+- `UiwShopViewBase.currencyNameAttrId`（默认 `名称`）：总价里货币名取货币道具的哪个属性；置空 = 照旧显示货币道具 ID。
+
+### 变更
+
+- 功能标签的显示（`textTagsPrefab` / `itemTagsContainer` 与刷新逻辑）从 `UiwInventoryItemDetail` 上移到基类 `UiwInventoryItemBase`，字段名不变，已有预制体的配置照常生效。
+- 商店总价、商品格的单价 / 小计文本改用 `ShopPriceText`：货币道具带 `名称` 属性时显示名称而不是 ID。
+
 ## [1.19.0] - 2026-11-20
 
 **选择面板可以和装备组面板同时显示。** 此前左键点装备槽总会先隐藏装备组面板再打开选择面板，做不出「候选列表贴在槽位旁边展开」的下拉式布局。

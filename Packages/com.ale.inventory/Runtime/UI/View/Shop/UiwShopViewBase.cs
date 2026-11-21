@@ -373,6 +373,8 @@ namespace Ale.Inventory.Runtime.UI
         public string sellTotalPrefix    = "总价：";
         [Tooltip("回收总收益前缀。")]
         public string recycleTotalPrefix = "总收益：";
+        [Tooltip("总价里货币的显示名称取货币道具的哪个属性（空 = 显示货币道具 ID）。")]
+        public string currencyNameAttrId = "名称";
         [Tooltip("数量自动下调提示。")]
         public string adjustHint         = "数量已自动调整（货币 / 容量不足），请再次点击结算。";
         [Tooltip("不支持交易提示。")]
@@ -428,7 +430,7 @@ namespace Ale.Inventory.Runtime.UI
 
             if (totalLabel)
             {
-                string priceText = UIFormat.PriceString(numberFormat, _totals);
+                string priceText = ShopPriceText.Format(numberFormat, _totals, currencyNameAttrId);
                 totalLabel.text  = TotalPrefix + (priceText.Length > 0 ? priceText : "0");
                 totalLabel.color = over ? overBudgetColor : normalColor;
             }
